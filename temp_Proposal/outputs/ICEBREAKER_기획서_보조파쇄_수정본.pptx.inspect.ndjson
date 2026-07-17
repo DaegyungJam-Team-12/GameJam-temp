@@ -1,0 +1,779 @@
+{"kind":"deck","id":"pr/45uuei","name":"Deck"}
+{"kind":"layout","layoutId":"/ppt/slideMasters/slideMaster1.xml","name":"","type":"master","placeholders":[{"name":"title","type":"title","textPreview":"Click to edit the title text format"},{"name":"body","type":"body","textPreview":"Click to edit the outline text format | Second Outline Level | Third Outline Level | Fourth Outline Level | Fifth Outline Level | Sixth O..."}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout1.xml","name":"DEFAULT","type":"blank"}
+{"kind":"slide","id":"sl/y90nupkv","slide":1,"title":"GAME DESIGN DOCUMENT","textShapes":6}
+{"kind":"textbox","id":"sh/wn6dc7eh","slide":1,"name":"Text 0","text":"GAME DESIGN DOCUMENT","textPreview":"GAME DESIGN DOCUMENT","textChars":20,"textLines":1,"bbox":[57.6,86.4,767.96,38.36]}
+{"kind":"textbox","id":"sh/hofulsf2","slide":1,"name":"Text 1","text":"ICEBREAKER","textPreview":"ICEBREAKER","textChars":10,"textLines":1,"bbox":[52.8,144,1171.16,134.36]}
+{"kind":"textbox","id":"sh/ul4vaxgb","slide":1,"name":"Text 2","text":"taskbar 위의 얼음을 깨는 자원 채굴형 증분 게임","textPreview":"taskbar 위의 얼음을 깨는 자원 채굴형 증분 게임","textChars":30,"textLines":1,"bbox":[59.53,288,1055.96,47.96]}
+{"kind":"shape","id":"sh/vmdcj2xw","slide":1,"name":"Shape 3","bbox":[0,566.4,1279.63,67.16]}
+{"kind":"shape","id":"sh/4r6dg7et","slide":1,"name":"Shape 4","bbox":[96,417.6,182.36,148.76]}
+{"kind":"shape","id":"sh/ipovexwn","slide":1,"name":"Shape 5","bbox":[123.33,447.34,63.87,44.64]}
+{"kind":"shape","id":"sh/3qxwn2x8","slide":1,"name":"Shape 6","bbox":[205.42,439.9,45.62,59.53]}
+{"kind":"shape","id":"sh/sfqdkrep","slide":1,"name":"Shape 7","bbox":[132.47,506.87,72.94,37.19]}
+{"kind":"shape","id":"sh/dgzetcfa","slide":1,"name":"Shape 8","bbox":[196.31,499.43,54.73,44.64]}
+{"kind":"shape","id":"sh/1cvuxc7e","slide":1,"name":"Shape 9","bbox":[307.2,484.8,345.56,71.96]}
+{"kind":"textbox","id":"sh/0bmd476t","slide":1,"name":"Text 10","text":"골드 12.4K   ⏱ 60s   심도 T3","textPreview":"골드 12.4K   ⏱ 60s   심도 T3","textChars":24,"textLines":1,"bbox":[328.33,484.8,316.76,71.96]}
+{"kind":"textbox","id":"sh/zadcv2p8","slide":1,"name":"Text 11","text":"14:32","textPreview":"14:32","textChars":5,"textLines":1,"bbox":[1171.2,566.4,86.36,67.16]}
+{"kind":"textbox","id":"sh/e94v2hon","slide":1,"name":"Text 12","text":"게임잼 「납량」 출품작  ·  기획: 박민준  ·  v1.0 · 2026.07","textPreview":"게임잼 「납량」 출품작  ·  기획: 박민준  ·  v1.0 · 2026.07","textChars":43,"textLines":1,"bbox":[59.53,657.6,863.96,38.36]}
+{"kind":"image","id":"im/eh4fmdgv","slide":1,"name":"Image 0","bbox":[161.65,474.14,51.02,51.02]}
+{"kind":"notes","id":"nt/y90nupkv","slide":1,"text":""}
+{"kind":"slide","id":"sl/hwbqtkby","slide":2,"title":"OVERVIEW","textShapes":20}
+{"kind":"textbox","id":"sh/hcvy14ne","slide":2,"name":"Text 0","text":"OVERVIEW","textPreview":"OVERVIEW","textChars":8,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/gbmxszmt","slide":2,"name":"Text 1","text":"게임 개요","textPreview":"게임 개요","textChars":5,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/fadgzu58","slide":2,"name":"Shape 2","bbox":[57.6,177.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/u94fqp4n","slide":2,"name":"Text 3","text":"장르","textPreview":"장르","textChars":2,"textLines":1,"bbox":[81.6,194.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/p0vy54na","slide":2,"name":"Text 4","text":"자원 채굴형 증분\n(Incremental / Idle)","textPreview":"자원 채굴형 증분 | (Incremental / Idle)","textChars":30,"textLines":2,"bbox":[81.6,230.4,235.16,81.56]}
+{"kind":"shape","id":"sh/4zmxwzmp","slide":2,"name":"Shape 5","bbox":[358.07,177.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/mlgvq147","slide":2,"name":"Text 6","text":"형식","textPreview":"형식","textChars":2,"textLines":1,"bbox":[382.07,194.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/nmpcj6ls","slide":2,"name":"Text 7","text":"taskbar 상주형\n데스크톱 컴패니언","textPreview":"taskbar 상주형 | 데스크톱 컴패니언","textChars":21,"textLines":2,"bbox":[382.07,230.4,235.16,81.56]}
+{"kind":"shape","id":"sh/onydsbmd","slide":2,"name":"Shape 8","bbox":[658.54,177.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/9o7ulg3y","slide":2,"name":"Text 9","text":"플랫폼","textPreview":"플랫폼","textChars":3,"textLines":1,"bbox":[682.54,194.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/a9gvulkj","slide":2,"name":"Text 10","text":"Windows (P0)\nmacOS (P1)","textPreview":"Windows (P0) | macOS (P1)","textChars":23,"textLines":2,"bbox":[682.54,230.4,235.16,81.56]}
+{"kind":"shape","id":"sh/ba9cn6l4","slide":2,"name":"Shape 11","bbox":[959.06,177.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/wbidwb29","slide":2,"name":"Text 12","text":"엔진","textPreview":"엔진","textChars":2,"textLines":1,"bbox":[983.06,194.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/xcrupg3u","slide":2,"name":"Text 13","text":"Unity + C#\nUniWindowController","textPreview":"Unity + C# | UniWindowController","textChars":30,"textLines":2,"bbox":[983.06,230.4,235.16,81.56]}
+{"kind":"shape","id":"sh/id0vylkf","slide":2,"name":"Shape 14","bbox":[57.6,345.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/je9crql0","slide":2,"name":"Text 15","text":"세션","textPreview":"세션","textChars":2,"textLines":1,"bbox":[81.6,362.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/ru5cbqd4","slide":2,"name":"Text 16","text":"한 판 60초 고정\n재결빙 90초(잼)","textPreview":"한 판 60초 고정 | 재결빙 90초(잼)","textChars":21,"textLines":2,"bbox":[81.6,398.4,235.16,81.56]}
+{"kind":"shape","id":"sh/69wbilcj","slide":2,"name":"Shape 17","bbox":[358.07,345.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/tw7ud0va","slide":2,"name":"Text 18","text":"볼륨","textPreview":"볼륨","textChars":2,"textLines":1,"bbox":[382.07,362.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/svedkvup","slide":2,"name":"Text 19","text":"2~3시간 완결형\n(finishable)","textPreview":"2~3시간 완결형 | (finishable)","textChars":22,"textLines":2,"bbox":[382.07,398.4,235.16,81.56]}
+{"kind":"shape","id":"sh/fypcfqdg","slide":2,"name":"Shape 20","bbox":[658.54,345.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/exgvmlcv","slide":2,"name":"Text 21","text":"재화","textPreview":"재화","textChars":2,"textLines":1,"bbox":[682.54,362.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/107uh0v6","slide":2,"name":"Text 22","text":"골드 단일\n영구 업그레이드 트리","textPreview":"골드 단일 | 영구 업그레이드 트리","textChars":17,"textLines":2,"bbox":[682.54,398.4,235.16,81.56]}
+{"kind":"shape","id":"sh/gzydovul","slide":2,"name":"Shape 23","bbox":[959.06,345.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/v2lc36dw","slide":2,"name":"Text 24","text":"타깃","textPreview":"타깃","textChars":2,"textLines":1,"bbox":[983.06,362.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/a1cba1wb","slide":2,"name":"Text 25","text":"25~44 사무직\n미국 + 중국 (Steam)","textPreview":"25~44 사무직 | 미국 + 중국 (Steam)","textChars":25,"textLines":2,"bbox":[983.06,398.4,235.16,81.56]}
+{"kind":"shape","id":"sh/0vq1o36x","slide":2,"name":"Shape 26","bbox":[57.6,537.6,1161.56,110.36]}
+{"kind":"textbox","id":"sh/1wzix87i","slide":2,"name":"Text 27","text":"컨셉 — 판은 얼음이 떠다니는 스테이지다. 60초 동안 얼음을 직접 클릭해 부수고, 골드로 트리를 키우며, 재결빙 동안 자기 일을 한다.\n성장의 증거는 숫자가 아니라 \"한 번의 클릭으로 동시에 깨지는 얼음의 수\"다 — 같은 60초, 매 판 정확히 비교된다.","textPreview":"컨셉 — 판은 얼음이 떠다니는 스테이지다. 60초 동안 얼음을 직접 클릭해 부수고, 골드로 트리를 키우며, 재결빙 동안 자기 일을 한다. | 성장의 증거는 숫자가 아니라 \"한 번의 클릭으로 동시에 깨지는 얼음의 수\"다 — 같은 60초, 매 판 정...","textChars":143,"textLines":2,"bbox":[91.2,537.6,1103.96,110.36]}
+{"kind":"textbox","id":"sh/et8zmto7","slide":2,"name":"Text 28","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/hwbqtkby","slide":2,"text":""}
+{"kind":"slide","id":"sl/ofy9wn61","slide":3,"title":"WHAT IS THIS GAME","textShapes":18}
+{"kind":"textbox","id":"sh/w3it8zit","slide":3,"name":"Text 0","text":"WHAT IS THIS GAME","textPreview":"WHAT IS THIS GAME","textChars":17,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/nypcba1c","slide":3,"name":"Text 1","text":"평소엔 얇은 띠, 클릭하면 게임","textPreview":"평소엔 얇은 띠, 클릭하면 게임","textChars":17,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/mxgb250r","slide":3,"name":"Shape 2","bbox":[57.6,165.13,32.62,32.62]}
+{"kind":"textbox","id":"sh/90rudkji","slide":3,"name":"Text 3","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[57.6,164.64,32.62,32.62]}
+{"kind":"textbox","id":"sh/8zit4fix","slide":3,"name":"Text 4","text":"도킹 — 평소 taskbar 위","textPreview":"도킹 — 평소 taskbar 위","textChars":17,"textLines":1,"bbox":[97.93,161.27,479.96,38.36]}
+{"kind":"shape","id":"sh/7utcne1g","slide":3,"name":"Shape 5","bbox":[57.6,216,547.16,340.76]}
+{"kind":"shape","id":"sh/6tkve90v","slide":3,"name":"Shape 6","bbox":[91.2,249.6,316.76,191.96]}
+{"kind":"textbox","id":"sh/2p4f6dk3","slide":3,"name":"Text 7","text":"업무 창 — 방해받지 않음","textPreview":"업무 창 — 방해받지 않음","textChars":14,"textLines":1,"bbox":[105.6,261.13,287.96,28.76]}
+{"kind":"shape","id":"sh/3qxwfilo","slide":3,"name":"Shape 8","bbox":[70.07,499.2,522.22,45.09]}
+{"kind":"textbox","id":"sh/or6x8329","slide":3,"name":"Text 9","text":"14:32","textPreview":"14:32","textChars":5,"textLines":1,"bbox":[508.8,499.2,76.76,45.09]}
+{"kind":"shape","id":"sh/psfeh83u","slide":3,"name":"Shape 10","bbox":[91.2,430.07,412.76,63.31]}
+{"kind":"shape","id":"sh/qtofadkf","slide":3,"name":"Shape 11","bbox":[105.6,439.67,46.03,44.11]}
+{"kind":"shape","id":"sh/bexwjil0","slide":3,"name":"Shape 12","bbox":[112.48,448.48,16.14,13.27]}
+{"kind":"shape","id":"sh/cf6xcn2l","slide":3,"name":"Shape 13","bbox":[133.23,446.29,11.53,17.65]}
+{"kind":"textbox","id":"sh/dgfyls3q","slide":3,"name":"Text 14","text":"골드 12.4K  재결빙 ▓▓▓░░ 08:12","textPreview":"골드 12.4K  재결빙 ▓▓▓░░ 08:12","textChars":25,"textLines":1,"bbox":[168,430.07,316.76,63.31]}
+{"kind":"textbox","id":"sh/6xkvytkb","slide":3,"name":"Text 15","text":"보이는 것 = 얼음 실루엣 · 골드 · 재결빙 타이머뿐","textPreview":"보이는 것 = 얼음 실루엣 · 골드 · 재결빙 타이머뿐","textChars":30,"textLines":1,"bbox":[91.2,558.73,499.16,28.76]}
+{"kind":"shape","id":"sh/7idw7ylg","slide":3,"name":"Shape 16","bbox":[619.2,336,71.96,67.16]}
+{"kind":"textbox","id":"sh/9cjidwny","slide":3,"name":"Text 17","text":"클릭","textPreview":"클릭","textChars":2,"textLines":1,"bbox":[619.2,336,71.96,67.16]}
+{"kind":"shape","id":"sh/8bahkrmt","slide":3,"name":"Shape 18","bbox":[609.6,369.6,4.8,0.04]}
+{"kind":"shape","id":"sh/na10bm58","slide":3,"name":"Shape 19","bbox":[604.8,369.6,11.49,0.04]}
+{"kind":"shape","id":"sh/m9szih4n","slide":3,"name":"Shape 20","bbox":[691.2,369.6,14.4,0.04]}
+{"kind":"shape","id":"sh/xg3ihwna","slide":3,"name":"Shape 21","bbox":[720,165.13,32.62,32.62]}
+{"kind":"textbox","id":"sh/wfahormp","slide":3,"name":"Text 22","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[720,164.64,32.62,32.62]}
+{"kind":"textbox","id":"sh/ve10fm54","slide":3,"name":"Text 23","text":"확장 — 게임 전용 화면 (720×480)","textPreview":"확장 — 게임 전용 화면 (720×480)","textChars":23,"textLines":1,"bbox":[760.33,161.27,479.96,38.36]}
+{"kind":"shape","id":"sh/adszm14j","slide":3,"name":"Shape 24","bbox":[720,216,499.16,340.76]}
+{"kind":"shape","id":"sh/dkzy5cn6","slide":3,"name":"Shape 25","bbox":[737.27,230.4,464.62,40.29]}
+{"kind":"textbox","id":"sh/cjqhc7ml","slide":3,"name":"Text 26","text":"⏱ 00:42  골드 +1,240  심도 T2  콤보 ×7","textPreview":"⏱ 00:42  골드 +1,240  심도 T2  콤보 ×7","textChars":32,"textLines":1,"bbox":[748.8,230.4,441.56,40.29]}
+{"kind":"shape","id":"sh/436lcve1","slide":3,"name":"Shape 27","bbox":[827.78,425.65,41.19,44]}
+{"kind":"shape","id":"sh/54fm50vm","slide":3,"name":"Shape 28","bbox":[826.1,322.31,36.63,47.91]}
+{"kind":"shape","id":"sh/ih43alwv","slide":3,"name":"Shape 29","bbox":[956.07,305.29,39.43,31.98]}
+{"kind":"shape","id":"sh/3id43qdg","slide":3,"name":"Shape 30","bbox":[1007.16,383.44,54.23,35.12]}
+{"kind":"shape","id":"sh/gfml8ve5","slide":3,"name":"Shape 31","bbox":[754.61,330.09,47.07,28.76]}
+{"kind":"shape","id":"sh/hgvm1gvq","slide":3,"name":"Shape 32","bbox":[1014.51,315.33,42.28,32.58]}
+{"kind":"shape","id":"sh/ud436lwz","slide":3,"name":"Shape 33","bbox":[768.92,433.06,35.89,37.58]}
+{"kind":"shape","id":"sh/ved4zqdk","slide":3,"name":"Shape 34","bbox":[919.44,443.08,38.29,39.5]}
+{"kind":"shape","id":"sh/0bq5kfu9","slide":3,"name":"Shape 35","bbox":[882.76,335.72,35.47,28.32]}
+{"kind":"shape","id":"sh/1czmdkvu","slide":3,"name":"Shape 36","bbox":[891.55,397.87,42.03,32.6]}
+{"kind":"shape","id":"sh/b61o3exw","slide":3,"name":"Shape 37","bbox":[812.26,375.16,54.13,45.26]}
+{"kind":"shape","id":"sh/a5s7a9gb","slide":3,"name":"Shape 38","bbox":[1000.7,432.1,46.73,34.71]}
+{"kind":"shape","id":"sh/x8jq5of2","slide":3,"name":"Shape 39","bbox":[946.22,368.56,55.58,47.36]}
+{"kind":"shape","id":"sh/w7apcjyh","slide":3,"name":"Shape 40","bbox":[756.58,292.6,35.55,34.13]}
+{"kind":"shape","id":"sh/jul87yx8","slide":3,"name":"Shape 41","bbox":[749.24,363.53,51.7,39.46]}
+{"kind":"shape","id":"sh/ytc7etwn","slide":3,"name":"Shape 42","bbox":[878.74,438.78,34.45,36.58]}
+{"kind":"shape","id":"sh/lw3q9ofy","slide":3,"name":"Shape 43","bbox":[893.11,294.62,50.35,34.62]}
+{"kind":"shape","id":"sh/kvupg3ed","slide":3,"name":"Shape 44","bbox":[977.37,296.31,44.08,44.86]}
+{"kind":"shape","id":"sh/fyhovuxo","slide":3,"name":"Shape 45","bbox":[782.91,383.5,49.73,48.94]}
+{"kind":"textbox","id":"sh/ex872pg3","slide":3,"name":"Text 46","text":"부유 스테이지 — 여러 얼음을 직접 클릭, 파괴 후 새 얼음 스폰","textPreview":"부유 스테이지 — 여러 얼음을 직접 클릭, 파괴 후 새 얼음 스폰","textChars":36,"textLines":1,"bbox":[744,496.33,326.36,24.91]}
+{"kind":"shape","id":"sh/fuhcnq50","slide":3,"name":"Shape 47","bbox":[1082.87,285.13,119.02,206.36]}
+{"kind":"textbox","id":"sh/et8vel4f","slide":3,"name":"Text 48","text":"재질\n다음 티어\n특수빙\n최고 연쇄","textPreview":"재질 | 다음 티어 | 특수빙 | 최고 연쇄","textChars":18,"textLines":4,"bbox":[1090.54,297.6,105.56,182.36]}
+{"kind":"shape","id":"sh/1wzup0nq","slide":3,"name":"Shape 49","bbox":[737.27,516.47,464.62,28.76]}
+{"kind":"textbox","id":"sh/0vqdgvml","slide":3,"name":"Text 50","text":"골드  ·  업그레이드 트리  ·  접기","textPreview":"골드  ·  업그레이드 트리  ·  접기","textChars":22,"textLines":1,"bbox":[737.27,516.47,464.62,28.76]}
+{"kind":"textbox","id":"sh/r6xcjq5o","slide":3,"name":"Text 51","text":"오직 게임만 — 다른 창·요소 없음","textPreview":"오직 게임만 — 다른 창·요소 없음","textChars":19,"textLines":1,"bbox":[720,558.73,499.16,28.76]}
+{"kind":"shape","id":"sh/q5oval43","slide":3,"name":"Shape 52","bbox":[57.6,609.6,1161.56,47.96]}
+{"kind":"textbox","id":"sh/d8zul0nu","slide":3,"name":"Text 53","text":"핵심 — 평소엔 taskbar 위 얇은 띠로 존재하다가, 클릭하면 여러 얼음이 떠다니는 60초 스테이지가 열린다. 업무는 방해받지 않는다.","textPreview":"핵심 — 평소엔 taskbar 위 얇은 띠로 존재하다가, 클릭하면 여러 얼음이 떠다니는 60초 스테이지가 열린다. 업무는 방해받지 않는다.","textChars":77,"textLines":1,"bbox":[91.2,609.6,1103.96,47.96]}
+{"kind":"textbox","id":"sh/s7qdcvm9","slide":3,"name":"Text 54","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/ofy9wn61","slide":3,"text":""}
+{"kind":"slide","id":"sl/jyx0ra1s","slide":4,"title":"GENRE","textShapes":14}
+{"kind":"textbox","id":"sh/udkbadkf","slide":4,"name":"Text 0","text":"GENRE","textPreview":"GENRE","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/vedcjil0","slide":4,"name":"Text 1","text":"장르: 능동으로 시작해 방치로 미끄러진다","textPreview":"장르: 능동으로 시작해 방치로 미끄러진다","textChars":22,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/58fe9cn2","slide":4,"name":"Shape 2","bbox":[115.2,441.6,1046.4,0.04]}
+{"kind":"textbox","id":"sh/476d076h","slide":4,"name":"Text 3","text":"능동 (클릭·조준의 손맛)","textPreview":"능동 (클릭·조준의 손맛)","textChars":14,"textLines":1,"bbox":[115.2,456,287.96,30.69]}
+{"kind":"textbox","id":"sh/36xw7m5c","slide":4,"name":"Text 4","text":"방치 (idle · 알아서 진행)","textPreview":"방치 (idle · 알아서 진행)","textChars":18,"textLines":1,"bbox":[873.6,456,287.96,30.69]}
+{"kind":"shape","id":"sh/i5ovyhor","slide":4,"name":"Shape 5","bbox":[172.8,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/h4ve5cn6","slide":4,"name":"Text 6","text":"Cookie Clicker","textPreview":"Cookie Clicker","textChars":14,"textLines":1,"bbox":[76.8,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/g3mdw76l","slide":4,"name":"Shape 7","bbox":[345.6,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/v2dw3250","slide":4,"name":"Text 8","text":"Timber Rush","textPreview":"Timber Rush","textChars":11,"textLines":1,"bbox":[249.6,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/u14vuxof","slide":4,"name":"Shape 9","bbox":[499.2,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/10zehwna","slide":4,"name":"Text 10","text":"Space Rock Breaker","textPreview":"Space Rock Breaker","textChars":18,"textLines":1,"bbox":[403.2,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/0zqd8rmp","slide":4,"name":"Shape 11","bbox":[892.8,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/kfip0zyd","slide":4,"name":"Text 12","text":"TBH: Task Bar Hero","textPreview":"TBH: Task Bar Hero","textChars":18,"textLines":1,"bbox":[796.8,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/lgr6t4zy","slide":4,"name":"Shape 13","bbox":[1046.4,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/ytg7ypg7","slide":4,"name":"Text 14","text":"Rusty's Retirement","textPreview":"Rusty's Retirement","textChars":18,"textLines":1,"bbox":[950.4,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/je9oruhs","slide":4,"name":"Shape 15","bbox":[316.8,288,614.36,59.49]}
+{"kind":"textbox","id":"sh/wrypwzy1","slide":4,"name":"Text 16","text":"ICEBREAKER — 판 중엔 능동, 판 사이엔 방치","textPreview":"ICEBREAKER — 판 중엔 능동, 판 사이엔 방치","textChars":30,"textLines":1,"bbox":[316.8,288,614.36,59.49]}
+{"kind":"shape","id":"sh/xs76p4zm","slide":4,"name":"Shape 17","bbox":[422.4,350.4,0.04,64.29]}
+{"kind":"shape","id":"sh/apg7upgb","slide":4,"name":"Shape 18","bbox":[835.2,350.4,0.04,64.29]}
+{"kind":"textbox","id":"sh/bqponuhg","slide":4,"name":"Text 19","text":"판 (1~8분)","textPreview":"판 (1~8분)","textChars":8,"textLines":1,"bbox":[340.8,355.2,191.96,30.69]}
+{"kind":"textbox","id":"sh/onypsfy5","slide":4,"name":"Text 20","text":"재결빙 (15~20분)","textPreview":"재결빙 (15~20분)","textChars":12,"textLines":1,"bbox":[849.6,355.2,211.16,30.69]}
+{"kind":"shape","id":"sh/9o76lkzq","slide":4,"name":"Shape 21","bbox":[57.6,552,1161.56,95.96]}
+{"kind":"textbox","id":"sh/ri58ba1c","slide":4,"name":"Text 22","text":"증분(incremental) = \"숫자가 오른다 → 그 숫자로 더 빨리 오르게 만든다 → 새 층이 열린다\"의 구조 장르. RPG·팜 등은 껍데기일 뿐 — 우리 껍데기는 얼음이다.","textPreview":"증분(incremental) = \"숫자가 오른다 → 그 숫자로 더 빨리 오르게 만든다 → 새 층이 열린다\"의 구조 장르. RPG·팜 등은 껍데기일 뿐 — 우리 껍데기는 얼음이다.","textChars":99,"textLines":1,"bbox":[91.2,552,1103.96,95.96]}
+{"kind":"textbox","id":"sh/qhw725kr","slide":4,"name":"Text 23","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/jyx0ra1s","slide":4,"text":""}
+{"kind":"slide","id":"sl/i107q5of","slide":5,"title":"REFERENCES","textShapes":28}
+{"kind":"textbox","id":"sh/9gjmtwvi","slide":5,"name":"Text 0","text":"REFERENCES","textPreview":"REFERENCES","textChars":10,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/8fql0rux","slide":5,"name":"Text 1","text":"레퍼런스 — 각각에서 가져오는 것","textPreview":"레퍼런스 — 각각에서 가져오는 것","textChars":18,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/zahkn2dg","slide":5,"name":"Shape 2","bbox":[57.6,172.8,278.36,470.36]}
+{"kind":"shape","id":"sh/y983uxcv","slide":5,"name":"Shape 3","bbox":[57.6,172.8,278.36,91.16]}
+{"kind":"textbox","id":"sh/lcz2pcvm","slide":5,"name":"Text 4","text":"Timber Rush","textPreview":"Timber Rush","textChars":11,"textLines":1,"bbox":[76.8,184.33,239.96,38.36]}
+{"kind":"textbox","id":"sh/kbqlw7u1","slide":5,"name":"Text 5","text":"단일 행동 증분","textPreview":"단일 행동 증분","textChars":8,"textLines":1,"bbox":[76.8,222.73,239.96,28.76]}
+{"kind":"textbox","id":"sh/j614z6dk","slide":5,"name":"Text 6","text":"벌목 한 번이 거대한 영구 트리로 확장.\n자동화·특수 재료·포션이 시너지를 만든다","textPreview":"벌목 한 번이 거대한 영구 트리로 확장. | 자동화·특수 재료·포션이 시너지를 만든다","textChars":45,"textLines":2,"bbox":[76.8,283.2,244.76,110.36]}
+{"kind":"shape","id":"sh/i5s361cz","slide":5,"name":"Shape 7","bbox":[76.8,398.4,239.96,143.96]}
+{"kind":"textbox","id":"sh/qt87u5sj","slide":5,"name":"Text 8","text":"가져오는 것","textPreview":"가져오는 것","textChars":6,"textLines":1,"bbox":[94.07,410.87,211.16,26.83]}
+{"kind":"textbox","id":"sh/ru1onq9o","slide":5,"name":"Text 9","text":"영구 노드 네트워크\n자동화 → 클릭 발동 보조 파쇄","textPreview":"영구 노드 네트워크 | 자동화 → 클릭 발동 보조 파쇄","textChars":28,"textLines":2,"bbox":[94.07,439.67,211.16,91.16]}
+{"kind":"textbox","id":"sh/sfapwva9","slide":5,"name":"Text 10","text":"공식 Steam 페이지 기준","textPreview":"공식 Steam 페이지 기준","textChars":15,"textLines":1,"bbox":[76.8,561.6,239.96,28.76]}
+{"kind":"shape","id":"sh/dgj6p0ru","slide":5,"name":"Shape 11","bbox":[358.07,172.8,278.36,470.36]}
+{"kind":"shape","id":"sh/ip87qls7","slide":5,"name":"Shape 12","bbox":[358.07,172.8,278.36,91.16]}
+{"kind":"textbox","id":"sh/3qhojq9s","slide":5,"name":"Text 13","text":"Space Rock Breaker","textPreview":"Space Rock Breaker","textChars":18,"textLines":1,"bbox":[377.27,184.33,239.96,38.36]}
+{"kind":"textbox","id":"sh/4rqpsvad","slide":5,"name":"Text 14","text":"완결형 채굴 증분","textPreview":"완결형 채굴 증분","textChars":9,"textLines":1,"bbox":[377.27,222.73,239.96,28.76]}
+{"kind":"textbox","id":"sh/5sz6l0ry","slide":5,"name":"Text 15","text":"총·미사일·레이저와 가공·보상을 확장.\n중앙에서 여러 방향으로 퍼지는 대형 스킬 트리","textPreview":"총·미사일·레이저와 가공·보상을 확장. | 중앙에서 여러 방향으로 퍼지는 대형 스킬 트리","textChars":47,"textLines":2,"bbox":[377.27,283.2,244.76,110.36]}
+{"kind":"shape","id":"sh/2ls72p8r","slide":5,"name":"Shape 16","bbox":[377.27,398.4,239.96,143.96]}
+{"kind":"textbox","id":"sh/nml8va9w","slide":5,"name":"Text 17","text":"가져오는 것","textPreview":"가져오는 것","textChars":6,"textLines":1,"bbox":[394.54,410.87,211.16,26.83]}
+{"kind":"textbox","id":"sh/xgna1obe","slide":5,"name":"Text 18","text":"중앙 루트 → 다중 분기\n무기·함선 강화 · 끝 노드 보상","textPreview":"중앙 루트 → 다중 분기 | 무기·함선 강화 · 끝 노드 보상","textChars":32,"textLines":2,"bbox":[394.54,439.67,211.16,91.16]}
+{"kind":"textbox","id":"sh/cfe9sjat","slide":5,"name":"Text 19","text":"공식 Steam 페이지·스토어 미디어","textPreview":"공식 Steam 페이지·스토어 미디어","textChars":20,"textLines":1,"bbox":[377.27,561.6,239.96,28.76]}
+{"kind":"shape","id":"sh/be5szet8","slide":5,"name":"Shape 20","bbox":[658.54,172.8,278.36,470.36]}
+{"kind":"shape","id":"sh/adwrq9cn","slide":5,"name":"Shape 21","bbox":[658.54,172.8,278.36,91.16]}
+{"kind":"textbox","id":"sh/pc3ax4b2","slide":5,"name":"Text 22","text":"Rusty's Retirement","textPreview":"Rusty's Retirement","textChars":18,"textLines":1,"bbox":[677.74,184.33,239.96,38.36]}
+{"kind":"textbox","id":"sh/obu9ozuh","slide":5,"name":"Text 23","text":"화면 하단 상주 idle","textPreview":"화면 하단 상주 idle","textChars":13,"textLines":1,"bbox":[677.74,222.73,239.96,28.76]}
+{"kind":"textbox","id":"sh/nalsvutw","slide":5,"name":"Text 24","text":"작업 화면 아래 자리잡는 형식의\n원형. 솔로 개발 33만 장","textPreview":"작업 화면 아래 자리잡는 형식의 | 원형. 솔로 개발 33만 장","textChars":33,"textLines":2,"bbox":[677.74,283.2,244.76,110.36]}
+{"kind":"shape","id":"sh/29crmpcr","slide":5,"name":"Shape 25","bbox":[677.74,398.4,239.96,143.96]}
+{"kind":"textbox","id":"sh/t87at8bm","slide":5,"name":"Text 26","text":"가져오는 것","textPreview":"가져오는 것","textChars":6,"textLines":1,"bbox":[695.06,410.87,211.16,26.83]}
+{"kind":"textbox","id":"sh/87yt03a1","slide":5,"name":"Text 27","text":"상주 UI 문법 · 업무 불간섭\n원칙 · 프리미엄 가격 모델","textPreview":"상주 UI 문법 · 업무 불간섭 | 원칙 · 프리미엄 가격 모델","textChars":33,"textLines":2,"bbox":[695.06,439.67,211.16,91.16]}
+{"kind":"textbox","id":"sh/snqlcbm9","slide":5,"name":"Text 28","text":"33만 장 · $7","textPreview":"33만 장 · $7","textChars":10,"textLines":1,"bbox":[677.74,561.6,239.96,28.76]}
+{"kind":"shape","id":"sh/dozmlwnu","slide":5,"name":"Shape 29","bbox":[959.06,172.8,278.36,470.36]}
+{"kind":"shape","id":"sh/q1o3a143","slide":5,"name":"Shape 30","bbox":[959.06,172.8,278.36,91.16]}
+{"kind":"textbox","id":"sh/r2hkj65o","slide":5,"name":"Text 31","text":"TBH: Task Bar Hero","textPreview":"TBH: Task Bar Hero","textChars":18,"textLines":1,"bbox":[978.26,184.33,239.96,38.36]}
+{"kind":"textbox","id":"sh/4z6l8rmd","slide":5,"name":"Text 32","text":"taskbar 바이럴","textPreview":"taskbar 바이럴","textChars":11,"textLines":1,"bbox":[978.26,222.73,239.96,28.76]}
+{"kind":"textbox","id":"sh/50f2hwny","slide":5,"name":"Text 33","text":"taskbar RPG로 동접 36만.\n단, 현금화 경제로 평판 붕괴","textPreview":"taskbar RPG로 동접 36만. | 단, 현금화 경제로 평판 붕괴","textChars":37,"textLines":2,"bbox":[978.26,283.2,244.76,110.36]}
+{"kind":"shape","id":"sh/ixo36h47","slide":5,"name":"Shape 34","bbox":[978.26,398.4,239.96,143.96]}
+{"kind":"textbox","id":"sh/3yxkfm5s","slide":5,"name":"Text 35","text":"가져오는 것","textPreview":"가져오는 것","textChars":6,"textLines":1,"bbox":[995.53,410.87,211.16,26.83]}
+{"kind":"textbox","id":"sh/gv6l4rm1","slide":5,"name":"Text 36","text":"한 줄 피치의 확산력.\n(현금화는 반면교사로 배제)","textPreview":"한 줄 피치의 확산력. | (현금화는 반면교사로 배제)","textChars":28,"textLines":2,"bbox":[995.53,439.67,211.16,91.16]}
+{"kind":"textbox","id":"sh/hwf2dcnm","slide":5,"name":"Text 37","text":"동접 36만+ · Steam 3위","textPreview":"동접 36만+ · Steam 3위","textChars":18,"textLines":1,"bbox":[978.26,561.6,239.96,28.76]}
+{"kind":"textbox","id":"sh/jqd4n2po","slide":5,"name":"Text 38","text":"ICEBREAKER 적용: 재질 해금 공통 진행 × 직접·보조·연쇄 3빌드 × 조건부 보조 공격 × 끝 노드 키스톤","textPreview":"ICEBREAKER 적용: 재질 해금 공통 진행 × 직접·보조·연쇄 3빌드 × 조건부 보조 공격 × 끝 노드 키스톤","textChars":64,"textLines":1,"bbox":[57.6,662.4,1161.56,33.56]}
+{"kind":"textbox","id":"sh/yp43uh83","slide":5,"name":"Text 39","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/i107q5of","slide":5,"text":""}
+{"kind":"slide","id":"sl/x8f69ofe","slide":6,"title":"CORE LOOP","textShapes":23}
+{"kind":"textbox","id":"sh/atkn6lg3","slide":6,"name":"Text 0","text":"CORE LOOP","textPreview":"CORE LOOP","textChars":9,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/but4zqho","slide":6,"name":"Text 1","text":"코어 루프 — 순환 구조","textPreview":"코어 루프 — 순환 구조","textChars":13,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/or254byx","slide":6,"name":"Shape 2","bbox":[345.6,177.6,249.56,177.56]}
+{"kind":"textbox","id":"sh/2p0n2lg7","slide":6,"name":"Text 3","text":"깬다","textPreview":"깬다","textChars":2,"textLines":1,"bbox":[420.47,194.87,163.16,38.36]}
+{"kind":"textbox","id":"sh/nqt4v6hs","slide":6,"name":"Text 4","text":"능동 · 60초 고정","textPreview":"능동 · 60초 고정","textChars":11,"textLines":1,"bbox":[420.47,231.34,172.76,26.83]}
+{"kind":"textbox","id":"sh/0ni50by1","slide":6,"name":"Text 5","text":"스테이지를 떠다니는 얼음을 클릭\n깰수록 넓게 · 깊게 · 골드","textPreview":"스테이지를 떠다니는 얼음을 클릭 | 깰수록 넓게 · 깊게 · 골드","textChars":34,"textLines":2,"bbox":[369.6,268.8,211.16,76.76]}
+{"kind":"shape","id":"sh/1ormtgzm","slide":6,"name":"Shape 6","bbox":[768,177.6,249.56,177.56]}
+{"kind":"textbox","id":"sh/sb6l0nm1","slide":6,"name":"Text 7","text":"타임업","textPreview":"타임업","textChars":3,"textLines":1,"bbox":[842.87,194.87,163.16,38.36]}
+{"kind":"textbox","id":"sh/7ax4rilg","slide":6,"name":"Text 8","text":"60초 종료 = 기록","textPreview":"60초 종료 = 기록","textChars":11,"textLines":1,"bbox":[842.87,231.34,172.76,26.83]}
+{"kind":"textbox","id":"sh/6943yd4v","slide":6,"name":"Text 9","text":"골드 · 파괴 수 · 최고 재질\n최대 연쇄 · 성장 % 비교","textPreview":"골드 · 파괴 수 · 최고 재질 | 최대 연쇄 · 성장 % 비교","textChars":33,"textLines":2,"bbox":[792,268.8,211.16,76.76]}
+{"kind":"shape","id":"sh/h0fmxc3i","slide":6,"name":"Shape 10","bbox":[768,441.6,249.56,177.56]}
+{"kind":"textbox","id":"sh/fyx4v2lc","slide":6,"name":"Text 11","text":"재결빙","textPreview":"재결빙","textChars":3,"textLines":1,"bbox":[842.87,458.87,163.16,38.36]}
+{"kind":"textbox","id":"sh/uxo32x4r","slide":6,"name":"Text 12","text":"잼 90초 · 본편 8~15분","textPreview":"잼 90초 · 본편 8~15분","textChars":16,"textLines":1,"bbox":[842.87,495.34,172.76,26.83]}
+{"kind":"textbox","id":"sh/p4zm1c3e","slide":6,"name":"Text 13","text":"다음 스테이지가 재빙결되는 동안\n유저는 자기 일을 한다","textPreview":"다음 스테이지가 재빙결되는 동안 | 유저는 자기 일을 한다","textChars":30,"textLines":2,"bbox":[792,532.8,211.16,76.76]}
+{"kind":"shape","id":"sh/43ql872t","slide":6,"name":"Shape 14","bbox":[345.6,441.6,249.56,177.56]}
+{"kind":"textbox","id":"sh/ny9sfax0","slide":6,"name":"Text 15","text":"복귀","textPreview":"복귀","textChars":2,"textLines":1,"bbox":[420.47,458.87,163.16,38.36]}
+{"kind":"textbox","id":"sh/ozi98fy5","slide":6,"name":"Text 16","text":"트리를 키우고","textPreview":"트리를 키우고","textChars":7,"textLines":1,"bbox":[420.47,495.34,172.76,26.83]}
+{"kind":"textbox","id":"sh/90rahkfq","slide":6,"name":"Text 17","text":"골드로 트리 해금 (스테이지 사이)\n같은 60초, 동시에 더 많이","textPreview":"골드로 트리 해금 (스테이지 사이) | 같은 60초, 동시에 더 많이","textChars":36,"textLines":2,"bbox":[369.6,532.8,211.16,76.76]}
+{"kind":"shape","id":"sh/a10rapgb","slide":6,"name":"Shape 18","bbox":[604.8,265.89,153.6,0.04]}
+{"kind":"shape","id":"sh/b29sjuxw","slide":6,"name":"Shape 19","bbox":[892.8,364.8,0.04,67.2]}
+{"kind":"shape","id":"sh/w3i9czyh","slide":6,"name":"Shape 20","bbox":[604.8,528,153.6,0.04]}
+{"kind":"shape","id":"sh/x4ral4f2","slide":6,"name":"Shape 21","bbox":[470.4,364.8,0.04,67.2]}
+{"kind":"textbox","id":"sh/y5kre9wn","slide":6,"name":"Text 22","text":"60초 종료","textPreview":"60초 종료","textChars":6,"textLines":1,"bbox":[614.4,225.6,134.36,30.69]}
+{"kind":"textbox","id":"sh/j6tsnuxs","slide":6,"name":"Text 23","text":"정산 후","textPreview":"정산 후","textChars":4,"textLines":1,"bbox":[912,384,163.16,30.69]}
+{"kind":"textbox","id":"sh/mhgn2pk3","slide":6,"name":"Text 24","text":"재빙결 완료","textPreview":"재빙결 완료","textChars":6,"textLines":1,"bbox":[609.6,537.6,153.56,30.69]}
+{"kind":"textbox","id":"sh/nipobu1o","slide":6,"name":"Text 25","text":"트리 강화","textPreview":"트리 강화","textChars":5,"textLines":1,"bbox":[326.4,384,134.36,30.69]}
+{"kind":"shape","id":"sh/ojy54z29","slide":6,"name":"Shape 26","bbox":[57.6,249.6,239.96,230.36]}
+{"kind":"textbox","id":"sh/9476d4ju","slide":6,"name":"Text 27","text":"능동 국면","textPreview":"능동 국면","textChars":5,"textLines":1,"bbox":[81.6,268.8,191.96,28.76]}
+{"kind":"textbox","id":"sh/a5g769kf","slide":6,"name":"Text 28","text":"손맛과 폭증.\n증분의 도파민은\n전부 여기에.","textPreview":"손맛과 폭증. | 증분의 도파민은 | 전부 여기에.","textChars":24,"textLines":3,"bbox":[81.6,307.2,196.76,124.76]}
+{"kind":"shape","id":"sh/b6pofe10","slide":6,"name":"Shape 29","bbox":[1046.4,249.6,177.56,230.36]}
+{"kind":"textbox","id":"sh/w7yp8j25","slide":6,"name":"Text 30","text":"방치 국면","textPreview":"방치 국면","textChars":5,"textLines":1,"bbox":[1065.6,268.8,143.96,28.76]}
+{"kind":"textbox","id":"sh/x8r6hojq","slide":6,"name":"Text 31","text":"업무 복귀.\n게임은 조용히\n다음을 준비.","textPreview":"업무 복귀. | 게임은 조용히 | 다음을 준비.","textChars":22,"textLines":3,"bbox":[1065.6,307.2,143.96,124.76]}
+{"kind":"textbox","id":"sh/y907a90b","slide":6,"name":"Text 32","text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/298bed0r","slide":6,"name":"Image 0","bbox":[369.6,198.73,38.36,38.36]}
+{"kind":"image","id":"im/sf69ojy9","slide":6,"name":"Image 1","bbox":[792,198.73,38.36,38.36]}
+{"kind":"image","id":"im/tgfqhozu","slide":6,"name":"Image 2","bbox":[792,462.73,38.36,38.36]}
+{"kind":"image","id":"im/6d4rm9gj","slide":6,"name":"Image 3","bbox":[369.6,462.73,38.36,38.36]}
+{"kind":"notes","id":"nt/x8f69ofe","slide":6,"text":""}
+{"kind":"slide","id":"sl/gnmp4jqx","slide":7,"title":"GAMEPLAY · ACTIVE","textShapes":13}
+{"kind":"textbox","id":"sh/9sv2psjq","slide":7,"name":"Text 0","text":"GAMEPLAY · ACTIVE","textPreview":"GAMEPLAY · ACTIVE","textChars":17,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/jmxofml8","slide":7,"name":"Text 1","text":"60초의 진행 — 스테이지 안에서 얼음이 떠다닌다","textPreview":"60초의 진행 — 스테이지 안에서 얼음이 떠다닌다","textChars":27,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/ilonmhkn","slide":7,"name":"Shape 2","bbox":[67.2,182.4,273.56,297.56]}
+{"kind":"shape","id":"sh/58z6hw3y","slide":7,"name":"Shape 3","bbox":[244.33,274.35,28.09,29.48]}
+{"kind":"shape","id":"sh/k765or2d","slide":7,"name":"Shape 4","bbox":[253.21,218.64,31.21,25.51]}
+{"kind":"shape","id":"sh/vix4bmlw","slide":7,"name":"Shape 5","bbox":[168.33,217.38,32.3,28.7]}
+{"kind":"shape","id":"sh/ahonihkb","slide":7,"name":"Shape 6","bbox":[277.91,288.85,24.97,20.76]}
+{"kind":"shape","id":"sh/xkf6dc32","slide":7,"name":"Shape 7","bbox":[139.38,267.41,33.72,20.93]}
+{"kind":"shape","id":"sh/wj65kr2h","slide":7,"name":"Shape 8","bbox":[142.92,297.13,33.7,21.23]}
+{"kind":"shape","id":"sh/fehon6l0","slide":7,"name":"Shape 9","bbox":[178.49,267.57,27.5,26.05]}
+{"kind":"shape","id":"sh/ud8nu1kv","slide":7,"name":"Shape 10","bbox":[231.81,320.45,28.44,21.09]}
+{"kind":"shape","id":"sh/q9crm543","slide":7,"name":"Shape 11","bbox":[139.18,228.6,25.1,24.15]}
+{"kind":"shape","id":"sh/ral8va58","slide":7,"name":"Shape 12","bbox":[210.07,234.5,30.53,25.43]}
+{"kind":"shape","id":"sh/cbu9ofmt","slide":7,"name":"Shape 13","bbox":[105.69,219.12,28.49,24.72]}
+{"kind":"shape","id":"sh/dw3qhkne","slide":7,"name":"Shape 14","bbox":[194.87,318.34,32.61,24.51]}
+{"kind":"shape","id":"sh/excrqp4z","slide":7,"name":"Shape 15","bbox":[108.05,259.31,26.63,28.34]}
+{"kind":"shape","id":"sh/zy58ju5k","slide":7,"name":"Shape 16","bbox":[98.35,299.74,31.67,27.27]}
+{"kind":"shape","id":"sh/0ze9szm5","slide":7,"name":"Shape 17","bbox":[207.15,208.44,25.62,22.23]}
+{"kind":"shape","id":"sh/10nqlknq","slide":7,"name":"Shape 18","bbox":[265.54,318.12,30.08,24.59]}
+{"kind":"shape","id":"sh/u1s7el4v","slide":7,"name":"Shape 19","bbox":[211.17,277.56,27.01,21.9]}
+{"kind":"shape","id":"sh/f218nq5g","slide":7,"name":"Shape 20","bbox":[284.26,254.64,24.55,30.16]}
+{"kind":"shape","id":"sh/xw7uto7y","slide":7,"name":"Shape 21","bbox":[155.11,321.74,22.94,24.75]}
+{"kind":"shape","id":"sh/wvytkj6d","slide":7,"name":"Shape 22","bbox":[109.04,293.76,26.01,25.12]}
+{"kind":"textbox","id":"sh/bupcryps","slide":7,"name":"Text 23","text":"① 판 시작","textPreview":"① 판 시작","textChars":6,"textLines":1,"bbox":[88.33,364.8,235.16,33.56]}
+{"kind":"textbox","id":"sh/atgbito7","slide":7,"name":"Text 24","text":"여러 얼음이 자유 위치에 스폰\n(첫 판은 전부 T1 백빙)","textPreview":"여러 얼음이 자유 위치에 스폰 | (첫 판은 전부 T1 백빙)","textChars":32,"textLines":2,"bbox":[88.33,399.34,244.76,71.96]}
+{"kind":"shape","id":"sh/50rux87u","slide":7,"name":"Shape 25","bbox":[342.69,326.4,29.78,0.04]}
+{"kind":"shape","id":"sh/kzito369","slide":7,"name":"Shape 26","bbox":[374.4,182.4,273.56,297.56]}
+{"kind":"shape","id":"sh/jy9cvypo","slide":7,"name":"Shape 27","bbox":[493.66,277.86,28.1,30.48]}
+{"kind":"shape","id":"sh/ixgbmto3","slide":7,"name":"Shape 28","bbox":[547.49,274.93,28.18,30.25]}
+{"kind":"shape","id":"sh/14nal47q","slide":7,"name":"Shape 29","bbox":[473.62,212.13,25.75,25.23]}
+{"kind":"shape","id":"sh/03etcz65","slide":7,"name":"Shape 30","bbox":[582.24,323.38,30.56,22.44]}
+{"kind":"shape","id":"sh/ov65gbup","slide":7,"name":"Shape 31","bbox":[580.54,260.92,30.02,27.12]}
+{"kind":"shape","id":"sh/pwf69gva","slide":7,"name":"Shape 32","bbox":[416.45,314.2,33.02,26.78]}
+{"kind":"shape","id":"sh/2t4ne1cz","slide":7,"name":"Shape 33","bbox":[412.57,269.44,33.09,22.39]}
+{"kind":"shape","id":"sh/3uxo76dk","slide":7,"name":"Shape 34","bbox":[421.16,222.31,25.34,24.36]}
+{"kind":"shape","id":"sh/grm5crut","slide":7,"name":"Shape 35","bbox":[505.78,233.73,25.71,21.74]}
+{"kind":"shape","id":"sh/1svm5wve","slide":7,"name":"Shape 36","bbox":[449.9,267.99,31.43,25.56]}
+{"kind":"shape","id":"sh/e54na1cn","slide":7,"name":"Shape 37","bbox":[539.68,235.09,22.37,29.3]}
+{"kind":"shape","id":"sh/f6d436d8","slide":7,"name":"Shape 38","bbox":[518.35,315.16,22.37,29.61]}
+{"kind":"shape","id":"sh/s3m58rux","slide":7,"name":"Shape 39","bbox":[460.28,310.84,24.8,23.86]}
+{"kind":"shape","id":"sh/t4vm1wv2","slide":7,"name":"Shape 40","bbox":[570.43,227.3,26.49,24.23]}
+{"kind":"shape","id":"sh/vytobmx4","slide":7,"name":"Shape 41","bbox":[549.04,311.86,29.45,29.64]}
+{"kind":"shape","id":"sh/uxknihgj","slide":7,"name":"Shape 42","bbox":[584.42,295.45,22.6,24.74]}
+{"kind":"textbox","id":"sh/h0b6dwfa","slide":7,"name":"Text 43","text":"② 파괴 → 리필","textPreview":"② 파괴 → 리필","textChars":9,"textLines":1,"bbox":[395.53,364.8,235.16,33.56]}
+{"kind":"textbox","id":"sh/wz25kryp","slide":7,"name":"Text 44","text":"파괴 위치가 잠시 비었다가\n빈 공간에 새 얼음이 스폰된다","textPreview":"파괴 위치가 잠시 비었다가 | 빈 공간에 새 얼음이 스폰된다","textChars":31,"textLines":2,"bbox":[395.53,399.34,244.76,71.96]}
+{"kind":"shape","id":"sh/j2tofmx0","slide":7,"name":"Shape 45","bbox":[649.89,326.4,29.78,0.04]}
+{"kind":"shape","id":"sh/i1k7mhgf","slide":7,"name":"Shape 46","bbox":[681.6,182.4,273.56,297.56]}
+{"kind":"shape","id":"sh/54v6hwf6","slide":7,"name":"Shape 47","bbox":[742.99,288.9,28.1,20.48]}
+{"kind":"shape","id":"sh/43mporyl","slide":7,"name":"Shape 48","bbox":[841.27,220.87,25.15,23.99]}
+{"kind":"shape","id":"sh/rqdoj6xc","slide":7,"name":"Shape 49","bbox":[774.44,206.55,31.19,21.77]}
+{"kind":"shape","id":"sh/6p47q1gr","slide":7,"name":"Shape 50","bbox":[898.38,239.03,24.16,24.13]}
+{"kind":"shape","id":"sh/2lori50z","slide":7,"name":"Shape 51","bbox":[817.99,283.86,26.31,22.31]}
+{"kind":"shape","id":"sh/3mh8rahk","slide":7,"name":"Shape 52","bbox":[866.77,297.47,32.3,23.41]}
+{"kind":"shape","id":"sh/onq9kfi5","slide":7,"name":"Shape 53","bbox":[802.84,324.18,27.14,20.8]}
+{"kind":"shape","id":"sh/pozatkzq","slide":7,"name":"Shape 54","bbox":[791.95,244.4,29.76,25.92]}
+{"kind":"shape","id":"sh/exorel0n","slide":7,"name":"Shape 55","bbox":[774.17,277.58,26.31,30.34]}
+{"kind":"shape","id":"sh/fyx8nqh8","slide":7,"name":"Shape 56","bbox":[716.99,205.5,26.21,28.92]}
+{"kind":"shape","id":"sh/gj69gvit","slide":7,"name":"Shape 57","bbox":[714.76,317.25,32.08,27.27]}
+{"kind":"shape","id":"sh/1kfqp0ze","slide":7,"name":"Shape 58","bbox":[718.32,237.98,23.25,30.67]}
+{"kind":"shape","id":"sh/yt8rqpg7","slide":7,"name":"Shape 59","bbox":[855.89,265.95,27.74,27.45]}
+{"kind":"shape","id":"sh/zu1szuhs","slide":7,"name":"Shape 60","bbox":[762.12,315.23,31.21,29.28]}
+{"kind":"shape","id":"sh/9o3upoju","slide":7,"name":"Shape 61","bbox":[884.67,207.46,31.98,25.8]}
+{"kind":"shape","id":"sh/8nutgj29","slide":7,"name":"Shape 62","bbox":[750.81,250.02,32.35,20.3]}
+{"kind":"shape","id":"sh/nmlcne1o","slide":7,"name":"Shape 63","bbox":[885.65,325.14,29.87,21.42]}
+{"kind":"shape","id":"sh/mlcbe9k3","slide":7,"name":"Shape 64","bbox":[898.32,271.09,23.61,22.03]}
+{"kind":"shape","id":"sh/lkjul4jy","slide":7,"name":"Shape 65","bbox":[823.59,226.1,31.52,29.13]}
+{"kind":"shape","id":"sh/0jatcj2d","slide":7,"name":"Shape 66","bbox":[835.16,311.96,22.8,28.14]}
+{"kind":"textbox","id":"sh/zi1cje1s","slide":7,"name":"Text 67","text":"③ 심도 상승","textPreview":"③ 심도 상승","textChars":7,"textLines":1,"bbox":[702.73,364.8,235.16,33.56]}
+{"kind":"textbox","id":"sh/yhsba9k7","slide":7,"name":"Text 68","text":"파괴 누적으로 심도 ↑ —\n더 단단·비싼 얼음이 부유","textPreview":"파괴 누적으로 심도 ↑ — | 더 단단·비싼 얼음이 부유","textChars":29,"textLines":2,"bbox":[702.73,399.34,244.76,71.96]}
+{"kind":"shape","id":"sh/5gnux8j2","slide":7,"name":"Shape 69","bbox":[957.09,326.4,29.78,0.04]}
+{"kind":"shape","id":"sh/4fedo3ih","slide":7,"name":"Shape 70","bbox":[988.8,182.4,273.56,297.56]}
+{"kind":"shape","id":"sh/gbyxg72p","slide":7,"name":"Shape 71","bbox":[1175.22,292.67,28.11,21.47]}
+{"kind":"shape","id":"sh/1crepc3a","slide":7,"name":"Shape 72","bbox":[1134.54,277.86,22.12,28.73]}
+{"kind":"shape","id":"sh/e9gfexkj","slide":7,"name":"Shape 73","bbox":[1079.41,313.73,24.63,29.3]}
+{"kind":"shape","id":"sh/fapwn2l4","slide":7,"name":"Shape 74","bbox":[1021.3,273.24,29.75,25.81]}
+{"kind":"shape","id":"sh/ozixkr2l","slide":7,"name":"Shape 75","bbox":[1062,266.6,22.6,28.51]}
+{"kind":"shape","id":"sh/p0rytc36","slide":7,"name":"Shape 76","bbox":[1042.3,212.3,30.91,22.65]}
+{"kind":"shape","id":"sh/2d0fihkv","slide":7,"name":"Shape 77","bbox":[1152.83,250.53,32.98,21.28]}
+{"kind":"shape","id":"sh/3e9grmlg","slide":7,"name":"Shape 78","bbox":[1145.02,219.42,27.82,23.98]}
+{"kind":"shape","id":"sh/43ex8nmh","slide":7,"name":"Shape 79","bbox":[1039.45,321.03,27.79,23.95]}
+{"kind":"shape","id":"sh/54nehs32","slide":7,"name":"Shape 80","bbox":[1103.81,217.61,27.08,22.61]}
+{"kind":"shape","id":"sh/7ax83u9w","slide":7,"name":"Shape 81","bbox":[1195.05,248.75,32.08,27.03]}
+{"kind":"shape","id":"sh/m9orap8b","slide":7,"name":"Shape 82","bbox":[1096.63,275.09,23.57,29.66]}
+{"kind":"shape","id":"sh/9cfq5kr2","slide":7,"name":"Shape 83","bbox":[1109.36,320.57,30.82,23.46]}
+{"kind":"shape","id":"sh/8b69cfqh","slide":7,"name":"Shape 84","bbox":[1076.95,207.99,22.55,30.1]}
+{"kind":"shape","id":"sh/z6d8za9k","slide":7,"name":"Shape 85","bbox":[1181.39,206.72,29.04,30.57]}
+{"kind":"shape","id":"sh/y54r658z","slide":7,"name":"Shape 86","bbox":[1189.97,317.15,31.24,29.58]}
+{"kind":"shape","id":"sh/l8vq1krq","slide":7,"name":"Shape 87","bbox":[1024.03,240.41,30.23,28.55]}
+{"kind":"shape","id":"sh/k7m98fq5","slide":7,"name":"Shape 88","bbox":[1098.4,244.07,33.85,27.54]}
+{"kind":"shape","id":"sh/bid8va9o","slide":7,"name":"Shape 89","bbox":[1157.19,320.34,28.97,26.45]}
+{"kind":"shape","id":"sh/ah4r25s3","slide":7,"name":"Shape 90","bbox":[1045.05,263.78,24.93,20.35]}
+{"kind":"textbox","id":"sh/dczqtgjm","slide":7,"name":"Text 91","text":"④ 타임업","textPreview":"④ 타임업","textChars":5,"textLines":1,"bbox":[1009.93,364.8,235.16,33.56]}
+{"kind":"textbox","id":"sh/cbqp0bi1","slide":7,"name":"Text 92","text":"남은 얼음이 이동을 멈추고 동결 —\n0.3초 정지 후 집계","textPreview":"남은 얼음이 이동을 멈추고 동결 — | 0.3초 정지 후 집계","textChars":32,"textLines":2,"bbox":[1009.93,399.34,244.76,71.96]}
+{"kind":"shape","id":"sh/bah8r61g","slide":7,"name":"Shape 93","bbox":[67.2,513.6,1151.96,129.56]}
+{"kind":"textbox","id":"sh/q987y10v","slide":7,"name":"Text 94","text":"성장의 정의","textPreview":"성장의 정의","textChars":6,"textLines":1,"bbox":[96,528,1055.96,30.69]}
+{"kind":"textbox","id":"sh/lgjqxgji","slide":7,"name":"Text 95","text":"숫자가 커지는 게 아니라, 화면에서 동시에 깨지는 얼음의 수가 늘어나는 것. 처음엔 떠다니는 얼음을 하나씩 클릭 → 연쇄가 열리면 주변 얼음까지 국소 붕괴 → 최종엔 이전 티어가 화면째로 쓸려 나간다.","textPreview":"숫자가 커지는 게 아니라, 화면에서 동시에 깨지는 얼음의 수가 늘어나는 것. 처음엔 떠다니는 얼음을 하나씩 클릭 → 연쇄가 열리면 주변 얼음까지 국소 붕괴 → 최종엔 이전 티어가 화면째로 쓸려 나간다.","textChars":112,"textLines":1,"bbox":[96,561.6,1103.96,71.96]}
+{"kind":"textbox","id":"sh/0fa94vix","slide":7,"name":"Text 96","text":"7","textPreview":"7","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/gnmp4jqx","slide":7,"text":""}
+{"kind":"slide","id":"sl/fu1gfa1s","slide":8,"title":"GAMEPLAY · SPAWN","textShapes":27}
+{"kind":"textbox","id":"sh/edovuls3","slide":8,"name":"Text 0","text":"GAMEPLAY · SPAWN","textPreview":"GAMEPLAY · SPAWN","textChars":16,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/fexc3qt8","slide":8,"name":"Text 1","text":"스폰 규칙 — 리필 · 심도 · 혼합 비율","textPreview":"스폰 규칙 — 리필 · 심도 · 혼합 비율","textChars":23,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/kbad8zad","slide":8,"name":"Text 2","text":"개별 리필 타이밍","textPreview":"개별 리필 타이밍","textChars":9,"textLines":1,"bbox":[57.6,163.2,479.96,33.56]}
+{"kind":"shape","id":"sh/lcjeh4ry","slide":8,"name":"Shape 3","bbox":[57.6,201.6,121.89,57.56]}
+{"kind":"textbox","id":"sh/v6lg7yt0","slide":8,"name":"Text 4","text":"파괴 연출","textPreview":"파괴 연출","textChars":5,"textLines":1,"bbox":[57.6,201.6,121.89,36.43]}
+{"kind":"textbox","id":"sh/u5cfytcf","slide":8,"name":"Text 5","text":"0.12초","textPreview":"0.12초","textChars":5,"textLines":1,"bbox":[57.6,232.33,121.89,24.91]}
+{"kind":"shape","id":"sh/h8ny98b6","slide":8,"name":"Shape 6","bbox":[187.2,201.6,136.29,57.56]}
+{"kind":"textbox","id":"sh/g7eh03ul","slide":8,"name":"Text 7","text":"빈 공간","textPreview":"빈 공간","textChars":4,"textLines":1,"bbox":[187.2,201.6,136.29,36.43]}
+{"kind":"textbox","id":"sh/3a5gbytw","slide":8,"name":"Text 8","text":"0.1~0.2초","textPreview":"0.1~0.2초","textChars":8,"textLines":1,"bbox":[187.2,232.33,136.29,24.91]}
+{"kind":"shape","id":"sh/i9wz2tcb","slide":8,"name":"Shape 9","bbox":[331.2,201.6,136.29,57.56]}
+{"kind":"textbox","id":"sh/5cnyd8b2","slide":8,"name":"Text 10","text":"새 얼음 생성","textPreview":"새 얼음 생성","textChars":7,"textLines":1,"bbox":[331.2,201.6,136.29,36.43]}
+{"kind":"textbox","id":"sh/4beh43uh","slide":8,"name":"Text 11","text":"0.18초","textPreview":"0.18초","textChars":5,"textLines":1,"bbox":[331.2,232.33,136.29,24.91]}
+{"kind":"shape","id":"sh/je1gzeds","slide":8,"name":"Shape 12","bbox":[475.2,201.6,136.29,57.56]}
+{"kind":"textbox","id":"sh/ydsfq9c7","slide":8,"name":"Text 13","text":"연쇄 면역","textPreview":"연쇄 면역","textChars":5,"textLines":1,"bbox":[475.2,201.6,136.29,36.43]}
+{"kind":"textbox","id":"sh/m5kru107","slide":8,"name":"Text 14","text":"0.25초","textPreview":"0.25초","textChars":5,"textLines":1,"bbox":[475.2,232.33,136.29,24.91]}
+{"kind":"textbox","id":"sh/n6tsn6hc","slide":8,"name":"Text 15","text":"연쇄로 여러 개가 깨지면 0.03초 간격으로 빈 공간에 순차 스폰 — \"흩어졌다 다시 모이는\" 리듬을 보여준다","textPreview":"연쇄로 여러 개가 깨지면 0.03초 간격으로 빈 공간에 순차 스폰 — \"흩어졌다 다시 모이는\" 리듬을 보여준다","textChars":61,"textLines":1,"bbox":[57.6,273.6,566.36,52.76]}
+{"kind":"shape","id":"sh/o72twbix","slide":8,"name":"Shape 16","bbox":[57.6,345.6,566.36,292.76]}
+{"kind":"textbox","id":"sh/98bapgzi","slide":8,"name":"Text 17","text":"심도 진행","textPreview":"심도 진행","textChars":5,"textLines":1,"bbox":[86.4,364.8,479.96,33.56]}
+{"kind":"textbox","id":"sh/eh0rq10v","slide":8,"name":"Text 18","text":"파괴 = 심도 점수 (T1=1점 · T2=2점 · T3=3점 …)\n20점마다 심도 +1 — 단, 영구 해금한 최고 티어를 넘지 못함\n신규 티어 보장 — 새 재질 해금 후 첫 판, 10회 스폰 안에 확정 등장","textPreview":"파괴 = 심도 점수 (T1=1점 · T2=2점 · T3=3점 …) | 20점마다 심도 +1 — 단, 영구 해금한 최고 티어를 넘지 못함 | 신규 티어 보장 — 새 재질 해금 후 첫 판, 10회 스폰 안에 확정 등장","textChars":115,"textLines":3,"bbox":[86.4,408,518.36,153.56]}
+{"kind":"textbox","id":"sh/zi9sj6hg","slide":8,"name":"Text 19","text":"업그레이드를 샀는데 새 콘텐츠를 못 보는 상황을 규칙으로 차단","textPreview":"업그레이드를 샀는데 새 콘텐츠를 못 보는 상황을 규칙으로 차단","textChars":34,"textLines":1,"bbox":[86.4,590.4,508.76,38.36]}
+{"kind":"textbox","id":"sh/0ji9sbi1","slide":8,"name":"Text 20","text":"재질 혼합 비율 (현재 심도 기준)","textPreview":"재질 혼합 비율 (현재 심도 기준)","textChars":19,"textLines":1,"bbox":[672,163.2,527.96,33.56]}
+{"kind":"textbox","id":"sh/14balwzm","slide":8,"name":"Text 21","text":"심도 T1","textPreview":"심도 T1","textChars":5,"textLines":1,"bbox":[672,218.87,115.16,33.56]}
+{"kind":"shape","id":"sh/qd0rmh0z","slide":8,"name":"Shape 22","bbox":[792,211.2,412.76,47.96]}
+{"kind":"textbox","id":"sh/re9sfmhk","slide":8,"name":"Text 23","text":"T1 100%","textPreview":"T1 100%","textChars":7,"textLines":1,"bbox":[792,211.2,412.76,47.96]}
+{"kind":"textbox","id":"sh/t8fulkj2","slide":8,"name":"Text 24","text":"심도 T2","textPreview":"심도 T2","textChars":5,"textLines":1,"bbox":[672,314.87,115.16,33.56]}
+{"kind":"shape","id":"sh/s76dsz2h","slide":8,"name":"Shape 25","bbox":[792,307.2,309.58,47.96]}
+{"kind":"textbox","id":"sh/76xcju1w","slide":8,"name":"Text 26","text":"T2 75%","textPreview":"T2 75%","textChars":6,"textLines":1,"bbox":[792,307.2,309.58,47.96]}
+{"kind":"shape","id":"sh/65ovqpkb","slide":8,"name":"Shape 27","bbox":[1101.62,307.2,103.18,47.96]}
+{"kind":"textbox","id":"sh/54fuhkjq","slide":8,"name":"Text 28","text":"T1 25%","textPreview":"T1 25%","textChars":6,"textLines":1,"bbox":[1101.62,307.2,103.18,47.96]}
+{"kind":"textbox","id":"sh/k36dof25","slide":8,"name":"Text 29","text":"심도 T3","textPreview":"심도 T3","textChars":5,"textLines":1,"bbox":[672,410.87,115.16,33.56]}
+{"kind":"shape","id":"sh/j2dcfa1k","slide":8,"name":"Shape 30","bbox":[792,403.2,288.91,47.96]}
+{"kind":"textbox","id":"sh/i14vm5kf","slide":8,"name":"Text 31","text":"T3 70%","textPreview":"T3 70%","textChars":6,"textLines":1,"bbox":[792,403.2,288.91,47.96]}
+{"kind":"shape","id":"sh/x0vud0ju","slide":8,"name":"Shape 32","bbox":[1080.94,403.2,103.18,47.96]}
+{"kind":"textbox","id":"sh/wzmdkf29","slide":8,"name":"Text 33","text":"T2 25%","textPreview":"T2 25%","textChars":6,"textLines":1,"bbox":[1080.94,403.2,103.18,47.96]}
+{"kind":"shape","id":"sh/crud4fyt","slide":8,"name":"Shape 34","bbox":[1184.16,403.2,20.6,47.96]}
+{"kind":"textbox","id":"sh/xs3udkfe","slide":8,"name":"Text 35","text":"새 재질이 나와도 이전 재질이 사라지지 않는다 — 강해진 플레이어가 낮은 티어를 순식간에 쓸어버리는 장면이 계속 만들어진다","textPreview":"새 재질이 나와도 이전 재질이 사라지지 않는다 — 강해진 플레이어가 낮은 티어를 순식간에 쓸어버리는 장면이 계속 만들어진다","textChars":68,"textLines":1,"bbox":[672,504,537.56,57.56]}
+{"kind":"shape","id":"sh/q5cv25g3","slide":8,"name":"Shape 36","bbox":[672,571.2,542.36,67.16]}
+{"kind":"textbox","id":"sh/bqlcbaxo","slide":8,"name":"Text 37","text":"스테이지 시작 — 최대 20개를 자유 위치에 스폰 · 첫 판은 전부 T1 · 시작 심도는 트리(D3)로 상승","textPreview":"스테이지 시작 — 최대 20개를 자유 위치에 스폰 · 첫 판은 전부 T1 · 시작 심도는 트리(D3)로 상승","textChars":60,"textLines":1,"bbox":[696,571.2,499.16,67.16]}
+{"kind":"textbox","id":"sh/kved8zy5","slide":8,"name":"Text 38","text":"8","textPreview":"8","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/fu1gfa1s","slide":8,"text":""}
+{"kind":"slide","id":"sl/udsvah03","slide":9,"title":"ICE TYPES","textShapes":24}
+{"kind":"textbox","id":"sh/xsbmtcbi","slide":9,"name":"Text 0","text":"ICE TYPES","textPreview":"ICE TYPES","textChars":9,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/ap0nixcr","slide":9,"name":"Text 1","text":"얼음 종류 — 재질 티어 + 특수빙","textPreview":"얼음 종류 — 재질 티어 + 특수빙","textChars":19,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/vq94r2tc","slide":9,"name":"Text 2","text":"기본 얼음은 성장 단계를 보여주는 재질 티어. 특수빙은 그 위에 붙는 속성(예: T2 결정빙)이며 전부 연쇄 파괴 장치다.","textPreview":"기본 얼음은 성장 단계를 보여주는 재질 티어. 특수빙은 그 위에 붙는 속성(예: T2 결정빙)이며 전부 연쇄 파괴 장치다.","textChars":68,"textLines":1,"bbox":[57.6,148.8,1171.16,33.56]}
+{"kind":"textbox","id":"sh/gnm5wba1","slide":9,"name":"Text 3","text":"재질 티어 — HP보다 골드 증가율이 높다: 새 재질을 깨는 순간 효율도 상승","textPreview":"재질 티어 — HP보다 골드 증가율이 높다: 새 재질을 깨는 순간 효율도 상승","textChars":43,"textLines":1,"bbox":[57.6,192,1055.96,33.56]}
+{"kind":"shape","id":"sh/1ov65gbm","slide":9,"name":"Shape 4","bbox":[57.6,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/buhgbuh0","slide":9,"name":"Shape 5","bbox":[141.62,272.5,47.96,43.16]}
+{"kind":"textbox","id":"sh/at8zipgf","slide":9,"name":"Text 6","text":"T1 백빙","textPreview":"T1 백빙","textChars":5,"textLines":1,"bbox":[67.2,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/xgjyd4z6","slide":9,"name":"Text 7","text":"HP · 골드  ×1 · ×1","textPreview":"HP · 골드  ×1 · ×1","textChars":16,"textLines":1,"bbox":[67.2,364.8,196.76,26.83]}
+{"kind":"shape","id":"sh/cvahkzyl","slide":9,"name":"Shape 8","bbox":[292.8,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/zi1gfehc","slide":9,"name":"Shape 9","bbox":[370.54,264.72,60.43,54.39]}
+{"kind":"textbox","id":"sh/yhszm9gr","slide":9,"name":"Text 10","text":"T2 청빙","textPreview":"T2 청빙","textChars":5,"textLines":1,"bbox":[302.4,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/lkjihoz2","slide":9,"name":"Text 11","text":"HP · 골드  ×6 · ×8","textPreview":"HP · 골드  ×6 · ×8","textChars":16,"textLines":1,"bbox":[302.4,364.8,196.76,26.83]}
+{"kind":"shape","id":"sh/kjahojyx","slide":9,"name":"Shape 12","bbox":[528,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/fmxg3ahs","slide":9,"name":"Shape 13","bbox":[599.51,256.93,72.91,65.61]}
+{"kind":"textbox","id":"sh/eloza50n","slide":9,"name":"Text 14","text":"T3 심빙","textPreview":"T3 심빙","textChars":5,"textLines":1,"bbox":[537.6,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/ihwjid0v","slide":9,"name":"Text 15","text":"HP · 골드  ×36 · ×70","textPreview":"HP · 골드  ×36 · ×70","textChars":18,"textLines":1,"bbox":[537.6,364.8,196.76,26.83]}
+{"kind":"shape","id":"sh/ji5kri1g","slide":9,"name":"Shape 16","bbox":[763.2,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/4je1kni1","slide":9,"name":"Shape 17","bbox":[828.47,249.11,85.42,76.88]}
+{"kind":"textbox","id":"sh/5kn2tsjm","slide":9,"name":"Text 18","text":"T4 자빙","textPreview":"T4 자빙","textChars":5,"textLines":1,"bbox":[772.8,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/udcjed0z","slide":9,"name":"Text 19","text":"HP · 골드  ×240 · ×650","textPreview":"HP · 골드  ×240 · ×650","textChars":20,"textLines":1,"bbox":[772.8,364.8,196.76,26.83]}
+{"kind":"shape","id":"sh/velkni1k","slide":9,"name":"Shape 20","bbox":[998.4,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/wfe1gni5","slide":9,"name":"Shape 21","bbox":[1057.44,241.32,97.89,88.1]}
+{"kind":"textbox","id":"sh/hgn2p8ja","slide":9,"name":"Text 22","text":"T5 극광빙","textPreview":"T5 극광빙","textChars":6,"textLines":1,"bbox":[1008,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/mpcjat0n","slide":9,"name":"Text 23","text":"HP · 골드  ×1,800 · ×7,000","textPreview":"HP · 골드  ×1,800 · ×7,000","textChars":24,"textLines":1,"bbox":[1008,364.8,196.76,26.83]}
+{"kind":"textbox","id":"sh/7alkjy18","slide":9,"name":"Text 24","text":"특수빙 — 확률 총 6% · 18회 미출현 시 확정 · 화면 동시 최대 2개","textPreview":"특수빙 — 확률 총 6% · 18회 미출현 시 확정 · 화면 동시 최대 2개","textChars":42,"textLines":1,"bbox":[57.6,424.33,1055.96,33.56]}
+{"kind":"shape","id":"sh/p4rmpw3q","slide":9,"name":"Shape 25","bbox":[57.6,465.6,273.56,177.56]}
+{"kind":"shape","id":"sh/o3i5gb2l","slide":9,"name":"Shape 26","bbox":[76.8,484.8,59.49,55.63]}
+{"kind":"textbox","id":"sh/210ne1kf","slide":9,"name":"Text 27","text":"결정빙 2.5%","textPreview":"결정빙 2.5%","textChars":8,"textLines":1,"bbox":[148.8,484.8,177.56,28.76]}
+{"kind":"textbox","id":"sh/10rmlw3u","slide":9,"name":"Text 28","text":"골드 ×4 · 파괴 시 결정 파편 5개가\n주변 얼음 추적 (HP 40% 피해,\n하위 티어는 즉사)","textPreview":"골드 ×4 · 파괴 시 결정 파편 5개가 | 주변 얼음 추적 (HP 40% 피해, | 하위 티어는 즉사)","textChars":54,"textLines":3,"bbox":[76.8,532.8,239.96,100.76]}
+{"kind":"shape","id":"sh/0fi5cr29","slide":9,"name":"Shape 29","bbox":[351.34,465.6,273.56,177.56]}
+{"kind":"shape","id":"sh/fe94jmlo","slide":9,"name":"Shape 30","bbox":[370.54,484.8,59.49,55.63]}
+{"kind":"shape","id":"sh/edgnahk3","slide":9,"name":"Shape 31","bbox":[382.07,495.34,30.73,34.54]}
+{"kind":"shape","id":"sh/dc7mhc3i","slide":9,"name":"Shape 32","bbox":[387.82,493.42,17.27,38.4]}
+{"kind":"textbox","id":"sh/sby5872d","slide":9,"name":"Text 33","text":"균열빙 2%","textPreview":"균열빙 2%","textChars":6,"textLines":1,"bbox":[442.54,484.8,177.56,28.76]}
+{"kind":"textbox","id":"sh/4ba90nel","slide":9,"name":"Text 34","text":"HP 60% · 주변 반경에 60% 피해,\n균열빙끼리 연쇄 폭발 (최대 3단)","textPreview":"HP 60% · 주변 반경에 60% 피해, | 균열빙끼리 연쇄 폭발 (최대 3단)","textChars":43,"textLines":2,"bbox":[370.54,532.8,239.96,100.76]}
+{"kind":"shape","id":"sh/5cjatsf6","slide":9,"name":"Shape 35","bbox":[645.13,465.6,273.56,177.56]}
+{"kind":"shape","id":"sh/ipsrydwf","slide":9,"name":"Shape 36","bbox":[664.33,484.8,59.49,55.63]}
+{"kind":"shape","id":"sh/3a1srix0","slide":9,"name":"Shape 37","bbox":[672,508.8,44.11,7.63]}
+{"kind":"shape","id":"sh/sfa947eh","slide":9,"name":"Shape 38","bbox":[690.26,490.54,7.63,44.11]}
+{"kind":"textbox","id":"sh/dg3axcf2","slide":9,"name":"Text 39","text":"흑빙 1%","textPreview":"흑빙 1%","textChars":5,"textLines":1,"bbox":[736.33,484.8,177.56,28.76]}
+{"kind":"textbox","id":"sh/qdsr2xwb","slide":9,"name":"Text 40","text":"HP ×3 · 골드 ×3 · 전방위 충격파\n범위 내 동급 이하 즉시 파괴","textPreview":"HP ×3 · 골드 ×3 · 전방위 충격파 | 범위 내 동급 이하 즉시 파괴","textChars":40,"textLines":2,"bbox":[664.33,532.8,239.96,100.76]}
+{"kind":"shape","id":"sh/re1sv2xw","slide":9,"name":"Shape 41","bbox":[938.87,465.6,273.56,177.56]}
+{"kind":"shape","id":"sh/0jut87et","slide":9,"name":"Shape 42","bbox":[958.07,484.8,59.49,55.63]}
+{"kind":"shape","id":"sh/1k3a1cfy","slide":9,"name":"Shape 43","bbox":[967.67,492.47,4.8,40.33]}
+{"kind":"shape","id":"sh/be5cr6hg","slide":9,"name":"Shape 44","bbox":[978.22,492.47,4.8,40.33]}
+{"kind":"shape","id":"sh/adwvy1gv","slide":9,"name":"Shape 45","bbox":[988.8,492.47,4.8,40.33]}
+{"kind":"textbox","id":"sh/x07utgz6","slide":9,"name":"Text 46","text":"서리빙 0.5%","textPreview":"서리빙 0.5%","textChars":8,"textLines":1,"bbox":[1030.07,484.8,177.56,28.76]}
+{"kind":"textbox","id":"sh/cfyd0by1","slide":9,"name":"Text 47","text":"골드 ×2 · 화면의 모든 하위 티어\n즉시 파괴 — \"이전 티어 청소부\"","textPreview":"골드 ×2 · 화면의 모든 하위 티어 | 즉시 파괴 — \"이전 티어 청소부\"","textChars":40,"textLines":2,"bbox":[958.07,532.8,239.96,100.76]}
+{"kind":"textbox","id":"sh/na5cn6h4","slide":9,"name":"Text 48","text":"9","textPreview":"9","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/7axsz25g","slide":9,"name":"Image 0","bbox":[90.26,498.26,30.69,30.69]}
+{"kind":"notes","id":"nt/udsvah03","slide":9,"text":""}
+{"kind":"slide","id":"sl/m90b6t0r","slide":10,"title":"GAME STATES","textShapes":33}
+{"kind":"textbox","id":"sh/etw7614r","slide":10,"name":"Text 0","text":"GAME STATES","textPreview":"GAME STATES","textChars":11,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/1gnq1g3i","slide":10,"name":"Text 1","text":"8단계 상태 흐름 — 판 사이의 리듬","textPreview":"8단계 상태 흐름 — 판 사이의 리듬","textChars":20,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/0fep8bmx","slide":10,"name":"Shape 2","bbox":[57.6,177.6,278.36,124.76]}
+{"kind":"shape","id":"sh/ja98balg","slide":10,"name":"Shape 3","bbox":[76.8,194.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/y9gr254v","slide":10,"name":"Text 4","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[76.8,194.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/nq9k3qlw","slide":10,"name":"Text 5","text":"재결빙 중","textPreview":"재결빙 중","textChars":5,"textLines":1,"bbox":[126.73,194.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/mp03u54b","slide":10,"name":"Text 6","text":"도킹 · 트리는 열람 가능","textPreview":"도킹 · 트리는 열람 가능","textChars":14,"textLines":1,"bbox":[126.73,231.34,201.56,57.56]}
+{"kind":"shape","id":"sh/9cr2503m","slide":10,"name":"Shape 7","bbox":[337.89,240,18.26,0.04]}
+{"kind":"shape","id":"sh/8rilwvm1","slide":10,"name":"Shape 8","bbox":[358.07,177.6,278.36,124.76]}
+{"kind":"shape","id":"sh/zm9kzqlk","slide":10,"name":"Shape 9","bbox":[377.27,194.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/elg3ql4z","slide":10,"name":"Text 10","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[377.27,194.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/1or2103q","slide":10,"name":"Text 11","text":"준비 완료","textPreview":"준비 완료","textChars":5,"textLines":1,"bbox":[427.2,194.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/0nilsvm5","slide":10,"name":"Text 12","text":"자동 시작 없음 · 반짝임","textPreview":"자동 시작 없음 · 반짝임","textChars":14,"textLines":1,"bbox":[427.2,231.34,201.56,57.56]}
+{"kind":"shape","id":"sh/jitkbulo","slide":10,"name":"Shape 13","bbox":[638.4,240,18.22,0.04]}
+{"kind":"shape","id":"sh/ihk32p4j","slide":10,"name":"Shape 14","bbox":[658.54,177.6,278.36,124.76]}
+{"kind":"shape","id":"sh/gbu9gnyp","slide":10,"name":"Shape 15","bbox":[677.74,194.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/hc3q9sfa","slide":10,"name":"Text 16","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[677.74,194.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/upcredgj","slide":10,"name":"Text 17","text":"판 준비","textPreview":"판 준비","textChars":4,"textLines":1,"bbox":[727.67,194.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/vql87ix4","slide":10,"name":"Text 18","text":"확장 · 기록 확인 · 무제한","textPreview":"확장 · 기록 확인 · 무제한","textChars":16,"textLines":1,"bbox":[727.67,231.34,201.56,57.56]}
+{"kind":"shape","id":"sh/4fu9knyl","slide":10,"name":"Shape 19","bbox":[938.87,240,18.22,0.04]}
+{"kind":"shape","id":"sh/5g3qdsf6","slide":10,"name":"Shape 20","bbox":[959.06,177.6,278.36,124.76]}
+{"kind":"shape","id":"sh/idcrixgv","slide":10,"name":"Shape 21","bbox":[978.26,194.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/3el8b2x0","slide":10,"name":"Text 22","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[978.26,194.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/sje9o7yx","slide":10,"name":"Text 23","text":"카운트다운","textPreview":"카운트다운","textChars":5,"textLines":1,"bbox":[1028.14,194.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/dknahcfi","slide":10,"name":"Text 24","text":"3·2·1 — 부유 스테이지 공개","textPreview":"3·2·1 — 부유 스테이지 공개","textChars":18,"textLines":1,"bbox":[1028.14,231.34,201.56,57.56]}
+{"kind":"shape","id":"sh/10jq1c7m","slide":10,"name":"Shape 25","bbox":[57.6,321.6,278.36,124.76]}
+{"kind":"shape","id":"sh/0za9s7q1","slide":10,"name":"Shape 26","bbox":[76.8,338.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/zy18z2pg","slide":10,"name":"Text 27","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[76.8,338.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/exsrqx8v","slide":10,"name":"Text 28","text":"능동 채굴","textPreview":"능동 채굴","textChars":5,"textLines":1,"bbox":[126.73,338.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/943q5c7i","slide":10,"name":"Text 29","text":"정확히 60초 · 구매 불가","textPreview":"정확히 60초 · 구매 불가","textChars":15,"textLines":1,"bbox":[126.73,375.34,201.56,57.56]}
+{"kind":"shape","id":"sh/o3u9w7qx","slide":10,"name":"Shape 30","bbox":[337.89,384,18.26,0.04]}
+{"kind":"shape","id":"sh/n21832pc","slide":10,"name":"Shape 31","bbox":[358.07,321.6,278.36,124.76]}
+{"kind":"shape","id":"sh/m1srux87","slide":10,"name":"Shape 32","bbox":[377.27,338.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/p8zqts7e","slide":10,"name":"Text 33","text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[377.27,338.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/47qpknqt","slide":10,"name":"Text 34","text":"마지막 5초","textPreview":"마지막 5초","textChars":6,"textLines":1,"bbox":[427.2,338.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/udonutor","slide":10,"name":"Text 35","text":"피치 상승 · 성에 번짐","textPreview":"피치 상승 · 성에 번짐","textChars":13,"textLines":1,"bbox":[427.2,375.34,201.56,57.56]}
+{"kind":"shape","id":"sh/fexo3e5w","slide":10,"name":"Shape 36","bbox":[638.4,384,18.22,0.04]}
+{"kind":"shape","id":"sh/gf65wj6h","slide":10,"name":"Shape 37","bbox":[658.54,321.6,278.36,124.76]}
+{"kind":"shape","id":"sh/hgf65on2","slide":10,"name":"Shape 38","bbox":[677.74,338.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/21onyton","slide":10,"name":"Text 39","text":"7","textPreview":"7","textChars":1,"textLines":1,"bbox":[677.74,338.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/32xo7y58","slide":10,"name":"Text 40","text":"타임업·결과","textPreview":"타임업·결과","textChars":6,"textLines":1,"bbox":[727.67,338.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/4365036t","slide":10,"name":"Text 41","text":"0.3초 정지 · 일제 동결","textPreview":"0.3초 정지 · 일제 동결","textChars":15,"textLines":1,"bbox":[727.67,375.34,201.56,57.56]}
+{"kind":"shape","id":"sh/p4z698ne","slide":10,"name":"Shape 42","bbox":[938.87,384,18.22,0.04]}
+{"kind":"shape","id":"sh/il4nm9oj","slide":10,"name":"Shape 43","bbox":[959.06,321.6,278.36,124.76]}
+{"kind":"shape","id":"sh/j6d4vu54","slide":10,"name":"Shape 44","bbox":[978.26,338.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/zqlc36tg","slide":10,"name":"Text 45","text":"8","textPreview":"8","textChars":1,"textLines":1,"bbox":[978.26,338.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/epcva1cv","slide":10,"name":"Text 46","text":"강화·복귀","textPreview":"강화·복귀","textChars":5,"textLines":1,"bbox":[1028.14,338.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/1s3u5wbm","slide":10,"name":"Text 47","text":"트리 구매 → 접기 → 1로","textPreview":"트리 구매 → 접기 → 1로","textChars":15,"textLines":1,"bbox":[1028.14,375.34,201.56,57.56]}
+{"kind":"shape","id":"sh/0rudcru1","slide":10,"name":"Shape 48","bbox":[196.8,304.29,0.04,63.38]}
+{"kind":"shape","id":"sh/nulc76ts","slide":10,"name":"Shape 49","bbox":[57.6,484.8,1161.56,158.36]}
+{"kind":"textbox","id":"sh/mtcve1c7","slide":10,"name":"Text 50","text":"재결빙 시간 — 빌드별로 다르다","textPreview":"재결빙 시간 — 빌드별로 다르다","textChars":17,"textLines":1,"bbox":[86.4,501.13,1055.96,30.69]}
+{"kind":"shape","id":"sh/9wnu9gbi","slide":10,"name":"Shape 51","bbox":[86.4,539.53,259.16,59.49]}
+{"kind":"textbox","id":"sh/ovedgbux","slide":10,"name":"Text 52","text":"최초 실행  즉시","textPreview":"최초 실행  즉시","textChars":9,"textLines":1,"bbox":[100.8,539.53,239.96,59.49]}
+{"kind":"shape","id":"sh/by5cbqto","slide":10,"name":"Shape 53","bbox":[369.6,539.53,259.16,59.49]}
+{"kind":"textbox","id":"sh/axwvilc3","slide":10,"name":"Text 54","text":"게임잼 빌드  90초","textPreview":"게임잼 빌드  90초","textChars":11,"textLines":1,"bbox":[384,539.53,239.96,59.49]}
+{"kind":"shape","id":"sh/snyt8vah","slide":10,"name":"Shape 55","bbox":[652.8,539.53,259.16,59.49]}
+{"kind":"textbox","id":"sh/to7u10r2","slide":10,"name":"Text 56","text":"발표·시연 옵션  20초","textPreview":"발표·시연 옵션  20초","textChars":13,"textLines":1,"bbox":[667.2,539.53,239.96,59.49]}
+{"kind":"shape","id":"sh/6lwb6lsb","slide":10,"name":"Shape 57","bbox":[936,539.53,259.16,59.49]}
+{"kind":"textbox","id":"sh/7mpczq9w","slide":10,"name":"Text 58","text":"본편 목표  8~15분","textPreview":"본편 목표  8~15분","textChars":12,"textLines":1,"bbox":[950.4,539.53,239.96,59.49]}
+{"kind":"textbox","id":"sh/kzet4ba5","slide":10,"name":"Text 59","text":"잼에서 5분을 기다리게 하면 심사 시간 안에 두 번째 판을 못 본다 — 90초면 결과 확인 + 트리 선택 동안 자연히 지나간다. 오프라인에도 타임스탬프 차분으로 진행.","textPreview":"잼에서 5분을 기다리게 하면 심사 시간 안에 두 번째 판을 못 본다 — 90초면 결과 확인 + 트리 선택 동안 자연히 지나간다. 오프라인에도 타임스탬프 차분으로 진행.","textChars":93,"textLines":1,"bbox":[86.4,606.73,1103.96,33.56]}
+{"kind":"textbox","id":"sh/50nuxgrq","slide":10,"name":"Text 60","text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/m90b6t0r","slide":10,"text":""}
+{"kind":"slide","id":"sl/jetc3ut0","slide":11,"title":"ECONOMY","textShapes":30}
+{"kind":"textbox","id":"sh/eh83apwb","slide":11,"name":"Text 0","text":"ECONOMY","textPreview":"ECONOMY","textChars":7,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/zihk3uxg","slide":11,"name":"Text 1","text":"강화 트리는 도식이 아니라, 직접 탐색하는 게임 화면이다","textPreview":"강화 트리는 도식이 아니라, 직접 탐색하는 게임 화면이다","textChars":31,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/onqlgzed","slide":11,"name":"Shape 2","bbox":[67.2,201.6,278.36,100.76]}
+{"kind":"textbox","id":"sh/h4f2t472","slide":11,"name":"Text 3","text":"얼음 파괴 (60초)","textPreview":"얼음 파괴 (60초)","textChars":11,"textLines":1,"bbox":[144,201.6,191.96,100.76]}
+{"kind":"shape","id":"sh/w361kz6h","slide":11,"name":"Shape 4","bbox":[206.4,302.4,0.04,62.4]}
+{"kind":"shape","id":"sh/v2dkrupw","slide":11,"name":"Shape 5","bbox":[67.2,374.4,278.36,100.76]}
+{"kind":"textbox","id":"sh/58f2x47y","slide":11,"name":"Text 6","text":"골드\n유일 재화 · 특수빙도 골드만 준다","textPreview":"골드 | 유일 재화 · 특수빙도 골드만 준다","textChars":22,"textLines":2,"bbox":[144,374.4,196.76,100.76]}
+{"kind":"shape","id":"sh/476loj6d","slide":11,"name":"Shape 7","bbox":[206.4,475.2,0.04,62.4]}
+{"kind":"shape","id":"sh/j6xkveps","slide":11,"name":"Shape 8","bbox":[67.2,547.2,278.36,95.96]}
+{"kind":"textbox","id":"sh/i5ojm9on","slide":11,"name":"Text 9","text":"업그레이드 트리 해금","textPreview":"업그레이드 트리 해금","textChars":11,"textLines":1,"bbox":[91.2,547.2,239.96,95.96]}
+{"kind":"shape","id":"sh/lcv2lk7u","slide":11,"name":"Shape 10","bbox":[345.6,326.4,96,268.8]}
+{"kind":"textbox","id":"sh/0bm1cf69","slide":11,"name":"Text 11","text":"같은 60초,\n더 깊이·더 많이","textPreview":"같은 60초, | 더 깊이·더 많이","textChars":17,"textLines":2,"bbox":[321.6,470.4,191.96,30.69]}
+{"kind":"shape","id":"sh/q5g76h0v","slide":11,"name":"Shape 12","bbox":[499.2,187.2,719.96,460.76]}
+{"kind":"textbox","id":"sh/r698zm1g","slide":11,"name":"Text 13","text":"ICEBREAKER  //  UPGRADE TERMINAL     GOLD 12.4K  ·  MATERIAL T3","textPreview":"ICEBREAKER  //  UPGRADE TERMINAL     GOLD 12.4K  ·  MATERIAL T3","textChars":63,"textLines":1,"bbox":[522,199,675,28]}
+{"kind":"shape","id":"sh/c7i98ri1","slide":11,"name":"Shape 14","bbox":[700,395,70,70]}
+{"kind":"textbox","id":"sh/d8rq1wj6","slide":11,"name":"Text 15","text":"CORE\nLV.1","textPreview":"CORE | LV.1","textChars":9,"textLines":2,"bbox":[700,395,70,70]}
+{"kind":"shape","id":"sh/e90ra10r","slide":11,"name":"Shape 16","bbox":[783.33,346.42,0.04,68.29]}
+{"kind":"shape","id":"sh/za98361c","slide":11,"name":"Shape 17","bbox":[522,238,156,36]}
+{"kind":"textbox","id":"sh/0bi9cbix","slide":11,"name":"Text 18","text":"가공","textPreview":"가공","textChars":2,"textLines":1,"bbox":[522,238,156,36]}
+{"kind":"shape","id":"sh/1crq5wji","slide":11,"name":"Shape 19","bbox":[883.98,291.59,0.04,73.82]}
+{"kind":"textbox","id":"sh/udw7yx0n","slide":11,"name":"Shape 20","text":"DMG","textPreview":"DMG","textChars":3,"textLines":1,"bbox":[800,315,48,48]}
+{"kind":"shape","id":"sh/fe58r218","slide":11,"name":"Shape 21","bbox":[1004.01,293.71,0.04,74.93]}
+{"kind":"textbox","id":"sh/jyxsjmhk","slide":11,"name":"Shape 22","text":"SPD","textPreview":"SPD","textChars":3,"textLines":1,"bbox":[920,294,48,48]}
+{"kind":"shape","id":"sh/yxorqh0f","slide":11,"name":"Shape 23","bbox":[897.98,317.54,0.04,117.92]}
+{"kind":"textbox","id":"sh/l0falwzq","slide":11,"name":"Shape 24","text":"OVER","textPreview":"OVER","textChars":4,"textLines":1,"bbox":[1040,318,54,54]}
+{"kind":"textbox","id":"sh/kz69sri5","slide":11,"name":"Text 25","text":"RUN 04\nGOLD     12.4K\nMAT      T3\nBUILD    03 / 09","textPreview":"RUN 04 | GOLD     12.4K | MAT      T3 | BUILD    03 / 09","textChars":50,"textLines":4,"bbox":[522,292,132,116]}
+{"kind":"shape","id":"sh/72xsn6hw","slide":11,"name":"Shape 26","bbox":[794.97,400.45,0.04,50.29]}
+{"kind":"shape","id":"sh/61oru10b","slide":11,"name":"Shape 27","bbox":[688,238,156,36]}
+{"kind":"textbox","id":"sh/tozapgz2","slide":11,"name":"Text 28","text":"스킬 트리","textPreview":"스킬 트리","textChars":5,"textLines":1,"bbox":[688,238,156,36]}
+{"kind":"shape","id":"sh/8nq9wbih","slide":11,"name":"Shape 29","bbox":[907.98,377.88,0.04,80.25]}
+{"kind":"textbox","id":"sh/n6d8b2hs","slide":11,"name":"Shape 30","text":"CHG","textPreview":"CHG","textChars":3,"textLines":1,"bbox":[820,398,48,48]}
+{"kind":"shape","id":"sh/m54rix07","slide":11,"name":"Shape 31","bbox":[1042.98,363.98,0.04,94.12]}
+{"kind":"textbox","id":"sh/szixwjut","slide":11,"name":"Shape 32","text":"DUAL","textPreview":"DUAL","textChars":4,"textLines":1,"bbox":[948,390,48,48]}
+{"kind":"shape","id":"sh/d0ry5oby","slide":11,"name":"Shape 33","bbox":[962.98,437.33,0.04,73.34]}
+{"kind":"textbox","id":"sh/qxgfu9cn","slide":11,"name":"Shape 34","text":"DRILL","textPreview":"DRILL","textChars":5,"textLines":1,"bbox":[1090,382,52,52]}
+{"kind":"textbox","id":"sh/rypg3et8","slide":11,"name":"Text 35","text":"DRAG 이동 · WHEEL 확대\nR 초기화","textPreview":"DRAG 이동 · WHEEL 확대 | R 초기화","textChars":24,"textLines":2,"bbox":[522,575,158,60]}
+{"kind":"shape","id":"sh/4vyxszuh","slide":11,"name":"Shape 36","bbox":[786.26,440.52,0.04,61.88]}
+{"kind":"shape","id":"sh/5w7e14b2","slide":11,"name":"Shape 37","bbox":[854,238,156,36]}
+{"kind":"textbox","id":"sh/itgfqpcb","slide":11,"name":"Text 38","text":"유물","textPreview":"유물","textChars":2,"textLines":1,"bbox":[854,238,156,36]}
+{"kind":"shape","id":"sh/3upwzutw","slide":11,"name":"Shape 39","bbox":[891.48,479.95,0.04,80.1]}
+{"kind":"textbox","id":"sh/or2x43ul","slide":11,"name":"Shape 40","text":"SPLIT","textPreview":"SPLIT","textChars":5,"textLines":1,"bbox":[805,482,48,48]}
+{"kind":"shape","id":"sh/psbyd8b6","slide":11,"name":"Shape 41","bbox":[1018.99,483.52,0.04,83.22]}
+{"kind":"textbox","id":"sh/a183mts3","slide":11,"name":"Shape 42","text":"ICE+","textPreview":"ICE+","textChars":4,"textLines":1,"bbox":[930,510,48,48]}
+{"kind":"shape","id":"sh/v2hkfyto","slide":11,"name":"Shape 43","bbox":[756.48,458.98,0.04,97.03]}
+{"kind":"textbox","id":"sh/w3qlo3a9","slide":11,"name":"Shape 44","text":"AOE","textPreview":"AOE","textChars":3,"textLines":1,"bbox":[1060,490,52,52]}
+{"kind":"textbox","id":"sh/x4j2h8bu","slide":11,"name":"Text 45","text":"공통  GOLD→T2→T3\n빌드  직접·보조·연쇄","textPreview":"공통  GOLD→T2→T3 | 빌드  직접·보조·연쇄","textChars":27,"textLines":2,"bbox":[690,575,170,60]}
+{"kind":"shape","id":"sh/i5s3qdsf","slide":11,"name":"Shape 46","bbox":[706.5,456.6,0.04,35.03]}
+{"kind":"shape","id":"sh/j61kjit0","slide":11,"name":"Shape 47","bbox":[1020,238,156,36]}
+{"kind":"textbox","id":"sh/k7alsnal","slide":11,"name":"Text 48","text":"통계","textPreview":"통계","textChars":2,"textLines":1,"bbox":[1020,238,156,36]}
+{"kind":"shape","id":"sh/5sj2l8bq","slide":11,"name":"Shape 49","bbox":[646.48,510.5,0.04,37]}
+{"kind":"textbox","id":"sh/e9oje9cv","slide":11,"name":"Shape 50","text":"GOLD","textPreview":"GOLD","textChars":4,"textLines":1,"bbox":[660,485,48,48]}
+{"kind":"shape","id":"sh/zaxk7etg","slide":11,"name":"Shape 51","bbox":[580.69,504.69,0.04,32.02]}
+{"kind":"textbox","id":"sh/hon6dcvy","slide":11,"name":"Shape 52","text":"T2","textPreview":"T2","textChars":2,"textLines":1,"bbox":[585,525,48,48]}
+{"kind":"shape","id":"sh/gne5k7ut","slide":11,"name":"Shape 53","bbox":[667.98,436.12,0.04,114.31]}
+{"kind":"textbox","id":"sh/fml4bmd8","slide":11,"name":"Shape 54","text":"T3","textPreview":"T3","textChars":2,"textLines":1,"bbox":[525,465,52,52]}
+{"kind":"textbox","id":"sh/u1cnihcn","slide":11,"name":"Text 55","text":"과잉 파쇄  LV.1 / 3        COST 180G\n클릭 피해의 45%가 주변 얼음으로 전이","textPreview":"과잉 파쇄  LV.1 / 3        COST 180G | 클릭 피해의 45%가 주변 얼음으로 전이","textChars":55,"textLines":2,"bbox":[870,575,325,60]}
+{"kind":"textbox","id":"sh/psn6hwva","slide":11,"name":"Text 56","text":"재질 해금(GOLD→T2→T3)은 공통 진행 · 선택 빌드는 직접 파쇄/보조 파쇄/연쇄 파괴 · 판 사이 구매 · 60초 불변","textPreview":"재질 해금(GOLD→T2→T3)은 공통 진행 · 선택 빌드는 직접 파쇄/보조 파쇄/연쇄 파괴 · 판 사이 구매 · 60초 불변","textChars":70,"textLines":1,"bbox":[67.2,667.2,1151.96,33.56]}
+{"kind":"textbox","id":"sh/4re5orup","slide":11,"name":"Text 57","text":"17","textPreview":"17","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/ut4nixwz","slide":11,"name":"Image 0","bbox":[94.07,230.4,40.29,40.29]}
+{"kind":"image","id":"im/vudorixk","slide":11,"name":"Image 1","bbox":[94.07,403.2,40.29,40.29]}
+{"kind":"notes","id":"nt/jetc3ut0","slide":11,"text":""}
+{"kind":"slide","id":"sl/8f2psfyx","slide":12,"title":"CONTENT","textShapes":19}
+{"kind":"textbox","id":"sh/3a90nq9o","slide":12,"name":"Text 0","text":"CONTENT","textPreview":"CONTENT","textChars":7,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/2p0zel83","slide":12,"name":"Text 1","text":"재질 티어 — 60초 안에 어디까지 내려가는가","textPreview":"재질 티어 — 60초 안에 어디까지 내려가는가","textChars":25,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/5g7idgrq","slide":12,"name":"Shape 2","bbox":[156.02,391.22,71.96,64.78]}
+{"kind":"textbox","id":"sh/kfyh4ba5","slide":12,"name":"Text 3","text":"T1 백빙","textPreview":"T1 백빙","textChars":5,"textLines":1,"bbox":[96,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/cz2hkbi1","slide":12,"name":"Text 4","text":"HP ×1 · 골드 ×1","textPreview":"HP ×1 · 골드 ×1","textChars":13,"textLines":1,"bbox":[86.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/x0bitgz6","slide":12,"name":"Text 5","text":"처음부터","textPreview":"처음부터","textChars":4,"textLines":1,"bbox":[81.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/axkzi10v","slide":12,"name":"Shape 6","bbox":[381.62,365.29,100.76,90.67]}
+{"kind":"textbox","id":"sh/byt0r6hg","slide":12,"name":"Text 7","text":"T2 청빙","textPreview":"T2 청빙","textChars":5,"textLines":1,"bbox":[336,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/k321obix","slide":12,"name":"Text 8","text":"HP ×6 · 골드 ×8","textPreview":"HP ×6 · 골드 ×8","textChars":13,"textLines":1,"bbox":[326.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/l4bixgzi","slide":12,"name":"Text 9","text":"초반 목표 (500G 해금)","textPreview":"초반 목표 (500G 해금)","textChars":15,"textLines":1,"bbox":[321.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/y1kzml0r","slide":12,"name":"Shape 10","bbox":[604.8,335.06,134.36,120.91]}
+{"kind":"textbox","id":"sh/8rm1svit","slide":12,"name":"Text 11","text":"T3 심빙","textPreview":"T3 심빙","textChars":5,"textLines":1,"bbox":[576,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/tsvi10ze","slide":12,"name":"Text 12","text":"HP ×36 · 골드 ×70","textPreview":"HP ×36 · 골드 ×70","textChars":15,"textLines":1,"bbox":[566.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/3mxkru1w","slide":12,"name":"Text 13","text":"잼 최종 — 첫 파괴 = 엔딩","textPreview":"잼 최종 — 첫 파괴 = 엔딩","textChars":16,"textLines":1,"bbox":[561.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/ilo3ipkb","slide":12,"name":"Shape 14","bbox":[825.6,300.47,172.76,155.49]}
+{"kind":"textbox","id":"sh/4n6lkz21","slide":12,"name":"Text 15","text":"T4 자빙","textPreview":"T4 자빙","textChars":5,"textLines":1,"bbox":[816,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/vyxkna1k","slide":12,"name":"Text 16","text":"HP ×240 · 골드 ×650","textPreview":"HP ×240 · 골드 ×650","textChars":17,"textLines":1,"bbox":[806.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/uxo3epkz","slide":12,"name":"Text 17","text":"잼 이후 (P1)","textPreview":"잼 이후 (P1)","textChars":9,"textLines":1,"bbox":[801.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/hkf2pkjq","slide":12,"name":"Shape 18","bbox":[1044.02,261.62,215.96,194.38]}
+{"kind":"textbox","id":"sh/fuh4ze14","slide":12,"name":"Text 19","text":"T5 극광빙","textPreview":"T5 극광빙","textChars":6,"textLines":1,"bbox":[1056,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/et83q90j","slide":12,"name":"Text 20","text":"HP ×1,800 · 골드 ×7,000","textPreview":"HP ×1,800 · 골드 ×7,000","textChars":21,"textLines":1,"bbox":[1046.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/m1o7udgn","slide":12,"name":"Text 21","text":"본편 최종","textPreview":"본편 최종","textChars":5,"textLines":1,"bbox":[1041.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/n2honix8","slide":12,"name":"Shape 22","bbox":[96,463.67,1084.8,0.04]}
+{"kind":"textbox","id":"sh/o3qpw3yt","slide":12,"name":"Text 23","text":"설계 원칙: 새 재질은 HP보다 골드 증가율이 더 높다 — 부술 수 있게 되는 순간 수익 효율도 상승. 새 티어 첫 등장 시 0.3초 슬로우 + 이름 표시 + 색온도 하강 + 대형 파편으로 \"더 깊이 왔다\"를 보상한다.","textPreview":"설계 원칙: 새 재질은 HP보다 골드 증가율이 더 높다 — 부술 수 있게 되는 순간 수익 효율도 상승. 새 티어 첫 등장 시 0.3초 슬로우 + 이름 표시 + 색온도 하강 + 대형 파편으로 \"더 깊이 왔다\"를 보상한다.","textChars":122,"textLines":1,"bbox":[57.6,624,1161.56,57.56]}
+{"kind":"textbox","id":"sh/94z6p8fe","slide":12,"name":"Text 24","text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/ve1crydw","slide":12,"name":"Image 0","bbox":[654.54,378.07,34.92,34.92]}
+{"kind":"image","id":"im/ad8vytcb","slide":12,"name":"Image 1","bbox":[889.55,355.77,44.9,44.9]}
+{"kind":"image","id":"im/xgjutovm","slide":12,"name":"Image 2","bbox":[1123.92,330.71,56.13,56.13]}
+{"kind":"notes","id":"nt/8f2psfyx","slide":12,"text":""}
+{"kind":"slide","id":"sl/hgzapcr6","slide":13,"title":"UI","textShapes":12}
+{"kind":"textbox","id":"sh/t4bqlc7a","slide":13,"name":"Text 0","text":"UI","textPreview":"UI","textChars":2,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/s329c76p","slide":13,"name":"Text 1","text":"화면 규격 — 도킹 480×56 · 확장 720×480","textPreview":"화면 규격 — 도킹 480×56 · 확장 720×480","textChars":30,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/r2t8j2p4","slide":13,"name":"Text 2","text":"도킹 — 480×56px (taskbar 바로 위)","textPreview":"도킹 — 480×56px (taskbar 바로 위)","textChars":28,"textLines":1,"bbox":[57.6,165.13,479.96,30.69]}
+{"kind":"shape","id":"sh/61kraxoj","slide":13,"name":"Shape 3","bbox":[57.6,206.4,489.56,67.16]}
+{"kind":"shape","id":"sh/d0faxg7e","slide":13,"name":"Shape 4","bbox":[72,216.94,47.96,46.03]}
+{"kind":"shape","id":"sh/cz69ob69","slide":13,"name":"Shape 5","bbox":[79.18,226.17,16.82,13.83]}
+{"kind":"shape","id":"sh/u507id4b","slide":13,"name":"Shape 6","bbox":[100.8,223.86,11.98,18.41]}
+{"kind":"textbox","id":"sh/v69ory5w","slide":13,"name":"Text 7","text":"골드 12.4K   재결빙 ▓▓▓░░   준비되면 반짝임","textPreview":"골드 12.4K   재결빙 ▓▓▓░░   준비되면 반짝임","textChars":31,"textLines":1,"bbox":[134.4,206.4,403.16,67.16]}
+{"kind":"textbox","id":"sh/w7ipk3mh","slide":13,"name":"Text 8","text":"표시: 골드 · 재결빙 진행도 · 준비 상태 · 얼어붙는 실루엣  /  알파 클릭 통과 없음 · 소리 기본 꺼짐","textPreview":"표시: 골드 · 재결빙 진행도 · 준비 상태 · 얼어붙는 실루엣  /  알파 클릭 통과 없음 · 소리 기본 꺼짐","textChars":62,"textLines":1,"bbox":[57.6,285.13,547.16,52.76]}
+{"kind":"textbox","id":"sh/h8r6t8n2","slide":13,"name":"Text 9","text":"확장 — 720×480px (기준 1920×1080 · 최소 1366×768)","textPreview":"확장 — 720×480px (기준 1920×1080 · 최소 1366×768)","textChars":43,"textLines":1,"bbox":[643.2,165.13,575.96,30.69]}
+{"kind":"shape","id":"sh/mhgnet4f","slide":13,"name":"Shape 10","bbox":[643.2,206.4,575.96,383.96]}
+{"kind":"shape","id":"sh/7ipony50","slide":13,"name":"Shape 11","bbox":[654.73,217.93,552.91,43.16]}
+{"kind":"textbox","id":"sh/8jypg3ml","slide":13,"name":"Text 12","text":"60초 타이머 │ 이번 판 골드 │ 현재 심도 │ 콤보          48px","textPreview":"60초 타이머 │ 이번 판 골드 │ 현재 심도 │ 콤보          48px","textChars":44,"textLines":1,"bbox":[667.2,217.93,527.96,43.16]}
+{"kind":"shape","id":"sh/9476p8n6","slide":13,"name":"Shape 13","bbox":[654.73,265.93,427.16,259.16]}
+{"kind":"shape","id":"sh/6dk7qx4j","slide":13,"name":"Shape 14","bbox":[877.21,440.48,56.47,34.97]}
+{"kind":"shape","id":"sh/retozi54","slide":13,"name":"Shape 15","bbox":[860.15,348.99,46.42,31.58]}
+{"kind":"shape","id":"sh/3il4bulg","slide":13,"name":"Shape 16","bbox":[984.64,458.62,37.72,43.24]}
+{"kind":"shape","id":"sh/2hc3ipkb","slide":13,"name":"Shape 17","bbox":[901.96,391.63,59.42,36.27]}
+{"kind":"shape","id":"sh/pk3mdk3m","slide":13,"name":"Shape 18","bbox":[1004.03,303.15,42.45,46.13]}
+{"kind":"shape","id":"sh/ojulkf21","slide":13,"name":"Shape 19","bbox":[735.27,318.93,52.29,46.97]}
+{"kind":"shape","id":"sh/bm54fuls","slide":13,"name":"Shape 20","bbox":[936.02,281.87,52.83,48.14]}
+{"kind":"shape","id":"sh/qlc3mpk7","slide":13,"name":"Shape 21","bbox":[723.86,375.09,55.44,46.19]}
+{"kind":"shape","id":"sh/donmh43y","slide":13,"name":"Shape 22","bbox":[980.96,380.08,51.9,49.61]}
+{"kind":"shape","id":"sh/cneloz2d","slide":13,"name":"Shape 23","bbox":[777.7,438.34,41.4,48.97]}
+{"kind":"shape","id":"sh/za54jelo","slide":13,"name":"Shape 24","bbox":[712.25,444.83,41.52,43.22]}
+{"kind":"shape","id":"sh/ypw3q9k3","slide":13,"name":"Shape 25","bbox":[823.61,393.3,48.37,39.84]}
+{"kind":"shape","id":"sh/wfylgjih","slide":13,"name":"Shape 26","bbox":[936.21,478.84,41.74,30.11]}
+{"kind":"shape","id":"sh/hg7294z2","slide":13,"name":"Shape 27","bbox":[852.65,291.65,56.99,37.16]}
+{"kind":"shape","id":"sh/udg3e90b","slide":13,"name":"Shape 28","bbox":[929.46,338.24,61.57,33.66]}
+{"kind":"shape","id":"sh/vepk7ehw","slide":13,"name":"Shape 29","bbox":[676.27,299.17,52.41,43.65]}
+{"kind":"shape","id":"sh/8belczil","slide":13,"name":"Shape 30","bbox":[824.86,452.32,42.18,39.21]}
+{"kind":"shape","id":"sh/9cn254jq","slide":13,"name":"Shape 31","bbox":[811.39,313.23,38.04,37.41]}
+{"kind":"shape","id":"sh/mpw3ap0f","slide":13,"name":"Shape 32","bbox":[822.04,352.35,62.06,29.65]}
+{"kind":"shape","id":"sh/nq5k3u10","slide":13,"name":"Shape 33","bbox":[776.11,348.96,60.42,30.49]}
+{"kind":"textbox","id":"sh/0ne18zi9","slide":13,"name":"Text 34","text":"부유 스테이지 520×376 — 자유 위치 · 최대 20개\n(속도·방향·크기 랜덤, 서로 겹치지 않게 스폰)","textPreview":"부유 스테이지 520×376 — 자유 위치 · 최대 20개 | (속도·방향·크기 랜덤, 서로 겹치지 않게 스폰)","textChars":60,"textLines":2,"bbox":[657.6,527.06,422.36,52.76]}
+{"kind":"shape","id":"sh/lon21kju","slide":13,"name":"Shape 35","bbox":[1086.73,265.93,120.91,259.16]}
+{"kind":"textbox","id":"sh/dkralcji","slide":13,"name":"Text 36","text":"현재 재질\n다음 티어\n특수빙 정보\n활성 효과\n최고 연쇄","textPreview":"현재 재질 | 다음 티어 | 특수빙 정보 | 활성 효과 | 최고 연쇄","textChars":30,"textLines":5,"bbox":[1096.33,283.2,105.56,230.36]}
+{"kind":"shape","id":"sh/sjy9c72x","slide":13,"name":"Shape 37","bbox":[654.73,537.6,552.91,41.23]}
+{"kind":"textbox","id":"sh/ripsjm1c","slide":13,"name":"Text 38","text":"골드 │ 업그레이드 트리 │ 접기          56px","textPreview":"골드 │ 업그레이드 트리 │ 접기          56px","textChars":32,"textLines":1,"bbox":[667.2,537.6,527.96,41.23]}
+{"kind":"shape","id":"sh/qhgrahkr","slide":13,"name":"Shape 39","bbox":[57.6,609.6,1161.56,47.96]}
+{"kind":"textbox","id":"sh/1orapwje","slide":13,"name":"Text 40","text":"원칙 — 판 도중 접기·구매 비활성(60초 몰입 보장) · 소리 기본 꺼짐 · 포커스 스틸 금지 · 로컬라이즈 문자열 최소화","textPreview":"원칙 — 판 도중 접기·구매 비활성(60초 몰입 보장) · 소리 기본 꺼짐 · 포커스 스틸 금지 · 로컬라이즈 문자열 최소화","textChars":69,"textLines":1,"bbox":[91.2,609.6,1103.96,47.96]}
+{"kind":"textbox","id":"sh/0nitgrit","slide":13,"name":"Text 41","text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/hgzapcr6","slide":13,"text":""}
+{"kind":"slide","id":"sl/6lsnupw7","slide":14,"title":"JUICE","textShapes":27}
+{"kind":"textbox","id":"sh/8futkzm5","slide":14,"name":"Text 0","text":"JUICE","textPreview":"JUICE","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/9g3ad43q","slide":14,"name":"Text 1","text":"연출 — 재미 지분의 절반","textPreview":"연출 — 재미 지분의 절반","textChars":14,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/y9sre543","slide":14,"name":"Text 2","text":"타격 피드백 5중 스택","textPreview":"타격 피드백 5중 스택","textChars":12,"textLines":1,"bbox":[57.6,168,479.96,33.56]}
+{"kind":"shape","id":"sh/zals7alo","slide":14,"name":"Shape 3","bbox":[57.6,216,585.56,65.23]}
+{"kind":"shape","id":"sh/14retsn6","slide":14,"name":"Shape 4","bbox":[78.73,232.33,32.62,32.62]}
+{"kind":"textbox","id":"sh/g3idkn6l","slide":14,"name":"Text 5","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[78.73,231.84,32.62,32.62]}
+{"kind":"textbox","id":"sh/f29wri50","slide":14,"name":"Text 6","text":"금(crack) — 타격점에서 방사형 성장","textPreview":"금(crack) — 타격점에서 방사형 성장","textChars":23,"textLines":1,"bbox":[129.6,216,499.16,65.23]}
+{"kind":"shape","id":"sh/e10vidov","slide":14,"name":"Shape 7","bbox":[57.6,294.73,585.56,65.23]}
+{"kind":"shape","id":"sh/t07ep8na","slide":14,"name":"Shape 8","bbox":[78.73,311.06,32.62,32.62]}
+{"kind":"textbox","id":"sh/szydg36p","slide":14,"name":"Text 9","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[78.73,310.56,32.62,32.62]}
+{"kind":"textbox","id":"sh/rypwny54","slide":14,"name":"Text 10","text":"파편 파티클 — 크기·수가 타격력에 비례","textPreview":"파편 파티클 — 크기·수가 타격력에 비례","textChars":22,"textLines":1,"bbox":[129.6,294.73,499.16,65.23]}
+{"kind":"shape","id":"sh/6xgvetoj","slide":14,"name":"Shape 11","bbox":[57.6,373.46,585.56,65.23]}
+{"kind":"shape","id":"sh/5w7ul8ny","slide":14,"name":"Shape 12","bbox":[78.73,389.74,32.62,32.62]}
+{"kind":"textbox","id":"sh/4bydc36d","slide":14,"name":"Text 13","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[78.73,389.29,32.62,32.62]}
+{"kind":"textbox","id":"sh/dc7ido7u","slide":14,"name":"Text 14","text":"숫자 팝 — 크리 시 확대 + 색 변화","textPreview":"숫자 팝 — 크리 시 확대 + 색 변화","textChars":21,"textLines":1,"bbox":[129.6,373.46,499.16,65.23]}
+{"kind":"shape","id":"sh/cby14jq9","slide":14,"name":"Shape 15","bbox":[57.6,452.14,585.56,65.23]}
+{"kind":"shape","id":"sh/rap0bepo","slide":14,"name":"Shape 16","bbox":[78.73,468.47,32.62,32.62]}
+{"kind":"textbox","id":"sh/q9gj2t83","slide":14,"name":"Text 17","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[78.73,468.02,32.62,32.62]}
+{"kind":"textbox","id":"sh/p87i9o7i","slide":14,"name":"Text 18","text":"미세 화면 진동 (확장 상태 한정)","textPreview":"미세 화면 진동 (확장 상태 한정)","textChars":19,"textLines":1,"bbox":[129.6,452.14,499.16,65.23]}
+{"kind":"shape","id":"sh/47eh0jqx","slide":14,"name":"Shape 19","bbox":[57.6,530.87,585.56,65.23]}
+{"kind":"shape","id":"sh/36507eps","slide":14,"name":"Shape 20","bbox":[78.73,547.2,32.62,32.62]}
+{"kind":"textbox","id":"sh/2lwzy987","slide":14,"name":"Text 21","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[78.73,546.71,32.62,32.62]}
+{"kind":"textbox","id":"sh/hkni547m","slide":14,"name":"Text 22","text":"타격음 \"쩡—\" — 깊어질수록 낮고 둔탁","textPreview":"타격음 \"쩡—\" — 깊어질수록 낮고 둔탁","textChars":22,"textLines":1,"bbox":[129.6,530.87,499.16,65.23]}
+{"kind":"textbox","id":"sh/gjehwzq1","slide":14,"name":"Text 23","text":"온도 연출 — 티어가 오를수록 차가워진다","textPreview":"온도 연출 — 티어가 오를수록 차가워진다","textChars":22,"textLines":1,"bbox":[691.2,168,527.96,33.56]}
+{"kind":"shape","id":"sh/6pcf65oz","slide":14,"name":"Shape 24","bbox":[691.2,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/7qlgza5k","slide":14,"name":"Text 25","text":"T1","textPreview":"T1","textChars":2,"textLines":1,"bbox":[691.2,292.8,95.96,26.83]}
+{"kind":"shape","id":"sh/srux8f6p","slide":14,"name":"Shape 26","bbox":[796.8,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/tc3y1kna","slide":14,"name":"Text 27","text":"T2","textPreview":"T2","textChars":2,"textLines":1,"bbox":[796.8,292.8,95.96,26.83]}
+{"kind":"shape","id":"sh/ilsf25on","slide":14,"name":"Shape 28","bbox":[902.4,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/jm1gbq58","slide":14,"name":"Text 29","text":"T3","textPreview":"T3","textChars":2,"textLines":1,"bbox":[902.4,292.8,95.96,26.83]}
+{"kind":"shape","id":"sh/knax4v6t","slide":14,"name":"Shape 30","bbox":[1008,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/5ojyd0ne","slide":14,"name":"Text 31","text":"T4","textPreview":"T4","textChars":2,"textLines":1,"bbox":[1008,292.8,95.96,26.83]}
+{"kind":"shape","id":"sh/ah8fylor","slide":14,"name":"Shape 32","bbox":[1113.6,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/vi1w7q5c","slide":14,"name":"Text 33","text":"T5","textPreview":"T5","textChars":2,"textLines":1,"bbox":[1113.6,292.8,95.96,26.83]}
+{"kind":"textbox","id":"sh/zqd4jihs","slide":14,"name":"Text 34","text":"심도가 깊어질수록 UI 색온도 하강 — 백빙의 흰색에서 극광빙의 심청색까지. 성장이 온도로 체감된다","textPreview":"심도가 깊어질수록 UI 색온도 하강 — 백빙의 흰색에서 극광빙의 심청색까지. 성장이 온도로 체감된다","textChars":55,"textLines":1,"bbox":[691.2,331.2,527.96,57.56]}
+{"kind":"shape","id":"sh/ep43qx07","slide":14,"name":"Shape 35","bbox":[691.2,408,527.96,230.36]}
+{"kind":"textbox","id":"sh/1cvmlszy","slide":14,"name":"Text 36","text":"타임업 시퀀스","textPreview":"타임업 시퀀스","textChars":7,"textLines":1,"bbox":[720,427.2,479.96,33.56]}
+{"kind":"textbox","id":"sh/0bmlsnid","slide":14,"name":"Text 37","text":"1  마지막 5초 — 피치 상승 · 성에가 가장자리부터 번짐","textPreview":"1  마지막 5초 — 피치 상승 · 성에가 가장자리부터 번짐","textChars":33,"textLines":1,"bbox":[720,470.4,479.96,38.36]}
+{"kind":"textbox","id":"sh/nex4n2ho","slide":14,"name":"Text 38","text":"2  0초 직전 — 0.1초 전체 사운드 정지","textPreview":"2  0초 직전 — 0.1초 전체 사운드 정지","textChars":25,"textLines":1,"bbox":[720,510.73,479.96,38.36]}
+{"kind":"textbox","id":"sh/mdo3ux03","slide":14,"name":"Text 39","text":"3  타임업 — 0.3초 정지 · 남은 얼음 일제 동결","textPreview":"3  타임업 — 0.3초 정지 · 남은 얼음 일제 동결","textChars":30,"textLines":1,"bbox":[720,551.06,479.96,38.36]}
+{"kind":"textbox","id":"sh/9gfmpczu","slide":14,"name":"Text 40","text":"4  집계 — 골드 · 파괴 수 · 최고 재질 · 최대 연쇄","textPreview":"4  집계 — 골드 · 파괴 수 · 최고 재질 · 최대 연쇄","textChars":33,"textLines":1,"bbox":[720,591.34,479.96,38.36]}
+{"kind":"textbox","id":"sh/of6lw7i9","slide":14,"name":"Text 41","text":"신규 재질 첫 등장: 0.3초 슬로우 + 이름 표시 + 색온도 하강 + 첫 파괴 대형 파편 — \"더 깊이 왔다\"는 성장 보상 연출","textPreview":"신규 재질 첫 등장: 0.3초 슬로우 + 이름 표시 + 색온도 하강 + 첫 파괴 대형 파편 — \"더 깊이 왔다\"는 성장 보상 연출","textChars":72,"textLines":1,"bbox":[57.6,667.2,1161.56,33.56]}
+{"kind":"textbox","id":"sh/3itkbyhk","slide":14,"name":"Text 42","text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/6lsnupw7","slide":14,"text":""}
+{"kind":"slide","id":"sl/vaxsvy10","slide":15,"title":"BALANCE","textShapes":33}
+{"kind":"textbox","id":"sh/yhcfuxsr","slide":15,"name":"Text 0","text":"BALANCE","textPreview":"BALANCE","textChars":7,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/onad43qp","slide":15,"name":"Text 1","text":"밸런스 초안 v0 — 두 곡선의 레이스","textPreview":"밸런스 초안 v0 — 두 곡선의 레이스","textChars":21,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/pojux87a","slide":15,"name":"Text 2","text":"설계 심장: 새 재질은 HP 증가율보다 골드 증가율이 높다 — 깰 수 있게 되는 순간 효율이 뛴다. 상세 노드 비용표는 03_Data 문서 참조.","textPreview":"설계 심장: 새 재질은 HP 증가율보다 골드 증가율이 높다 — 깰 수 있게 되는 순간 효율이 뛴다. 상세 노드 비용표는 03_Data 문서 참조.","textChars":81,"textLines":1,"bbox":[57.6,153.6,1151.96,33.56]}
+{"kind":"shape","id":"sh/2lsv2t8j","slide":15,"name":"Shape 3","bbox":[57.6,206.4,1161.56,52.76]}
+{"kind":"textbox","id":"sh/3m1cvyp4","slide":15,"name":"Text 4","text":"항목","textPreview":"항목","textChars":2,"textLines":1,"bbox":[76.8,206.4,268.76,52.76]}
+{"kind":"textbox","id":"sh/gjqd03qt","slide":15,"name":"Text 5","text":"값","textPreview":"값","textChars":1,"textLines":1,"bbox":[374.4,206.4,220.76,52.76]}
+{"kind":"textbox","id":"sh/1kjuto7y","slide":15,"name":"Text 6","text":"항목","textPreview":"항목","textChars":2,"textLines":1,"bbox":[624,206.4,268.76,52.76]}
+{"kind":"textbox","id":"sh/eh8byt8n","slide":15,"name":"Text 7","text":"값","textPreview":"값","textChars":1,"textLines":1,"bbox":[921.6,206.4,287.96,52.76]}
+{"kind":"shape","id":"sh/fihcryp8","slide":15,"name":"Shape 8","bbox":[57.6,259.2,1161.56,59.49]}
+{"kind":"textbox","id":"sh/0fudcnqx","slide":15,"name":"Text 9","text":"판 길이","textPreview":"판 길이","textChars":4,"textLines":1,"bbox":[76.8,259.2,268.76,59.49]}
+{"kind":"textbox","id":"sh/lg3e5s7i","slide":15,"name":"Text 10","text":"60초 고정","textPreview":"60초 고정","textChars":6,"textLines":1,"bbox":[374.4,259.2,220.76,59.49]}
+{"kind":"textbox","id":"sh/x8vih0ji","slide":15,"name":"Text 11","text":"재결빙","textPreview":"재결빙","textChars":3,"textLines":1,"bbox":[624,259.2,268.76,59.49]}
+{"kind":"textbox","id":"sh/wnm18v2x","slide":15,"name":"Text 12","text":"잼 90초 · 시연 20초 · 본편 8~15분","textPreview":"잼 90초 · 시연 20초 · 본편 8~15분","textChars":25,"textLines":1,"bbox":[921.6,259.2,287.96,59.49]}
+{"kind":"textbox","id":"sh/bmt0fq1c","slide":15,"name":"Text 13","text":"부유 스테이지","textPreview":"부유 스테이지","textChars":7,"textLines":1,"bbox":[76.8,318.73,268.76,59.49]}
+{"kind":"textbox","id":"sh/alkj6lk7","slide":15,"name":"Text 14","text":"자유 위치 · 최대 20개","textPreview":"자유 위치 · 최대 20개","textChars":14,"textLines":1,"bbox":[374.4,318.73,220.76,59.49]}
+{"kind":"textbox","id":"sh/lcvil0ju","slide":15,"name":"Text 15","text":"리필","textPreview":"리필","textChars":2,"textLines":1,"bbox":[624,318.73,268.76,59.49]}
+{"kind":"textbox","id":"sh/kbm1cv29","slide":15,"name":"Text 16","text":"파괴 0.12s → 공백 → 생성 0.18s","textPreview":"파괴 0.12s → 공백 → 생성 0.18s","textChars":24,"textLines":1,"bbox":[921.6,318.73,287.96,59.49]}
+{"kind":"shape","id":"sh/jad0jq1o","slide":15,"name":"Shape 17","bbox":[57.6,378.26,1161.56,59.49]}
+{"kind":"textbox","id":"sh/y94jalk3","slide":15,"name":"Text 18","text":"심도 상승","textPreview":"심도 상승","textChars":5,"textLines":1,"bbox":[76.8,378.26,268.76,59.49]}
+{"kind":"textbox","id":"sh/tgf2pkjq","slide":15,"name":"Text 19","text":"점수 20점당 +1 (T1=1점…)","textPreview":"점수 20점당 +1 (T1=1점…)","textChars":19,"textLines":1,"bbox":[374.4,378.26,220.76,59.49]}
+{"kind":"textbox","id":"sh/sf61gf25","slide":15,"name":"Text 20","text":"스폰 비율(심도 T3)","textPreview":"스폰 비율(심도 T3)","textChars":12,"textLines":1,"bbox":[624,378.26,268.76,59.49]}
+{"kind":"textbox","id":"sh/qlgfax0n","slide":15,"name":"Text 21","text":"T3 70 · T2 25 · T1 5%","textPreview":"T3 70 · T2 25 · T1 5%","textChars":21,"textLines":1,"bbox":[921.6,378.26,287.96,59.49]}
+{"kind":"textbox","id":"sh/rmpg3218","slide":15,"name":"Text 22","text":"티어 HP","textPreview":"티어 HP","textChars":5,"textLines":1,"bbox":[76.8,437.74,268.76,59.49]}
+{"kind":"textbox","id":"sh/cnyxc7it","slide":15,"name":"Text 23","text":"×1 / ×6 / ×36 / ×240 / ×1,800","textPreview":"×1 / ×6 / ×36 / ×240 / ×1,800","textChars":29,"textLines":1,"bbox":[374.4,437.74,220.76,59.49]}
+{"kind":"textbox","id":"sh/dory5cze","slide":15,"name":"Text 24","text":"티어 골드","textPreview":"티어 골드","textChars":5,"textLines":1,"bbox":[624,437.74,268.76,59.49]}
+{"kind":"textbox","id":"sh/ep0feh0z","slide":15,"name":"Text 25","text":"×1 / ×8 / ×70 / ×650 / ×7,000","textPreview":"×1 / ×8 / ×70 / ×650 / ×7,000","textChars":29,"textLines":1,"bbox":[921.6,437.74,287.96,59.49]}
+{"kind":"shape","id":"sh/zq9g7mh4","slide":15,"name":"Shape 26","bbox":[57.6,497.27,1161.56,59.49]}
+{"kind":"textbox","id":"sh/0rixgrip","slide":15,"name":"Text 27","text":"특수빙 확률","textPreview":"특수빙 확률","textChars":6,"textLines":1,"bbox":[76.8,497.27,268.76,59.49]}
+{"kind":"textbox","id":"sh/1sry9wza","slide":15,"name":"Text 28","text":"결정 2.5 · 균열 2 · 흑빙 1 · 서리 0.5%","textPreview":"결정 2.5 · 균열 2 · 흑빙 1 · 서리 0.5%","textChars":30,"textLines":1,"bbox":[374.4,497.27,220.76,59.49]}
+{"kind":"textbox","id":"sh/mt0zih0v","slide":15,"name":"Text 29","text":"특수빙 상한","textPreview":"특수빙 상한","textChars":6,"textLines":1,"bbox":[624,497.27,268.76,59.49]}
+{"kind":"textbox","id":"sh/ne9gbmhg","slide":15,"name":"Text 30","text":"18회 미출현 시 확정 · 동시 2개","textPreview":"18회 미출현 시 확정 · 동시 2개","textChars":20,"textLines":1,"bbox":[921.6,497.27,287.96,59.49]}
+{"kind":"textbox","id":"sh/jitwz6xo","slide":15,"name":"Text 31","text":"루트: 강화 장비","textPreview":"루트: 강화 장비","textChars":9,"textLines":1,"bbox":[76.8,556.8,268.76,59.49]}
+{"kind":"textbox","id":"sh/yhkf61g3","slide":15,"name":"Text 32","text":"10G — 클릭 피해 ×2","textPreview":"10G — 클릭 피해 ×2","textChars":14,"textLines":1,"bbox":[374.4,556.8,220.76,59.49]}
+{"kind":"textbox","id":"sh/lkbe1wfe","slide":15,"name":"Text 33","text":"크리 / 연타","textPreview":"크리 / 연타","textChars":7,"textLines":1,"bbox":[624,556.8,268.76,59.49]}
+{"kind":"textbox","id":"sh/kj2x8ry9","slide":15,"name":"Text 34","text":"5→10→15% (×5) / 5→7→10회·초","textPreview":"5→10→15% (×5) / 5→7→10회·초","textChars":25,"textLines":1,"bbox":[921.6,556.8,287.96,59.49]}
+{"kind":"shape","id":"sh/bu9wvmxc","slide":15,"name":"Shape 35","bbox":[57.6,628.8,1161.56,57.56]}
+{"kind":"textbox","id":"sh/at0f2hgr","slide":15,"name":"Text 36","text":"전 수치는 JSON으로 코드와 분리 관리 — 티어별 목표 클리어 시간을 역산해 튜닝한다. 프로토타입 후 전면 재조정 전제.","textPreview":"전 수치는 JSON으로 코드와 분리 관리 — 티어별 목표 클리어 시간을 역산해 튜닝한다. 프로토타입 후 전면 재조정 전제.","textChars":68,"textLines":1,"bbox":[91.2,628.8,1103.96,57.56]}
+{"kind":"textbox","id":"sh/xgbexwfi","slide":15,"name":"Text 37","text":"17","textPreview":"17","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/vaxsvy10","slide":15,"text":""}
+{"kind":"slide","id":"sl/gny5sjyp","slide":16,"title":"DEV ENVIRONMENT","textShapes":16}
+{"kind":"textbox","id":"sh/pk7y5g7m","slide":16,"name":"Text 0","text":"DEV ENVIRONMENT","textPreview":"DEV ENVIRONMENT","textChars":15,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/etwfq1oz","slide":16,"name":"Text 1","text":"개발 환경 및 기술 구조","textPreview":"개발 환경 및 기술 구조","textChars":13,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/fu5gz6pk","slide":16,"name":"Shape 2","bbox":[57.6,177.6,767.96,94.03]}
+{"kind":"textbox","id":"sh/wnm1cjqh","slide":16,"name":"Text 3","text":"게임 로직","textPreview":"게임 로직","textChars":5,"textLines":1,"bbox":[148.8,189.13,191.96,33.56]}
+{"kind":"textbox","id":"sh/vmdk3e9w","slide":16,"name":"Text 4","text":"Unity 6 · C# — 코어 루프 · 수치(JSON 분리) · 세이브(로컬 JSON + 버전 필드)","textPreview":"Unity 6 · C# — 코어 루프 · 수치(JSON 분리) · 세이브(로컬 JSON + 버전 필드)","textChars":57,"textLines":1,"bbox":[148.8,222.73,652.76,43.16]}
+{"kind":"shape","id":"sh/ulkja98b","slide":16,"name":"Shape 5","bbox":[441.6,272.62,0.04,14.4]}
+{"kind":"shape","id":"sh/9kb214rq","slide":16,"name":"Shape 6","bbox":[57.6,288,767.96,94.03]}
+{"kind":"textbox","id":"sh/7itkzu90","slide":16,"name":"Text 7","text":"연출","textPreview":"연출","textChars":2,"textLines":1,"bbox":[148.8,299.53,191.96,33.56]}
+{"kind":"textbox","id":"sh/mhkj6p8f","slide":16,"name":"Text 8","text":"Particle System + 2D 스프라이트 — 금 텍스처 단계 교체 · Canvas 진동","textPreview":"Particle System + 2D 스프라이트 — 금 텍스처 단계 교체 · Canvas 진동","textChars":52,"textLines":1,"bbox":[148.8,333.13,652.76,43.16]}
+{"kind":"shape","id":"sh/lgbixkru","slide":16,"name":"Shape 9","bbox":[441.6,383.02,0.04,14.4]}
+{"kind":"shape","id":"sh/kf214zq9","slide":16,"name":"Shape 10","bbox":[57.6,398.4,767.96,94.03]}
+{"kind":"textbox","id":"sh/xwn6p032","slide":16,"name":"Text 11","text":"창 제어","textPreview":"창 제어","textChars":4,"textLines":1,"bbox":[148.8,409.93,191.96,33.56]}
+{"kind":"textbox","id":"sh/atc7elkb","slide":16,"name":"Text 12","text":"UniWindowController (오픈소스) — 투명 · 프레임리스 · 최상위 · 알파 클릭 통과","textPreview":"UniWindowController (오픈소스) — 투명 · 프레임리스 · 최상위 · 알파 클릭 통과","textChars":56,"textLines":1,"bbox":[148.8,443.53,652.76,43.16]}
+{"kind":"shape","id":"sh/bulonqlw","slide":16,"name":"Shape 13","bbox":[441.6,493.42,0.04,14.4]}
+{"kind":"shape","id":"sh/kjepkf2t","slide":16,"name":"Shape 14","bbox":[57.6,508.8,767.96,94.03]}
+{"kind":"textbox","id":"sh/yxw7i5kn","slide":16,"name":"Text 15","text":"OS","textPreview":"OS","textChars":2,"textLines":1,"bbox":[148.8,520.33,191.96,33.56]}
+{"kind":"textbox","id":"sh/ji5ora18","slide":16,"name":"Text 16","text":"Windows 10/11 (P0)  ·  macOS (P1) — OS 의존 코드는 한 파일로 격리","textPreview":"Windows 10/11 (P0)  ·  macOS (P1) — OS 의존 코드는 한 파일로 격리","textChars":54,"textLines":1,"bbox":[148.8,553.93,652.76,43.16]}
+{"kind":"shape","id":"sh/8nepof2p","slide":16,"name":"Shape 17","bbox":[864,177.6,355.16,441.56]}
+{"kind":"textbox","id":"sh/to76xkja","slide":16,"name":"Text 18","text":"협업 · 워크플로우","textPreview":"협업 · 워크플로우","textChars":10,"textLines":1,"bbox":[892.8,196.8,307.16,33.56]}
+{"kind":"shape","id":"sh/3i9snelc","slide":16,"name":"Shape 19","bbox":[892.8,244.8,47.96,47.96]}
+{"kind":"textbox","id":"sh/5krapo3i","slide":16,"name":"Text 20","text":"GitHub — 브랜치: 기능 단위, 일 1회 통합","textPreview":"GitHub — 브랜치: 기능 단위, 일 1회 통합","textChars":28,"textLines":1,"bbox":[955.2,240,254.36,91.16]}
+{"kind":"shape","id":"sh/4ji9gjmx","slide":16,"name":"Shape 21","bbox":[892.8,340.8,47.96,47.96]}
+{"kind":"textbox","id":"sh/udgra94v","slide":16,"name":"Text 22","text":"AI 에이전트 병행 — 보일러플레이트·수치 튜닝 보조","textPreview":"AI 에이전트 병행 — 보일러플레이트·수치 튜닝 보조","textChars":29,"textLines":1,"bbox":[955.2,336,254.36,91.16]}
+{"kind":"shape","id":"sh/hgralo3m","slide":16,"name":"Shape 23","bbox":[892.8,436.8,47.96,47.96]}
+{"kind":"textbox","id":"sh/fatsvylk","slide":16,"name":"Text 24","text":"밸런스 시트 — 수치는 스프레드시트에서 관리 후 JSON 익스포트","textPreview":"밸런스 시트 — 수치는 스프레드시트에서 관리 후 JSON 익스포트","textChars":36,"textLines":1,"bbox":[955.2,432,254.36,91.16]}
+{"kind":"shape","id":"sh/e9krmt4z","slide":16,"name":"Shape 25","bbox":[892.8,532.8,47.96,47.96]}
+{"kind":"textbox","id":"sh/kradkjqd","slide":16,"name":"Text 26","text":"사운드 — 프리 에셋 + 피치 변조로 제작","textPreview":"사운드 — 프리 에셋 + 피치 변조로 제작","textChars":23,"textLines":1,"bbox":[955.2,528,254.36,91.16]}
+{"kind":"textbox","id":"sh/zq1wry98","slide":16,"name":"Text 27","text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/vyxojyps","slide":16,"name":"Image 0","bbox":[86.4,204.47,40.29,40.29]}
+{"kind":"image","id":"im/436pwnq9","slide":16,"name":"Image 1","bbox":[86.4,314.87,40.29,40.29]}
+{"kind":"image","id":"im/54z6ps7u","slide":16,"name":"Image 2","bbox":[86.4,425.27,40.29,40.29]}
+{"kind":"image","id":"im/i1o7ud83","slide":16,"name":"Image 3","bbox":[86.4,535.67,40.29,40.29]}
+{"kind":"image","id":"im/32xonipo","slide":16,"name":"Image 4","bbox":[904.33,256.33,24.91,24.91]}
+{"kind":"image","id":"im/c7qp0nq5","slide":16,"name":"Image 5","bbox":[904.33,352.33,24.91,24.91]}
+{"kind":"image","id":"im/d8zqts7q","slide":16,"name":"Image 6","bbox":[904.33,448.33,24.91,24.91]}
+{"kind":"image","id":"im/n21szm98","slide":16,"name":"Image 7","bbox":[904.33,544.33,24.91,24.91]}
+{"kind":"notes","id":"nt/gny5sjyp","slide":16,"text":""}
+{"kind":"slide","id":"sl/14bup87q","slide":17,"title":"SCHEDULE","textShapes":24}
+{"kind":"textbox","id":"sh/ryxkzqt0","slide":17,"name":"Text 0","text":"SCHEDULE","textPreview":"SCHEDULE","textChars":8,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/0nq1wvuh","slide":17,"name":"Text 1","text":"개발 일정 — 잼 2주 기준 (역산)","textPreview":"개발 일정 — 잼 2주 기준 (역산)","textChars":20,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/1oz250b2","slide":17,"name":"Shape 2","bbox":[57.6,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/e18ju5cr","slide":17,"name":"Text 3","text":"D1~2","textPreview":"D1~2","textChars":4,"textLines":1,"bbox":[57.6,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/zmhk3atw","slide":17,"name":"Text 4","text":"검증 스프린트","textPreview":"검증 스프린트","textChars":7,"textLines":1,"bbox":[43.2,283.2,182.36,33.56]}
+{"kind":"textbox","id":"sh/oral0fut","slide":17,"name":"Text 5","text":"창 기술 + 타격 손맛 프로토타입\nGO / NO-GO 판정","textPreview":"창 기술 + 타격 손맛 프로토타입 | GO / NO-GO 판정","textChars":32,"textLines":2,"bbox":[33.6,318.73,201.56,81.56]}
+{"kind":"shape","id":"sh/9sj29kbe","slide":17,"name":"Shape 6","bbox":[220.8,192,324.43,81.56]}
+{"kind":"textbox","id":"sh/jml4zedg","slide":17,"name":"Text 7","text":"D3~6","textPreview":"D3~6","textChars":4,"textLines":1,"bbox":[220.8,192,324.43,81.56]}
+{"kind":"textbox","id":"sh/ylcnq9wv","slide":17,"name":"Text 8","text":"코어 루프","textPreview":"코어 루프","textChars":5,"textLines":1,"bbox":[206.4,283.2,355.16,33.56]}
+{"kind":"textbox","id":"sh/lo3m1ovm","slide":17,"name":"Text 9","text":"부유 얼음 스테이지 · 60초 상태 흐름\n클릭 파괴 · 골드 · 타임업 · 결과 화면","textPreview":"부유 얼음 스테이지 · 60초 상태 흐름 | 클릭 파괴 · 골드 · 타임업 · 결과 화면","textChars":47,"textLines":2,"bbox":[196.8,318.73,374.36,81.56]}
+{"kind":"shape","id":"sh/knu5sje1","slide":17,"name":"Shape 10","bbox":[556.8,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/bil4ved4","slide":17,"name":"Text 11","text":"D7~9","textPreview":"D7~9","textChars":4,"textLines":1,"bbox":[556.8,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/ahsnm9wz","slide":17,"name":"Text 12","text":"시스템 완성","textPreview":"시스템 완성","textChars":6,"textLines":1,"bbox":[542.4,283.2,268.76,33.56]}
+{"kind":"textbox","id":"sh/xk3mx4va","slide":17,"name":"Text 13","text":"트리 12노드 · T1~T3\n결정빙·균열빙 · 세이브","textPreview":"트리 12노드 · T1~T3 | 결정빙·균열빙 · 세이브","textChars":29,"textLines":2,"bbox":[532.8,318.73,287.96,81.56]}
+{"kind":"shape","id":"sh/wju5ozep","slide":17,"name":"Shape 14","bbox":[806.4,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/ve5o7ydo","slide":17,"name":"Text 15","text":"D10~12","textPreview":"D10~12","textChars":6,"textLines":1,"bbox":[806.4,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/udwnytw3","slide":17,"name":"Text 16","text":"연출 · 밸런스","textPreview":"연출 · 밸런스","textChars":8,"textLines":1,"bbox":[792,283.2,268.76,33.56]}
+{"kind":"textbox","id":"sh/q907qxgb","slide":17,"name":"Text 17","text":"피드백 스택 5종 · 온도 연출\n수치 튜닝 (목표 시간 역산)","textPreview":"피드백 스택 5종 · 온도 연출 | 수치 튜닝 (목표 시간 역산)","textChars":34,"textLines":2,"bbox":[782.4,318.73,287.96,81.56]}
+{"kind":"shape","id":"sh/ra98z2xw","slide":17,"name":"Shape 18","bbox":[1056,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/sbips7yh","slide":17,"name":"Text 19","text":"D13~14","textPreview":"D13~14","textChars":6,"textLines":1,"bbox":[1056,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/dcrq1cfm","slide":17,"name":"Text 20","text":"폴리시 · 제출","textPreview":"폴리시 · 제출","textChars":8,"textLines":1,"bbox":[1041.6,283.2,182.36,33.56]}
+{"kind":"textbox","id":"sh/ed07uhw7","slide":17,"name":"Text 21","text":"성에 taskbar · 빌드 · 발표 자료\n버그픽스 버퍼","textPreview":"성에 taskbar · 빌드 · 발표 자료 | 버그픽스 버퍼","textChars":31,"textLines":2,"bbox":[1032,318.73,201.56,81.56]}
+{"kind":"shape","id":"sh/ze9832xs","slide":17,"name":"Shape 22","bbox":[57.6,432,566.36,211.16]}
+{"kind":"textbox","id":"sh/0fipw7ed","slide":17,"name":"Text 23","text":"P0 — 잼 제출","textPreview":"P0 — 잼 제출","textChars":9,"textLines":1,"bbox":[86.4,449.27,479.96,33.56]}
+{"kind":"textbox","id":"sh/1gbq5cfy","slide":17,"name":"Text 24","text":"720×480 확장 창 · 부유 얼음 스테이지 · T1~T3 · 결정빙·균열빙 · 트리 12노드\n90초 재결빙 · 연쇄 기록 · T3 첫 파괴 엔딩 · 로컬 세이브 · KO/EN · Windows","textPreview":"720×480 확장 창 · 부유 얼음 스테이지 · T1~T3 · 결정빙·균열빙 · 트리 12노드 | 90초 재결빙 · 연쇄 기록 · T3 첫 파괴 엔딩 · 로컬 세이브 · KO/EN · Windows","textChars":109,"textLines":2,"bbox":[86.4,489.6,518.36,81.56]}
+{"kind":"textbox","id":"sh/uhg7idg3","slide":17,"name":"Text 25","text":"컷 순서: 흑빙·서리빙 → 최종 노드 4개 → 온도 연출. 다수 파괴·재질 성장은 사수","textPreview":"컷 순서: 흑빙·서리빙 → 최종 노드 4개 → 온도 연출. 다수 파괴·재질 성장은 사수","textChars":48,"textLines":1,"bbox":[86.4,580.8,518.36,47.96]}
+{"kind":"shape","id":"sh/viporixo","slide":17,"name":"Shape 26","bbox":[652.8,432,566.36,211.16]}
+{"kind":"textbox","id":"sh/x8f2dk3i","slide":17,"name":"Text 27","text":"P1 — 잼 이후 (Steam 지향)","textPreview":"P1 — 잼 이후 (Steam 지향)","textChars":20,"textLines":1,"bbox":[681.6,449.27,479.96,33.56]}
+{"kind":"textbox","id":"sh/w761kfmx","slide":17,"name":"Text 28","text":"흑빙·서리빙 · T4 자빙·T5 극광빙 · 시작 심도 II · 재결빙 단축\n특수빙 확률 노드 · macOS · 8~11개 언어 · Steam $4.99~6.99","textPreview":"흑빙·서리빙 · T4 자빙·T5 극광빙 · 시작 심도 II · 재결빙 단축 | 특수빙 확률 노드 · macOS · 8~11개 언어 · Steam $4.99~6.99","textChars":89,"textLines":2,"bbox":[681.6,489.6,527.96,81.56]}
+{"kind":"textbox","id":"sh/v6xkbalc","slide":17,"name":"Text 29","text":"배제: Steam 마켓 현금화·거래 (Banana/TBH 반면교사)","textPreview":"배제: Steam 마켓 현금화·거래 (Banana/TBH 반면교사)","textChars":37,"textLines":1,"bbox":[681.6,580.8,518.36,47.96]}
+{"kind":"textbox","id":"sh/aloji54r","slide":17,"name":"Text 30","text":"17","textPreview":"17","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/14bup87q","slide":17,"text":""}
+{"kind":"slide","id":"sl/y5wne50z","slide":18,"title":"납량 — 서늘함을 들인다","textShapes":7}
+{"kind":"textbox","id":"sh/87udoby5","slide":18,"name":"Text 0","text":"납량 — 서늘함을 들인다","textPreview":"납량 — 서늘함을 들인다","textChars":13,"textLines":1,"bbox":[57.6,134.4,1151.96,47.96]}
+{"kind":"textbox","id":"sh/t83uhgfq","slide":18,"name":"Text 1","text":"\"더운 여름, 당신의 taskbar에\n얼음을 들입니다.\"","textPreview":"\"더운 여름, 당신의 taskbar에 | 얼음을 들입니다.\"","textChars":31,"textLines":2,"bbox":[57.6,201.6,1161.56,163.16]}
+{"kind":"textbox","id":"sh/65cvm1gz","slide":18,"name":"Text 2","text":"부술 때 속이 시원해지는 게임 · 일하는 리듬에 맞춰 설계된 게임","textPreview":"부술 때 속이 시원해지는 게임 · 일하는 리듬에 맞춰 설계된 게임","textChars":36,"textLines":1,"bbox":[59.53,393.6,1055.96,43.16]}
+{"kind":"shape","id":"sh/76lcf6xk","slide":18,"name":"Shape 3","bbox":[988.8,163.2,182.36,153.56]}
+{"kind":"shape","id":"sh/l43udwfu","slide":18,"name":"Shape 4","bbox":[1016.13,193.89,63.87,46.11]}
+{"kind":"shape","id":"sh/9ozalsvm","slide":18,"name":"Shape 5","bbox":[1098.22,186.22,45.62,61.46]}
+{"kind":"shape","id":"sh/onqtsne1","slide":18,"name":"Shape 6","bbox":[1025.27,255.34,72.94,38.4]}
+{"kind":"shape","id":"sh/nmhsjidg","slide":18,"name":"Shape 7","bbox":[1089.11,247.67,54.73,46.07]}
+{"kind":"shape","id":"sh/ml8rqxwv","slide":18,"name":"Shape 8","bbox":[0,566.4,1279.63,67.16]}
+{"kind":"shape","id":"sh/xcjapcvi","slide":18,"name":"Shape 9","bbox":[52.8,526.07,143.96,40.29]}
+{"kind":"textbox","id":"sh/ba1sn2dc","slide":18,"name":"Text 10","text":"ICEBREAKER","textPreview":"ICEBREAKER","textChars":10,"textLines":1,"bbox":[96,526.07,100.76,40.29]}
+{"kind":"textbox","id":"sh/ap8buxwr","slide":18,"name":"Text 11","text":"상세 스펙: ICEBREAKER_SPEC.md  ·  장르 선택 근거: WHY_TASKBAR_INCREMENTAL.md","textPreview":"상세 스펙: ICEBREAKER_SPEC.md  ·  장르 선택 근거: WHY_TASKBAR_INCREMENTAL.md","textChars":66,"textLines":1,"bbox":[59.53,657.6,1055.96,38.36]}
+{"kind":"textbox","id":"sh/dgfad8fe","slide":18,"name":"Text 12","text":"14:32","textPreview":"14:32","textChars":5,"textLines":1,"bbox":[1171.2,566.4,86.36,67.16]}
+{"kind":"textbox","id":"sh/sf69k3et","slide":18,"name":"Text 13","text":"18","textPreview":"18","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/z6t03ux0","slide":18,"name":"Image 0","bbox":[1054.45,221.56,51.02,51.02]}
+{"kind":"image","id":"im/e5kzapwf","slide":18,"name":"Image 1","bbox":[64.33,533.74,24.91,24.91]}
+{"kind":"notes","id":"nt/y5wne50z","slide":18,"text":""}
