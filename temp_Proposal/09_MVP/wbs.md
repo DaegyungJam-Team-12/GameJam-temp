@@ -6,6 +6,8 @@
 
 상세 협업 규칙은 `09_MVP/ai_agent_development_plan.md`, 구현 해석은 `07_Technical/implementation_lock.md`를 따른다.
 
+개발자별 일일 Task·선행 의존성·브랜치·완료 조건을 한눈에 실행할 때는 `11_Handoff/ICEBREAKER_개발자_WBS_작업전달서.docx`를 사용한다. Task 내용이 충돌하면 이 Markdown WBS를 최상위 원본으로 본다.
+
 ## 1. 담당 정의
 
 | 코드 | 담당 | 역할 |
