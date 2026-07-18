@@ -4,6 +4,8 @@
 > 기능 완료 목표: 2026-07-21 화요일 밤 · 빌드 검증 목표: 2026-07-22 수요일
 > 실행 규칙: 개발 Task는 Task 하나당 전용 브랜치와 PR 하나를 사용하고, 선행 Task가 `dev`에 병합된 뒤 후속 Task를 시작한다. 아트는 Google Drive로 납품하고 개발자가 관련 통합 PR에 포함하며, 기획·QA 결과는 GitHub Issue에 기록한다.
 
+> **해상도 변경:** 2026-07-19 결정에 따라 P0 실행 기준은 800×72 축소 런처와 960×540 확장 화면이다. 이 WBS의 해상도 표기는 통합 기획서 v2.6의 이전 값보다 우선한다.
+
 상세 협업 규칙은 `09_MVP/ai_agent_development_plan.md`, 구현 해석은 `07_Technical/implementation_lock.md`를 따른다.
 
 개발자별 일일 Task·선행 의존성·브랜치·완료 조건을 한눈에 실행할 때는 `11_Handoff/ICEBREAKER_개발자_WBS_작업전달서.docx`를 사용한다. Task 내용이 충돌하면 이 Markdown WBS를 최상위 원본으로 본다.
@@ -66,11 +68,11 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 |---|---|---|---|---:|---:|---|---|
 | `FND-01` | `LEAD` | Unity 6 프로젝트 생성, 폴더·네임스페이스·Force Text·Visible Meta 설정, `GameState`·이벤트·정비·`CombatConfig` 공용 계약 | 없음 | 4 | 3.0h | `feature/fnd-01-project-foundation` | Editor 컴파일 성공. `ProjectVersion.txt`, `manifest.json`, `packages-lock.json`, 공용 계약과 `.meta`가 커밋됨 |
 | `CORE-00` | `LEAD` | 앱 상태 enum, 읽기 전용 `GameState`, 가짜 파괴 소비자, 자금·목적지 최소 진행 뼈대 | `FND-01` | 4 | 2.0h | `feature/core-00-state-skeleton` | 가짜 `IceDestroyedEvent` 1개로 자금 +10·목적지 +1이 한 번만 반영됨 |
-| `WIN-00` | `LEAD` | UniWindowController 고정 revision 설치, 일반 창 fallback, Windows 초기화 Spike | `FND-01` | 5 | 1.5h | `feature/win-00-window-spike` | 플러그인 성공·실패 양쪽에서 앱이 실행되고 실패 시 720×480 일반 창을 사용함 |
+| `WIN-00` | `LEAD` | UniWindowController 고정 revision 설치, 일반 창 fallback, Windows 초기화 Spike | `FND-01` | 5 | 1.5h | `feature/win-00-window-spike` | 플러그인 성공·실패 양쪽에서 앱이 실행되고 실패 시 960×540 일반 창을 사용함 |
 | `GP-01` | `GAMEPLAY` | Gameplay Sandbox에서 T1 생성·클릭·HP·파괴·고유 ID·파괴 이벤트 1회 발행 | `FND-01` | 3 | 3.0h | `feature/gp-01-t1-destruction` | 치명타 없는 T1을 10회 공격하면 파괴 이벤트가 정확히 1회 발생함 |
 | `GP-02` | `GAMEPLAY` | 최대 20개 자유 위치 생성, 겹침 회피, 파괴 후 재생성, 최소 오브젝트 풀 | `GP-01` | 4 | 3.0h | `feature/gp-02-ice-field` | 20개 유지, 보호 영역 회피, 파괴 후 새 위치 재생성, 중복 인스턴스 ID 없음 |
-| `UI-01` | `UIQA` | UI Sandbox와 가짜 `GameState`·이벤트 샘플, 공통 색·폰트·Canvas 720×480 설정 | `FND-01` | 2 | 2.5h | `feature/ui-01-ui-sandbox` | 게임 로직 없이 가짜 데이터로 HUD·보상 표시를 독립 실행할 수 있음 |
-| `UI-02` | `UIQA` | 480×56 축소 런처와 쇄빙 HUD 기본 View Prefab | `UI-01` | 3 | 3.0h | `feature/ui-02-launcher-hud` | 480×56에서 자금·목적지·정비·운항·시작·설정이 잘리지 않고 각 입력 영역이 분리됨 |
+| `UI-01` | `UIQA` | UI Sandbox와 가짜 `GameState`·이벤트 샘플, 공통 색·폰트·Canvas 960×540 설정 | `FND-01` | 2 | 2.5h | `feature/ui-01-ui-sandbox` | 게임 로직 없이 가짜 데이터로 HUD·보상 표시를 독립 실행할 수 있음 |
+| `UI-02` | `UIQA` | 800×72 축소 런처와 쇄빙 HUD 기본 View Prefab | `UI-01` | 3 | 3.0h | `feature/ui-02-launcher-hud` | 800×72에서 자금·목적지·정비·운항·시작·설정이 잘리지 않고 각 입력 영역이 분리됨 |
 | `INT-01` | `LEAD` | T1 파괴 이벤트를 진행과 HUD에 연결하는 첫 수직 통합 | `CORE-00`, `GP-01`, `UI-01` | 5 | 2.5h | `feature/int-01-first-vertical-slice` | Main Scene에서 T1 파괴 → 자금 +10 → 목적지 +1 → 보상 숫자 1회 표시 |
 
 ### 일요일 예상 투입
@@ -118,11 +120,11 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 |---|---|---|---|---:|---:|---|---|
 | `UPG-01` | `LEAD` | 정비 13개 정의·선행 조건·구매·자금 차감·저장·전투 설정 snapshot | `SAVE-01` | 5 | 3.5h | `feature/upg-01-maintenance-system` | 13개 비용·최대 단계·선행 조건 일치, 구매 후 음수 자금 없음, 재실행 유지 |
 | `CORE-03` | `LEAD` | 세 목적지·pending arrival·공통 도착·북쪽 기지 완료, 표준·시연 프로필 | `SAVE-01`, `CORE-02` | 4 | 2.5h | `feature/core-03-route-completion` | 목적지 중복 완료·초과 이월 없음. 북쪽 기지 뒤 `운항 완료`와 시작 비활성 |
-| `WIN-01` | `LEAD` | 480×56·720×480 전환, 작업 영역 우하단 위치, 항상 위·포커스·fallback | `WIN-00`, `CORE-01` | 5 | 2.5h | `feature/win-01-window-behavior` | Windows 100%·125%에서 taskbar 위 8px, 자동 포커스 없음, 실패 시 일반 창 실행 |
+| `WIN-01` | `LEAD` | 800×72·960×540 전환, 작업 영역 우하단 위치, 항상 위·포커스·fallback | `WIN-00`, `CORE-01` | 5 | 2.5h | `feature/win-01-window-behavior` | Windows 100%·125%에서 taskbar 위 8px, 자동 포커스 없음, 실패 시 일반 창 실행 |
 | `GP-06` | `GAMEPLAY` | 가짜 `CombatConfig`로 S01 12회 충전, S02 다중 표적, S03 우선순위·특수빙 ×2 | `GP-05`, `FND-01` | 4 | 3.0h | `feature/gp-06-support-system` | 12번째 유효 입력 뒤 1회 발사, 중복 표적 없음, 표적 동률 규칙 일치 |
 | `GP-07` | `GAMEPLAY` | 가짜 `CombatConfig`로 D03·H01·H02·H03, chainId·depth 3·너비 우선 처리 | `GP-05`, `FND-01` | 5 | 4.0h | `feature/gp-07-chain-system` | 최대 depth 3, H03 chain당 1회, H02 5/7/8·균열 ×1/1.3/1.6, 중복 보상 없음 |
 | `GP-08` | `GAMEPLAY` | 20개 얼음·연쇄 성능, 이벤트·오브젝트 풀 누수, 전투 회귀 수정 | `GP-06`, `GP-07` | 4 | 2.0h | `fix/gp-08-performance-regression` | 목표 환경에서 진행 불가 프레임 저하 없음. 12개 전투 검증 중 담당 범위 통과 |
-| `UI-05` | `UIQA` | 가짜 ViewData로 정비 트리 13개·운항 현황·설정·운항 완료 View | `UI-04`, `FND-01` | 3 | 4.0h | `feature/ui-05-management-views` | 720×480 한 화면에 노드 13개, 잠김·구매 가능·보유 표시, 경로 선택 UI 없음 |
+| `UI-05` | `UIQA` | 가짜 ViewData로 정비 트리 13개·운항 현황·설정·운항 완료 View | `UI-04`, `FND-01` | 3 | 4.0h | `feature/ui-05-management-views` | 960×540 한 화면에 노드 13개, 잠김·구매 가능·보유 표시, 경로 선택 UI 없음 |
 | `UI-06` | `UIQA` | 이벤트 샘플로 충전 링·특수빙·연쇄·버튼·기본 VFX·필수 오디오 연결 | `UI-04`, `FND-01` | 3 | 3.0h | `feature/ui-06-feedback-audio` | 입력 없는 자동 충전 없음, 연쇄·치명타 구분, 최초 음소거, 정산 확인음 1회 |
 | `INT-03` | `LEAD` | 정비·목적지·창·파쇄·UI 전체 P0 통합과 Main Scene 참조 고정 | `UPG-01`, `CORE-03`, `WIN-01`, `GP-08`, `UI-05`, `UI-06` | 5 | 3.0h | `feature/int-03-p0-integration` | 통합 Scene 컴파일, Missing Reference 없음, 시연 데이터로 시작부터 북쪽 기지까지 진행 가능 |
 | `QA-02` | `UIQA` | 시연 데이터 전체 완주, 정비 효과·정산·도착·저장 수치 대조 | `INT-03` | 3 | 2.0h | `test/qa-02-p0-playthrough` | 북쪽 기지 완주 기록, 진행 차단·수치 불일치·UI 잘림을 우선순위와 함께 등록 |
@@ -152,7 +154,7 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 |---|---|---|---|---:|---:|---|---|
 | `REL-01` | `LEAD` | 표준·시연 Windows 빌드, 새 PC 실행, 로그·저장 경로 확인 | `INT-03` | 5 | 2.0h | `test/rel-01-windows-candidate` | 두 프로필이 분리되고 D3D11 실행·창 fallback·한국어 표시가 확인됨 |
 | `BUG-01` | `GAMEPLAY` | QA에서 발견된 파쇄 진행 차단·중복 보상·timer 0 오류 수정 | `QA-02`, `REL-01` | 4 | 3.0h | `fix/bug-01-gameplay-blockers` | 등록된 P0 gameplay blocker가 재현되지 않고 관련 회귀 절차 통과 |
-| `QA-03` | `UIQA` | 새 저장 전체 완주, 재실행, 480×56·720×480 잘림과 정산 수치 검증 | `REL-01` | 3 | 3.0h | `test/qa-03-release-regression` | 릴리스 체크리스트 결과와 캡처, 남은 비차단 결함 목록 제출 |
+| `QA-03` | `UIQA` | 새 저장 전체 완주, 재실행, 800×72·960×540 잘림과 정산 수치 검증 | `REL-01` | 3 | 3.0h | `test/qa-03-release-regression` | 릴리스 체크리스트 결과와 캡처, 남은 비차단 결함 목록 제출 |
 | `BUG-02` | `LEAD` | 진행·저장·창·Main Scene 차단 오류 수정과 최종 병합 | `REL-01`, `QA-03` | 5 | 3.0h | `fix/bug-02-release-blockers` | 진행 불가·데이터 손상·Missing Reference·창 이탈 오류 없음 |
 | `REL-02` | `LEAD` | 최종 재빌드, 버전 표기, `dev → main` 릴리스 PR | `BUG-01`, `BUG-02` | 5 | 1.5h | `feature/rel-02-release-candidate` | 다른 PC Smoke Test 통과 빌드와 커밋·데이터 프로필이 서로 대응함 |
 
@@ -178,7 +180,7 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 
 | ID | 담당 | 작업 | 선행·입력 | 난이도 | 예상 | 산출물·기록 | 완료 조건 |
 |---|---|---|---|---:|---:|---|---|
-| `ART-00` | `ART` | 아트 콘셉트 마스터 2장: 720×480 쇄빙 화면, 480×56 축소 런처 | 전달 PPT, 아트 디렉션 | 3 | 3.0h | Drive `01_preview` | 배·얼음·목적지·화물이 5초 안에 읽히고, T1~T3·주요 행동·따뜻한 목적지의 대비가 실제 크기에서 구분됨 |
+| `ART-00` | `ART` | 아트 콘셉트 마스터 2장: 1920×1080 확장 화면, 1600×144 축소 런처 + 1× 합성본 | 전달 PPT, 아트 디렉션 | 3 | 3.0h | Drive `01_preview` | 960×540·800×72에서 배·얼음·목적지·화물이 5초 안에 읽히고 T1~T3·주요 행동·따뜻한 목적지의 대비가 구분됨 |
 | `PLAN-01` | `LEAD`+`PLAN` | 게임 15분 설명, Unity 실행, GitHub Issue·Project 사용법 안내 | 전달 PPT, 현재 빌드 | 2 | 1.0h | 샘플 Issue 1개 | 기획자가 빌드를 실행하고 샘플 버그를 직접 등록·상태 변경할 수 있음 |
 | `PLAN-02` | `PLAN` | 핵심 루프·P0 범위·용어를 읽고 플레이테스트 관점 질문 정리 | `PLAN-01` | 1 | 1.0h | GitHub Issue 또는 댓글 | 자동 공격·인벤토리·경로 선택이 비범위임을 구분하고, 확인이 필요한 질문만 목록화함 |
 
@@ -186,8 +188,8 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 
 | ID | 담당 | 작업 | 선행·입력 | 난이도 | 예상 | 산출물·기록 | 완료 조건 |
 |---|---|---|---|---:|---:|---|---|
-| `ART-01` | `ART` | 핵심 게임 에셋: 배경 3레이어, 선박·파쇄기, T1~T3 6종, 특수빙 오버레이 | `ART-00`, 아트 디렉션 | 4 | 6.0h | Drive `02_source`, `03_export` | 720×480 합성본에서 선박과 6개 얼음이 겹쳐도 구분되고 파일명·피벗·알파 규칙을 지킴 |
-| `ART-02` | `ART` | 축소 런처·HUD·정산 UI 그래픽 | `ART-00`, `UI-02` 캡처 또는 UI 문서 | 3 | 5.0h | Drive `03_export`, 1× 미리보기 | 480×56과 720×480에서 텍스트·버튼이 잘리지 않고 상태가 색 외 명암·테두리로도 구분됨 |
+| `ART-01` | `ART` | 핵심 게임 에셋: 2560×1440 배경 3레이어, 선박·파쇄기, T1~T3 6종, 특수빙 오버레이 | `ART-00`, 아트 디렉션 | 4 | 6.0h | Drive `02_source`, `03_export` | 960×540 합성본에서 선박과 6개 얼음이 겹쳐도 구분되고 파일명·피벗·알파 규칙을 지킴 |
+| `ART-02` | `ART` | 축소 런처·HUD·정산 UI 그래픽을 2× 부품으로 제작 | `ART-00`, `UI-02` 캡처 또는 최신 UI 와이어 | 3 | 5.0h | Drive `03_export`, 1× 미리보기 | 800×72와 960×540에서 잘리지 않고, 텍스트 분리·9-slice·상태 구분 기준을 지킴 |
 | `PLAN-03` | `PLAN` | 전체 반복 첫 플레이테스트와 차단 버그 분류 | `INT-02` 빌드 | 2 | 1.5h | GitHub Issues | 항해→쇄빙→정산→항해를 두 번 실행하고 진행 불가·수치 불일치·가독성 문제를 우선순위와 함께 등록함 |
 
 ### 7월 21일 화요일 — 정비·피드백·전체 통합
@@ -195,7 +197,7 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 | ID | 담당 | 작업 | 선행·입력 | 난이도 | 예상 | 산출물·기록 | 완료 조건 |
 |---|---|---|---|---:|---:|---|---|
 | `ART-03` | `ART` | 기본 파괴·결정·균열·대형 붕괴·보조 발사 스프라이트 시트 | `ART-01`, 개발팀 프레임 규격 | 4 | 5.0h | Drive `02_source`, `03_export` | 투명 배경·동일 셀·고정 피벗이며 비루프 0.2~0.45초 재생에서 보상 숫자를 가리지 않음 |
-| `ART-04` | `ART` | 정비 보드·노드 아이콘 13개·상태 프레임·연결선·운항 아이콘 | `ART-00`, `UI-05` 와이어 또는 UI 문서 | 4 | 6.5h | Drive `03_export`, 720×480 합성본 | C01~H03 ID가 일치하고 13개 노드와 잠김·구매 가능·보유 상태가 한 화면에서 식별됨 |
+| `ART-04` | `ART` | 정비 보드·노드 아이콘 13개·상태 프레임·연결선·운항 아이콘 | `ART-00`, `UI-05` 와이어 또는 UI 문서 | 4 | 6.5h | Drive `03_export`, 960×540 합성본 | C01~H03 ID가 일치하고 13개 노드와 잠김·구매 가능·보유 상태가 한 화면에서 식별됨 |
 | `PLAN-04` | `PLAN` | 3회 플레이 기록과 1차 밸런스 수치 제안 | `INT-02`, 밸런스 표 | 3 | 2.5h | Balance Issue 1개 | 작업별 파괴 수·정비 구매 시점·목적지 도달 시간을 기록하고 변경 전/후 수치를 제안하되 직접 수정하지 않음 |
 | `PLAN-05` | `PLAN` | P0 전체 완주·문구·가독성 QA | `INT-03` 빌드 | 3 | 2.0h | GitHub Issues | 시연 데이터로 북쪽 기지까지 완주하고 잘림·용어 불일치·이해하기 어려운 상태를 재현 정보와 함께 등록함 |
 
@@ -204,7 +206,7 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 | ID | 담당 | 작업 | 선행·입력 | 난이도 | 예상 | 산출물·기록 | 완료 조건 |
 |---|---|---|---|---:|---:|---|---|
 | `ART-05` | `ART` | 원본·PNG·스프라이트 시트 정리와 최종 Drive 업로드 | `ART-01`~`ART-04` | 2 | 1.5h | Drive 전체 폴더 | 원본과 출력물이 짝을 이루고 파일명·1×/2×·알파·외부 브러시/텍스처 사용 기록이 정리됨 |
-| `ART-06` | `ART` | 통합 빌드 실제 크기 가독성·잘림 수정 | `INT-03`, `ART-05` | 3 | 3.0h | 수정 PNG, 전/후 캡처 | 720×480·480×56에서 P0 플레이 판독을 막는 문제를 우선 수정하고 장식 폴리시는 미룸 |
+| `ART-06` | `ART` | 통합 빌드 실제 크기 가독성·잘림 수정 | `INT-03`, `ART-05` | 3 | 3.0h | 수정 PNG, 전/후 캡처 | 960×540·800×72에서 P0 플레이 판독을 막는 문제를 우선 수정하고 장식 폴리시는 미룸 |
 | `PLAN-06` | `PLAN` | Windows 릴리스 회귀와 남은 이슈 정리 | `REL-01` 빌드 | 3 | 3.0h | Release Issues, 테스트 댓글 | 새 저장·재실행·창 크기·정산·북쪽 기지 완주를 확인하고 차단/비차단 이슈를 구분함 |
 
 ### 7월 23~24일 — 기능 동결 뒤 보완
@@ -269,7 +271,7 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 - 항해·쇄빙·정산·목적지 도착을 반복할 수 있음
 - 북쪽 기지 도착 뒤 `운항 완료`와 쇄빙 시작 비활성
 - 진행 중 종료를 복원하지 않으며 저장 완료된 결과를 유지함
-- 480×56·720×480 창이 Windows에서 의도한 위치·포커스로 동작
+- 800×72·960×540 창이 Windows에서 의도한 위치·포커스로 동작
 - 표준·시연 데이터와 저장 파일이 분리됨
 - 다른 Windows PC에서 처음부터 북쪽 기지까지 진행 가능
 
