@@ -24,6 +24,10 @@ AI 에이전트가 초안을 빠르게 만들 수 있어도 다음 책임은 사
 | `LEAD` — 기술 리드·통합 | 민준 | 프로젝트 기반, 공용 계약, 상태 흐름, 진행·경제, 정비, 저장, 창 제어, Main Scene, 통합·빌드 | 약 45% |
 | `GAMEPLAY` — 파쇄 시스템 | Unity 게임 1회 + Git·OOP 경험 개발자 | 입력, 얼음, 피해·파괴, 재생성, 특수빙, 보조 파쇄, 연쇄, 성능·예외 | 약 28% |
 | `UIQA` — View·피드백·QA | Unity·Git 초급 개발자 | UI Sandbox, View Prefab, HUD, 보상·정산 표시, 기본 피드백, 정형 QA | 약 27% |
+| `ART` — 아트 제작 | 2D 아티스트 | 콘셉트 마스터, 게임 오브젝트, UI 그래픽, 스프라이트 시트, Google Drive 납품 | 개발 비중 외 병렬 작업 |
+| `PLAN` — 플레이테스트·밸런스 | 기획자 | Unity 플레이테스트, GitHub Issue, 밸런스 수치 제안, 문구·제출 QA | 개발 비중 외 병렬 작업 |
+
+업무 비중 퍼센트는 세 개발자의 개발 작업만 합산한 값이다.
 
 ### 역할 경계
 
@@ -32,6 +36,8 @@ AI 에이전트가 초안을 빠르게 만들 수 있어도 다음 책임은 사
 - `UIQA`는 전달받은 `GameState`, `RewardGrantedEvent`, `SettlementSummary`를 표시하지만 수치를 다시 계산하지 않는다.
 - `Main.unity`, 공용 계약, 패키지·프로젝트 설정은 `LEAD`만 최종 수정한다.
 - `GAMEPLAY`와 `UIQA`는 각자의 Sandbox Scene과 Prefab을 사용하고 Main Scene 연결은 `LEAD`가 한다.
+- `ART`는 콘셉트 표현에 자율권을 갖되 해상도·정보 우선순위·필수 상태·납품 규격은 고정한다.
+- `PLAN`은 밸런스 값을 직접 수정하지 않고 플레이 기록과 변경 수치를 Issue로 제안한다.
 
 ## 3. 모듈·파일 소유권
 
@@ -48,6 +54,8 @@ Unity 프로젝트 생성 후 아래 경계를 유지한다. 실제 폴더명이
 | `GameplaySandbox.unity` | `GAMEPLAY` | 게임플레이 담당 전용 |
 | `UISandbox.unity` | `UIQA` | UI·피드백 담당 전용 |
 | `ProjectSettings/`, `Packages/` | `LEAD` | 사전 승인 없는 변경 금지 |
+| Google Drive 아트 원본·PNG | `ART` | `UIQA`가 관련 에셋 통합 브랜치로 가져오고 `LEAD`가 Main Scene 연결 |
+| GitHub Issue·Project | `PLAN`, `LEAD` | 기획 문서 PR 대신 버그·밸런스·릴리스 검증 결과를 기록 |
 
 `.meta` 파일은 대응 에셋과 같은 PR에 반드시 포함한다. AI 에이전트가 관련 없는 Scene, Prefab, ProjectSettings, 기획 문서를 수정하면 해당 변경은 제거한다.
 
@@ -103,6 +111,12 @@ PR → dev
 - 강제 푸시, 공용 브랜치 직접 커밋, 관련 없는 정리·리팩터링을 금지한다.
 - `UIQA` 담당은 rebase보다 최신 `dev` 병합 또는 새 브랜치 재생성을 사용한다.
 - 통합은 최소 하루 2회, 화요일에는 Task 완료 즉시 수행한다.
+
+아트와 기획 지원 Task에는 다음 예외를 적용한다.
+
+- 아티스트는 Git 브랜치나 PR을 만들지 않는다. Drive 납품물을 `UIQA`가 관련 Unity 에셋 PR에 포함한다.
+- 기획자는 문서 PR을 만들지 않는다. 플레이테스트·밸런스·문구 결과를 GitHub Issue와 Project 상태로 관리한다.
+- `LEAD`는 아티스트·기획자에게 전달 PPT와 역할별 작업전달서를 먼저 공유하고, 15분 설명 뒤 첫 Task를 배정한다.
 
 ## 6. AI 에이전트 Task 전달 형식
 
@@ -214,3 +228,6 @@ Task 예상시간의 최소 30%를 사람 검토와 Unity 실행에 사용한다
 - `07_Technical/tech_stack.md` — 소유권과 기술 구조
 - `09_MVP/p0_scope.md` — 수요일 P0 범위
 - `09_MVP/wbs.md` — Task ID·일정·난이도·예상시간·완료 조건
+- `11_Handoff/ICEBREAKER_아트_기획_온보딩.pptx` — 아트·기획 공용 게임 이해 자료
+- `11_Handoff/ICEBREAKER_아티스트_작업전달서.docx` — 아트 자율 범위·우선순위·납품 규격
+- `11_Handoff/ICEBREAKER_기획자_작업전달서.docx` — 플레이테스트·Issue·밸런스 제안 방식
