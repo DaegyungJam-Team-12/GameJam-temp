@@ -99,7 +99,7 @@
 - 0.2초간 정지한 뒤 남은 1.0초 동안 배경 얼음판의 균열·파괴와 정산 화면 전환을 진행한다.
 - 자금 정산 화면은 매 쇄빙 작업 뒤 반드시 표시한다.
 - 정산 화면에는 `획득 정비 자금`, `파괴한 얼음 수`, `목적지 진행 증가량`을 표시한다.
-- 표시 값은 이번 작업에서 승인된 `IceDestroyed` 이벤트의 합계다.
+- 표시 값은 이번 작업에서 승인된 `IceDestroyedEvent`의 합계다.
 - 정비 자금은 이미 파괴 순간 반영됐으므로 정산 화면에서는 다시 증가시키지 않는다.
 - 정산 화면은 최소 1.2초 동안 유지한다. 이후 버튼·화면 클릭·Enter·Space 입력으로 넘길 수 있다.
 - 입력하지 않으면 정산 화면이 열린 시점부터 4초 뒤 자동으로 항해로 전환한다.
@@ -207,18 +207,7 @@
 
 ### 파괴 이벤트 계약
 
-```text
-IceDestroyed(
-  iceInstanceId,
-  tier,
-  specialType,
-  screenPosition,
-  destroySource,
-  destroyedAt
-)
-```
-
-`destroySource`는 `Direct`, `Support`, `Chain` 중 하나다. 이 이벤트를 받은 진행 시스템이 다음을 한 번에 처리한다.
+실제 이벤트명·필드·ID·좌표·발행 순서는 [`07_Technical/implementation_lock.md` 3장](../07_Technical/implementation_lock.md#3-공용-이벤트-계약)을 단일 출처로 사용한다. 파쇄 시스템의 `IceDestroyedEvent`를 받은 진행 시스템이 다음을 한 번에 처리한다.
 
 1. `iceInstanceId`가 이미 처리됐는지 확인한다.
 2. 단계와 특수빙에 따른 자금을 계산한다.
@@ -242,7 +231,7 @@ SettlementSummary
 
 - 진행 시스템은 타이머가 끝나는 순간 누적값을 읽기 전용 `SettlementSummary`로 고정한다.
 - `SettlementReady(summary)`를 발생시키며 UI는 전달받은 값을 표시만 한다.
-- `destroyedCount`는 직접·보조·연쇄를 포함해 승인된 고유 `IceDestroyed` 이벤트 수다.
+- `destroyedCount`는 직접·보조·연쇄를 포함해 승인된 고유 `IceDestroyedEvent` 수다.
 - `destinationProgressGain`은 목표 초과분을 제외한 실제 목적지 진행 증가량이다. 목표 달성 뒤에는 `0`이 될 수 있다.
 - `reachedDestination`이 참이면 `destinationId`로 정산 패널에 목적지 이름을 표시한다.
 - 정산 UI는 이 데이터를 근거로 자금·목적지 진행·저장 상태를 다시 변경하지 않는다.
@@ -673,6 +662,8 @@ SettlementSummary
 ---
 
 ## 11. 개발 연결 규칙과 업무 분담
+
+> 창 위치·피해 계산·연쇄 깊이·공용 이벤트·저장 및 재실행 경계는 [`07_Technical/implementation_lock.md`](../07_Technical/implementation_lock.md)를 따른다.
 
 ### 공용 데이터
 

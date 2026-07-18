@@ -2,6 +2,7 @@
 
 > **상태: LOCKED · 2026-07-19 · 기준 문서: `new/ICEBREAKER_SPEC_v2.md` v2.6**  
 > 같은 상태를 여러 곳에서 계산하지 않는 것을 최우선으로 한다. 새 프레임워크나 범용 아키텍처는 만들지 않는다.
+> 창 위치·피해 계산·연쇄 깊이·공용 이벤트·저장 및 재실행 경계는 [`implementation_lock.md`](implementation_lock.md)를 따른다.
 
 ## 1. 기술 스택
 
@@ -43,18 +44,7 @@
 
 ## 4. 파괴 이벤트 계약
 
-```text
-IceDestroyed(
-  iceInstanceId,
-  tier,
-  specialType,
-  screenPosition,
-  destroySource,
-  destroyedAt
-)
-```
-
-`destroySource`는 `Direct`, `Support`, `Chain` 중 하나다. 이 이벤트를 받은 진행 시스템(민준)이 다음을 한 번에 처리한다.
+실제 이벤트명·필드·ID·좌표·발행 순서는 [`implementation_lock.md` 3장](implementation_lock.md#3-공용-이벤트-계약)을 단일 출처로 사용한다. 파쇄 시스템의 `IceDestroyedEvent`를 받은 진행 시스템(민준)이 다음을 한 번에 처리한다.
 
 1. `iceInstanceId`가 이미 처리됐는지 확인한다.
 2. 단계와 특수빙에 따른 자금을 계산한다.
@@ -80,7 +70,7 @@ SettlementSummary
 
 - 진행 시스템은 타이머가 끝나는 순간 누적값을 읽기 전용 `SettlementSummary`로 고정한다.
 - `SettlementReady(summary)`를 발생시키며 UI는 전달받은 값을 표시만 한다.
-- `destroyedCount`는 직접·보조·연쇄를 포함해 승인된 고유 `IceDestroyed` 이벤트 수다.
+- `destroyedCount`는 직접·보조·연쇄를 포함해 승인된 고유 `IceDestroyedEvent` 수다.
 - `destinationProgressGain`은 목표 초과분을 제외한 실제 목적지 진행 증가량이다. 목표 달성 뒤에는 `0`이 될 수 있다.
 - 정산 UI는 이 데이터를 근거로 자금·목적지 진행·저장 상태를 다시 변경하지 않는다.
 
