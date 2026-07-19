@@ -92,13 +92,13 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 | ID | 담당 | 작업 | 선행 | 난이도 | 예상 | 브랜치 | 완료 조건 |
 |---|---|---|---|---:|---:|---|---|
 | `CORE-01` | `LEAD` | 전체 상태 흐름과 항해·카운트다운·쇄빙·종료·정산 시계 | `INT-01` | 5 | 3.0h | `feature/core-01-game-loop` | 정의된 순서만 전환하고 설정 일시정지 외에는 쇄빙 시계가 계속 진행됨 |
-| `CORE-02` | `LEAD` | 파괴 승인, 자금·목적지, 작업별 누적, `SettlementSummary`, 도착 예약 | `CORE-01` | 4 | 2.5h | `feature/core-02-progression-settlement` | 중복 파괴 보상 없음. 정산 값과 실제 지급 합계가 같고 목표 초과 진행이 없음 |
-| `SAVE-01` | `LEAD` | 표준·시연 분리 저장, debounce·강제 저장·atomic replace, 진행 중 종료 복구 | `CORE-02` | 5 | 2.5h | `feature/save-01-local-persistence` | 자금·목적지·구매·첫 파괴 유지. 진행 중 종료 시 작업을 복원하지 않고 전체 항해로 복귀 |
+| `CORE-02` | `LEAD` | 파괴 승인, 자금·목적지, 작업별 누적, `SettlementSummary`, 도착 예약, 첫 파괴 플래그 | `CORE-01` | 4 | 2.5h | `feature/core-02-progression-settlement` | 중복 파괴 보상 없음. 정산 값과 실제 지급 합계가 같고 목표 초과 진행이 없음. 게임 최초 승인 파괴 시 `firstDestroyShown`을 한 번만 `true`로 바꿔 `GameState`·저장에 반영 |
+| `SAVE-01` | `LEAD` | 표준·시연 분리 저장, debounce·강제 저장·atomic replace, 진행 중 종료 복구, 항해 중 설정 일시정지 시각 보정 | `CORE-02` | 5 | 2.5h | `feature/save-01-local-persistence` | 자금·목적지·구매·첫 파괴 유지. 진행 중 종료 시 작업을 복원하지 않고 전체 항해로 복귀. 항해 중 설정을 열고 닫으면 열린 시간만큼 `nextAvailableAtUtc`를 뒤로 이동해 저장 |
 | `GP-03` | `GAMEPLAY` | 누르기, D02 속도, 직접 치명타, T1~T3 HP·해금별 생성 설정 | `GP-02` | 4 | 3.0h | `feature/gp-03-input-tiers-critical` | 클릭 즉시 1회, 홀드 최대 11회/초, 직접 공격만 치명타, 설정값에 따라 T1~T3 생성 |
 | `GP-04` | `GAMEPLAY` | 결정빙·균열빙과 재생성 보호 0.25초 | `GP-03` | 4 | 3.5h | `feature/gp-04-special-ice` | 결정 파편·균열 범위가 구현 잠금 규칙과 일치하고 보호 중 비직접 피해가 적용되지 않음 |
 | `GP-05` | `GAMEPLAY` | 파괴 중복 방지, 남은 시간이 0초가 된 뒤 피해·투사체·재생성 취소, 이벤트 순서 로그 | `GP-04`, `CORE-01` | 4 | 2.0h | `fix/gp-05-combat-boundaries` | 같은 얼음 보상 1회. 60초 이후 피해·파괴·보상 이벤트 없음 |
 | `UI-03` | `UIQA` | 카운트다운·쇄빙 중 자금/시간 표시·설정 버튼 상태 화면 | `UI-02`, `FND-01` | 3 | 2.5h | `feature/ui-03-combat-hud` | 가짜 상태로 3·2·1, 자금, 남은 시간, 설정만 표시되고 목적지·정비·접기는 숨김 |
-| `UI-04` | `UIQA` | 보상 숫자·치명타·연쇄 표시와 정산 패널·입력 잠금 | `UI-03`, `FND-01` | 3 | 3.5h | `feature/ui-04-reward-settlement` | 이벤트 샘플로 위치 보정, 정산 최소 1.2초 잠금, 4초 자동 진행, 화면에서 재계산·재지급 없음 |
+| `UI-04` | `UIQA` | 보상 숫자·치명타·연쇄 표시와 정산 패널·입력 잠금, 최초 파괴 성장 안내 | `UI-03`, `FND-01` | 3 | 3.5h | `feature/ui-04-reward-settlement` | 이벤트 샘플로 위치 보정, 정산 최소 1.2초 잠금, 4초 자동 진행, 화면에서 재계산·재지급 없음. `firstDestroyShown=false`에서 첫 파괴 시 성장 안내를 한 번만 표시하고 이후에는 표시하지 않음 |
 | `INT-02` | `LEAD` | 상태·게임플레이·UI·저장의 한 사이클 통합 | `SAVE-01`, `GP-05`, `UI-04` | 5 | 2.0h | `feature/int-02-complete-loop` | 시연 설정에서 두 사이클 연속 플레이하고 재실행 뒤 정상 항해 또는 준비 상태로 복귀 |
 | `QA-01` | `UIQA` | 전체 반복의 핵심 흐름을 빠르게 확인하고 수치를 대조한 뒤 재현 가능한 버그 등록 | `INT-02` | 2 | 1.5h | `test/qa-01-loop-smoke` | 고정 체크리스트 결과와 버그별 재현 절차·기대값·실제값이 PR에 기록됨 |
 
@@ -119,12 +119,12 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 | ID | 담당 | 작업 | 선행 | 난이도 | 예상 | 브랜치 | 완료 조건 |
 |---|---|---|---|---:|---:|---|---|
 | `UPG-01` | `LEAD` | 정비 13개 정의·앞 단계 조건·구매·자금 차감·저장·전투 시작 시 설정값 복사 | `SAVE-01` | 5 | 3.5h | `feature/upg-01-maintenance-system` | 13개 비용·최대 단계·앞 단계 조건 일치, 구매 후 음수 자금 없음, 재실행 유지 |
-| `CORE-03` | `LEAD` | 세 목적지·pending arrival·공통 도착·북쪽 기지 완료, 표준·시연 프로필 | `SAVE-01`, `CORE-02` | 4 | 2.5h | `feature/core-03-route-completion` | 목적지 중복 완료·초과 이월 없음. 북쪽 기지 뒤 `운항 완료`와 시작 비활성 |
+| `CORE-03` | `LEAD` | 세 목적지·pending arrival·공통 도착·북쪽 기지 완료, 표준·시연 프로필 | `SAVE-01`, `CORE-02` | 4 | 2.5h | `feature/core-03-route-completion` | 목적지 중복 완료·초과 이월 없음. 정산 뒤 공통 도착 연출 재생을 목적지당 한 번만 요청. 북쪽 기지 뒤 `운항 완료`와 시작 비활성 |
 | `WIN-01` | `LEAD` | 800×72·960×540 전환, 작업 영역 우하단 위치, 항상 위·포커스·실패 시 일반 창 사용 | `WIN-00`, `CORE-01` | 5 | 2.5h | `feature/win-01-window-behavior` | Windows 100%·125%에서 taskbar 위 8px, 자동 포커스 없음, 실패 시 일반 창 실행 |
 | `GP-06` | `GAMEPLAY` | 가짜 `CombatConfig`로 S01 12회 충전, S02 다중 표적, S03 우선순위·특수빙 ×2 | `GP-05`, `FND-01` | 4 | 3.0h | `feature/gp-06-support-system` | 12번째 유효 입력 뒤 1회 발사, 중복 표적 없음, 표적 동률 규칙 일치 |
 | `GP-07` | `GAMEPLAY` | 가짜 `CombatConfig`로 D03·H01·H02·H03, chainId·최대 3단계·가까운 얼음부터 단계별 처리 | `GP-05`, `FND-01` | 5 | 4.0h | `feature/gp-07-chain-system` | 최대 3단계, H03 연쇄당 1회, H02 5/7/8·균열 ×1/1.3/1.6, 중복 보상 없음 |
 | `GP-08` | `GAMEPLAY` | 20개 얼음·연쇄 성능, 이벤트·오브젝트 풀 누수, 기존 전투 기능 재확인 및 수정 | `GP-06`, `GP-07` | 4 | 2.0h | `fix/gp-08-performance-regression` | 목표 환경에서 진행 불가 프레임 저하 없음. 12개 전투 검증 중 담당 범위 통과 |
-| `UI-05` | `UIQA` | 가짜 ViewData로 정비 트리 13개·운항 현황·설정·운항 완료 View | `UI-04`, `FND-01` | 3 | 4.0h | `feature/ui-05-management-views` | 960×540 한 화면에 노드 13개, 잠김·구매 가능·보유 표시, 경로 선택 UI 없음 |
+| `UI-05` | `UIQA` | 가짜 ViewData로 정비 트리 13개·운항 현황·설정·운항 완료 View와 공통 도착 연출 | `UI-04`, `FND-01` | 3 | 4.0h | `feature/ui-05-management-views` | 960×540 한 화면에 노드 13개, 잠김·구매 가능·보유 표시, 경로 선택 UI 없음. 도착 요청 시 목적지 공용 도착 연출을 1회 재생하고 끝나면 다음 흐름으로 넘김 |
 | `UI-06` | `UIQA` | 이벤트 샘플로 충전 링·특수빙·연쇄·버튼·기본 VFX·필수 오디오 연결 | `UI-04`, `FND-01` | 3 | 3.0h | `feature/ui-06-feedback-audio` | 입력 없는 자동 충전 없음, 연쇄·치명타 구분, 최초 음소거, 정산 확인음 1회 |
 | `INT-03` | `LEAD` | 정비·목적지·창·파쇄·UI 전체 P0 통합과 최종 게임 Scene 참조 고정 | `UPG-01`, `CORE-03`, `WIN-01`, `GP-08`, `UI-05`, `UI-06` | 5 | 3.0h | `feature/int-03-p0-integration` | 통합 Scene 컴파일, Unity Inspector의 끊어진 참조 없음, 시연 데이터로 시작부터 북쪽 기지까지 진행 가능 |
 | `QA-02` | `UIQA` | 시연 데이터 전체 완주, 정비 효과·정산·도착·저장 수치 대조 | `INT-03` | 3 | 2.0h | `test/qa-02-p0-playthrough` | 북쪽 기지 완주 기록, 진행 차단·수치 불일치·UI 잘림을 우선순위와 함께 등록 |
@@ -143,6 +143,7 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 - 14시: 선행 PR 병합 상태 점검. 막힌 Task는 `LEAD`가 인수하거나 범위를 최소 구현으로 축소
 - 18시: 기능 동결. 새 기능 브랜치 생성 금지
 - 저녁: `INT-03`과 `QA-02`, 진행 불가 오류만 수정
+- 아트 반영: `UIQA`는 Drive에 납품된 P0 아트(`ART-01`·`ART-02`·`ART-04`)를 화요일 안에 Unity로 가져와 Import Settings·`.meta`와 함께 커밋한다. 최종 교체·마감은 `ART-06`·`ART-07`로 미루되, 수요일 `REL-01` 빌드가 플레이 판독 가능한 최소 아트를 포함하도록 한다. 이 임포트 시간은 화요일 `UIQA` 예상 투입에 추가로 반영한다.
 
 ## 6. 7월 22일 수요일 — 빌드와 차단 오류만
 
