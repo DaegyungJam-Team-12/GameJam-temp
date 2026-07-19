@@ -18,11 +18,11 @@
 
 | 항목 | 확정 규칙 |
 |---|---|
-| 플랫폼 | Windows 10·11 x64 |
-| 그래픽 API | Direct3D 11 |
+| 플랫폼 | Windows 10·11 x64 · macOS 12 이상 (Intel·Apple Silicon) |
+| 그래픽 API | Windows: Direct3D 11 · macOS: Metal |
 | 창 형태 | 불투명 직사각형 borderless 창 |
 | 투명·클릭 통과 | P0 제외 |
-| 공식 화면 환경 | 주 모니터 1대 · 아래쪽 taskbar · 배율 100%·125% |
+| 공식 화면 환경 | 주 모니터 1대 · Windows: 아래쪽 taskbar·배율 100%·125% · macOS: 기본 메뉴바·Dock |
 | 기타 모니터·taskbar 배치 | best effort. 진행 불가 오류만 수정 |
 
 - UniWindowController는 `Packages/manifest.json`과 `Packages/packages-lock.json`에 해석된 revision을 커밋해 팀 전원이 같은 소스를 사용한다.
@@ -34,7 +34,7 @@
 - 두 크기는 DPI 배율을 곱하지 않는 클라이언트 픽셀 기준이다. Canvas는 같은 기준 해상도를 사용한다.
 - P0 Canvas 기준 해상도는 축소 View 800×72, 확장 View 960×540이며 `Scale With Screen Size`와 앵커를 사용한다.
 - P0에서는 사용자가 크기를 조절하지 않는다. 1000×90·1200×675와 1200×108·1440×810는 게임잼 이후 설정 후보다.
-- 축소 창은 Windows 작업 영역의 오른쪽 아래에 놓는다. 작업 영역은 taskbar를 제외한 OS 제공 영역이다.
+- 축소 창은 OS 작업 영역의 오른쪽 아래에 놓는다. 작업 영역은 Windows에서는 taskbar, macOS에서는 메뉴바·Dock을 제외한 OS 제공 영역이며 두 플랫폼의 배치 규칙은 동일하다.
 - 축소 창의 오른쪽과 아래쪽은 작업 영역 경계에서 각각 8px 떨어뜨린다. 아래쪽 taskbar 환경에서는 taskbar 바로 위에 표시된다.
 - 확장할 때 축소 창의 아래쪽 기준점을 유지하고 위쪽과 왼쪽으로 크기를 늘린다.
 - 확장 창이 작업 영역을 벗어나면 전체 창이 보이도록 작업 영역 안으로 보정한다.
