@@ -91,11 +91,11 @@ namespace Icebreaker.Shared.Tests
                 StageStarted(new Icebreaker.Shared.Events.StageStarted(
                     1,
                     "2026-07-19T00:00:00.0000000+00:00",
-                    30f));
+                    60f));
                 RewardGranted(new RewardGrantedEvent(1, 2, 3, 1, 1, Vector2.zero));
                 StageEnded(new Icebreaker.Shared.Events.StageEnded(
                     1,
-                    "2026-07-19T00:00:30.0000000+00:00"));
+                    "2026-07-19T00:01:00.0000000+00:00"));
                 SettlementReady(new Icebreaker.Shared.Events.SettlementReady(
                     1,
                     new SettlementSummary(1, 1, 1, false, null)));
