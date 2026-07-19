@@ -269,8 +269,8 @@ SettlementReady
 
 ### 3.5 타이머 0 경계
 
-- 진행 시스템의 작업 시계만 쇄빙 입력 허용 여부를 결정한다.
-- 파쇄 시스템은 피해를 적용하기 직전에 `Playing` 상태와 `stageElapsedSeconds < 60`을 확인한다.
+- 진행 시스템이 구현한 `IStageClock`만 쇄빙 입력 허용 여부를 결정한다.
+- 파쇄 시스템은 피해를 적용하기 직전에 `Phase == Playing`, `IsPaused == false`, `StageElapsedSeconds < DurationSeconds`를 확인한다. P0의 `DurationSeconds`는 60이다.
 - 시계가 60초에 도달하면 상태를 먼저 `StageEnding`으로 변경하고 입력, 예약 피해, 투사체, 연쇄 큐, 재생성을 취소한다.
 - 상태 변경 전에 HP가 0 이하가 되어 발행된 이벤트만 승인한다.
 - `StageEnded`에는 자금이나 파괴 결과를 넣지 않는다.

@@ -124,10 +124,14 @@ namespace Icebreaker.Shared.Maintenance
                     nameof(MissingRequirementIds));
             }
 
-            if (CanPurchaseNextLevel && (IsMaxLevel || State == MaintenanceNodeState.Locked || !CanAffordNextLevel))
+            var expectedCanPurchase =
+                !IsMaxLevel &&
+                State != MaintenanceNodeState.Locked &&
+                CanAffordNextLevel;
+            if (CanPurchaseNextLevel != expectedCanPurchase)
             {
                 throw new ArgumentException(
-                    "A purchase requires an unlocked, affordable, non-max node.",
+                    "Purchase availability must match max level, prerequisites, and affordability.",
                     nameof(CanPurchaseNextLevel));
             }
         }

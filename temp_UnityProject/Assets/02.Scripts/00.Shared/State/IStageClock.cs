@@ -10,6 +10,9 @@ namespace Icebreaker.Shared.State
     {
         GamePhase Phase { get; }
 
+        /// <summary>Total duration of the current stage.</summary>
+        double DurationSeconds { get; }
+
         double StageElapsedSeconds { get; }
 
         double RemainingSeconds { get; }
