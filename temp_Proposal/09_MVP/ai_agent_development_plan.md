@@ -23,7 +23,7 @@ AI 에이전트가 초안을 빠르게 만들 수 있어도 다음 책임은 사
 
 | 역할 | 권장 대상 | 책임 | 업무 비중 |
 |---|---|---|---:|
-| `LEAD` — 기술 리드·통합 | 민준 | 프로젝트 기반, 공용 계약, 상태 흐름, 진행·경제, 정비, 저장, 창 제어, Main Scene, 통합·빌드 | 약 45% |
+| `LEAD` — 기술 리드·통합 | 민준 | 프로젝트 기반, 공용 계약, 상태 흐름, 진행·경제, 정비, 저장, 창 제어, `minjun.unity`, 통합·빌드 | 약 45% |
 | `GAMEPLAY` — 파쇄 시스템 | Unity 게임 1회 + Git·OOP 경험 개발자 | 입력, 얼음, 피해·파괴, 재생성, 특수빙, 보조 파쇄, 연쇄, 성능·예외 | 약 28% |
 | `UIQA` — View·피드백·QA | Unity·Git 초급 개발자 | UI Sandbox, View Prefab, HUD, 보상·정산 표시, 기본 피드백, 정형 QA | 약 27% |
 | `ART` — 아트 제작 | 2D 아티스트 | 콘셉트 마스터, 게임 오브젝트, UI 그래픽, 스프라이트 시트, Google Drive 납품 | 개발 비중 외 병렬 작업 |
@@ -43,20 +43,20 @@ AI 에이전트가 초안을 빠르게 만들 수 있어도 다음 책임은 사
 
 ## 3. 모듈·파일 소유권
 
-Unity 프로젝트 생성 후 아래 경계를 유지한다. 실제 폴더명이 달라져도 소유 원칙은 바꾸지 않는다.
+Unity 프로젝트의 실제 폴더를 기준으로 아래 경계를 유지한다.
 
 | 영역 | 소유자 | 다른 담당자의 변경 방식 |
 |---|---|---|
-| `Assets/ICEBREAKER/Shared/` | `LEAD` | 계약 변경 요청을 PR 댓글로 남기고 `LEAD`가 반영 |
-| `Assets/ICEBREAKER/Core/`, `Progression/`, `Save/`, `Window/` | `LEAD` | 직접 수정 금지 |
-| `Assets/ICEBREAKER/Gameplay/` | `GAMEPLAY` | 통합 수정은 소유자와 합의 |
-| `Assets/ICEBREAKER/UI/`, `VFX/`, `Audio/` | `UIQA` | 상태 바인딩 코드는 `LEAD`가 별도 파일로 연결 가능 |
+| `Assets/02.Scripts/00.Shared/` | `LEAD` | 계약 변경 요청을 PR 댓글로 남기고 `LEAD`가 반영 |
+| `Assets/02.Scripts/10.Core/`, `40.Window/`, `90.Integration/` | `LEAD` | 직접 수정 금지 |
+| `Assets/02.Scripts/20.Gameplay/`, `Assets/03.Prefabs/20.Gameplay/` | `GAMEPLAY` | 통합 수정은 소유자와 합의 |
+| `Assets/02.Scripts/30.UI/`, `Assets/03.Prefabs/30.UI/`, `Assets/04.Images/`, `Assets/06.Sounds/`, `Assets/07.Animations/`, `Assets/08.Effects/` | `UIQA` | 상태 바인딩 코드는 `LEAD`가 별도 파일로 연결 가능 |
 | `QA/Reports/` | `UIQA` | 테스트 결과·캡처 목록·재현 절차를 Task ID별로 기록 |
 | `Assets/01.Scenes/minjun.unity` | `LEAD` | 다른 담당자는 수정 금지 |
 | `Assets/01.Scenes/siyeon.unity` | `GAMEPLAY` | 게임플레이 담당 전용 |
 | `Assets/01.Scenes/jeonghwan.unity` | `UIQA` | UI·피드백 담당 전용 |
 | `ProjectSettings/`, `Packages/` | `LEAD` | 사전 승인 없는 변경 금지 |
-| Google Drive 아트 원본·PNG | `ART` | `UIQA`가 관련 에셋 통합 브랜치로 가져오고 `LEAD`가 Main Scene 연결 |
+| Google Drive 아트 원본·PNG | `ART` | `UIQA`가 관련 에셋 통합 브랜치로 가져오고 `LEAD`가 `minjun.unity`에 연결 |
 | GitHub Issue·Project | `PLAN`, `LEAD` | 기획 문서 PR 대신 버그·밸런스·릴리스 검증 결과를 기록 |
 
 `.meta` 파일은 대응 에셋과 같은 PR에 반드시 포함한다. AI 에이전트가 관련 없는 Scene, Prefab, ProjectSettings, 기획 문서를 수정하면 해당 변경은 제거한다.
@@ -144,7 +144,7 @@ Task ID:
 - 관련 기획 문서와 `07_Technical/implementation_lock.md`를 먼저 읽는다.
 - Task 완료 조건을 만족하는 최소 변경만 한다.
 - 공용 계약이 부족하면 임의로 확장하지 않고 담당자에게 요청한다.
-- 다른 담당자 소유 파일과 Main Scene을 수정하지 않는다.
+- 다른 담당자 소유 파일과 `minjun.unity`를 수정하지 않는다.
 - 새 패키지, 프레임워크, 범용 이벤트 버스, 싱글턴 구조를 임의로 추가하지 않는다.
 - 실제 실행하지 않은 테스트를 통과했다고 쓰지 않는다.
 - 변경 파일, 검증 결과, 남은 위험을 PR 설명에 기록한다.
@@ -197,7 +197,7 @@ AI 에이전트가 생성한 코드가 동작해도 사람이 diff를 설명할 
 
 ### Scene·Prefab 충돌
 
-에이전트는 YAML 충돌을 의미 있게 해결하지 못할 수 있다. 담당별 Sandbox Scene과 Prefab을 사용하고 Main Scene은 `LEAD`가 연결한다.
+에이전트는 YAML 충돌을 의미 있게 해결하지 못할 수 있다. 담당별 시험 Scene과 Prefab을 사용하고 `minjun.unity`는 `LEAD`가 연결한다.
 
 ### 빠른 코드 생성 뒤 검증 누락
 
