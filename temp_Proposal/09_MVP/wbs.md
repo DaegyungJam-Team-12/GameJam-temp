@@ -69,9 +69,9 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 | `FND-01` | `LEAD` | Unity 6 프로젝트 생성, 폴더·네임스페이스·Force Text·Visible Meta 설정, `GameState`·이벤트·정비·`CombatConfig` 공용 계약 | 없음 | 4 | 3.0h | `feature/fnd-01-project-foundation` | Editor 컴파일 성공. `ProjectVersion.txt`, `manifest.json`, `packages-lock.json`, 공용 계약과 `.meta`가 커밋됨 |
 | `CORE-00` | `LEAD` | 앱 상태 enum, 읽기 전용 `GameState`, 가짜 파괴 소비자, 자금·목적지 최소 진행 뼈대 | `FND-01` | 4 | 2.0h | `feature/core-00-state-skeleton` | 가짜 `IceDestroyedEvent` 1개로 자금 +10·목적지 +1이 한 번만 반영됨 |
 | `WIN-00` | `LEAD` | UniWindowController 버전 고정, 실패 시 일반 창으로 여는 동작, Windows 초기화 가능 여부 확인 | `FND-01` | 5 | 1.5h | `feature/win-00-window-spike` | 플러그인 성공·실패 양쪽에서 앱이 실행되고 실패 시 960×540 일반 창을 사용함 |
-| `GP-01` | `GAMEPLAY` | Gameplay Sandbox에서 T1 생성·클릭·HP·파괴·고유 ID·파괴 이벤트 1회 발행 | `FND-01` | 3 | 3.0h | `feature/gp-01-t1-destruction` | 치명타 없는 T1을 10회 공격하면 파괴 이벤트가 정확히 1회 발생함 |
+| `GP-01` | `GAMEPLAY` | Gameplay Sandbox(`siyeon.unity`)에서 T1 생성·클릭·HP·파괴·고유 ID·파괴 이벤트 1회 발행 | `FND-01` | 3 | 3.0h | `feature/gp-01-t1-destruction` | 치명타 없는 T1을 10회 공격하면 파괴 이벤트가 정확히 1회 발생함 |
 | `GP-02` | `GAMEPLAY` | 최대 20개 자유 위치 생성, 겹침 회피, 파괴 후 재생성, 최소 오브젝트 풀 | `GP-01` | 4 | 3.0h | `feature/gp-02-ice-field` | 20개 유지, 보호 영역 회피, 파괴 후 새 위치 재생성, 중복 인스턴스 ID 없음 |
-| `UI-01` | `UIQA` | UI 시험용 Scene과 가짜 `GameState`·이벤트 샘플, 공통 색·폰트·960×540 UI 배치 영역 설정 | `FND-01` | 2 | 2.5h | `feature/ui-01-ui-sandbox` | 게임 로직 없이 가짜 데이터로 자금·시간·보상 표시를 독립 실행할 수 있음 |
+| `UI-01` | `UIQA` | UI 시험용 Scene(`jeonghwan.unity`)과 가짜 `GameState`·이벤트 샘플, 공통 색·폰트·960×540 UI 배치 영역 설정 | `FND-01` | 2 | 2.5h | `feature/ui-01-ui-sandbox` | 게임 로직 없이 가짜 데이터로 자금·시간·보상 표시를 독립 실행할 수 있음 |
 | `UI-02` | `UIQA` | 800×72 축소 런처와 쇄빙 중 자금/시간 표시용 Prefab | `UI-01` | 3 | 3.0h | `feature/ui-02-launcher-hud` | 800×72에서 자금·목적지·정비·운항·시작·설정이 잘리지 않고 각 입력 영역이 분리됨 |
 | `INT-01` | `LEAD` | T1 파괴 이벤트를 진행과 플레이 중 자금 표시에 연결하는 첫 수직 통합 | `CORE-00`, `GP-01`, `UI-01` | 5 | 2.5h | `feature/int-01-first-vertical-slice` | 최종 게임 Scene에서 T1 파괴 → 자금 +10 → 목적지 +1 → 보상 숫자 1회 표시 |
 
