@@ -36,3 +36,7 @@
 ## 공용 Assembly
 
 `02.Scripts/00.Shared/Icebreaker.Shared.asmdef`만 우선 사용한다. Core·Gameplay·UI Assembly는 의존성이 실제로 필요해질 때 추가하고, 게임잼 기간에는 불필요하게 Assembly를 나누지 않는다.
+
+의존 방향은 `Core`, `Gameplay`, `UI`에서 `Icebreaker.Shared`로만 향한다. Shared는 다른 도메인 Assembly나 Scene·Prefab을 참조하지 않고, Gameplay와 UI도 서로 직접 참조하지 않는다.
+
+공용 계약의 소유자는 민준이다. FND-01 병합 뒤 게임잼 기간에는 기존 public 이름을 바꾸거나 삭제하지 않는다. 필드 추가가 필요하면 영향을 받는 소비자 PR과 함께 변경한다. Shared 이벤트를 구독한 구현은 `OnDisable` 또는 `Dispose`에서 반드시 구독을 해제한다.
