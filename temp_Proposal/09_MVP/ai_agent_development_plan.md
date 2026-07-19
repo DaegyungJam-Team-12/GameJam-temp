@@ -36,8 +36,8 @@ AI 에이전트가 초안을 빠르게 만들 수 있어도 다음 책임은 사
 - `LEAD`만 자금, 목적지 진행, 정비 구매, 저장 상태를 변경한다.
 - `GAMEPLAY`는 파괴를 판정하고 `IceDestroyedEvent`를 발행하지만 자금·목적지·저장을 변경하지 않는다.
 - `UIQA`는 전달받은 `GameState`, `RewardGrantedEvent`, `SettlementSummary`를 표시하지만 수치를 다시 계산하지 않는다.
-- `Main.unity`, 공용 계약, 패키지·프로젝트 설정은 `LEAD`만 최종 수정한다.
-- `GAMEPLAY`와 `UIQA`는 각자의 Sandbox Scene과 Prefab을 사용하고 Main Scene 연결은 `LEAD`가 한다.
+- `Assets/01.Scenes/minjun.unity`, 공용 계약, 패키지·프로젝트 설정은 `LEAD`만 최종 수정한다.
+- `GAMEPLAY`와 `UIQA`는 각자의 담당자 Scene과 Prefab을 사용하고 `minjun.unity` 연결은 `LEAD`가 한다.
 - `ART`는 콘셉트 표현에 자율권을 갖되 해상도·정보 우선순위·필수 상태·납품 규격은 고정한다.
 - `PLAN`은 밸런스 값을 직접 수정하지 않고 플레이 기록과 변경 수치를 Issue로 제안한다.
 
@@ -52,9 +52,9 @@ Unity 프로젝트 생성 후 아래 경계를 유지한다. 실제 폴더명이
 | `Assets/ICEBREAKER/Gameplay/` | `GAMEPLAY` | 통합 수정은 소유자와 합의 |
 | `Assets/ICEBREAKER/UI/`, `VFX/`, `Audio/` | `UIQA` | 상태 바인딩 코드는 `LEAD`가 별도 파일로 연결 가능 |
 | `QA/Reports/` | `UIQA` | 테스트 결과·캡처 목록·재현 절차를 Task ID별로 기록 |
-| `Assets/ICEBREAKER/Scenes/Main.unity` | `LEAD` | 다른 담당자는 수정 금지 |
-| `GameplaySandbox.unity` | `GAMEPLAY` | 게임플레이 담당 전용 |
-| `UISandbox.unity` | `UIQA` | UI·피드백 담당 전용 |
+| `Assets/01.Scenes/minjun.unity` | `LEAD` | 다른 담당자는 수정 금지 |
+| `Assets/01.Scenes/siyeon.unity` | `GAMEPLAY` | 게임플레이 담당 전용 |
+| `Assets/01.Scenes/jeonghwan.unity` | `UIQA` | UI·피드백 담당 전용 |
 | `ProjectSettings/`, `Packages/` | `LEAD` | 사전 승인 없는 변경 금지 |
 | Google Drive 아트 원본·PNG | `ART` | `UIQA`가 관련 에셋 통합 브랜치로 가져오고 `LEAD`가 Main Scene 연결 |
 | GitHub Issue·Project | `PLAN`, `LEAD` | 기획 문서 PR 대신 버그·밸런스·릴리스 검증 결과를 기록 |

@@ -6,9 +6,9 @@
 
 | 담당 | Scene | 용도 |
 |---|---|---|
-| 민준 | `Assets/01.Scenes/10.Main/minjun.unity` | 최종 통합·실행 Scene |
-| 시연 | `Assets/01.Scenes/20.Gameplay/siyeon.unity` | 얼음 파쇄 Gameplay 시험 Scene |
-| 정환 | `Assets/01.Scenes/30.UI/jeonghwan.unity` | UI·피드백 시험 Scene |
+| 민준 | `Assets/01.Scenes/minjun.unity` | 최종 통합·실행 Scene |
+| 시연 | `Assets/01.Scenes/siyeon.unity` | 얼음 파쇄 Gameplay 시험 Scene |
+| 정환 | `Assets/01.Scenes/jeonghwan.unity` | UI·피드백 시험 Scene |
 
 각 Scene은 표의 담당자만 수정한다. 다른 담당자의 결과가 필요하면 Scene을 직접 복사하지 않고 완성된 Prefab과 공용 계약을 사용한다.
 
