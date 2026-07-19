@@ -35,7 +35,7 @@
 
 ## 공용 Assembly
 
-`02.Scripts/00.Shared/Icebreaker.Shared.asmdef`만 우선 사용한다. Core·Gameplay·UI Assembly는 의존성이 실제로 필요해질 때 추가하고, 게임잼 기간에는 불필요하게 Assembly를 나누지 않는다.
+`02.Scripts/00.Shared/Icebreaker.Shared.asmdef`를 기본으로 사용하며, EditMode 테스트가 Core를 참조하는 의존성이 실제로 필요해져 `02.Scripts/10.Core/Icebreaker.Core.asmdef`를 추가했다. Gameplay·UI Assembly는 의존성이 실제로 필요해질 때 추가하고, 게임잼 기간에는 불필요하게 Assembly를 나누지 않는다.
 
 의존 방향은 `Core`, `Gameplay`, `UI`에서 `Icebreaker.Shared`로만 향한다. Shared는 다른 도메인 Assembly나 Scene·Prefab을 참조하지 않고, Gameplay와 UI도 서로 직접 참조하지 않는다.
 

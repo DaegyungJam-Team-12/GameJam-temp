@@ -56,16 +56,18 @@ namespace Icebreaker.Core
             }
 
             Funds += SkeletonFundsPerDestroy;
+            var previousProgress = DestinationProgress;
             DestinationProgress = Math.Min(
                 DestinationProgress + SkeletonProgressPerDestroy,
                 destination.TargetProgress);
+            var destinationProgressGranted = DestinationProgress - previousProgress;
 
             RewardGranted(new RewardGrantedEvent(
                 e.StageId,
                 e.IceInstanceId,
                 e.ChainId,
                 SkeletonFundsPerDestroy,
-                SkeletonProgressPerDestroy,
+                destinationProgressGranted,
                 e.ReferencePosition));
 
             return true;
