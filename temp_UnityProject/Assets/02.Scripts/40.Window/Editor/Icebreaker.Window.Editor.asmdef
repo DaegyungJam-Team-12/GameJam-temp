@@ -1,0 +1,18 @@
+{
+  "name": "Icebreaker.Window.Editor",
+  "rootNamespace": "Icebreaker.Window.Editor",
+  "references": [
+    "Icebreaker.Window"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
