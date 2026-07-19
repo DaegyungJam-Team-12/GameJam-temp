@@ -1,0 +1,21 @@
+{
+  "name": "Icebreaker.Window.EditModeTests",
+  "rootNamespace": "Icebreaker.Window.Tests",
+  "references": [
+    "Icebreaker.Window"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}
