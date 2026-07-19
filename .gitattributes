@@ -1,0 +1,9 @@
+# Unity YAML uses blank scalar values that Git otherwise reports as trailing whitespace.
+*.unity text eol=lf whitespace=-trailing-space
+*.prefab text eol=lf whitespace=-trailing-space
+*.asset text eol=lf whitespace=-trailing-space
+*.meta text eol=lf whitespace=-trailing-space
+*.mat text eol=lf whitespace=-trailing-space
+*.anim text eol=lf whitespace=-trailing-space
+*.controller text eol=lf whitespace=-trailing-space
+*.scenetemplate text eol=lf whitespace=-trailing-space
