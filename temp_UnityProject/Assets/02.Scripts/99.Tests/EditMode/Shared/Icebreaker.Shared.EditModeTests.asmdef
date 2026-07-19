@@ -1,0 +1,21 @@
+{
+  "name": "Icebreaker.Shared.EditModeTests",
+  "rootNamespace": "Icebreaker.Shared.Tests",
+  "references": [
+    "Icebreaker.Shared"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}
