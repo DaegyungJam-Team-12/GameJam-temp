@@ -1,0 +1,713 @@
+{"kind":"deck","id":"pr/cm6owe","name":"Deck"}
+{"kind":"layout","layoutId":"/ppt/slideMasters/slideMaster1.xml","name":"","type":"master","placeholders":[{"name":"title","type":"title","textPreview":"Click to edit the title text format"},{"name":"body","type":"body","textPreview":"Click to edit the outline text format | Second Outline Level | Third Outline Level | Fourth Outline Level | Fifth Outline Level | Sixth O..."}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout1.xml","name":"DEFAULT","type":"blank"}
+{"kind":"slide","id":"sl/y90nupkv","slide":1,"title":"팀 내부 기획서","textShapes":6}
+{"kind":"textbox","id":"sh/wn6dc7eh","slide":1,"name":"Text 0","text":"팀 내부 기획서","textPreview":"팀 내부 기획서","textChars":8,"textLines":1,"bbox":[57.6,86.4,767.96,38.36]}
+{"kind":"textbox","id":"sh/hofulsf2","slide":1,"name":"Text 1","text":"ICEBREAKER","textPreview":"ICEBREAKER","textChars":10,"textLines":1,"bbox":[52.8,144,1171.16,134.36]}
+{"kind":"textbox","id":"sh/ul4vaxgb","slide":1,"name":"Text 2","text":"얼음을 파쇄해 세 항구를 연결하는 60초 반복형 게임","textPreview":"얼음을 파쇄해 세 항구를 연결하는 60초 반복형 게임","textChars":29,"textLines":1,"bbox":[59.53,288,1055.96,47.96]}
+{"kind":"shape","id":"sh/vmdcj2xw","slide":1,"name":"Shape 3","bbox":[0,566.4,1279.63,67.16]}
+{"kind":"shape","id":"sh/1cvuxc7e","slide":1,"name":"Shape 9","bbox":[307.2,484.8,345.56,71.96]}
+{"kind":"textbox","id":"sh/0bmd476t","slide":1,"name":"Text 10","text":"정비 자금 12.4K   ⏱ 60s   항로 42%","textPreview":"정비 자금 12.4K   ⏱ 60s   항로 42%","textChars":28,"textLines":1,"bbox":[328.33,484.8,316.76,71.96]}
+{"kind":"textbox","id":"sh/zadcv2p8","slide":1,"name":"Text 11","text":"필수 범위","textPreview":"필수 범위","textChars":5,"textLines":1,"bbox":[1171.2,566.4,86.36,67.16]}
+{"kind":"textbox","id":"sh/e94v2hon","slide":1,"name":"Text 12","text":"게임잼 팀 내부  ·  확정 기획 v3.4  ·  2026.07","textPreview":"게임잼 팀 내부  ·  확정 기획 v3.4  ·  2026.07","textChars":35,"textLines":1,"bbox":[59.53,657.6,863.96,38.36]}
+{"kind":"image","id":"im/eh4fmdgv","slide":1,"name":"","bbox":[700,119.99,580,326.42]}
+{"kind":"notes","id":"nt/y90nupkv","slide":1,"text":"이 자료의 결론을 먼저 말한다. ICEBREAKER는 얼음을 깨는 게임이면서, 끊어진 항로를 다시 잇는 게임이다."}
+{"kind":"slide","id":"sl/hwbqtkby","slide":2,"title":"게임 개요","textShapes":20}
+{"kind":"textbox","id":"sh/hcvy14ne","slide":2,"name":"Text 0","text":"게임 개요","textPreview":"게임 개요","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/gbmxszmt","slide":2,"name":"Text 1","text":"게임 구조 요약","textPreview":"게임 구조 요약","textChars":8,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/fadgzu58","slide":2,"name":"Shape 2","bbox":[57.6,177.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/u94fqp4n","slide":2,"name":"Text 3","text":"역할","textPreview":"역할","textChars":2,"textLines":1,"bbox":[81.6,194.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/p0vy54na","slide":2,"name":"Text 4","text":"마지막 쇄빙 보급선\nICEBREAKER의 선장","textPreview":"마지막 쇄빙 보급선 | ICEBREAKER의 선장","textChars":25,"textLines":2,"bbox":[81.6,230.4,235.16,81.56]}
+{"kind":"shape","id":"sh/4zmxwzmp","slide":2,"name":"Shape 5","bbox":[358.07,177.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/mlgvq147","slide":2,"name":"Text 6","text":"핵심 행동","textPreview":"핵심 행동","textChars":5,"textLines":1,"bbox":[382.07,194.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/nmpcj6ls","slide":2,"name":"Text 7","text":"최대 20개 얼음\n클릭 또는 누르고 있기","textPreview":"최대 20개 얼음 | 클릭 또는 누르고 있기","textChars":22,"textLines":2,"bbox":[382.07,230.4,235.16,81.56]}
+{"kind":"shape","id":"sh/onydsbmd","slide":2,"name":"Shape 8","bbox":[658.54,177.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/9o7ulg3y","slide":2,"name":"Text 9","text":"플레이","textPreview":"플레이","textChars":3,"textLines":1,"bbox":[682.54,194.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/a9gvulkj","slide":2,"name":"Text 10","text":"60초 고정\n60초 동안 파괴량 기록","textPreview":"60초 고정 | 60초 동안 파괴량 기록","textChars":20,"textLines":2,"bbox":[682.54,230.4,235.16,81.56]}
+{"kind":"shape","id":"sh/ba9cn6l4","slide":2,"name":"Shape 11","bbox":[959.06,177.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/wbidwb29","slide":2,"name":"Text 12","text":"장기 목표","textPreview":"장기 목표","textChars":5,"textLines":1,"bbox":[983.06,194.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/xcrupg3u","slide":2,"name":"Text 13","text":"섬마을 → 등대항\n→ 북쪽 기지","textPreview":"섬마을 → 등대항 | → 북쪽 기지","textChars":17,"textLines":2,"bbox":[983.06,230.4,235.16,81.56]}
+{"kind":"shape","id":"sh/id0vylkf","slide":2,"name":"Shape 14","bbox":[57.6,345.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/je9crql0","slide":2,"name":"Text 15","text":"성장","textPreview":"성장","textChars":2,"textLines":1,"bbox":[81.6,362.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/ru5cbqd4","slide":2,"name":"Text 16","text":"T1~T3 얼음 단계\n선박 정비 강화 3종","textPreview":"T1~T3 얼음 단계 | 선박 정비 강화 3종","textChars":23,"textLines":2,"bbox":[81.6,398.4,235.16,81.56]}
+{"kind":"shape","id":"sh/69wbilcj","slide":2,"name":"Shape 17","bbox":[358.07,345.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/tw7ud0va","slide":2,"name":"Text 18","text":"판 사이","textPreview":"판 사이","textChars":4,"textLines":1,"bbox":[382.07,362.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/svedkvup","slide":2,"name":"Text 19","text":"30초 항해\n정비·항로 확인","textPreview":"30초 항해 | 정비·항로 확인","textChars":15,"textLines":2,"bbox":[382.07,398.4,235.16,81.56]}
+{"kind":"shape","id":"sh/fypcfqdg","slide":2,"name":"Shape 20","bbox":[658.54,345.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/exgvmlcv","slide":2,"name":"Text 21","text":"자금","textPreview":"자금","textChars":2,"textLines":1,"bbox":[682.54,362.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/107uh0v6","slide":2,"name":"Text 22","text":"파쇄 보상 →\n정비 자금 1종","textPreview":"파쇄 보상 → | 정비 자금 1종","textChars":16,"textLines":2,"bbox":[682.54,398.4,235.16,81.56]}
+{"kind":"shape","id":"sh/gzydovul","slide":2,"name":"Shape 23","bbox":[959.06,345.6,278.36,148.76]}
+{"kind":"textbox","id":"sh/v2lc36dw","slide":2,"name":"Text 24","text":"플레이타임","textPreview":"플레이타임","textChars":5,"textLines":1,"bbox":[983.06,362.87,230.36,28.76]}
+{"kind":"textbox","id":"sh/a1cba1wb","slide":2,"name":"Text 25","text":"목표 30~60분\n개발 5~10일차 조정","textPreview":"목표 30~60분 | 개발 5~10일차 조정","textChars":22,"textLines":2,"bbox":[983.06,398.4,235.16,81.56]}
+{"kind":"shape","id":"sh/0vq1o36x","slide":2,"name":"Shape 26","bbox":[57.6,537.6,1161.56,110.36]}
+{"kind":"textbox","id":"sh/1wzix87i","slide":2,"name":"Text 27","text":"세계관은 화물·항로·항구 시각 요소로 전달한다. 성장은 60초당 파괴량 증가로 확인한다.","textPreview":"세계관은 화물·항로·항구 시각 요소로 전달한다. 성장은 60초당 파괴량 증가로 확인한다.","textChars":49,"textLines":1,"bbox":[91.2,537.6,1103.96,110.36]}
+{"kind":"textbox","id":"sh/et8zmto7","slide":2,"name":"Text 28","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/hwbqtkby","slide":2,"text":"팀이 기억해야 할 게임 정의를 한 장에 고정한다. 세부 논의가 흔들리면 이 장으로 돌아온다."}
+{"kind":"slide","id":"sl/ofy9wn61","slide":3,"title":"화면 구성","textShapes":18}
+{"kind":"textbox","id":"sh/w3it8zit","slide":3,"name":"Text 0","text":"화면 구성","textPreview":"화면 구성","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/nypcba1c","slide":3,"name":"Text 1","text":"기본 화면 구성","textPreview":"기본 화면 구성","textChars":8,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/mxgb250r","slide":3,"name":"Shape 2","bbox":[57.6,165.13,32.62,32.62]}
+{"kind":"textbox","id":"sh/90rudkji","slide":3,"name":"Text 3","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[57.6,164.64,32.62,32.62]}
+{"kind":"textbox","id":"sh/8zit4fix","slide":3,"name":"Text 4","text":"축소 화면 — 항로·대기·자금 확인","textPreview":"축소 화면 — 항로·대기·자금 확인","textChars":19,"textLines":1,"bbox":[97.93,161.27,479.96,38.36]}
+{"kind":"shape","id":"sh/7utcne1g","slide":3,"name":"Shape 5","bbox":[57.6,216,547.16,340.76]}
+{"kind":"shape","id":"sh/6tkve90v","slide":3,"name":"Shape 6","bbox":[91.2,249.6,316.76,191.96]}
+{"kind":"textbox","id":"sh/2p4f6dk3","slide":3,"name":"Text 7","text":"기본 상태 — 480×56 축소 바","textPreview":"기본 상태 — 480×56 축소 바","textChars":19,"textLines":1,"bbox":[105.6,261.13,287.96,28.76]}
+{"kind":"shape","id":"sh/3qxwfilo","slide":3,"name":"Shape 8","bbox":[70.07,499.2,522.22,45.09]}
+{"kind":"textbox","id":"sh/or6x8329","slide":3,"name":"Text 9","text":"14:32","textPreview":"14:32","textChars":5,"textLines":1,"bbox":[508.8,499.2,76.76,45.09]}
+{"kind":"shape","id":"sh/psfeh83u","slide":3,"name":"Shape 10","bbox":[91.2,430.07,412.76,63.31]}
+{"kind":"shape","id":"sh/qtofadkf","slide":3,"name":"Shape 11","bbox":[105.6,439.67,46.03,44.11]}
+{"kind":"shape","id":"sh/bexwjil0","slide":3,"name":"Shape 12","bbox":[112.48,448.48,16.14,13.27]}
+{"kind":"shape","id":"sh/cf6xcn2l","slide":3,"name":"Shape 13","bbox":[133.23,446.29,11.53,17.65]}
+{"kind":"textbox","id":"sh/dgfyls3q","slide":3,"name":"Text 14","text":"🚢  등대항 42%   다음 얼음 구간 00:24   12.4K","textPreview":"🚢  등대항 42%   다음 얼음 구간 00:24   12.4K","textChars":36,"textLines":1,"bbox":[168,430.07,316.76,63.31]}
+{"kind":"textbox","id":"sh/6xkvytkb","slide":3,"name":"Text 15","text":"보이는 것 = 목적지 · 항로 · 대기 시간 · 정비 자금","textPreview":"보이는 것 = 목적지 · 항로 · 대기 시간 · 정비 자금","textChars":32,"textLines":1,"bbox":[91.2,558.73,499.16,28.76]}
+{"kind":"shape","id":"sh/7idw7ylg","slide":3,"name":"Shape 16","bbox":[619.2,336,71.96,67.16]}
+{"kind":"textbox","id":"sh/9cjidwny","slide":3,"name":"Text 17","text":"클릭","textPreview":"클릭","textChars":2,"textLines":1,"bbox":[619.2,336,71.96,67.16]}
+{"kind":"shape","id":"sh/8bahkrmt","slide":3,"name":"Shape 18","bbox":[609.6,369.6,4.8,0.04]}
+{"kind":"shape","id":"sh/na10bm58","slide":3,"name":"Shape 19","bbox":[604.8,369.6,11.49,0.04]}
+{"kind":"shape","id":"sh/m9szih4n","slide":3,"name":"Shape 20","bbox":[691.2,369.6,14.4,0.04]}
+{"kind":"shape","id":"sh/xg3ihwna","slide":3,"name":"Shape 21","bbox":[720,165.13,32.62,32.62]}
+{"kind":"textbox","id":"sh/wfahormp","slide":3,"name":"Text 22","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[720,164.64,32.62,32.62]}
+{"kind":"textbox","id":"sh/ve10fm54","slide":3,"name":"Text 23","text":"확장 화면 — 720×480 쇄빙 작업","textPreview":"확장 화면 — 720×480 쇄빙 작업","textChars":21,"textLines":1,"bbox":[760.33,161.27,479.96,38.36]}
+{"kind":"shape","id":"sh/adszm14j","slide":3,"name":"Shape 24","bbox":[720,216,499.16,340.76]}
+{"kind":"shape","id":"sh/dkzy5cn6","slide":3,"name":"Shape 25","bbox":[737.27,230.4,464.62,40.29]}
+{"kind":"textbox","id":"sh/cjqhc7ml","slide":3,"name":"Text 26","text":"등대항 항로        00:42        이번 운항 +1,240","textPreview":"등대항 항로        00:42        이번 운항 +1,240","textChars":39,"textLines":1,"bbox":[748.8,230.4,441.56,40.29]}
+{"kind":"textbox","id":"sh/ex872pg3","slide":3,"name":"Text 46","text":"최대 20개 얼음 — 파괴할수록 항로가 진행된다","textPreview":"최대 20개 얼음 — 파괴할수록 항로가 진행된다","textChars":26,"textLines":1,"bbox":[744,496.33,326.36,24.91]}
+{"kind":"shape","id":"sh/fuhcnq50","slide":3,"name":"Shape 47","bbox":[1082.87,285.13,119.02,206.36]}
+{"kind":"textbox","id":"sh/et8vel4f","slide":3,"name":"Text 48","text":"항로 진행\n항로 점수\n현재 얼음 단계\n최대 연쇄","textPreview":"항로 진행 | 항로 점수 | 현재 얼음 단계 | 최대 연쇄","textChars":26,"textLines":4,"bbox":[1090.54,297.6,105.56,182.36]}
+{"kind":"shape","id":"sh/1wzup0nq","slide":3,"name":"Shape 49","bbox":[737.27,516.47,464.62,28.76]}
+{"kind":"textbox","id":"sh/0vqdgvml","slide":3,"name":"Text 50","text":"정비 자금  ·  선박 정비  ·  항로  ·  접기","textPreview":"정비 자금  ·  선박 정비  ·  항로  ·  접기","textChars":29,"textLines":1,"bbox":[737.27,516.47,464.62,28.76]}
+{"kind":"textbox","id":"sh/r6xcjq5o","slide":3,"name":"Text 51","text":"세계관 전달 요소","textPreview":"세계관 전달 요소","textChars":9,"textLines":1,"bbox":[720,558.73,499.16,28.76]}
+{"kind":"shape","id":"sh/q5oval43","slide":3,"name":"Shape 52","bbox":[57.6,609.6,1161.56,47.96]}
+{"kind":"textbox","id":"sh/d8zul0nu","slide":3,"name":"Text 53","text":"화물 종류, 목적지 이름, 지도 위 선박 위치, 가까워지는 항구 불빛으로 진행 상황을 보여준다.","textPreview":"화물 종류, 목적지 이름, 지도 위 선박 위치, 가까워지는 항구 불빛으로 진행 상황을 보여준다.","textChars":53,"textLines":1,"bbox":[91.2,609.6,1103.96,47.96]}
+{"kind":"textbox","id":"sh/s7qdcvm9","slide":3,"name":"Text 54","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/e5gvel0j","slide":3,"name":"","geometry":"roundRect","bbox":[744,282,326,210]}
+{"kind":"notes","id":"nt/ofy9wn61","slide":3,"text":"세계관은 설명하지 않고 화면으로 전달한다. 화물·항로·불빛이 플레이 목적을 대신 말한다."}
+{"kind":"slide","id":"sl/jyx0ra1s","slide":4,"title":"플레이 흐름","textShapes":14}
+{"kind":"textbox","id":"sh/udkbadkf","slide":4,"name":"Text 0","text":"플레이 흐름","textPreview":"플레이 흐름","textChars":6,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/vedcjil0","slide":4,"name":"Text 1","text":"플레이 구간과 대기 구간","textPreview":"플레이 구간과 대기 구간","textChars":13,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/58fe9cn2","slide":4,"name":"Shape 2","bbox":[115.2,441.6,1046.4,0.04]}
+{"kind":"textbox","id":"sh/476d076h","slide":4,"name":"Text 3","text":"파쇄 구간 — 클릭하거나 누르고 있기","textPreview":"파쇄 구간 — 클릭하거나 누르고 있기","textChars":20,"textLines":1,"bbox":[115.2,456,287.96,30.69]}
+{"kind":"textbox","id":"sh/36xw7m5c","slide":4,"name":"Text 4","text":"대기 구간 — 정비 구매·항로 확인","textPreview":"대기 구간 — 정비 구매·항로 확인","textChars":19,"textLines":1,"bbox":[873.6,456,287.96,30.69]}
+{"kind":"shape","id":"sh/i5ovyhor","slide":4,"name":"Shape 5","bbox":[172.8,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/h4ve5cn6","slide":4,"name":"Text 6","text":"클릭·누르고 있기","textPreview":"클릭·누르고 있기","textChars":9,"textLines":1,"bbox":[76.8,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/g3mdw76l","slide":4,"name":"Shape 7","bbox":[345.6,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/v2dw3250","slide":4,"name":"Text 8","text":"특수빙 판단","textPreview":"특수빙 판단","textChars":6,"textLines":1,"bbox":[249.6,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/u14vuxof","slide":4,"name":"Shape 9","bbox":[499.2,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/10zehwna","slide":4,"name":"Text 10","text":"연쇄 확장","textPreview":"연쇄 확장","textChars":5,"textLines":1,"bbox":[403.2,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/0zqd8rmp","slide":4,"name":"Shape 11","bbox":[892.8,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/kfip0zyd","slide":4,"name":"Text 12","text":"정산 확인","textPreview":"정산 확인","textChars":5,"textLines":1,"bbox":[796.8,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/lgr6t4zy","slide":4,"name":"Shape 13","bbox":[1046.4,431.06,21.09,21.09]}
+{"kind":"textbox","id":"sh/ytg7ypg7","slide":4,"name":"Text 14","text":"선박 정비","textPreview":"선박 정비","textChars":5,"textLines":1,"bbox":[950.4,382.07,215.96,33.56]}
+{"kind":"shape","id":"sh/je9oruhs","slide":4,"name":"Shape 15","bbox":[316.8,288,614.36,59.49]}
+{"kind":"textbox","id":"sh/wrypwzy1","slide":4,"name":"Text 16","text":"파쇄 60초와 항해 30초를 반복한다","textPreview":"파쇄 60초와 항해 30초를 반복한다","textChars":20,"textLines":1,"bbox":[316.8,288,614.36,59.49]}
+{"kind":"shape","id":"sh/xs76p4zm","slide":4,"name":"Shape 17","bbox":[422.4,350.4,0.04,64.29]}
+{"kind":"shape","id":"sh/apg7upgb","slide":4,"name":"Shape 18","bbox":[835.2,350.4,0.04,64.29]}
+{"kind":"textbox","id":"sh/bqponuhg","slide":4,"name":"Text 19","text":"쇄빙 작업 60초","textPreview":"쇄빙 작업 60초","textChars":9,"textLines":1,"bbox":[340.8,355.2,191.96,30.69]}
+{"kind":"textbox","id":"sh/onypsfy5","slide":4,"name":"Text 20","text":"다음 얼음 구간까지 30초","textPreview":"다음 얼음 구간까지 30초","textChars":14,"textLines":1,"bbox":[849.6,355.2,211.16,30.69]}
+{"kind":"shape","id":"sh/9o76lkzq","slide":4,"name":"Shape 21","bbox":[57.6,552,1161.56,95.96]}
+{"kind":"textbox","id":"sh/ri58ba1c","slide":4,"name":"Text 22","text":"자동 공격·방치 수익·자동 항로 진행은 없다. 보조 파쇄는 입력 중에만 충전되고 작동한다.","textPreview":"자동 공격·방치 수익·자동 항로 진행은 없다. 보조 파쇄는 입력 중에만 충전되고 작동한다.","textChars":50,"textLines":1,"bbox":[91.2,552,1103.96,95.96]}
+{"kind":"textbox","id":"sh/qhw725kr","slide":4,"name":"Text 23","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/jyx0ra1s","slide":4,"text":"이 게임은 자동 전투형 게임이 아니다. 직접 조작과 조용한 항해가 번갈아 오는 리듬이다."}
+{"kind":"slide","id":"sl/i107q5of","slide":5,"title":"반복 구조","textShapes":23}
+{"kind":"textbox","id":"sh/lsvmpc7e","slide":5,"name":"Text 0","text":"반복 구조","textPreview":"반복 구조","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/krmlw7qt","slide":5,"name":"Text 1","text":"기본 반복 구조","textPreview":"기본 반복 구조","textChars":8,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/7ud4rmpk","slide":5,"name":"Shape 2","bbox":[345.6,177.6,249.56,177.56]}
+{"kind":"textbox","id":"sh/twfmtw7q","slide":5,"name":"Text 3","text":"얼음 구간 도착","textPreview":"얼음 구간 도착","textChars":8,"textLines":1,"bbox":[420.47,194.87,163.16,38.36]}
+{"kind":"textbox","id":"sh/8v650rq5","slide":5,"name":"Text 4","text":"사용자가 직접 시작","textPreview":"사용자가 직접 시작","textChars":10,"textLines":1,"bbox":[420.47,231.34,172.76,26.83]}
+{"kind":"textbox","id":"sh/vyx4v6pg","slide":5,"name":"Text 5","text":"목적지·화물·준비된 얼음을 확인한다","textPreview":"목적지·화물·준비된 얼음을 확인한다","textChars":19,"textLines":1,"bbox":[369.6,268.8,211.16,76.76]}
+{"kind":"shape","id":"sh/uxon218b","slide":5,"name":"Shape 6","bbox":[768,177.6,249.56,177.56]}
+{"kind":"textbox","id":"sh/36d8jql0","slide":5,"name":"Text 7","text":"쇄빙 작업","textPreview":"쇄빙 작업","textChars":5,"textLines":1,"bbox":[842.87,194.87,163.16,38.36]}
+{"kind":"textbox","id":"sh/47mpsvml","slide":5,"name":"Text 8","text":"정확히 60초","textPreview":"정확히 60초","textChars":7,"textLines":1,"bbox":[842.87,231.34,172.76,26.83]}
+{"kind":"textbox","id":"sh/p8vql036","slide":5,"name":"Text 9","text":"클릭·누르고 있기 · 항로 점수 · 정비 자금","textPreview":"클릭·누르고 있기 · 항로 점수 · 정비 자금","textChars":25,"textLines":1,"bbox":[792,268.8,211.16,76.76]}
+{"kind":"shape","id":"sh/q9o7u54b","slide":5,"name":"Shape 10","bbox":[768,441.6,249.56,177.56]}
+{"kind":"textbox","id":"sh/cb6pwvmh","slide":5,"name":"Text 11","text":"작업 정산","textPreview":"작업 정산","textChars":5,"textLines":1,"bbox":[842.87,458.87,163.16,38.36]}
+{"kind":"textbox","id":"sh/dcfqp032","slide":5,"name":"Text 12","text":"실패 판정 없음","textPreview":"실패 판정 없음","textChars":8,"textLines":1,"bbox":[842.87,495.34,172.76,26.83]}
+{"kind":"textbox","id":"sh/edo7y54n","slide":5,"name":"Text 13","text":"정비 자금 확정 · 항로 진행 반영 · 기록 비교","textPreview":"정비 자금 확정 · 항로 진행 반영 · 기록 비교","textChars":27,"textLines":1,"bbox":[792,532.8,211.16,76.76]}
+{"kind":"shape","id":"sh/zyx8ral8","slide":5,"name":"Shape 14","bbox":[345.6,441.6,249.56,177.56]}
+{"kind":"textbox","id":"sh/o7qtoz6p","slide":5,"name":"Text 15","text":"항해·정비","textPreview":"항해·정비","textChars":5,"textLines":1,"bbox":[420.47,458.87,163.16,38.36]}
+{"kind":"textbox","id":"sh/n6hsvu54","slide":5,"name":"Text 16","text":"표준 30초","textPreview":"표준 30초","textChars":6,"textLines":1,"bbox":[420.47,495.34,172.76,26.83]}
+{"kind":"textbox","id":"sh/m58bm9oj","slide":5,"name":"Text 17","text":"정비 구매 · 지도 확인 · 다음 구간 대기","textPreview":"정비 구매 · 지도 확인 · 다음 구간 대기","textChars":24,"textLines":1,"bbox":[369.6,532.8,211.16,76.76]}
+{"kind":"shape","id":"sh/xwja1on6","slide":5,"name":"Shape 18","bbox":[604.8,265.89,153.6,0.04]}
+{"kind":"shape","id":"sh/wvatsj61","slide":5,"name":"Shape 19","bbox":[892.8,364.8,0.04,67.2]}
+{"kind":"shape","id":"sh/bu1sze5g","slide":5,"name":"Shape 20","bbox":[604.8,528,153.6,0.04]}
+{"kind":"shape","id":"sh/atsbq9ov","slide":5,"name":"Shape 21","bbox":[470.4,364.8,0.04,67.2]}
+{"kind":"textbox","id":"sh/l03a5oni","slide":5,"name":"Text 22","text":"60초 종료","textPreview":"60초 종료","textChars":6,"textLines":1,"bbox":[614.4,225.6,134.36,30.69]}
+{"kind":"textbox","id":"sh/kzatwj6x","slide":5,"name":"Text 23","text":"정산 후","textPreview":"정산 후","textChars":4,"textLines":1,"bbox":[912,384,163.16,30.69]}
+{"kind":"textbox","id":"sh/lwrih8f2","slide":5,"name":"Text 24","text":"다음 얼음 구간 도착","textPreview":"다음 얼음 구간 도착","textChars":11,"textLines":1,"bbox":[609.6,537.6,153.56,30.69]}
+{"kind":"textbox","id":"sh/0vi183eh","slide":5,"name":"Text 25","text":"정비 구매","textPreview":"정비 구매","textChars":5,"textLines":1,"bbox":[326.4,384,134.36,30.69]}
+{"kind":"shape","id":"sh/zu90fyxc","slide":5,"name":"Shape 26","bbox":[57.6,249.6,239.96,230.36]}
+{"kind":"textbox","id":"sh/ytgj6twr","slide":5,"name":"Text 27","text":"파쇄 구간","textPreview":"파쇄 구간","textChars":5,"textLines":1,"bbox":[81.6,268.8,191.96,28.76]}
+{"kind":"textbox","id":"sh/9kr2lsfe","slide":5,"name":"Text 28","text":"직접 입력으로\n얼음을 파괴하고\n점수·정비 자금을 획득","textPreview":"직접 입력으로 | 얼음을 파괴하고 | 점수·정비 자금을 획득","textChars":29,"textLines":3,"bbox":[81.6,307.2,196.76,124.76]}
+{"kind":"shape","id":"sh/8ji1cnet","slide":5,"name":"Shape 29","bbox":[1046.4,249.6,177.56,230.36]}
+{"kind":"textbox","id":"sh/ni9kjix8","slide":5,"name":"Text 30","text":"항해 구간","textPreview":"항해 구간","textChars":5,"textLines":1,"bbox":[1065.6,268.8,143.96,28.76]}
+{"kind":"textbox","id":"sh/mh0jadwn","slide":5,"name":"Text 31","text":"정비를 구매하고\n항로를 확인하며\n다음 구간 대기","textPreview":"정비를 구매하고 | 항로를 확인하며 | 다음 구간 대기","textChars":26,"textLines":3,"bbox":[1065.6,307.2,143.96,124.76]}
+{"kind":"textbox","id":"sh/xob2psfa","slide":5,"name":"Text 32","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/t0bylcb2","slide":5,"name":"Image 0","bbox":[369.6,198.73,38.36,38.36]}
+{"kind":"image","id":"im/3ud0b6dk","slide":5,"name":"Image 1","bbox":[792,198.73,38.36,38.36]}
+{"kind":"image","id":"im/2t4z21cz","slide":5,"name":"Image 2","bbox":[792,462.73,38.36,38.36]}
+{"kind":"image","id":"im/pwvidgva","slide":5,"name":"Image 3","bbox":[369.6,462.73,38.36,38.36]}
+{"kind":"notes","id":"nt/i107q5of","slide":5,"text":"한 번의 60초가 정비 자금과 항로 진행으로 동시에 이어진다. 항해 중 정비가 다음 60초의 차이를 만든다."}
+{"kind":"slide","id":"sl/x8f69ofe","slide":6,"title":"파쇄 규칙","textShapes":13}
+{"kind":"textbox","id":"sh/ja9oje1w","slide":6,"name":"Text 0","text":"파쇄 규칙","textPreview":"파쇄 규칙","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/t4bq983y","slide":6,"name":"Text 1","text":"60초 파쇄 구간 규칙","textPreview":"60초 파쇄 구간 규칙","textChars":12,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/83290nmd","slide":6,"name":"Shape 2","bbox":[67.2,182.4,273.56,297.56]}
+{"kind":"shape","id":"sh/72t87il8","slide":6,"name":"Shape 3","bbox":[244.33,274.35,28.09,29.48]}
+{"kind":"shape","id":"sh/61kryd4n","slide":6,"name":"Shape 4","bbox":[253.21,218.64,31.21,25.51]}
+{"kind":"shape","id":"sh/h8vads3a","slide":6,"name":"Shape 5","bbox":[168.33,217.38,32.3,28.7]}
+{"kind":"shape","id":"sh/g7m94n2p","slide":6,"name":"Shape 6","bbox":[277.91,288.85,24.97,20.76]}
+{"kind":"shape","id":"sh/v6t8bil4","slide":6,"name":"Shape 7","bbox":[139.38,267.41,33.72,20.93]}
+{"kind":"shape","id":"sh/u5kr2d4j","slide":6,"name":"Shape 8","bbox":[142.92,297.13,33.7,21.23]}
+{"kind":"shape","id":"sh/5wvahc36","slide":6,"name":"Shape 9","bbox":[178.49,267.57,27.5,26.05]}
+{"kind":"shape","id":"sh/4vm9872l","slide":6,"name":"Shape 10","bbox":[231.81,320.45,28.44,21.09]}
+{"kind":"shape","id":"sh/orel0ve9","slide":6,"name":"Shape 11","bbox":[139.18,228.6,25.1,24.15]}
+{"kind":"shape","id":"sh/9cn2t0fu","slide":6,"name":"Shape 12","bbox":[210.07,234.5,30.53,25.43]}
+{"kind":"shape","id":"sh/mpwjy5w3","slide":6,"name":"Shape 13","bbox":[105.69,219.12,28.49,24.72]}
+{"kind":"shape","id":"sh/nq5kraxo","slide":6,"name":"Shape 14","bbox":[194.87,318.34,32.61,24.51]}
+{"kind":"shape","id":"sh/wfel4fe5","slide":6,"name":"Shape 15","bbox":[108.05,259.31,26.63,28.34]}
+{"kind":"shape","id":"sh/xg72xkfq","slide":6,"name":"Shape 16","bbox":[98.35,299.74,31.67,27.27]}
+{"kind":"shape","id":"sh/adw325wz","slide":6,"name":"Shape 17","bbox":[207.15,208.44,25.62,22.23]}
+{"kind":"shape","id":"sh/be5kvaxk","slide":6,"name":"Shape 18","bbox":[265.54,318.12,30.08,24.59]}
+{"kind":"shape","id":"sh/cju1sbe1","slide":6,"name":"Shape 19","bbox":[211.17,277.56,27.01,21.9]}
+{"kind":"shape","id":"sh/dk32lgfm","slide":6,"name":"Shape 20","bbox":[284.26,254.64,24.55,30.16]}
+{"kind":"shape","id":"sh/ve9oreh4","slide":6,"name":"Shape 21","bbox":[155.11,321.74,22.94,24.75]}
+{"kind":"shape","id":"sh/ud0nytgj","slide":6,"name":"Shape 22","bbox":[109.04,293.76,26.01,25.12]}
+{"kind":"textbox","id":"sh/hgb6toza","slide":6,"name":"Text 23","text":"① 20개로 시작","textPreview":"① 20개로 시작","textChars":9,"textLines":1,"bbox":[88.33,364.8,235.16,33.56]}
+{"kind":"textbox","id":"sh/gf250jyp","slide":6,"name":"Text 24","text":"자유 위치 · 첫 작업은 T1\n이동은 ±6px, 클릭 가능 범위는 넓게","textPreview":"자유 위치 · 첫 작업은 T1 | 이동은 ±6px, 클릭 가능 범위는 넓게","textChars":39,"textLines":2,"bbox":[88.33,399.34,244.76,71.96]}
+{"kind":"shape","id":"sh/7a94nehs","slide":6,"name":"Shape 25","bbox":[342.69,326.4,29.78,0.04]}
+{"kind":"shape","id":"sh/690nu9g7","slide":6,"name":"Shape 26","bbox":[374.4,182.4,273.56,297.56]}
+{"kind":"shape","id":"sh/tcrmpozy","slide":6,"name":"Shape 27","bbox":[493.66,277.86,28.1,30.48]}
+{"kind":"shape","id":"sh/8bi5wjyd","slide":6,"name":"Shape 28","bbox":[547.49,274.93,28.18,30.25]}
+{"kind":"shape","id":"sh/j6p4juhw","slide":6,"name":"Shape 29","bbox":[473.62,212.13,25.75,25.23]}
+{"kind":"shape","id":"sh/ylgnq9gb","slide":6,"name":"Shape 30","bbox":[582.24,323.38,30.56,22.44]}
+{"kind":"shape","id":"sh/etkruxcv","slide":6,"name":"Shape 31","bbox":[580.54,260.92,30.02,27.12]}
+{"kind":"shape","id":"sh/zet8n2dg","slide":6,"name":"Shape 32","bbox":[416.45,314.2,33.02,26.78]}
+{"kind":"shape","id":"sh/0f29w7u1","slide":6,"name":"Shape 33","bbox":[412.57,269.44,33.09,22.39]}
+{"kind":"shape","id":"sh/lgbqpcvm","slide":6,"name":"Shape 34","bbox":[421.16,222.31,25.34,24.36]}
+{"kind":"shape","id":"sh/qp0rqxcz","slide":6,"name":"Shape 35","bbox":[505.78,233.73,25.71,21.74]}
+{"kind":"shape","id":"sh/rq98j2dk","slide":6,"name":"Shape 36","bbox":[449.9,267.99,31.43,25.56]}
+{"kind":"shape","id":"sh/cri9snup","slide":6,"name":"Shape 37","bbox":[539.68,235.09,22.37,29.3]}
+{"kind":"shape","id":"sh/dsrqlsva","slide":6,"name":"Shape 38","bbox":[518.35,315.16,22.37,29.61]}
+{"kind":"shape","id":"sh/2lgrmdcn","slide":6,"name":"Shape 39","bbox":[460.28,310.84,24.8,23.86]}
+{"kind":"shape","id":"sh/3m98fid8","slide":6,"name":"Shape 40","bbox":[570.43,227.3,26.49,24.23]}
+{"kind":"shape","id":"sh/5gfu1gfq","slide":6,"name":"Shape 41","bbox":[549.04,311.86,29.45,29.64]}
+{"kind":"shape","id":"sh/kf6tsbe5","slide":6,"name":"Shape 42","bbox":[584.42,295.45,22.6,24.74]}
+{"kind":"textbox","id":"sh/jexcz6xk","slide":6,"name":"Text 43","text":"② 파괴 → 다시 생성","textPreview":"② 파괴 → 다시 생성","textChars":12,"textLines":1,"bbox":[395.53,364.8,235.16,33.56]}
+{"kind":"textbox","id":"sh/idobqlwf","slide":6,"name":"Text 44","text":"0.12초 파괴 → 공백 → 0.18초 생성\n연쇄는 0.03초 간격으로 순서대로 다시 생성","textPreview":"0.12초 파괴 → 공백 → 0.18초 생성 | 연쇄는 0.03초 간격으로 순서대로 다시 생성","textChars":50,"textLines":2,"bbox":[395.53,399.34,244.76,71.96]}
+{"kind":"shape","id":"sh/xcvuxgfu","slide":6,"name":"Shape 45","bbox":[649.89,326.4,29.78,0.04]}
+{"kind":"shape","id":"sh/wbmtobe9","slide":6,"name":"Shape 46","bbox":[681.6,182.4,273.56,297.56]}
+{"kind":"shape","id":"sh/vadcv6xo","slide":6,"name":"Shape 47","bbox":[742.99,288.9,28.1,20.48]}
+{"kind":"shape","id":"sh/a94bm1w3","slide":6,"name":"Shape 48","bbox":[841.27,220.87,25.15,23.99]}
+{"kind":"shape","id":"sh/98vutwfi","slide":6,"name":"Shape 49","bbox":[774.44,206.55,31.19,21.77]}
+{"kind":"shape","id":"sh/8nmtkrex","slide":6,"name":"Shape 50","bbox":[898.38,239.03,24.16,24.13]}
+{"kind":"shape","id":"sh/0rqt0bmt","slide":6,"name":"Shape 51","bbox":[817.99,283.86,26.31,22.31]}
+{"kind":"shape","id":"sh/1szu9wne","slide":6,"name":"Shape 52","bbox":[866.77,297.47,32.3,23.41]}
+{"kind":"shape","id":"sh/epoby143","slide":6,"name":"Shape 53","bbox":[802.84,324.18,27.14,20.8]}
+{"kind":"shape","id":"sh/zqhc7658","slide":6,"name":"Shape 54","bbox":[791.95,244.4,29.76,25.92]}
+{"kind":"shape","id":"sh/c36twr6x","slide":6,"name":"Shape 55","bbox":[774.17,277.58,26.31,30.34]}
+{"kind":"shape","id":"sh/dofu5wni","slide":6,"name":"Shape 56","bbox":[716.99,205.5,26.21,28.92]}
+{"kind":"shape","id":"sh/q1obuhor","slide":6,"name":"Shape 57","bbox":[714.76,317.25,32.08,27.27]}
+{"kind":"shape","id":"sh/r2xc3m5c","slide":6,"name":"Shape 58","bbox":[718.32,237.98,23.25,30.67]}
+{"kind":"shape","id":"sh/wzad8vm1","slide":6,"name":"Shape 59","bbox":[855.89,265.95,27.74,27.45]}
+{"kind":"shape","id":"sh/xkjuhgnm","slide":6,"name":"Shape 60","bbox":[762.12,315.23,31.21,29.28]}
+{"kind":"shape","id":"sh/7q5onet0","slide":6,"name":"Shape 61","bbox":[884.67,207.46,31.98,25.8]}
+{"kind":"shape","id":"sh/6pwnu9sf","slide":6,"name":"Shape 62","bbox":[750.81,250.02,32.35,20.3]}
+{"kind":"shape","id":"sh/tsn6pob6","slide":6,"name":"Shape 63","bbox":[885.65,325.14,29.87,21.42]}
+{"kind":"shape","id":"sh/sre5wjal","slide":6,"name":"Shape 64","bbox":[898.32,271.09,23.61,22.03]}
+{"kind":"shape","id":"sh/fuporytc","slide":6,"name":"Shape 65","bbox":[823.59,226.1,31.52,29.13]}
+{"kind":"shape","id":"sh/utwnytsr","slide":6,"name":"Shape 66","bbox":[835.16,311.96,22.8,28.14]}
+{"kind":"textbox","id":"sh/hw76tob2","slide":6,"name":"Text 67","text":"③ 더 단단한 얼음","textPreview":"③ 더 단단한 얼음","textChars":10,"textLines":1,"bbox":[702.73,364.8,235.16,33.56]}
+{"kind":"textbox","id":"sh/gvyp03ah","slide":6,"name":"Text 68","text":"항로 점수 20마다 얼음 단계 상승\n열린 단계와 현재 항로 범위까지만 등장","textPreview":"항로 점수 20마다 얼음 단계 상승 | 열린 단계와 현재 항로 범위까지만 등장","textChars":41,"textLines":2,"bbox":[702.73,399.34,244.76,71.96]}
+{"kind":"shape","id":"sh/vylofuts","slide":6,"name":"Shape 69","bbox":[957.09,326.4,29.78,0.04]}
+{"kind":"shape","id":"sh/axcnmpc7","slide":6,"name":"Shape 70","bbox":[988.8,182.4,273.56,297.56]}
+{"kind":"shape","id":"sh/yd8na9cb","slide":6,"name":"Shape 71","bbox":[1175.22,292.67,28.11,21.47]}
+{"kind":"shape","id":"sh/zyh43edg","slide":6,"name":"Shape 72","bbox":[1134.54,277.86,22.12,28.73]}
+{"kind":"shape","id":"sh/0zq5cju1","slide":6,"name":"Shape 73","bbox":[1079.41,313.73,24.63,29.3]}
+{"kind":"shape","id":"sh/l0zm5ovm","slide":6,"name":"Shape 74","bbox":[1021.3,273.24,29.75,25.81]}
+{"kind":"shape","id":"sh/m18netc7","slide":6,"name":"Shape 75","bbox":[1062,266.6,22.6,28.51]}
+{"kind":"shape","id":"sh/n2h47yds","slide":6,"name":"Shape 76","bbox":[1042.3,212.3,30.91,22.65]}
+{"kind":"shape","id":"sh/83q5gjud","slide":6,"name":"Shape 77","bbox":[1152.83,250.53,32.98,21.28]}
+{"kind":"shape","id":"sh/94zm9ovy","slide":6,"name":"Shape 78","bbox":[1145.02,219.42,27.82,23.98]}
+{"kind":"shape","id":"sh/25432pc3","slide":6,"name":"Shape 79","bbox":[1039.45,321.03,27.79,23.95]}
+{"kind":"shape","id":"sh/36x4budo","slide":6,"name":"Shape 80","bbox":[1103.81,217.61,27.08,22.61]}
+{"kind":"shape","id":"sh/5cnyxwj2","slide":6,"name":"Shape 81","bbox":[1195.05,248.75,32.08,27.03]}
+{"kind":"shape","id":"sh/4behorix","slide":6,"name":"Shape 82","bbox":[1096.63,275.09,23.57,29.66]}
+{"kind":"shape","id":"sh/ja5gvm1c","slide":6,"name":"Shape 83","bbox":[1109.36,320.57,30.82,23.46]}
+{"kind":"shape","id":"sh/i9czmh0r","slide":6,"name":"Shape 84","bbox":[1076.95,207.99,22.55,30.1]}
+{"kind":"shape","id":"sh/d0ny1wje","slide":6,"name":"Shape 85","bbox":[1181.39,206.72,29.04,30.57]}
+{"kind":"shape","id":"sh/szehsrit","slide":6,"name":"Shape 86","bbox":[1189.97,317.15,31.24,29.58]}
+{"kind":"shape","id":"sh/re5gzm18","slide":6,"name":"Shape 87","bbox":[1024.03,240.41,30.23,28.55]}
+{"kind":"shape","id":"sh/6dwzq10n","slide":6,"name":"Shape 88","bbox":[1098.4,244.07,33.85,27.54]}
+{"kind":"shape","id":"sh/943ypcja","slide":6,"name":"Shape 89","bbox":[1157.19,320.34,28.97,26.45]}
+{"kind":"shape","id":"sh/8juxg7ip","slide":6,"name":"Shape 90","bbox":[1045.05,263.78,24.93,20.35]}
+{"kind":"textbox","id":"sh/nudcn21s","slide":6,"name":"Text 91","text":"④ 60초 정산","textPreview":"④ 60초 정산","textChars":8,"textLines":1,"bbox":[1009.93,364.8,235.16,33.56]}
+{"kind":"textbox","id":"sh/m94bex07","slide":6,"name":"Text 92","text":"남은 얼음 정지 → 정비 자금·항로 점수 확정\n다음 항해 대기 시간 즉시 시작","textPreview":"남은 얼음 정지 → 정비 자금·항로 점수 확정 | 다음 항해 대기 시간 즉시 시작","textChars":43,"textLines":2,"bbox":[1009.93,399.34,244.76,71.96]}
+{"kind":"shape","id":"sh/9wvupcji","slide":6,"name":"Shape 93","bbox":[67.2,513.6,1151.96,129.56]}
+{"kind":"textbox","id":"sh/8vmtg7id","slide":6,"name":"Text 94","text":"성장 체감","textPreview":"성장 체감","textChars":5,"textLines":1,"bbox":[96,528,1055.96,30.69]}
+{"kind":"textbox","id":"sh/vyxcrm1o","slide":6,"name":"Text 95","text":"정비 후에는 클릭 피해, 보조 타격, 연쇄 범위가 늘어나 같은 60초 동안 더 많은 얼음을 파괴한다.","textPreview":"정비 후에는 클릭 피해, 보조 타격, 연쇄 범위가 늘어나 같은 60초 동안 더 많은 얼음을 파괴한다.","textChars":56,"textLines":1,"bbox":[96,561.6,1103.96,71.96]}
+{"kind":"textbox","id":"sh/axobih03","slide":6,"name":"Text 96","text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/x8f69ofe","slide":6,"text":"60초 종료는 실패가 아니다. 매번 같은 길이로 강화 전후의 파괴량을 비교하기 위한 측정 구간이다."}
+{"kind":"slide","id":"sl/gnmp4jqx","slide":7,"title":"얼음 구성","textShapes":24}
+{"kind":"textbox","id":"sh/gnihw7qp","slide":7,"name":"Text 0","text":"얼음 구성","textPreview":"얼음 구성","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/fm903294","slide":7,"name":"Text 1","text":"필수 구현 얼음 구성","textPreview":"필수 구현 얼음 구성","textChars":11,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/el0zax8j","slide":7,"name":"Text 2","text":"T1~T3는 내구도와 보상이 다르고, 특수빙은 파편·범위 피해를 발생시킨다.","textPreview":"T1~T3는 내구도와 보상이 다르고, 특수빙은 파편·범위 피해를 발생시킨다.","textChars":42,"textLines":1,"bbox":[57.6,148.8,1171.16,33.56]}
+{"kind":"textbox","id":"sh/lkvihwre","slide":7,"name":"Text 3","text":"필수 구현은 T1~T3와 결정빙·균열빙이다. T4·T5는 게임잼 이후 검토한다.","textPreview":"필수 구현은 T1~T3와 결정빙·균열빙이다. T4·T5는 게임잼 이후 검토한다.","textChars":44,"textLines":1,"bbox":[57.6,192,1055.96,33.56]}
+{"kind":"shape","id":"sh/0jm18rq9","slide":7,"name":"Shape 4","bbox":[57.6,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/ipgf2tob","slide":7,"name":"Shape 5","bbox":[141.62,272.5,47.96,43.16]}
+{"kind":"textbox","id":"sh/jqpwbypw","slide":7,"name":"Text 6","text":"T1 백빙","textPreview":"T1 백빙","textChars":5,"textLines":1,"bbox":[67.2,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/kryx436h","slide":7,"name":"Text 7","text":"내구도 · 보상  ×1 · ×1","textPreview":"내구도 · 보상  ×1 · ×1","textChars":17,"textLines":1,"bbox":[67.2,364.8,196.76,26.83]}
+{"kind":"shape","id":"sh/5s7ed872","slide":7,"name":"Shape 8","bbox":[292.8,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/a1wfy9of","slide":7,"name":"Shape 9","bbox":[370.54,264.72,60.43,54.39]}
+{"kind":"textbox","id":"sh/v25w7ep0","slide":7,"name":"Text 10","text":"T2 청빙","textPreview":"T2 청빙","textChars":5,"textLines":1,"bbox":[302.4,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/w3ex0j6l","slide":7,"name":"Text 11","text":"내구도 · 보상  ×6 · ×8","textPreview":"내구도 · 보상  ×6 · ×8","textChars":17,"textLines":1,"bbox":[302.4,364.8,196.76,26.83]}
+{"kind":"shape","id":"sh/xone9o76","slide":7,"name":"Shape 12","bbox":[528,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/ex0fadoj","slide":7,"name":"Shape 13","bbox":[599.51,256.93,72.91,65.61]}
+{"kind":"textbox","id":"sh/fy9gjip4","slide":7,"name":"Text 14","text":"T3 심빙","textPreview":"T3 심빙","textChars":5,"textLines":1,"bbox":[537.6,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/b21cba5g","slide":7,"name":"Text 15","text":"내구도 · 보상  ×36 · ×70","textPreview":"내구도 · 보상  ×36 · ×70","textChars":19,"textLines":1,"bbox":[537.6,364.8,196.76,26.83]}
+{"kind":"shape","id":"sh/q1sb254b","slide":7,"name":"Shape 16","bbox":[763.2,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/d4judknm","slide":7,"name":"Shape 17","bbox":[828.47,249.11,85.42,76.88]}
+{"kind":"textbox","id":"sh/c3at4fm1","slide":7,"name":"Text 18","text":"T4 자빙","textPreview":"T4 자빙","textChars":5,"textLines":1,"bbox":[772.8,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/z6lcfa5s","slide":7,"name":"Text 19","text":"추후 추가","textPreview":"추후 추가","textChars":5,"textLines":1,"bbox":[772.8,364.8,196.76,26.83]}
+{"kind":"shape","id":"sh/y5sb6p47","slide":7,"name":"Shape 20","bbox":[998.4,235.2,215.96,167.96]}
+{"kind":"shape","id":"sh/l83uhkny","slide":7,"name":"Shape 21","bbox":[1057.44,241.32,97.89,88.1]}
+{"kind":"textbox","id":"sh/07ud8fmd","slide":7,"name":"Text 22","text":"T5 극광빙","textPreview":"T5 극광빙","textChars":6,"textLines":1,"bbox":[1008,336,196.76,28.76]}
+{"kind":"textbox","id":"sh/nulcju5o","slide":7,"name":"Text 23","text":"추후 추가","textPreview":"추후 추가","textChars":5,"textLines":1,"bbox":[1008,364.8,196.76,26.83]}
+{"kind":"textbox","id":"sh/m9cvap43","slide":7,"name":"Text 24","text":"특수빙 효과","textPreview":"특수빙 효과","textChars":6,"textLines":1,"bbox":[57.6,424.33,1055.96,33.56]}
+{"kind":"shape","id":"sh/kzet0z2h","slide":7,"name":"Shape 25","bbox":[57.6,465.6,273.56,177.56]}
+{"kind":"shape","id":"sh/50nut432","slide":7,"name":"Shape 26","bbox":[76.8,484.8,59.49,55.63]}
+{"kind":"textbox","id":"sh/jy5srulw","slide":7,"name":"Text 27","text":"결정빙 2.5%","textPreview":"결정빙 2.5%","textChars":8,"textLines":1,"bbox":[148.8,484.8,177.56,28.76]}
+{"kind":"textbox","id":"sh/wbutwf25","slide":7,"name":"Text 28","text":"보상 ×4 · 파편 5개 추적\n낮은 단계 얼음 즉시 파괴","textPreview":"보상 ×4 · 파편 5개 추적 | 낮은 단계 얼음 즉시 파괴","textChars":31,"textLines":2,"bbox":[76.8,532.8,239.96,100.76]}
+{"kind":"shape","id":"sh/xw3apk3q","slide":7,"name":"Shape 29","bbox":[351.34,465.6,273.56,177.56]}
+{"kind":"shape","id":"sh/a9cbupkf","slide":7,"name":"Shape 30","bbox":[370.54,484.8,59.49,55.63]}
+{"kind":"shape","id":"sh/valsnul0","slide":7,"name":"Shape 31","bbox":[382.07,495.34,30.73,34.54]}
+{"kind":"shape","id":"sh/87utsf29","slide":7,"name":"Shape 32","bbox":[387.82,493.42,17.27,38.4]}
+{"kind":"textbox","id":"sh/983alk3u","slide":7,"name":"Text 33","text":"균열빙 2%","textPreview":"균열빙 2%","textChars":6,"textLines":1,"bbox":[442.54,484.8,177.56,28.76]}
+{"kind":"textbox","id":"sh/147i5c3i","slide":7,"name":"Text 34","text":"내구도 ×0.6 · 반경 120px 피해\n최대 3단 연쇄","textPreview":"내구도 ×0.6 · 반경 120px 피해 | 최대 3단 연쇄","textChars":31,"textLines":2,"bbox":[370.54,532.8,239.96,100.76]}
+{"kind":"shape","id":"sh/03y1c7mx","slide":7,"name":"Shape 35","bbox":[645.13,465.6,273.56,177.56]}
+{"kind":"shape","id":"sh/f25032lc","slide":7,"name":"Shape 36","bbox":[664.33,484.8,59.49,55.63]}
+{"kind":"shape","id":"sh/e1wjax4r","slide":7,"name":"Shape 37","bbox":[672,508.8,44.11,7.63]}
+{"kind":"shape","id":"sh/p87i9c3e","slide":7,"name":"Shape 38","bbox":[690.26,490.54,7.63,44.11]}
+{"kind":"textbox","id":"sh/o7y1g7mt","slide":7,"name":"Text 39","text":"안 나올 때 보정","textPreview":"안 나올 때 보정","textChars":9,"textLines":1,"bbox":[736.33,484.8,177.56,28.76]}
+{"kind":"textbox","id":"sh/n6p072lo","slide":7,"name":"Text 40","text":"18번 안 나오면 다음에 확정\n화면 동시 최대 2개","textPreview":"18번 안 나오면 다음에 확정 | 화면 동시 최대 2개","textChars":28,"textLines":2,"bbox":[664.33,532.8,239.96,100.76]}
+{"kind":"shape","id":"sh/25gjeh43","slide":7,"name":"Shape 41","bbox":[938.87,465.6,273.56,177.56]}
+{"kind":"shape","id":"sh/xcridw3q","slide":7,"name":"Shape 42","bbox":[958.07,484.8,59.49,55.63]}
+{"kind":"shape","id":"sh/cbi14r25","slide":7,"name":"Shape 43","bbox":[967.67,492.47,4.8,40.33]}
+{"kind":"shape","id":"sh/uhsfytkn","slide":7,"name":"Shape 44","bbox":[978.22,492.47,4.8,40.33]}
+{"kind":"shape","id":"sh/vi1g7y18","slide":7,"name":"Shape 45","bbox":[988.8,492.47,4.8,40.33]}
+{"kind":"textbox","id":"sh/wjax0j2t","slide":7,"name":"Text 46","text":"안전 규칙","textPreview":"안전 규칙","textChars":5,"textLines":1,"bbox":[1030.07,484.8,177.56,28.76]}
+{"kind":"textbox","id":"sh/hk3y9ojy","slide":7,"name":"Text 47","text":"다시 생성 후 0.25초간 연쇄 피해 제외\n즉시 재파괴 방지","textPreview":"다시 생성 후 0.25초간 연쇄 피해 제외 | 즉시 재파괴 방지","textChars":33,"textLines":2,"bbox":[958.07,532.8,239.96,100.76]}
+{"kind":"textbox","id":"sh/ilcf2tkj","slide":7,"name":"Text 48","text":"7","textPreview":"7","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/2t0v2d4v","slide":7,"name":"Image 0","bbox":[90.26,498.26,30.69,30.69]}
+{"kind":"notes","id":"nt/gnmp4jqx","slide":7,"text":"게임잼 필수 구현에서는 콘텐츠 수보다 T1~T3 구분과 두 특수빙의 연쇄 손맛을 완성한다."}
+{"kind":"slide","id":"sl/fu1gfa1s","slide":8,"title":"항로 진행","textShapes":19}
+{"kind":"textbox","id":"sh/7a5o7yh0","slide":8,"name":"Text 0","text":"항로 진행","textPreview":"항로 진행","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/m9wnet0f","slide":8,"name":"Text 1","text":"항로 진행 구조","textPreview":"항로 진행 구조","textChars":8,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/h076d8z2","slide":8,"name":"Shape 2","bbox":[156.02,391.22,71.96,64.78]}
+{"kind":"textbox","id":"sh/wzy5k3ih","slide":8,"name":"Text 3","text":"출발항","textPreview":"출발항","textChars":3,"textLines":1,"bbox":[96,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/gj6pgr6t","slide":8,"name":"Text 4","text":"식료품 · 우편 적재","textPreview":"식료품 · 우편 적재","textChars":11,"textLines":1,"bbox":[86.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/14fq9w7e","slide":8,"name":"Text 5","text":"첫 작업 즉시","textPreview":"첫 작업 즉시","textChars":7,"textLines":1,"bbox":[81.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/eho7eh8n","slide":8,"name":"Shape 6","bbox":[381.62,365.29,100.76,90.67]}
+{"kind":"textbox","id":"sh/fix87mp8","slide":8,"name":"Text 7","text":"섬마을","textPreview":"섬마을","textChars":3,"textLines":1,"bbox":[336,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/o76pkr65","slide":8,"name":"Text 8","text":"식료품 · 우편","textPreview":"식료품 · 우편","textChars":8,"textLines":1,"bbox":[326.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/p8fqdw7a","slide":8,"name":"Text 9","text":"항로 목표 120","textPreview":"항로 목표 120","textChars":9,"textLines":1,"bbox":[321.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/25o7ihoz","slide":8,"name":"Shape 10","bbox":[604.8,335.06,134.36,120.91]}
+{"kind":"textbox","id":"sh/4bmp87ql","slide":8,"name":"Text 11","text":"등대항","textPreview":"등대항","textChars":3,"textLines":1,"bbox":[576,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/5cvq1s76","slide":8,"name":"Text 12","text":"발전기 연료 · 의약품","textPreview":"발전기 연료 · 의약품","textChars":12,"textLines":1,"bbox":[566.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/n61sna9o","slide":8,"name":"Text 13","text":"항로 목표 600","textPreview":"항로 목표 600","textChars":9,"textLines":1,"bbox":[561.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/m5sbe583","slide":8,"name":"Shape 14","bbox":[825.6,300.47,172.76,155.49]}
+{"kind":"textbox","id":"sh/87atgfq9","slide":8,"name":"Text 15","text":"북쪽 항로","textPreview":"북쪽 항로","textChars":5,"textLines":1,"bbox":[816,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/z21sjq9s","slide":8,"name":"Text 16","text":"기계 부품 · 우편","textPreview":"기계 부품 · 우편","textChars":10,"textLines":1,"bbox":[806.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/y1sbals7","slide":8,"name":"Text 17","text":"항로 목표 2,400","textPreview":"항로 목표 2,400","textChars":11,"textLines":1,"bbox":[801.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/l4jal0ri","slide":8,"name":"Shape 18","bbox":[1044.02,261.62,215.96,194.38]}
+{"kind":"textbox","id":"sh/byhsfq9g","slide":8,"name":"Text 19","text":"북쪽 기지","textPreview":"북쪽 기지","textChars":5,"textLines":1,"bbox":[1056,473.27,191.96,36.43]}
+{"kind":"textbox","id":"sh/qd8r6lsv","slide":8,"name":"Text 20","text":"T3 첫 파괴 기록 저장","textPreview":"T3 첫 파괴 기록 저장","textChars":13,"textLines":1,"bbox":[1046.4,513.6,211.16,28.76]}
+{"kind":"textbox","id":"sh/6lsfa9ov","slide":8,"name":"Text 21","text":"목표 달성 시 기지 도착","textPreview":"목표 달성 시 기지 도착","textChars":13,"textLines":1,"bbox":[1041.6,542.4,220.76,47.96]}
+{"kind":"shape","id":"sh/rmlwje50","slide":8,"name":"Shape 22","bbox":[96,463.67,1084.8,0.04]}
+{"kind":"textbox","id":"sh/s7uxcj6l","slide":8,"name":"Text 23","text":"파괴한 얼음의 항로 점수를 현재 항로에 1:1로 더한다. 각 항로는 목표값에 도달하면 완료되며, 전용 엔딩은 일정 여유가 있을 때만 제작한다.","textPreview":"파괴한 얼음의 항로 점수를 현재 항로에 1:1로 더한다. 각 항로는 목표값에 도달하면 완료되며, 전용 엔딩은 일정 여유가 있을 때만 제작한다.","textChars":79,"textLines":1,"bbox":[57.6,624,1161.56,57.56]}
+{"kind":"textbox","id":"sh/t83elon6","slide":8,"name":"Text 24","text":"8","textPreview":"8","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/r6h8vy10","slide":8,"name":"Image 0","bbox":[654.54,378.07,34.92,34.92]}
+{"kind":"image","id":"im/658rmt0f","slide":8,"name":"Image 1","bbox":[889.55,355.77,44.9,44.9]}
+{"kind":"image","id":"im/t8zqx8jq","slide":8,"name":"Image 2","bbox":[1123.92,330.71,56.13,56.13]}
+{"kind":"notes","id":"nt/fu1gfa1s","slide":8,"text":"세 목적지는 게임의 시작·중간·끝이다. 북쪽 기지도 목표값으로 완료하며 T3 첫 파괴는 성장 기록만 남긴다. 전용 엔딩은 일정에 여유가 있을 때만 검토한다."}
+{"kind":"slide","id":"sl/udsvah03","slide":9,"title":"선박 정비","textShapes":16}
+{"kind":"textbox","id":"sh/6dwfq147","slide":9,"name":"Text 0","text":"선박 정비","textPreview":"선박 정비","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/7e5gj65s","slide":9,"name":"Text 1","text":"선박 정비 시스템","textPreview":"선박 정비 시스템","textChars":9,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/krexorm1","slide":9,"name":"Shape 2","bbox":[67.2,201.6,278.36,100.76]}
+{"kind":"textbox","id":"sh/l8felsfa","slide":9,"name":"Text 3","text":"얼음 파쇄\n60초","textPreview":"얼음 파쇄 | 60초","textChars":9,"textLines":2,"bbox":[144,201.6,191.96,100.76]}
+{"kind":"shape","id":"sh/07mdsnep","slide":9,"name":"Shape 4","bbox":[206.4,302.4,0.04,62.4]}
+{"kind":"shape","id":"sh/z6dwjixk","slide":9,"name":"Shape 5","bbox":[67.2,374.4,278.36,100.76]}
+{"kind":"textbox","id":"sh/dkveh8fe","slide":9,"name":"Text 6","text":"정비 자금 획득\n작업 종료 시 확정","textPreview":"정비 자금 획득 | 작업 종료 시 확정","textChars":19,"textLines":2,"bbox":[144,374.4,196.76,100.76]}
+{"kind":"shape","id":"sh/cjmdo3et","slide":9,"name":"Shape 7","bbox":[206.4,475.2,0.04,62.4]}
+{"kind":"shape","id":"sh/bidwfyx8","slide":9,"name":"Shape 8","bbox":[67.2,547.2,278.36,95.96]}
+{"kind":"textbox","id":"sh/qh4vmtwn","slide":9,"name":"Text 9","text":"정비 자금\n한 종류만 사용","textPreview":"정비 자금 | 한 종류만 사용","textChars":14,"textLines":2,"bbox":[91.2,547.2,239.96,95.96]}
+{"kind":"shape","id":"sh/xgzetcfi","slide":9,"name":"Shape 10","bbox":[345.6,326.4,96,268.8]}
+{"kind":"textbox","id":"sh/wfqx07ex","slide":9,"name":"Text 11","text":"정비 효과:\n피해·보조·연쇄 강화","textPreview":"정비 효과: | 피해·보조·연쇄 강화","textChars":18,"textLines":2,"bbox":[321.6,470.4,191.96,30.69]}
+{"kind":"shape","id":"sh/el0bu9cf","slide":9,"name":"Shape 12","bbox":[499.2,187.2,719.96,460.76]}
+{"kind":"textbox","id":"sh/fm9snud0","slide":9,"name":"Text 13","text":"ICEBREAKER  //  선박 정비     정비 자금 12.4K  ·  얼음 T3","textPreview":"ICEBREAKER  //  선박 정비     정비 자금 12.4K  ·  얼음 T3","textChars":47,"textLines":1,"bbox":[522,199,675,28]}
+{"kind":"shape","id":"sh/ri9sjud4","slide":9,"name":"Shape 17","bbox":[522,238,156,36]}
+{"kind":"textbox","id":"sh/sjitszup","slide":9,"name":"Text 18","text":"공통 장비","textPreview":"공통 장비","textChars":5,"textLines":1,"bbox":[522,238,156,36]}
+{"kind":"shape","id":"sh/qtwjm50j","slide":9,"name":"Shape 27","bbox":[688,238,156,36]}
+{"kind":"textbox","id":"sh/dwn2xkja","slide":9,"name":"Text 28","text":"직접 파쇄","textPreview":"직접 파쇄","textChars":5,"textLines":1,"bbox":[688,238,156,36]}
+{"kind":"textbox","id":"sh/ra1gj6hk","slide":9,"name":"Text 35","text":"장비 선택\n상세 효과·비용","textPreview":"장비 선택 | 상세 효과·비용","textChars":14,"textLines":2,"bbox":[522,575,158,60]}
+{"kind":"shape","id":"sh/103ypgz2","slide":9,"name":"Shape 37","bbox":[854,238,156,36]}
+{"kind":"textbox","id":"sh/exszu1gb","slide":9,"name":"Text 38","text":"보조 파쇄","textPreview":"보조 파쇄","textChars":5,"textLines":1,"bbox":[854,238,156,36]}
+{"kind":"textbox","id":"sh/1snex4fq","slide":9,"name":"Text 45","text":"공통 장비  T2→T3\n강화  직접·보조·연쇄","textPreview":"공통 장비  T2→T3 | 강화  직접·보조·연쇄","textChars":25,"textLines":2,"bbox":[690,575,170,60]}
+{"kind":"shape","id":"sh/rmlwruho","slide":9,"name":"Shape 47","bbox":[1020,238,156,36]}
+{"kind":"textbox","id":"sh/snud0zy9","slide":9,"name":"Text 48","text":"연쇄 파괴","textPreview":"연쇄 파괴","textChars":5,"textLines":1,"bbox":[1020,238,156,36]}
+{"kind":"textbox","id":"sh/yl07ex4v","slide":9,"name":"Text 55","text":"주 파쇄기 출력  2/3단계        비용 900\n클릭 피해 ×1.6 — 구매 후 선수 장비가 점등","textPreview":"주 파쇄기 출력  2/3단계        비용 900 | 클릭 피해 ×1.6 — 구매 후 선수 장비가 점등","textChars":57,"textLines":2,"bbox":[870,575,325,60]}
+{"kind":"textbox","id":"sh/x0rqlcna","slide":9,"name":"Text 56","text":"구매 항목은 13개다. 공통/직접/보조/연쇄 4개 영역을 사용하고, 아이콘 대신 텍스트·레벨 점을 재사용한다.","textPreview":"구매 항목은 13개다. 공통/직접/보조/연쇄 4개 영역을 사용하고, 아이콘 대신 텍스트·레벨 점을 재사용한다.","textChars":61,"textLines":1,"bbox":[67.2,667.2,1151.96,33.56]}
+{"kind":"textbox","id":"sh/wzipc7mp","slide":9,"name":"Text 57","text":"9","textPreview":"9","textChars":1,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/25kjq5gz","slide":9,"name":"Image 0","bbox":[94.07,230.4,40.29,40.29]}
+{"kind":"image","id":"im/3qt0zahk","slide":9,"name":"Image 1","bbox":[94.07,403.2,40.29,40.29]}
+{"kind":"image","id":"im/kvihgvyl","slide":9,"name":"","geometry":"roundRect","bbox":[522,282,674,280]}
+{"kind":"notes","id":"nt/udsvah03","slide":9,"text":"강화 화면은 설명용 도표가 아니라 선박을 직접 정비하는 게임 화면으로 보이게 만든다."}
+{"kind":"slide","id":"sl/m90b6t0r","slide":10,"title":"상태 흐름","textShapes":33}
+{"kind":"textbox","id":"sh/etw7614r","slide":10,"name":"Text 0","text":"상태 흐름","textPreview":"상태 흐름","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/1gnq1g3i","slide":10,"name":"Text 1","text":"게임 상태 흐름","textPreview":"게임 상태 흐름","textChars":8,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/0fep8bmx","slide":10,"name":"Shape 2","bbox":[57.6,177.6,278.36,124.76]}
+{"kind":"shape","id":"sh/ja98balg","slide":10,"name":"Shape 3","bbox":[76.8,194.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/y9gr254v","slide":10,"name":"Text 4","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[76.8,194.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/nq9k3qlw","slide":10,"name":"Text 5","text":"항해 중","textPreview":"항해 중","textChars":4,"textLines":1,"bbox":[126.73,194.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/mp03u54b","slide":10,"name":"Text 6","text":"축소 화면 표시 · 대기 시간 진행","textPreview":"축소 화면 표시 · 대기 시간 진행","textChars":19,"textLines":1,"bbox":[126.73,231.34,201.56,57.56]}
+{"kind":"shape","id":"sh/9cr2503m","slide":10,"name":"Shape 7","bbox":[337.89,240,18.26,0.04]}
+{"kind":"shape","id":"sh/8rilwvm1","slide":10,"name":"Shape 8","bbox":[358.07,177.6,278.36,124.76]}
+{"kind":"shape","id":"sh/zm9kzqlk","slide":10,"name":"Shape 9","bbox":[377.27,194.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/elg3ql4z","slide":10,"name":"Text 10","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[377.27,194.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/1or2103q","slide":10,"name":"Text 11","text":"얼음 구간 도착","textPreview":"얼음 구간 도착","textChars":8,"textLines":1,"bbox":[427.2,194.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/0nilsvm5","slide":10,"name":"Text 12","text":"자동 시작 없음 · 사용자가 클릭해 확장","textPreview":"자동 시작 없음 · 사용자가 클릭해 확장","textChars":22,"textLines":1,"bbox":[427.2,231.34,201.56,57.56]}
+{"kind":"shape","id":"sh/jitkbulo","slide":10,"name":"Shape 13","bbox":[638.4,240,18.22,0.04]}
+{"kind":"shape","id":"sh/ihk32p4j","slide":10,"name":"Shape 14","bbox":[658.54,177.6,278.36,124.76]}
+{"kind":"shape","id":"sh/gbu9gnyp","slide":10,"name":"Shape 15","bbox":[677.74,194.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/hc3q9sfa","slide":10,"name":"Text 16","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[677.74,194.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/upcredgj","slide":10,"name":"Text 17","text":"쇄빙 준비","textPreview":"쇄빙 준비","textChars":5,"textLines":1,"bbox":[727.67,194.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/vql87ix4","slide":10,"name":"Text 18","text":"목적지·화물·정비 확인","textPreview":"목적지·화물·정비 확인","textChars":12,"textLines":1,"bbox":[727.67,231.34,201.56,57.56]}
+{"kind":"shape","id":"sh/4fu9knyl","slide":10,"name":"Shape 19","bbox":[938.87,240,18.22,0.04]}
+{"kind":"shape","id":"sh/5g3qdsf6","slide":10,"name":"Shape 20","bbox":[959.06,177.6,278.36,124.76]}
+{"kind":"shape","id":"sh/idcrixgv","slide":10,"name":"Shape 21","bbox":[978.26,194.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/3el8b2x0","slide":10,"name":"Text 22","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[978.26,194.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/sje9o7yx","slide":10,"name":"Text 23","text":"카운트다운","textPreview":"카운트다운","textChars":5,"textLines":1,"bbox":[1028.14,194.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/dknahcfi","slide":10,"name":"Text 24","text":"3·2·1 · 입력 불가","textPreview":"3·2·1 · 입력 불가","textChars":13,"textLines":1,"bbox":[1028.14,231.34,201.56,57.56]}
+{"kind":"shape","id":"sh/10jq1c7m","slide":10,"name":"Shape 25","bbox":[57.6,321.6,278.36,124.76]}
+{"kind":"shape","id":"sh/0za9s7q1","slide":10,"name":"Shape 26","bbox":[76.8,338.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/zy18z2pg","slide":10,"name":"Text 27","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[76.8,338.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/exsrqx8v","slide":10,"name":"Text 28","text":"쇄빙 작업","textPreview":"쇄빙 작업","textChars":5,"textLines":1,"bbox":[126.73,338.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/943q5c7i","slide":10,"name":"Text 29","text":"정확히 60초 · 구매/접기 사용 불가","textPreview":"정확히 60초 · 구매/접기 사용 불가","textChars":21,"textLines":1,"bbox":[126.73,375.34,201.56,57.56]}
+{"kind":"shape","id":"sh/o3u9w7qx","slide":10,"name":"Shape 30","bbox":[337.89,384,18.26,0.04]}
+{"kind":"shape","id":"sh/n21832pc","slide":10,"name":"Shape 31","bbox":[358.07,321.6,278.36,124.76]}
+{"kind":"shape","id":"sh/m1srux87","slide":10,"name":"Shape 32","bbox":[377.27,338.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/p8zqts7e","slide":10,"name":"Text 33","text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[377.27,338.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/47qpknqt","slide":10,"name":"Text 34","text":"작업 정산","textPreview":"작업 정산","textChars":5,"textLines":1,"bbox":[427.2,338.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/udonutor","slide":10,"name":"Text 35","text":"0.3초 정지 · 정비 자금/항로 확정","textPreview":"0.3초 정지 · 정비 자금/항로 확정","textChars":21,"textLines":1,"bbox":[427.2,375.34,201.56,57.56]}
+{"kind":"shape","id":"sh/fexo3e5w","slide":10,"name":"Shape 36","bbox":[638.4,384,18.22,0.04]}
+{"kind":"shape","id":"sh/gf65wj6h","slide":10,"name":"Shape 37","bbox":[658.54,321.6,278.36,124.76]}
+{"kind":"shape","id":"sh/hgf65on2","slide":10,"name":"Shape 38","bbox":[677.74,338.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/21onyton","slide":10,"name":"Text 39","text":"7","textPreview":"7","textChars":1,"textLines":1,"bbox":[677.74,338.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/32xo7y58","slide":10,"name":"Text 40","text":"항로 진행 반영","textPreview":"항로 진행 반영","textChars":8,"textLines":1,"bbox":[727.67,338.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/4365036t","slide":10,"name":"Text 41","text":"항구 도착 또는 다음 항해","textPreview":"항구 도착 또는 다음 항해","textChars":14,"textLines":1,"bbox":[727.67,375.34,201.56,57.56]}
+{"kind":"shape","id":"sh/p4z698ne","slide":10,"name":"Shape 42","bbox":[938.87,384,18.22,0.04]}
+{"kind":"shape","id":"sh/il4nm9oj","slide":10,"name":"Shape 43","bbox":[959.06,321.6,278.36,124.76]}
+{"kind":"shape","id":"sh/j6d4vu54","slide":10,"name":"Shape 44","bbox":[978.26,338.87,38.36,38.36]}
+{"kind":"textbox","id":"sh/zqlc36tg","slide":10,"name":"Text 45","text":"!","textPreview":"!","textChars":1,"textLines":1,"bbox":[978.26,338.42,38.36,38.36]}
+{"kind":"textbox","id":"sh/epcva1cv","slide":10,"name":"Text 46","text":"마지막 5초 경고","textPreview":"마지막 5초 경고","textChars":9,"textLines":1,"bbox":[1028.14,338.87,201.56,33.56]}
+{"kind":"textbox","id":"sh/1s3u5wbm","slide":10,"name":"Text 47","text":"입력 유지 · 남은 시간/성에 강조","textPreview":"입력 유지 · 남은 시간/성에 강조","textChars":19,"textLines":1,"bbox":[1028.14,375.34,201.56,57.56]}
+{"kind":"shape","id":"sh/0rudcru1","slide":10,"name":"Shape 48","bbox":[196.8,304.29,0.04,63.38]}
+{"kind":"shape","id":"sh/nulc76ts","slide":10,"name":"Shape 49","bbox":[57.6,484.8,1161.56,158.36]}
+{"kind":"textbox","id":"sh/mtcve1c7","slide":10,"name":"Text 50","text":"표준/시연 설정은 같은 상태 흐름을 사용한다","textPreview":"표준/시연 설정은 같은 상태 흐름을 사용한다","textChars":24,"textLines":1,"bbox":[86.4,501.13,1055.96,30.69]}
+{"kind":"shape","id":"sh/9wnu9gbi","slide":10,"name":"Shape 51","bbox":[86.4,539.53,259.16,59.49]}
+{"kind":"textbox","id":"sh/ovedgbux","slide":10,"name":"Text 52","text":"최초 실행  즉시","textPreview":"최초 실행  즉시","textChars":9,"textLines":1,"bbox":[100.8,539.53,239.96,59.49]}
+{"kind":"shape","id":"sh/by5cbqto","slide":10,"name":"Shape 53","bbox":[369.6,539.53,259.16,59.49]}
+{"kind":"textbox","id":"sh/axwvilc3","slide":10,"name":"Text 54","text":"표준 초기값  30초","textPreview":"표준 초기값  30초","textChars":11,"textLines":1,"bbox":[384,539.53,239.96,59.49]}
+{"kind":"shape","id":"sh/snyt8vah","slide":10,"name":"Shape 55","bbox":[652.8,539.53,259.16,59.49]}
+{"kind":"textbox","id":"sh/to7u10r2","slide":10,"name":"Text 56","text":"시연 초기값  10초","textPreview":"시연 초기값  10초","textChars":11,"textLines":1,"bbox":[667.2,539.53,239.96,59.49]}
+{"kind":"shape","id":"sh/6lwb6lsb","slide":10,"name":"Shape 57","bbox":[936,539.53,259.16,59.49]}
+{"kind":"textbox","id":"sh/7mpczq9w","slide":10,"name":"Text 58","text":"장기 대기  미확정","textPreview":"장기 대기  미확정","textChars":10,"textLines":1,"bbox":[950.4,539.53,239.96,59.49]}
+{"kind":"textbox","id":"sh/kzet4ba5","slide":10,"name":"Text 59","text":"마지막 5초에도 입력은 유지된다. 정산 중 대기 시간은 흐르며 앱 종료 중에는 대기 시간만 진행된다.","textPreview":"마지막 5초에도 입력은 유지된다. 정산 중 대기 시간은 흐르며 앱 종료 중에는 대기 시간만 진행된다.","textChars":56,"textLines":1,"bbox":[86.4,606.73,1103.96,33.56]}
+{"kind":"textbox","id":"sh/50nuxgrq","slide":10,"name":"Text 60","text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/m90b6t0r","slide":10,"text":"상태는 일곱 개다. 마지막 5초는 입력을 유지하는 경고이며 별도 게임 상태가 아니다."}
+{"kind":"slide","id":"sl/jetc3ut0","slide":11,"title":"UI 구성","textShapes":12}
+{"kind":"textbox","id":"sh/ypk3e9o3","slide":11,"name":"Text 0","text":"UI 구성","textPreview":"UI 구성","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/zqtk7e5o","slide":11,"name":"Text 1","text":"창 크기와 UI 구성","textPreview":"창 크기와 UI 구성","textChars":11,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/krmlgj69","slide":11,"name":"Text 2","text":"축소 화면 — 480×56px (작업 표시줄 바로 위)","textPreview":"축소 화면 — 480×56px (작업 표시줄 바로 위)","textChars":30,"textLines":1,"bbox":[57.6,165.13,479.96,30.69]}
+{"kind":"shape","id":"sh/lsv29onu","slide":11,"name":"Shape 3","bbox":[57.6,206.4,489.56,67.16]}
+{"kind":"shape","id":"sh/ilo3qdon","slide":11,"name":"Shape 4","bbox":[72,216.94,47.96,46.03]}
+{"kind":"shape","id":"sh/jmx4ji5s","slide":11,"name":"Shape 5","bbox":[79.18,226.17,16.82,13.83]}
+{"kind":"shape","id":"sh/tgz69c7a","slide":11,"name":"Shape 6","bbox":[100.8,223.86,11.98,18.41]}
+{"kind":"textbox","id":"sh/sfq5g7qp","slide":11,"name":"Text 7","text":"🚢  등대항 42%   다음 얼음 구간 00:24   12.4K","textPreview":"🚢  등대항 42%   다음 얼음 구간 00:24   12.4K","textChars":36,"textLines":1,"bbox":[134.4,206.4,403.16,67.16]}
+{"kind":"textbox","id":"sh/reho72p4","slide":11,"name":"Text 8","text":"목적지 · 항로 · 대기 시간 · 정비 자금 표시  /  팝업·자동 확장 없음 · 최초 실행 음소거","textPreview":"목적지 · 항로 · 대기 시간 · 정비 자금 표시  /  팝업·자동 확장 없음 · 최초 실행 음소거","textChars":55,"textLines":1,"bbox":[57.6,285.13,547.16,52.76]}
+{"kind":"textbox","id":"sh/6d8nex8j","slide":11,"name":"Text 9","text":"확장 — 720×480px (준비·플레이·정산 공통 장면)","textPreview":"확장 — 720×480px (준비·플레이·정산 공통 장면)","textChars":32,"textLines":1,"bbox":[643.2,165.13,575.96,30.69]}
+{"kind":"shape","id":"sh/5cz65s7y","slide":11,"name":"Shape 10","bbox":[643.2,206.4,575.96,383.96]}
+{"kind":"shape","id":"sh/4bq5c7qd","slide":11,"name":"Shape 11","bbox":[654.73,217.93,552.91,43.16]}
+{"kind":"textbox","id":"sh/jaxo32p8","slide":11,"name":"Text 12","text":"등대항 항로 │ 00:42 │ 이번 운항 +1,240          48px","textPreview":"등대항 항로 │ 00:42 │ 이번 운항 +1,240          48px","textChars":43,"textLines":1,"bbox":[667.2,217.93,527.96,43.16]}
+{"kind":"shape","id":"sh/i9onax8n","slide":11,"name":"Shape 13","bbox":[654.73,265.93,427.16,259.16]}
+{"kind":"shape","id":"sh/p8j6hw7i","slide":11,"name":"Shape 14","bbox":[877.21,440.48,56.47,34.97]}
+{"kind":"shape","id":"sh/o7aporqx","slide":11,"name":"Shape 15","bbox":[860.15,348.99,46.42,31.58]}
+{"kind":"shape","id":"sh/8n2h0zi5","slide":11,"name":"Shape 16","bbox":[984.64,458.62,37.72,43.24]}
+{"kind":"shape","id":"sh/9obi94jq","slide":11,"name":"Shape 17","bbox":[901.96,391.63,59.42,36.27]}
+{"kind":"shape","id":"sh/m1kzyp0z","slide":11,"name":"Shape 18","bbox":[1004.03,303.15,42.45,46.13]}
+{"kind":"shape","id":"sh/n2tg7u1k","slide":11,"name":"Shape 19","bbox":[735.27,318.93,52.29,46.97]}
+{"kind":"shape","id":"sh/0z2hwfi9","slide":11,"name":"Shape 20","bbox":[936.02,281.87,52.83,48.14]}
+{"kind":"shape","id":"sh/l0by5kju","slide":11,"name":"Shape 21","bbox":[723.86,375.09,55.44,46.19]}
+{"kind":"shape","id":"sh/yx0zup03","slide":11,"name":"Shape 22","bbox":[980.96,380.08,51.9,49.61]}
+{"kind":"shape","id":"sh/zy9g3u1o","slide":11,"name":"Shape 23","bbox":[777.7,438.34,41.4,48.97]}
+{"kind":"shape","id":"sh/cvihsf2x","slide":11,"name":"Shape 24","bbox":[712.25,444.83,41.52,43.22]}
+{"kind":"shape","id":"sh/dwry1kji","slide":11,"name":"Shape 25","bbox":[823.61,393.3,48.37,39.84]}
+{"kind":"shape","id":"sh/fqp0balk","slide":11,"name":"Shape 26","bbox":[936.21,478.84,41.74,30.11]}
+{"kind":"shape","id":"sh/epgz254z","slide":11,"name":"Shape 27","bbox":[852.65,291.65,56.99,37.16]}
+{"kind":"shape","id":"sh/1sridk3a","slide":11,"name":"Shape 28","bbox":[929.46,338.24,61.57,33.66]}
+{"kind":"shape","id":"sh/gryh4fm5","slide":11,"name":"Shape 29","bbox":[676.27,299.17,52.41,43.65]}
+{"kind":"shape","id":"sh/3u90falg","slide":11,"name":"Shape 30","bbox":[824.86,452.32,42.18,39.21]}
+{"kind":"shape","id":"sh/2t0z654v","slide":11,"name":"Shape 31","bbox":[811.39,313.23,38.04,37.41]}
+{"kind":"shape","id":"sh/pwrihk3m","slide":11,"name":"Shape 32","bbox":[822.04,352.35,62.06,29.65]}
+{"kind":"shape","id":"sh/ovi18fm1","slide":11,"name":"Shape 33","bbox":[776.11,348.96,60.42,30.49]}
+{"kind":"textbox","id":"sh/by90juls","slide":11,"name":"Text 34","text":"얼음 구간 520×376 — 바다 + 먼 항구 + 뱃머리 + 최대 20개 얼음","textPreview":"얼음 구간 520×376 — 바다 + 먼 항구 + 뱃머리 + 최대 20개 얼음","textChars":43,"textLines":1,"bbox":[657.6,527.06,422.36,52.76]}
+{"kind":"shape","id":"sh/qx0jap47","slide":11,"name":"Shape 35","bbox":[1086.73,265.93,120.91,259.16]}
+{"kind":"textbox","id":"sh/y5g3et0b","slide":11,"name":"Text 36","text":"항로 진행\n항로 점수\n현재 얼음 단계\n최대 연쇄\n보조 장비","textPreview":"항로 진행 | 항로 점수 | 현재 얼음 단계 | 최대 연쇄 | 보조 장비","textChars":32,"textLines":5,"bbox":[1096.33,283.2,105.56,230.36]}
+{"kind":"shape","id":"sh/j6p47ehw","slide":11,"name":"Shape 37","bbox":[654.73,537.6,552.91,41.23]}
+{"kind":"textbox","id":"sh/k7ilgjih","slide":11,"name":"Text 38","text":"정비 자금 │ 선박 정비 │ 항로 │ 설정 │ 접기          56px","textPreview":"정비 자금 │ 선박 정비 │ 항로 │ 설정 │ 접기          56px","textChars":42,"textLines":1,"bbox":[667.2,537.6,527.96,41.23]}
+{"kind":"shape","id":"sh/l8rm9oz2","slide":11,"name":"Shape 39","bbox":[57.6,609.6,1161.56,47.96]}
+{"kind":"textbox","id":"sh/6903it07","slide":11,"name":"Text 40","text":"공통 규칙 — 결과 팝업 없음 · 작업 중 정비/접기 사용 불가 · 최초 실행 음소거 · 다른 창의 입력을 빼앗지 않음","textPreview":"공통 규칙 — 결과 팝업 없음 · 작업 중 정비/접기 사용 불가 · 최초 실행 음소거 · 다른 창의 입력을 빼앗지 않음","textChars":66,"textLines":1,"bbox":[91.2,609.6,1103.96,47.96]}
+{"kind":"textbox","id":"sh/7a94byhs","slide":11,"name":"Text 41","text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/jetc3ut0","slide":11,"text":"축소 화면과 확장 화면은 서로 다른 게임이 아니라 같은 운항 상태에서 창 크기만 바뀌는 구조다."}
+{"kind":"slide","id":"sl/8f2psfyx","slide":12,"title":"아트 방향","textShapes":28}
+{"kind":"textbox","id":"sh/xgzihcbm","slide":12,"name":"Text 0","text":"아트 방향","textPreview":"아트 방향","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/wfqho7a1","slide":12,"name":"Text 1","text":"아트 방향과 참고 게임","textPreview":"아트 방향과 참고 게임","textChars":12,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/jih0jmts","slide":12,"name":"Shape 2","bbox":[57.6,172.8,278.36,470.36]}
+{"kind":"shape","id":"sh/ih8zqhs7","slide":12,"name":"Shape 3","bbox":[57.6,172.8,278.36,91.16]}
+{"kind":"textbox","id":"sh/5kzilwbi","slide":12,"name":"Text 4","text":"DREDGE","textPreview":"DREDGE","textChars":6,"textLines":1,"bbox":[76.8,184.33,239.96,38.36]}
+{"kind":"textbox","id":"sh/kjq1srad","slide":12,"name":"Text 5","text":"한눈에 읽히는 배·등대 형태","textPreview":"한눈에 읽히는 배·등대 형태","textChars":15,"textLines":1,"bbox":[76.8,222.73,239.96,28.76]}
+{"kind":"textbox","id":"sh/zmd072t8","slide":12,"name":"Text 6","text":"어두운 해역에서도 배·등대·불빛이 한눈에 읽히는 구도","textPreview":"어두운 해역에서도 배·등대·불빛이 한눈에 읽히는 구도","textChars":29,"textLines":1,"bbox":[76.8,283.2,244.76,110.36]}
+{"kind":"shape","id":"sh/yl4zexc3","slide":12,"name":"Shape 7","bbox":[76.8,398.4,239.96,143.96]}
+{"kind":"textbox","id":"sh/q58zuxkj","slide":12,"name":"Text 8","text":"적용 요소","textPreview":"적용 요소","textChars":5,"textLines":1,"bbox":[94.07,410.87,211.16,26.83]}
+{"kind":"textbox","id":"sh/r6h0n214","slide":12,"name":"Text 9","text":"목적지 불빛·선박 형태\n공포 연출 제외","textPreview":"목적지 불빛·선박 형태 | 공포 연출 제외","textChars":21,"textLines":2,"bbox":[94.07,439.67,211.16,91.16]}
+{"kind":"textbox","id":"sh/c7qhw72p","slide":12,"name":"Text 10","text":"공식 보도 자료","textPreview":"공식 보도 자료","textChars":8,"textLines":1,"bbox":[76.8,561.6,239.96,28.76]}
+{"kind":"shape","id":"sh/d8jipcja","slide":12,"name":"Shape 11","bbox":[358.07,172.8,278.36,470.36]}
+{"kind":"shape","id":"sh/e9sjyxkv","slide":12,"name":"Shape 12","bbox":[358.07,172.8,278.36,91.16]}
+{"kind":"textbox","id":"sh/zu10r21g","slide":12,"name":"Text 13","text":"Spiritfarer","textPreview":"Spiritfarer","textChars":11,"textLines":1,"bbox":[377.27,184.33,239.96,38.36]}
+{"kind":"textbox","id":"sh/0va10721","slide":12,"name":"Text 14","text":"항구의 따뜻한 조명","textPreview":"항구의 따뜻한 조명","textChars":10,"textLines":1,"bbox":[377.27,222.73,239.96,28.76]}
+{"kind":"textbox","id":"sh/1wjitcj6","slide":12,"name":"Text 15","text":"부드러운 손그림풍과 주황 계열 항구 조명","textPreview":"부드러운 손그림풍과 주황 계열 항구 조명","textChars":22,"textLines":1,"bbox":[377.27,283.2,244.76,110.36]}
+{"kind":"shape","id":"sh/mxsj2hkr","slide":12,"name":"Shape 16","bbox":[377.27,398.4,239.96,143.96]}
+{"kind":"textbox","id":"sh/ny10vm1c","slide":12,"name":"Text 17","text":"적용 요소","textPreview":"적용 요소","textChars":5,"textLines":1,"bbox":[394.54,410.87,211.16,26.83]}
+{"kind":"textbox","id":"sh/xsn21g3e","slide":12,"name":"Text 18","text":"차가운 바다·주황 창문 대비\n대사 중심 연출 제외","textPreview":"차가운 바다·주황 창문 대비 | 대사 중심 연출 제외","textChars":27,"textLines":2,"bbox":[394.54,439.67,211.16,91.16]}
+{"kind":"textbox","id":"sh/wrelsbm9","slide":12,"name":"Text 19","text":"공식 보도 자료","textPreview":"공식 보도 자료","textChars":8,"textLines":1,"bbox":[377.27,561.6,239.96,28.76]}
+{"kind":"shape","id":"sh/bqlkz6lo","slide":12,"name":"Shape 20","bbox":[658.54,172.8,278.36,470.36]}
+{"kind":"shape","id":"sh/apc3q143","slide":12,"name":"Shape 21","bbox":[658.54,172.8,278.36,91.16]}
+{"kind":"textbox","id":"sh/lwnm5g3q","slide":12,"name":"Text 22","text":"FAR: Lone Sails","textPreview":"FAR: Lone Sails","textChars":15,"textLines":1,"bbox":[677.74,184.33,239.96,38.36]}
+{"kind":"textbox","id":"sh/kvelwvm5","slide":12,"name":"Text 23","text":"선박 중심 화면","textPreview":"선박 중심 화면","textChars":8,"textLines":1,"bbox":[677.74,222.73,239.96,28.76]}
+{"kind":"textbox","id":"sh/ju5k3qlk","slide":12,"name":"Text 24","text":"기계와 선박 장비가 플레이의 중심이 되는 화면","textPreview":"기계와 선박 장비가 플레이의 중심이 되는 화면","textChars":25,"textLines":1,"bbox":[677.74,283.2,244.76,110.36]}
+{"kind":"shape","id":"sh/ytw3ul4z","slide":12,"name":"Shape 25","bbox":[677.74,398.4,239.96,143.96]}
+{"kind":"textbox","id":"sh/tk7m903m","slide":12,"name":"Text 26","text":"적용 요소","textPreview":"적용 요소","textChars":5,"textLines":1,"bbox":[695.06,410.87,211.16,26.83]}
+{"kind":"textbox","id":"sh/8jyl0vm1","slide":12,"name":"Text 27","text":"선박 측면도 정비 화면\n장비 영역 4곳","textPreview":"선박 측면도 정비 화면 | 장비 영역 4곳","textChars":21,"textLines":2,"bbox":[695.06,439.67,211.16,91.16]}
+{"kind":"textbox","id":"sh/cf6xs3ep","slide":12,"name":"Text 28","text":"공식 소개 페이지","textPreview":"공식 소개 페이지","textChars":9,"textLines":1,"bbox":[677.74,561.6,239.96,28.76]}
+{"kind":"shape","id":"sh/dgzel8fa","slide":12,"name":"Shape 29","bbox":[959.06,172.8,278.36,470.36]}
+{"kind":"shape","id":"sh/qdovqtwj","slide":12,"name":"Shape 30","bbox":[959.06,172.8,278.36,91.16]}
+{"kind":"textbox","id":"sh/rexwjyx4","slide":12,"name":"Text 31","text":"Wildfrost","textPreview":"Wildfrost","textChars":9,"textLines":1,"bbox":[978.26,184.33,239.96,38.36]}
+{"kind":"textbox","id":"sh/03qxw3el","slide":12,"name":"Text 32","text":"작은 화면 가독성","textPreview":"작은 화면 가독성","textChars":9,"textLines":1,"bbox":[978.26,222.73,239.96,28.76]}
+{"kind":"textbox","id":"sh/14zep8f6","slide":12,"name":"Text 33","text":"간단한 외곽 형태와 색으로 즉시 구분되는 얼음","textPreview":"간단한 외곽 형태와 색으로 즉시 구분되는 얼음","textChars":25,"textLines":1,"bbox":[978.26,283.2,244.76,110.36]}
+{"kind":"shape","id":"sh/eh8fudwv","slide":12,"name":"Shape 34","bbox":[978.26,398.4,239.96,143.96]}
+{"kind":"textbox","id":"sh/z2hwnixg","slide":12,"name":"Text 35","text":"적용 요소","textPreview":"적용 요소","textChars":5,"textLines":1,"bbox":[995.53,410.87,211.16,26.83]}
+{"kind":"textbox","id":"sh/g7mdkjeh","slide":12,"name":"Text 36","text":"68px에서도 T1~T3 구분\n도트 대신 부드러운 채색","textPreview":"68px에서도 T1~T3 구분 | 도트 대신 부드러운 채색","textChars":30,"textLines":2,"bbox":[995.53,439.67,211.16,91.16]}
+{"kind":"textbox","id":"sh/h8vedof2","slide":12,"name":"Text 37","text":"공식 보도 자료","textPreview":"공식 보도 자료","textChars":8,"textLines":1,"bbox":[978.26,561.6,239.96,28.76]}
+{"kind":"textbox","id":"sh/j2l0jmhk","slide":12,"name":"Text 38","text":"필수 제작 기준: 캐주얼 손그림풍 게임 화면 × 미형 선장 반신 1장 · 얼음 6종 형태 재사용 · 항구 3종은 거리와 안개로 변주","textPreview":"필수 제작 기준: 캐주얼 손그림풍 게임 화면 × 미형 선장 반신 1장 · 얼음 6종 형태 재사용 · 항구 3종은 거리와 안개로 변주","textChars":73,"textLines":1,"bbox":[57.6,662.4,1161.56,33.56]}
+{"kind":"textbox","id":"sh/y1czqhgz","slide":12,"name":"Text 39","text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/8f2psfyx","slide":12,"text":"참고 게임마다 가져올 요소와 가져오지 않을 요소를 분명히 한다."}
+{"kind":"slide","id":"sl/hgzapcr6","slide":13,"title":"타격·오디오","textShapes":27}
+{"kind":"textbox","id":"sh/fm9snm1o","slide":13,"name":"Text 0","text":"타격·오디오","textPreview":"타격·오디오","textChars":6,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/el0reh03","slide":13,"name":"Text 1","text":"타격 연출과 오디오","textPreview":"타격 연출과 오디오","textChars":10,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/pcbatwjq","slide":13,"name":"Text 2","text":"타격 연출 5종","textPreview":"타격 연출 5종","textChars":8,"textLines":1,"bbox":[57.6,168,479.96,33.56]}
+{"kind":"shape","id":"sh/or2tkri5","slide":13,"name":"Shape 3","bbox":[57.6,216,585.56,65.23]}
+{"kind":"shape","id":"sh/6xc7et0n","slide":13,"name":"Shape 4","bbox":[78.73,232.33,32.62,32.62]}
+{"kind":"textbox","id":"sh/7yl8nyh8","slide":13,"name":"Text 5","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[78.73,231.84,32.62,32.62]}
+{"kind":"textbox","id":"sh/8zupg3it","slide":13,"name":"Text 6","text":"균열 단계 — 타격점에서 3단계로 성장","textPreview":"균열 단계 — 타격점에서 3단계로 성장","textChars":21,"textLines":1,"bbox":[129.6,216,499.16,65.23]}
+{"kind":"shape","id":"sh/t03qp8zy","slide":13,"name":"Shape 7","bbox":[57.6,294.73,585.56,65.23]}
+{"kind":"shape","id":"sh/u1w7id0j","slide":13,"name":"Shape 8","bbox":[78.73,311.06,32.62,32.62]}
+{"kind":"textbox","id":"sh/vm58rih4","slide":13,"name":"Text 9","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[78.73,310.56,32.62,32.62]}
+{"kind":"textbox","id":"sh/gnepk3yp","slide":13,"name":"Text 10","text":"파편·섬광 — 피해와 파괴 규모를 즉시 표시","textPreview":"파편·섬광 — 피해와 파괴 규모를 즉시 표시","textChars":24,"textLines":1,"bbox":[129.6,294.73,499.16,65.23]}
+{"kind":"shape","id":"sh/honqt8za","slide":13,"name":"Shape 11","bbox":[57.6,373.46,585.56,65.23]}
+{"kind":"shape","id":"sh/ipw7mdgv","slide":13,"name":"Shape 12","bbox":[78.73,389.74,32.62,32.62]}
+{"kind":"textbox","id":"sh/3q58vihg","slide":13,"name":"Text 13","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[78.73,389.29,32.62,32.62]}
+{"kind":"textbox","id":"sh/m5kzuhoj","slide":13,"name":"Text 14","text":"숫자 표시 — 치명타와 연쇄만 강조","textPreview":"숫자 표시 — 치명타와 연쇄만 강조","textChars":19,"textLines":1,"bbox":[129.6,373.46,499.16,65.23]}
+{"kind":"shape","id":"sh/n6tgnmp4","slide":13,"name":"Shape 15","bbox":[57.6,452.14,585.56,65.23]}
+{"kind":"shape","id":"sh/o72hwr6p","slide":13,"name":"Shape 16","bbox":[78.73,468.47,32.62,32.62]}
+{"kind":"textbox","id":"sh/98bypc7a","slide":13,"name":"Text 17","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[78.73,468.02,32.62,32.62]}
+{"kind":"textbox","id":"sh/a9kzyhov","slide":13,"name":"Text 18","text":"미세 화면 진동 — 확장 화면, 설정에서 끌 수 있음","textPreview":"미세 화면 진동 — 확장 화면, 설정에서 끌 수 있음","textChars":29,"textLines":1,"bbox":[129.6,452.14,499.16,65.23]}
+{"kind":"shape","id":"sh/batgrmpg","slide":13,"name":"Shape 19","bbox":[57.6,530.87,585.56,65.23]}
+{"kind":"shape","id":"sh/wbmh0r61","slide":13,"name":"Shape 20","bbox":[78.73,547.2,32.62,32.62]}
+{"kind":"textbox","id":"sh/xcvytw76","slide":13,"name":"Text 21","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[78.73,546.71,32.62,32.62]}
+{"kind":"textbox","id":"sh/yd4z21or","slide":13,"name":"Text 22","text":"얼음 파열음 — T1은 높게, T3는 낮고 무겁게","textPreview":"얼음 파열음 — T1은 높게, T3는 낮고 무겁게","textChars":27,"textLines":1,"bbox":[129.6,530.87,499.16,65.23]}
+{"kind":"textbox","id":"sh/jedgv6pc","slide":13,"name":"Text 23","text":"오디오 기준","textPreview":"오디오 기준","textChars":6,"textLines":1,"bbox":[691.2,168,527.96,33.56]}
+{"kind":"shape","id":"sh/t8f2l0re","slide":13,"name":"Shape 24","bbox":[691.2,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/8761svq9","slide":13,"name":"Text 25","text":"얼음","textPreview":"얼음","textChars":2,"textLines":1,"bbox":[691.2,292.8,95.96,26.83]}
+{"kind":"shape","id":"sh/76x0jq9o","slide":13,"name":"Shape 26","bbox":[796.8,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/65ojql83","slide":13,"name":"Text 27","text":"선박","textPreview":"선박","textChars":2,"textLines":1,"bbox":[796.8,292.8,95.96,26.83]}
+{"kind":"shape","id":"sh/hwz2p0rq","slide":13,"name":"Shape 28","bbox":[902.4,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/gvq1wvq5","slide":13,"name":"Text 29","text":"항구","textPreview":"항구","textChars":2,"textLines":1,"bbox":[902.4,292.8,95.96,26.83]}
+{"kind":"shape","id":"sh/vuhkna9k","slide":13,"name":"Shape 30","bbox":[1008,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/utoju58z","slide":13,"name":"Text 31","text":"화면","textPreview":"화면","textChars":2,"textLines":1,"bbox":[1008,292.8,95.96,26.83]}
+{"kind":"shape","id":"sh/50z2tk7m","slide":13,"name":"Shape 32","bbox":[1113.6,220.8,95.96,67.16]}
+{"kind":"textbox","id":"sh/4zq10fq1","slide":13,"name":"Text 33","text":"음소거","textPreview":"음소거","textChars":3,"textLines":1,"bbox":[1113.6,292.8,95.96,26.83]}
+{"kind":"textbox","id":"sh/ofidcn2p","slide":13,"name":"Text 34","text":"얼음=짧고 선명 · 엔진=낮고 안정 · 항구=따뜻한 2음 · 최초 실행은 음소거","textPreview":"얼음=짧고 선명 · 엔진=낮고 안정 · 항구=따뜻한 2음 · 최초 실행은 음소거","textChars":44,"textLines":1,"bbox":[691.2,331.2,527.96,57.56]}
+{"kind":"shape","id":"sh/9grulsja","slide":13,"name":"Shape 35","bbox":[691.2,408,527.96,230.36]}
+{"kind":"textbox","id":"sh/md0vadkj","slide":13,"name":"Text 36","text":"60초 오디오 흐름","textPreview":"60초 오디오 흐름","textChars":10,"textLines":1,"bbox":[720,427.2,479.96,33.56]}
+{"kind":"textbox","id":"sh/ne9cji14","slide":13,"name":"Text 37","text":"1  카운트다운 소리 + 낮은 엔진음","textPreview":"1  카운트다운 소리 + 낮은 엔진음","textChars":20,"textLines":1,"bbox":[720,470.4,479.96,38.36]}
+{"kind":"textbox","id":"sh/wj2dgn2l","slide":13,"name":"Text 38","text":"2  타격·연쇄 중심, 큰 연쇄 때 환경음 볼륨 낮춤","textPreview":"2  타격·연쇄 중심, 큰 연쇄 때 환경음 볼륨 낮춤","textChars":29,"textLines":1,"bbox":[720,510.73,479.96,38.36]}
+{"kind":"textbox","id":"sh/xkbupsj6","slide":13,"name":"Text 39","text":"3  작업 종료 직전 타격·음악 0.1초 정지","textPreview":"3  작업 종료 직전 타격·음악 0.1초 정지","textChars":25,"textLines":1,"bbox":[720,551.06,479.96,38.36]}
+{"kind":"textbox","id":"sh/ah0vexkv","slide":13,"name":"Text 40","text":"4  작업 종료음 → 항구 도착 화음","textPreview":"4  작업 종료음 → 항구 도착 화음","textChars":20,"textLines":1,"bbox":[720,591.34,479.96,38.36]}
+{"kind":"textbox","id":"sh/bi9cni10","slide":13,"name":"Text 41","text":"새로운 얼음 단계는 이름·발광·파열음으로 알린다. 음성 대사는 제작하지 않으며, 일정 부족 시 배경음악을 먼저 제외한다.","textPreview":"새로운 얼음 단계는 이름·발광·파열음으로 알린다. 음성 대사는 제작하지 않으며, 일정 부족 시 배경음악을 먼저 제외한다.","textChars":67,"textLines":1,"bbox":[57.6,667.2,1161.56,33.56]}
+{"kind":"textbox","id":"sh/cnyt432h","slide":13,"name":"Text 42","text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/hgzapcr6","slide":13,"text":"오디오는 이야기를 설명하지 않는다. 얼음 재질과 선박의 무게, 항구 도착의 안도감을 보강한다."}
+{"kind":"slide","id":"sl/6lsnupw7","slide":14,"title":"개발 범위","textShapes":24}
+{"kind":"textbox","id":"sh/rytgzex4","slide":14,"name":"Text 0","text":"개발 범위","textPreview":"개발 범위","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/4bixozyt","slide":14,"name":"Text 1","text":"필수 구현과 추후 검토","textPreview":"필수 구현과 추후 검토","textChars":12,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/5wryx4fy","slide":14,"name":"Shape 2","bbox":[57.6,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/i90fmpgn","slide":14,"name":"Text 3","text":"창/UI","textPreview":"창/UI","textChars":4,"textLines":1,"bbox":[57.6,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/ja9gvux8","slide":14,"name":"Text 4","text":"창 크기·저장","textPreview":"창 크기·저장","textChars":7,"textLines":1,"bbox":[43.2,283.2,182.36,33.56]}
+{"kind":"textbox","id":"sh/o7mh03yx","slide":14,"name":"Text 5","text":"480×56 ↔ 720×480\n저장 · 한국어/영어 · Windows","textPreview":"480×56 ↔ 720×480 | 저장 · 한국어/영어 · Windows","textChars":38,"textLines":2,"bbox":[33.6,318.73,201.56,81.56]}
+{"kind":"shape","id":"sh/psvy9ofi","slide":14,"name":"Shape 6","bbox":[220.8,192,324.43,81.56]}
+{"kind":"textbox","id":"sh/zmxkz2hk","slide":14,"name":"Text 7","text":"파쇄","textPreview":"파쇄","textChars":2,"textLines":1,"bbox":[220.8,192,324.43,81.56]}
+{"kind":"textbox","id":"sh/y1ojqx0z","slide":14,"name":"Text 8","text":"파쇄 규칙","textPreview":"파쇄 규칙","textChars":5,"textLines":1,"bbox":[206.4,283.2,355.16,33.56]}
+{"kind":"textbox","id":"sh/loz21szq","slide":14,"name":"Text 9","text":"60초 · 최대 20개\nT1~T3 · 결정빙·균열빙","textPreview":"60초 · 최대 20개 | T1~T3 · 결정빙·균열빙","textChars":28,"textLines":2,"bbox":[196.8,318.73,374.36,81.56]}
+{"kind":"shape","id":"sh/0n61s7i5","slide":14,"name":"Shape 10","bbox":[556.8,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/7qhk32hw","slide":14,"name":"Text 11","text":"진행","textPreview":"진행","textChars":2,"textLines":1,"bbox":[556.8,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/mp8jux0b","slide":14,"name":"Text 12","text":"진행 시스템","textPreview":"진행 시스템","textChars":6,"textLines":1,"bbox":[542.4,283.2,268.76,33.56]}
+{"kind":"textbox","id":"sh/9sz25czm","slide":14,"name":"Text 13","text":"고정 항로 3개 · 정비 자금\n구매 항목 13개","textPreview":"고정 항로 3개 · 정비 자금 | 구매 항목 13개","textChars":26,"textLines":2,"bbox":[532.8,318.73,287.96,81.56]}
+{"kind":"shape","id":"sh/8rq1w7i1","slide":14,"name":"Shape 14","bbox":[806.4,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/3ud0rihc","slide":14,"name":"Text 15","text":"표현","textPreview":"표현","textChars":2,"textLines":1,"bbox":[806.4,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/2t4jid0r","slide":14,"name":"Text 16","text":"세계관 요소","textPreview":"세계관 요소","textChars":6,"textLines":1,"bbox":[792,283.2,268.76,33.56]}
+{"kind":"textbox","id":"sh/6pcn6lkf","slide":14,"name":"Text 17","text":"화물 · 항구 3곳\n도착 연출 1~2초","textPreview":"화물 · 항구 3곳 | 도착 연출 1~2초","textChars":21,"textLines":2,"bbox":[782.4,318.73,287.96,81.56]}
+{"kind":"shape","id":"sh/rql4zq10","slide":14,"name":"Shape 18","bbox":[1056,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/sru58bil","slide":14,"name":"Text 19","text":"완료","textPreview":"완료","textChars":2,"textLines":1,"bbox":[1056,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/tc3m1gj6","slide":14,"name":"Text 20","text":"완료 조건","textPreview":"완료 조건","textChars":5,"textLines":1,"bbox":[1041.6,283.2,182.36,33.56]}
+{"kind":"textbox","id":"sh/ils321kj","slide":14,"name":"Text 21","text":"목표 도달 → 북쪽 기지\n전용 엔딩은 일정이 남을 때만 제작","textPreview":"목표 도달 → 북쪽 기지 | 전용 엔딩은 일정이 남을 때만 제작","textChars":33,"textLines":2,"bbox":[1032,318.73,201.56,81.56]}
+{"kind":"shape","id":"sh/jm14v614","slide":14,"name":"Shape 22","bbox":[57.6,432,566.36,211.16]}
+{"kind":"textbox","id":"sh/4nu54b29","slide":14,"name":"Text 23","text":"필수 구현","textPreview":"필수 구현","textChars":5,"textLines":1,"bbox":[86.4,449.27,479.96,33.56]}
+{"kind":"textbox","id":"sh/5o3mxgju","slide":14,"name":"Text 24","text":"60초 파쇄 · 30초 항해 · 고정 항로 3개 · 정비 강화 3종 · 기기 저장 · 캐주얼 손그림풍 화면 · 선장 반신 1장","textPreview":"60초 파쇄 · 30초 항해 · 고정 항로 3개 · 정비 강화 3종 · 기기 저장 · 캐주얼 손그림풍 화면 · 선장 반신 1장","textChars":70,"textLines":1,"bbox":[86.4,489.6,518.36,81.56]}
+{"kind":"textbox","id":"sh/uhs3y1k7","slide":14,"name":"Text 25","text":"일정 부족 시 제외 순서: 선택 엔딩 → 대표 이미지/배경음악 → 장식용 선원 → 장비 외형 → 항구 거리 표현 → 얼음 외형 변형 → 핵심 장비 아이콘","textPreview":"일정 부족 시 제외 순서: 선택 엔딩 → 대표 이미지/배경음악 → 장식용 선원 → 장비 외형 → 항구 거리 표현 → 얼음 외형 변형 → 핵심 장비 아이콘","textChars":85,"textLines":1,"bbox":[86.4,580.8,518.36,47.96]}
+{"kind":"shape","id":"sh/vi14r61s","slide":14,"name":"Shape 26","bbox":[652.8,432,566.36,211.16]}
+{"kind":"textbox","id":"sh/xoryto7m","slide":14,"name":"Text 27","text":"추후 검토","textPreview":"추후 검토","textChars":5,"textLines":1,"bbox":[681.6,449.27,479.96,33.56]}
+{"kind":"textbox","id":"sh/cnihkj61","slide":14,"name":"Text 28","text":"T4·T5 · 흑빙·서리빙 · 추가 목적지 · 의뢰 선택 · 분기 항로 · 화물 보정 · macOS · 다국어 · Steam 출시 준비","textPreview":"T4·T5 · 흑빙·서리빙 · 추가 목적지 · 의뢰 선택 · 분기 항로 · 화물 보정 · macOS · 다국어 · Steam 출시 준비","textChars":75,"textLines":1,"bbox":[681.6,489.6,527.96,81.56]}
+{"kind":"textbox","id":"sh/bm9grypg","slide":14,"name":"Text 29","text":"범위 제외: 자동 공격 · 앱 종료 중 수익 · 거래 경제 · 선체 내구도 · 장문 대화 · 물류 시뮬레이션","textPreview":"범위 제외: 자동 공격 · 앱 종료 중 수익 · 거래 경제 · 선체 내구도 · 장문 대화 · 물류 시뮬레이션","textChars":60,"textLines":1,"bbox":[681.6,580.8,518.36,47.96]}
+{"kind":"textbox","id":"sh/al0fit8v","slide":14,"name":"Text 30","text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/6lsnupw7","slide":14,"text":"필수 구현은 북쪽 기지 공통 도착까지다. 전용 엔딩은 제출 후보 실행본이 안정됐을 때만 개발 일정의 마지막 순서로 검토한다."}
+{"kind":"slide","id":"sl/vaxsvy10","slide":15,"title":"밸런스","textShapes":33}
+{"kind":"textbox","id":"sh/yhcfuxsr","slide":15,"name":"Text 0","text":"밸런스","textPreview":"밸런스","textChars":3,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/onad43qp","slide":15,"name":"Text 1","text":"표준/시연 초기 수치","textPreview":"표준/시연 초기 수치","textChars":11,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"textbox","id":"sh/pojux87a","slide":15,"name":"Text 2","text":"시연용 수치는 같은 코드에서 별도 데이터 파일로 적용한다. 표준/시연 저장 파일은 분리한다.","textPreview":"시연용 수치는 같은 코드에서 별도 데이터 파일로 적용한다. 표준/시연 저장 파일은 분리한다.","textChars":51,"textLines":1,"bbox":[57.6,153.6,1151.96,33.56]}
+{"kind":"shape","id":"sh/2lsv2t8j","slide":15,"name":"Shape 3","bbox":[57.6,206.4,1161.56,52.76]}
+{"kind":"textbox","id":"sh/3m1cvyp4","slide":15,"name":"Text 4","text":"표준 설정","textPreview":"표준 설정","textChars":5,"textLines":1,"bbox":[76.8,206.4,268.76,52.76]}
+{"kind":"textbox","id":"sh/gjqd03qt","slide":15,"name":"Text 5","text":"값","textPreview":"값","textChars":1,"textLines":1,"bbox":[374.4,206.4,220.76,52.76]}
+{"kind":"textbox","id":"sh/1kjuto7y","slide":15,"name":"Text 6","text":"시연 설정","textPreview":"시연 설정","textChars":5,"textLines":1,"bbox":[624,206.4,268.76,52.76]}
+{"kind":"textbox","id":"sh/eh8byt8n","slide":15,"name":"Text 7","text":"값","textPreview":"값","textChars":1,"textLines":1,"bbox":[921.6,206.4,287.96,52.76]}
+{"kind":"shape","id":"sh/fihcryp8","slide":15,"name":"Shape 8","bbox":[57.6,259.2,1161.56,59.49]}
+{"kind":"textbox","id":"sh/0fudcnqx","slide":15,"name":"Text 9","text":"쇄빙 작업","textPreview":"쇄빙 작업","textChars":5,"textLines":1,"bbox":[76.8,259.2,268.76,59.49]}
+{"kind":"textbox","id":"sh/lg3e5s7i","slide":15,"name":"Text 10","text":"60초 고정","textPreview":"60초 고정","textChars":6,"textLines":1,"bbox":[374.4,259.2,220.76,59.49]}
+{"kind":"textbox","id":"sh/x8vih0ji","slide":15,"name":"Text 11","text":"쇄빙 작업","textPreview":"쇄빙 작업","textChars":5,"textLines":1,"bbox":[624,259.2,268.76,59.49]}
+{"kind":"textbox","id":"sh/wnm18v2x","slide":15,"name":"Text 12","text":"60초 · 동일 코드","textPreview":"60초 · 동일 코드","textChars":11,"textLines":1,"bbox":[921.6,259.2,287.96,59.49]}
+{"kind":"textbox","id":"sh/bmt0fq1c","slide":15,"name":"Text 13","text":"다음 얼음 구간","textPreview":"다음 얼음 구간","textChars":8,"textLines":1,"bbox":[76.8,318.73,268.76,59.49]}
+{"kind":"textbox","id":"sh/alkj6lk7","slide":15,"name":"Text 14","text":"30초","textPreview":"30초","textChars":3,"textLines":1,"bbox":[374.4,318.73,220.76,59.49]}
+{"kind":"textbox","id":"sh/lcvil0ju","slide":15,"name":"Text 15","text":"다음 얼음 구간","textPreview":"다음 얼음 구간","textChars":8,"textLines":1,"bbox":[624,318.73,268.76,59.49]}
+{"kind":"textbox","id":"sh/kbm1cv29","slide":15,"name":"Text 16","text":"10초","textPreview":"10초","textChars":3,"textLines":1,"bbox":[921.6,318.73,287.96,59.49]}
+{"kind":"shape","id":"sh/jad0jq1o","slide":15,"name":"Shape 17","bbox":[57.6,378.26,1161.56,59.49]}
+{"kind":"textbox","id":"sh/y94jalk3","slide":15,"name":"Text 18","text":"항로 목표","textPreview":"항로 목표","textChars":5,"textLines":1,"bbox":[76.8,378.26,268.76,59.49]}
+{"kind":"textbox","id":"sh/tgf2pkjq","slide":15,"name":"Text 19","text":"120 / 600 / 2,400","textPreview":"120 / 600 / 2,400","textChars":17,"textLines":1,"bbox":[374.4,378.26,220.76,59.49]}
+{"kind":"textbox","id":"sh/sf61gf25","slide":15,"name":"Text 20","text":"항로 목표","textPreview":"항로 목표","textChars":5,"textLines":1,"bbox":[624,378.26,268.76,59.49]}
+{"kind":"textbox","id":"sh/qlgfax0n","slide":15,"name":"Text 21","text":"40 / 120 / 300","textPreview":"40 / 120 / 300","textChars":14,"textLines":1,"bbox":[921.6,378.26,287.96,59.49]}
+{"kind":"textbox","id":"sh/rmpg3218","slide":15,"name":"Text 22","text":"정비 비용","textPreview":"정비 비용","textChars":5,"textLines":1,"bbox":[76.8,437.74,268.76,59.49]}
+{"kind":"textbox","id":"sh/cnyxc7it","slide":15,"name":"Text 23","text":"기준값 100%","textPreview":"기준값 100%","textChars":8,"textLines":1,"bbox":[374.4,437.74,220.76,59.49]}
+{"kind":"textbox","id":"sh/dory5cze","slide":15,"name":"Text 24","text":"정비 비용","textPreview":"정비 비용","textChars":5,"textLines":1,"bbox":[624,437.74,268.76,59.49]}
+{"kind":"textbox","id":"sh/ep0feh0z","slide":15,"name":"Text 25","text":"표준 비용의 10%, 올림","textPreview":"표준 비용의 10%, 올림","textChars":14,"textLines":1,"bbox":[921.6,437.74,287.96,59.49]}
+{"kind":"shape","id":"sh/zq9g7mh4","slide":15,"name":"Shape 26","bbox":[57.6,497.27,1161.56,59.49]}
+{"kind":"textbox","id":"sh/0rixgrip","slide":15,"name":"Text 27","text":"플레이타임 목표","textPreview":"플레이타임 목표","textChars":8,"textLines":1,"bbox":[76.8,497.27,268.76,59.49]}
+{"kind":"textbox","id":"sh/1sry9wza","slide":15,"name":"Text 28","text":"목표 30~60분","textPreview":"목표 30~60분","textChars":9,"textLines":1,"bbox":[374.4,497.27,220.76,59.49]}
+{"kind":"textbox","id":"sh/mt0zih0v","slide":15,"name":"Text 29","text":"시연 시간 목표","textPreview":"시연 시간 목표","textChars":8,"textLines":1,"bbox":[624,497.27,268.76,59.49]}
+{"kind":"textbox","id":"sh/ne9gbmhg","slide":15,"name":"Text 30","text":"전체 흐름 10분 이내","textPreview":"전체 흐름 10분 이내","textChars":12,"textLines":1,"bbox":[921.6,497.27,287.96,59.49]}
+{"kind":"textbox","id":"sh/jitwz6xo","slide":15,"name":"Text 31","text":"얼음 화면","textPreview":"얼음 화면","textChars":5,"textLines":1,"bbox":[76.8,556.8,268.76,59.49]}
+{"kind":"textbox","id":"sh/yhkf61g3","slide":15,"name":"Text 32","text":"자유 위치 · 최대 20개","textPreview":"자유 위치 · 최대 20개","textChars":14,"textLines":1,"bbox":[374.4,556.8,220.76,59.49]}
+{"kind":"textbox","id":"sh/lkbe1wfe","slide":15,"name":"Text 33","text":"얼음 화면","textPreview":"얼음 화면","textChars":5,"textLines":1,"bbox":[624,556.8,268.76,59.49]}
+{"kind":"textbox","id":"sh/kj2x8ry9","slide":15,"name":"Text 34","text":"표준과 동일","textPreview":"표준과 동일","textChars":6,"textLines":1,"bbox":[921.6,556.8,287.96,59.49]}
+{"kind":"shape","id":"sh/bu9wvmxc","slide":15,"name":"Shape 35","bbox":[57.6,628.8,1161.56,57.56]}
+{"kind":"textbox","id":"sh/at0f2hgr","slide":15,"name":"Text 36","text":"밸런스 값은 데이터 파일에서 관리한다. 개발 5~10일차 기록을 기준으로 조정하고 11일차에 확정한다.","textPreview":"밸런스 값은 데이터 파일에서 관리한다. 개발 5~10일차 기록을 기준으로 조정하고 11일차에 확정한다.","textChars":57,"textLines":1,"bbox":[91.2,628.8,1103.96,57.56]}
+{"kind":"textbox","id":"sh/xgbexwfi","slide":15,"name":"Text 37","text":"15","textPreview":"15","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/vaxsvy10","slide":15,"text":"표준과 시연은 같은 코드에서 수치 데이터만 다르게 쓴다. 현재 수치는 초기값이며 개발 5일차부터 기록을 보고 조정해 11일차에 확정한다."}
+{"kind":"slide","id":"sl/gny5sjyp","slide":16,"title":"기술·업무","textShapes":16}
+{"kind":"textbox","id":"sh/pk7y5g7m","slide":16,"name":"Text 0","text":"기술·업무","textPreview":"기술·업무","textChars":5,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/etwfq1oz","slide":16,"name":"Text 1","text":"개발자별 작업 범위","textPreview":"개발자별 작업 범위","textChars":10,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/fu5gz6pk","slide":16,"name":"Shape 2","bbox":[57.6,177.6,767.96,94.03]}
+{"kind":"textbox","id":"sh/wnm1cjqh","slide":16,"name":"Text 3","text":"공유 데이터 형식","textPreview":"공유 데이터 형식","textChars":9,"textLines":1,"bbox":[148.8,189.13,191.96,33.56]}
+{"kind":"textbox","id":"sh/vmdk3e9w","slide":16,"name":"Text 4","text":"정산 결과 · 항로 상태 · 밸런스 값 · 게임 신호 형식을 1일차에 확정","textPreview":"정산 결과 · 항로 상태 · 밸런스 값 · 게임 신호 형식을 1일차에 확정","textChars":41,"textLines":1,"bbox":[148.8,222.73,652.76,43.16]}
+{"kind":"shape","id":"sh/ulkja98b","slide":16,"name":"Shape 5","bbox":[441.6,272.62,0.04,14.4]}
+{"kind":"shape","id":"sh/9kb214rq","slide":16,"name":"Shape 6","bbox":[57.6,288,767.96,94.03]}
+{"kind":"textbox","id":"sh/7itkzu90","slide":16,"name":"Text 7","text":"공통 게임 기능","textPreview":"공통 게임 기능","textChars":8,"textLines":1,"bbox":[148.8,299.53,191.96,33.56]}
+{"kind":"textbox","id":"sh/mhkj6p8f","slide":16,"name":"Text 8","text":"Unity 6 · C# — 상태 흐름 · 얼음 배치 · 항로 · 정비 · 저장","textPreview":"Unity 6 · C# — 상태 흐름 · 얼음 배치 · 항로 · 정비 · 저장","textChars":43,"textLines":1,"bbox":[148.8,333.13,652.76,43.16]}
+{"kind":"shape","id":"sh/lgbixkru","slide":16,"name":"Shape 9","bbox":[441.6,383.02,0.04,14.4]}
+{"kind":"shape","id":"sh/kf214zq9","slide":16,"name":"Shape 10","bbox":[57.6,398.4,767.96,94.03]}
+{"kind":"textbox","id":"sh/xwn6p032","slide":16,"name":"Text 11","text":"창·UI","textPreview":"창·UI","textChars":4,"textLines":1,"bbox":[148.8,409.93,191.96,33.56]}
+{"kind":"textbox","id":"sh/atc7elkb","slide":16,"name":"Text 12","text":"창 제어 — 축소·확장 · 화면 배율 대응 · 실패 시 화면 하단 일반 창","textPreview":"창 제어 — 축소·확장 · 화면 배율 대응 · 실패 시 화면 하단 일반 창","textChars":41,"textLines":1,"bbox":[148.8,443.53,652.76,43.16]}
+{"kind":"shape","id":"sh/bulonqlw","slide":16,"name":"Shape 13","bbox":[441.6,493.42,0.04,14.4]}
+{"kind":"shape","id":"sh/kjepkf2t","slide":16,"name":"Shape 14","bbox":[57.6,508.8,767.96,94.03]}
+{"kind":"textbox","id":"sh/yxw7i5kn","slide":16,"name":"Text 15","text":"데이터·검증","textPreview":"데이터·검증","textChars":6,"textLines":1,"bbox":[148.8,520.33,191.96,33.56]}
+{"kind":"textbox","id":"sh/ji5ora18","slide":16,"name":"Text 16","text":"표준/시연 데이터 · 기기 저장 · 상태/항로/구매 자동 테스트","textPreview":"표준/시연 데이터 · 기기 저장 · 상태/항로/구매 자동 테스트","textChars":35,"textLines":1,"bbox":[148.8,553.93,652.76,43.16]}
+{"kind":"shape","id":"sh/8nepof2p","slide":16,"name":"Shape 17","bbox":[864,177.6,355.16,441.56]}
+{"kind":"textbox","id":"sh/to76xkja","slide":16,"name":"Text 18","text":"개발자별 작업 범위","textPreview":"개발자별 작업 범위","textChars":10,"textLines":1,"bbox":[892.8,196.8,307.16,33.56]}
+{"kind":"shape","id":"sh/3i9snelc","slide":16,"name":"Shape 19","bbox":[892.8,244.8,47.96,47.96]}
+{"kind":"textbox","id":"sh/5krapo3i","slide":16,"name":"Text 20","text":"개발자 1 — 얼음·입력·특수빙·연쇄\n파쇄 스크립트와 얼음 재사용 처리 담당","textPreview":"개발자 1 — 얼음·입력·특수빙·연쇄 | 파쇄 스크립트와 얼음 재사용 처리 담당","textChars":42,"textLines":2,"bbox":[955.2,240,254.36,91.16]}
+{"kind":"shape","id":"sh/4ji9gjmx","slide":16,"name":"Shape 21","bbox":[892.8,340.8,47.96,47.96]}
+{"kind":"textbox","id":"sh/udgra94v","slide":16,"name":"Text 22","text":"개발자 2 — 상태·정산·항로·정비·저장·밸런스\n공용 데이터와 저장 형식 담당","textPreview":"개발자 2 — 상태·정산·항로·정비·저장·밸런스 | 공용 데이터와 저장 형식 담당","textChars":43,"textLines":2,"bbox":[955.2,336,254.36,91.16]}
+{"kind":"shape","id":"sh/hgralo3m","slide":16,"name":"Shape 23","bbox":[892.8,436.8,47.96,47.96]}
+{"kind":"textbox","id":"sh/fatsvylk","slide":16,"name":"Text 24","text":"개발자 3 — 창·메인 게임 화면·UI·아트/오디오 적용·실행 파일 제작\n메인 게임 화면과 UI 구성 파일 담당","textPreview":"개발자 3 — 창·메인 게임 화면·UI·아트/오디오 적용·실행 파일 제작 | 메인 게임 화면과 UI 구성 파일 담당","textChars":62,"textLines":2,"bbox":[955.2,432,254.36,91.16]}
+{"kind":"shape","id":"sh/e9krmt4z","slide":16,"name":"Shape 25","bbox":[892.8,532.8,47.96,47.96]}
+{"kind":"textbox","id":"sh/kradkjqd","slide":16,"name":"Text 26","text":"아티스트 — 작업 원본(PSD/KRA) + 투명 PNG + 720×480 합성 화면\nUnity 적용은 개발자 3이 담당","textPreview":"아티스트 — 작업 원본(PSD/KRA) + 투명 PNG + 720×480 합성 화면 | Unity 적용은 개발자 3이 담당","textChars":66,"textLines":2,"bbox":[955.2,528,254.36,91.16]}
+{"kind":"textbox","id":"sh/zq1wry98","slide":16,"name":"Text 27","text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/vyxojyps","slide":16,"name":"Image 0","bbox":[86.4,204.47,40.29,40.29]}
+{"kind":"image","id":"im/436pwnq9","slide":16,"name":"Image 1","bbox":[86.4,314.87,40.29,40.29]}
+{"kind":"image","id":"im/54z6ps7u","slide":16,"name":"Image 2","bbox":[86.4,425.27,40.29,40.29]}
+{"kind":"image","id":"im/i1o7ud83","slide":16,"name":"Image 3","bbox":[86.4,535.67,40.29,40.29]}
+{"kind":"image","id":"im/32xonipo","slide":16,"name":"Image 4","bbox":[904.33,256.33,24.91,24.91]}
+{"kind":"image","id":"im/c7qp0nq5","slide":16,"name":"Image 5","bbox":[904.33,352.33,24.91,24.91]}
+{"kind":"image","id":"im/d8zqts7q","slide":16,"name":"Image 6","bbox":[904.33,448.33,24.91,24.91]}
+{"kind":"image","id":"im/n21szm98","slide":16,"name":"Image 7","bbox":[904.33,544.33,24.91,24.91]}
+{"kind":"notes","id":"nt/gny5sjyp","slide":16,"text":"개발자 셋이 같은 Unity 파일을 동시에 수정하지 않도록 각자 맡을 작업 범위를 고정한다."}
+{"kind":"slide","id":"sl/14bup87q","slide":17,"title":"14일 개발 일정","textShapes":24}
+{"kind":"textbox","id":"sh/ryxkzqt0","slide":17,"name":"Text 0","text":"14일 개발 일정","textPreview":"14일 개발 일정","textChars":9,"textLines":1,"bbox":[57.6,38.4,863.96,31.63]}
+{"kind":"textbox","id":"sh/0nq1wvuh","slide":17,"name":"Text 1","text":"5일차 반복 · 8일차 항로/정비 · 11일차 기능 마감 · 13일차 제출 후보","textPreview":"5일차 반복 · 8일차 항로/정비 · 11일차 기능 마감 · 13일차 제출 후보","textChars":44,"textLines":1,"bbox":[57.6,71.06,1161.56,67.16]}
+{"kind":"shape","id":"sh/1oz250b2","slide":17,"name":"Shape 2","bbox":[57.6,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/e18ju5cr","slide":17,"name":"Text 3","text":"1~2일차","textPreview":"1~2일차","textChars":5,"textLines":1,"bbox":[57.6,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/zmhk3atw","slide":17,"name":"Text 4","text":"기술 검증","textPreview":"기술 검증","textChars":5,"textLines":1,"bbox":[43.2,283.2,182.36,33.56]}
+{"kind":"textbox","id":"sh/oral0fut","slide":17,"name":"Text 5","text":"일반 창 전환 · 얼음 20개 · 초당 60프레임\n공유 데이터 형식·아트 기준 이미지 확정","textPreview":"일반 창 전환 · 얼음 20개 · 초당 60프레임 | 공유 데이터 형식·아트 기준 이미지 확정","textChars":50,"textLines":2,"bbox":[33.6,318.73,201.56,81.56]}
+{"kind":"shape","id":"sh/9sj29kbe","slide":17,"name":"Shape 6","bbox":[220.8,192,324.43,81.56]}
+{"kind":"textbox","id":"sh/jml4zedg","slide":17,"name":"Text 7","text":"3~5일차","textPreview":"3~5일차","textChars":5,"textLines":1,"bbox":[220.8,192,324.43,81.56]}
+{"kind":"textbox","id":"sh/ylcnq9wv","slide":17,"name":"Text 8","text":"기본 반복","textPreview":"기본 반복","textChars":5,"textLines":1,"bbox":[206.4,283.2,355.16,33.56]}
+{"kind":"textbox","id":"sh/lo3m1ovm","slide":17,"name":"Text 9","text":"60초 작업 → 정산 → 30초 항해\n→ 두 번째 작업","textPreview":"60초 작업 → 정산 → 30초 항해 | → 두 번째 작업","textChars":30,"textLines":2,"bbox":[196.8,318.73,374.36,81.56]}
+{"kind":"shape","id":"sh/knu5sje1","slide":17,"name":"Shape 10","bbox":[556.8,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/bil4ved4","slide":17,"name":"Text 11","text":"6~8일차","textPreview":"6~8일차","textChars":5,"textLines":1,"bbox":[556.8,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/ahsnm9wz","slide":17,"name":"Text 12","text":"항로·정비","textPreview":"항로·정비","textChars":5,"textLines":1,"bbox":[542.4,283.2,268.76,33.56]}
+{"kind":"textbox","id":"sh/xk3mx4va","slide":17,"name":"Text 13","text":"항로 · 정비 13개 · 저장\nUI·아트 1차 적용","textPreview":"항로 · 정비 13개 · 저장 | UI·아트 1차 적용","textChars":28,"textLines":2,"bbox":[532.8,318.73,287.96,81.56]}
+{"kind":"shape","id":"sh/wju5ozep","slide":17,"name":"Shape 14","bbox":[806.4,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/ve5o7ydo","slide":17,"name":"Text 15","text":"9~11일차","textPreview":"9~11일차","textChars":6,"textLines":1,"bbox":[806.4,192,238.03,81.56]}
+{"kind":"textbox","id":"sh/udwnytw3","slide":17,"name":"Text 16","text":"콘텐츠 완료","textPreview":"콘텐츠 완료","textChars":6,"textLines":1,"bbox":[792,283.2,268.76,33.56]}
+{"kind":"textbox","id":"sh/q907qxgb","slide":17,"name":"Text 17","text":"T1~T3 · 특수빙 · 항구 3곳\n도착·오디오 · 11일차 확정","textPreview":"T1~T3 · 특수빙 · 항구 3곳 | 도착·오디오 · 11일차 확정","textChars":36,"textLines":2,"bbox":[782.4,318.73,287.96,81.56]}
+{"kind":"shape","id":"sh/ra98z2xw","slide":17,"name":"Shape 18","bbox":[1056,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/sbips7yh","slide":17,"name":"Text 19","text":"12~14일차","textPreview":"12~14일차","textChars":7,"textLines":1,"bbox":[1056,192,151.63,81.56]}
+{"kind":"textbox","id":"sh/dcrq1cfm","slide":17,"name":"Text 20","text":"최종 검수·제출","textPreview":"최종 검수·제출","textChars":8,"textLines":1,"bbox":[1041.6,283.2,182.36,33.56]}
+{"kind":"textbox","id":"sh/ed07uhw7","slide":17,"name":"Text 21","text":"밸런스 · 화면 배율 · 한국어/영어 · 제출 후보 실행본\n안정 시에만 선택 엔딩 · 제출","textPreview":"밸런스 · 화면 배율 · 한국어/영어 · 제출 후보 실행본 | 안정 시에만 선택 엔딩 · 제출","textChars":50,"textLines":2,"bbox":[1032,318.73,201.56,81.56]}
+{"kind":"shape","id":"sh/ze9832xs","slide":17,"name":"Shape 22","bbox":[57.6,432,566.36,211.16]}
+{"kind":"textbox","id":"sh/0fipw7ed","slide":17,"name":"Text 23","text":"업무 분담","textPreview":"업무 분담","textChars":5,"textLines":1,"bbox":[86.4,449.27,479.96,33.56]}
+{"kind":"textbox","id":"sh/1gbq5cfy","slide":17,"name":"Text 24","text":"개발자 1 파쇄 기능 · 개발자 2 진행/데이터 · 개발자 3 창/UI/통합 · 아티스트 게임 아트/선장 원화","textPreview":"개발자 1 파쇄 기능 · 개발자 2 진행/데이터 · 개발자 3 창/UI/통합 · 아티스트 게임 아트/선장 원화","textChars":61,"textLines":1,"bbox":[86.4,489.6,518.36,81.56]}
+{"kind":"textbox","id":"sh/uhg7idg3","slide":17,"name":"Text 25","text":"메인 게임 화면·UI 구성 파일·아트 적용은 개발자 3만 수정한다. 나머지는 스크립트·데이터·테스트·원본 아트로 전달한다.","textPreview":"메인 게임 화면·UI 구성 파일·아트 적용은 개발자 3만 수정한다. 나머지는 스크립트·데이터·테스트·원본 아트로 전달한다.","textChars":68,"textLines":1,"bbox":[86.4,580.8,518.36,47.96]}
+{"kind":"shape","id":"sh/viporixo","slide":17,"name":"Shape 26","bbox":[652.8,432,566.36,211.16]}
+{"kind":"textbox","id":"sh/x8f2dk3i","slide":17,"name":"Text 27","text":"통합 및 검수","textPreview":"통합 및 검수","textChars":7,"textLines":1,"bbox":[681.6,449.27,479.96,33.56]}
+{"kind":"textbox","id":"sh/w761kfmx","slide":17,"name":"Text 28","text":"매일 개발자 1 → 2 → 3 순서로 변경 사항 합치기 · 직후 네 명이 10분 핵심 흐름 확인 · 11일차 이후 새 기능·아트 요청 금지","textPreview":"매일 개발자 1 → 2 → 3 순서로 변경 사항 합치기 · 직후 네 명이 10분 핵심 흐름 확인 · 11일차 이후 새 기능·아트 요청 금지","textChars":77,"textLines":1,"bbox":[681.6,489.6,527.96,81.56]}
+{"kind":"textbox","id":"sh/v6xkbalc","slide":17,"name":"Text 29","text":"선택 엔딩은 12일차 제출 후보 실행본이 안정된 경우에만 작업한다. 13일차 이후에는 진행 불가 버그만 수정한다.","textPreview":"선택 엔딩은 12일차 제출 후보 실행본이 안정된 경우에만 작업한다. 13일차 이후에는 진행 불가 버그만 수정한다.","textChars":63,"textLines":1,"bbox":[681.6,580.8,518.36,47.96]}
+{"kind":"textbox","id":"sh/aloji54r","slide":17,"name":"Text 30","text":"17","textPreview":"17","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"notes","id":"nt/14bup87q","slide":17,"text":"5일차와 8일차에 실제 실행 가능한 버전을 확인한다. 선택 엔딩은 12일차 제출 후보 실행본이 안정된 경우에만 작업한다."}
+{"kind":"slide","id":"sl/y5wne50z","slide":18,"title":"팀 내부 최종 기준","textShapes":7}
+{"kind":"textbox","id":"sh/87udoby5","slide":18,"name":"Text 0","text":"팀 내부 최종 기준","textPreview":"팀 내부 최종 기준","textChars":10,"textLines":1,"bbox":[57.6,134.4,1151.96,47.96]}
+{"kind":"textbox","id":"sh/t83uhgfq","slide":18,"name":"Text 1","text":"필수 목표: 60초 파쇄 반복과\n고정 항로 3개 완주","textPreview":"필수 목표: 60초 파쇄 반복과 | 고정 항로 3개 완주","textChars":29,"textLines":2,"bbox":[57.6,201.6,1161.56,163.16]}
+{"kind":"textbox","id":"sh/65cvm1gz","slide":18,"name":"Text 2","text":"북쪽 기지 공통 도착까지 구현 · 선택 엔딩은 일정 여유 시 검토","textPreview":"북쪽 기지 공통 도착까지 구현 · 선택 엔딩은 일정 여유 시 검토","textChars":36,"textLines":1,"bbox":[59.53,393.6,1055.96,43.16]}
+{"kind":"shape","id":"sh/ml8rqxwv","slide":18,"name":"Shape 8","bbox":[0,566.4,1279.63,67.16]}
+{"kind":"shape","id":"sh/xcjapcvi","slide":18,"name":"Shape 9","bbox":[52.8,526.07,143.96,40.29]}
+{"kind":"textbox","id":"sh/ba1sn2dc","slide":18,"name":"Text 10","text":"ICEBREAKER","textPreview":"ICEBREAKER","textChars":10,"textLines":1,"bbox":[96,526.07,100.76,40.29]}
+{"kind":"textbox","id":"sh/ap8buxwr","slide":18,"name":"Text 11","text":"1일차 착수 항목: 공유 데이터 형식 · 아트 기준 이미지 · 축소 창/파쇄 시제품","textPreview":"1일차 착수 항목: 공유 데이터 형식 · 아트 기준 이미지 · 축소 창/파쇄 시제품","textChars":46,"textLines":1,"bbox":[59.53,657.6,1055.96,38.36]}
+{"kind":"textbox","id":"sh/dgfad8fe","slide":18,"name":"Text 12","text":"1일차","textPreview":"1일차","textChars":3,"textLines":1,"bbox":[1171.2,566.4,86.36,67.16]}
+{"kind":"textbox","id":"sh/sf69k3et","slide":18,"name":"Text 13","text":"18","textPreview":"18","textChars":2,"textLines":1,"bbox":[1204.8,676.8,47.96,28.76]}
+{"kind":"image","id":"im/z6t03ux0","slide":18,"name":"Image 1","bbox":[64.33,533.74,24.91,24.91]}
+{"kind":"image","id":"im/e5kzapwf","slide":18,"name":"","geometry":"roundRect","bbox":[810,118,380,380]}
+{"kind":"notes","id":"nt/y5wne50z","slide":18,"text":"마지막 장은 다음 행동으로 닫는다. 1일차에 데이터 형식, 아트 기준, 창·파쇄 기술을 동시에 검증한다."}

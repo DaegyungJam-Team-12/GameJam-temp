@@ -86,6 +86,11 @@ crashlytics-build.properties
 .vscode/
 *.swp
 
+# Microsoft Office lock files
+~$*.docx
+~$*.pptx
+~$*.xlsx
+
 # ============================================
 # AI Agents (Claude Code, Codex)
 # ============================================
