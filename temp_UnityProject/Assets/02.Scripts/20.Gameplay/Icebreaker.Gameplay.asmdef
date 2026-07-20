@@ -1,0 +1,17 @@
+{
+  "name": "Icebreaker.Gameplay",
+  "rootNamespace": "Icebreaker.Gameplay",
+  "references": [
+    "Icebreaker.Shared",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
