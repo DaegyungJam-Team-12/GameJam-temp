@@ -3,6 +3,7 @@
 using System;
 using Icebreaker.Shared.Events;
 using Icebreaker.Shared.State;
+using Icebreaker.UI.Hud;
 using UnityEngine;
 
 namespace Icebreaker.UI.Sandbox
@@ -10,7 +11,7 @@ namespace Icebreaker.UI.Sandbox
     /// <summary>
     /// UI-only sample source. It mirrors progression outputs without depending on Core or Gameplay.
     /// </summary>
-    public sealed class UiSandboxDataSource : MonoBehaviour, IProgressionEventSource
+    public sealed class UiSandboxDataSource : MonoBehaviour, IProgressionEventSource, IGameStateSource
     {
         private const long InitialFunds = 12_400;
         private const double InitialRemainingSeconds = 42d;

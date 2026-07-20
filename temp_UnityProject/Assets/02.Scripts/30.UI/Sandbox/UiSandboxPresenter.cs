@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using Icebreaker.Shared.Events;
 using Icebreaker.Shared.State;
+using Icebreaker.UI.Hud;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -124,12 +125,12 @@ namespace Icebreaker.UI.Sandbox
         {
             if (fundsText != null)
             {
-                fundsText.text = $"FUNDS {FormatCompactFunds(state.Funds)}";
+                fundsText.text = $"FUNDS {HudTextFormatter.FormatFunds(state.Funds)}";
             }
 
             if (timerText != null)
             {
-                timerText.text = FormatCountdown(state.RemainingSeconds);
+                timerText.text = HudTextFormatter.FormatCountdown(state.RemainingSeconds);
             }
         }
 
@@ -250,23 +251,5 @@ namespace Icebreaker.UI.Sandbox
             return runtimeFallbackFont;
         }
 
-        internal static string FormatCompactFunds(long funds)
-        {
-            if (funds < 1_000)
-            {
-                return funds.ToString("N0", CultureInfo.InvariantCulture);
-            }
-
-            var compact = funds / 1_000d;
-            return $"{compact.ToString("0.#", CultureInfo.InvariantCulture)}K";
-        }
-
-        internal static string FormatCountdown(double remainingSeconds)
-        {
-            var totalSeconds = Math.Max(0, (int)Math.Ceiling(remainingSeconds));
-            var minutes = totalSeconds / 60;
-            var seconds = totalSeconds % 60;
-            return $"{minutes:00}:{seconds:00}";
-        }
     }
 }
