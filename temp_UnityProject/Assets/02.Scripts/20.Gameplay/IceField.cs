@@ -15,6 +15,8 @@ namespace Icebreaker.Gameplay
     /// </summary>
     public sealed class IceField : ICombatEventSource
     {
+        private const int MaxInitialLayoutAttempts = 10;
+
         private readonly long stageId;
         private readonly IceFieldConfig config;
         private readonly IceIdGenerator idGenerator;
@@ -74,13 +76,26 @@ namespace Icebreaker.Gameplay
         /// </summary>
         public void Initialize(double stageElapsedSeconds)
         {
-            activeIce.Clear();
-
-            for (var i = 0; i < config.MaxActiveIceCount; i++)
+            for (var layoutAttempt = 0; layoutAttempt < MaxInitialLayoutAttempts; layoutAttempt++)
             {
-                var ice = SpawnNewIce(stageElapsedSeconds);
-                activeIce.Add(ice);
+                activeIce.Clear();
+                for (var i = 0; i < config.MaxActiveIceCount; i++)
+                {
+                    if (!TrySpawnNewIce(stageElapsedSeconds, out var ice))
+                    {
+                        break;
+                    }
+
+                    activeIce.Add(ice!);
+                }
+
+                if (activeIce.Count == config.MaxActiveIceCount)
+                {
+                    return;
+                }
             }
+
+            throw new InvalidOperationException("Could not create a valid ice-field layout.");
         }
 
         /// <summary>
@@ -333,7 +348,10 @@ namespace Icebreaker.Gameplay
             var def = GetDefinition(tier);
             var positions = CollectAlivePositions(destroyed);
 
-            positioner.TryGetPosition(positions, out var newPosition);
+            if (!positioner.TryGetPosition(positions, out var newPosition))
+            {
+                throw new InvalidOperationException("No valid position remained for an ice respawn.");
+            }
             
             DetermineSpecialIce(tier, out var specialType, out var hpMultiplier);
 
@@ -352,17 +370,21 @@ namespace Icebreaker.Gameplay
             }
         }
 
-        private IceInstance SpawnNewIce(double stageElapsedSeconds)
+        private bool TrySpawnNewIce(double stageElapsedSeconds, out IceInstance? ice)
         {
             var tier = PickRandomTier();
             var def = GetDefinition(tier);
             var positions = CollectAlivePositions(null);
 
-            positioner.TryGetPosition(positions, out var position);
+            if (!positioner.TryGetPosition(positions, out var position))
+            {
+                ice = null;
+                return false;
+            }
             
             DetermineSpecialIce(tier, out var specialType, out var hpMultiplier);
 
-            return new IceInstance(
+            ice = new IceInstance(
                 stageId,
                 idGenerator.NextId(),
                 tier,
@@ -370,6 +392,7 @@ namespace Icebreaker.Gameplay
                 def.MaxHp * hpMultiplier,
                 position,
                 stageElapsedSeconds);
+            return true;
         }
 
         private List<Vector2> CollectAlivePositions(IceInstance? exclude)

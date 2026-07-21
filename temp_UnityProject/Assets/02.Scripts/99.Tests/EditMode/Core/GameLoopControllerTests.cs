@@ -70,6 +70,22 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
+        public void StageEnding_WaitsOnePointTwoSeconds_BeforeSettlement()
+        {
+            var controller = new GameLoopController();
+            DriveToPlaying(controller);
+            controller.Tick(60d);
+
+            controller.Tick(1.19d);
+
+            Assert.That(controller.Phase, Is.EqualTo(GamePhase.StageEnding));
+
+            controller.Tick(0.02d);
+
+            Assert.That(controller.Phase, Is.EqualTo(GamePhase.Settlement));
+        }
+
+        [Test]
         public void SettingsPause_FreezesStageClock()
         {
             var controller = new GameLoopController();
@@ -103,9 +119,7 @@ namespace Icebreaker.Core.Tests
         public void SettlementWithoutArrival_ReturnsToTraveling_AndResetsVoyage()
         {
             var controller = new GameLoopController();
-            DriveToPlaying(controller);
-            controller.Tick(60d);
-            controller.EnterSettlement();
+            DriveToSettlement(controller);
 
             controller.CompleteSettlement(false);
 
@@ -117,9 +131,7 @@ namespace Icebreaker.Core.Tests
         public void SettlementWithArrival_ThenCompleteArrival_FinalDestination_Completed()
         {
             var controller = new GameLoopController();
-            DriveToPlaying(controller);
-            controller.Tick(60d);
-            controller.EnterSettlement();
+            DriveToSettlement(controller);
 
             controller.CompleteSettlement(true);
 
@@ -134,9 +146,7 @@ namespace Icebreaker.Core.Tests
         public void CompletedPhase_BlocksStageStart()
         {
             var controller = new GameLoopController();
-            DriveToPlaying(controller);
-            controller.Tick(60d);
-            controller.EnterSettlement();
+            DriveToSettlement(controller);
             controller.CompleteSettlement(true);
             controller.CompleteArrival(true);
 
@@ -154,6 +164,13 @@ namespace Icebreaker.Core.Tests
             controller.Tick(30d);
             controller.RequestStageStart();
             controller.Tick(3d);
+        }
+
+        private static void DriveToSettlement(GameLoopController controller)
+        {
+            DriveToPlaying(controller);
+            controller.Tick(60d);
+            controller.Tick(1.2d);
         }
     }
 }
