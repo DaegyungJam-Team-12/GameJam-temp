@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
+using Icebreaker.Shared.State;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -37,6 +38,18 @@ namespace Icebreaker.Gameplay
         private Sprite? iceSprite;
         private double stageStartedAt;
 
+        private sealed class DummyClock : IStageClock
+        {
+            private readonly IceFieldView view;
+            public DummyClock(IceFieldView view) => this.view = view;
+            
+            public GamePhase Phase => GamePhase.Playing;
+            public double DurationSeconds => 60d;
+            public double StageElapsedSeconds => Time.timeAsDouble - view.stageStartedAt;
+            public double RemainingSeconds => Math.Max(0d, DurationSeconds - StageElapsedSeconds);
+            public bool IsPaused => false;
+        }
+
         /// <summary>Live combat-event source for integration wiring (INT-01).</summary>
         public ICombatEventSource Source =>
             field ?? throw new InvalidOperationException("IceField is not initialized yet.");
@@ -54,8 +67,9 @@ namespace Icebreaker.Gameplay
                 ReferenceHeight - SpawnMargin * 2f);
             var positioner = new IceSpawnPositioner(spawnBounds, config.MinimumSpawnDistanceReferencePixels);
             var criticalStrike = new CriticalStrike(CriticalChance, CriticalMultiplier);
+            var clock = new DummyClock(this);
 
-            field = new IceField(stageId, config, idGenerator, positioner, criticalStrike);
+            field = new IceField(stageId, config, idGenerator, positioner, clock, criticalStrike);
             field.DamageApplied += HandleDamageApplied;
             field.IceDestroyed += HandleIceDestroyed;
             field.IceRespawned += HandleIceRespawned;

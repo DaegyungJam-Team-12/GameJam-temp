@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
+using Icebreaker.Shared.State;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -17,6 +18,17 @@ namespace Icebreaker.Gameplay.Tests
         private int respawnedCount;
         private IceDestroyedEvent lastDestroyed;
         private DamageAppliedEvent lastDamage;
+
+        private sealed class MockClock : IStageClock
+        {
+            public GamePhase Phase { get; set; } = GamePhase.Playing;
+            public double DurationSeconds { get; set; } = 60d;
+            public double StageElapsedSeconds { get; set; } = 0d;
+            public double RemainingSeconds => Math.Max(0d, DurationSeconds - StageElapsedSeconds);
+            public bool IsPaused { get; set; } = false;
+        }
+
+        private MockClock clock = null!;
 
         [SetUp]
         public void SetUp()
@@ -35,7 +47,8 @@ namespace Icebreaker.Gameplay.Tests
             var spawnBounds = new Rect(56f, 56f, 848f, 428f);
             var positioner = new IceSpawnPositioner(spawnBounds, config.MinimumSpawnDistanceReferencePixels);
 
-            field = new IceField(1L, config, idGenerator, positioner);
+            clock = new MockClock();
+            field = new IceField(1L, config, idGenerator, positioner, clock);
             field.DamageApplied += e => { lastDamage = e; };
             field.IceDestroyed += e => { destroyedCount++; lastDestroyed = e; };
             field.IceRespawned += _ => respawnedCount++;
@@ -214,10 +227,9 @@ namespace Icebreaker.Gameplay.Tests
                 spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
                 specialDefinitions: Array.Empty<SpecialIceDefinition>());
 
-            var critField = new IceField(
-                1L, critConfig, new IceIdGenerator(),
-                new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f),
-                new CriticalStrike(1.0f, 3.0f)); // Always crit
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var critField = new IceField(1L, critConfig, new IceIdGenerator(), positioner, mockClock);
 
             DamageAppliedEvent capturedDamage = default;
             critField.DamageApplied += e => capturedDamage = e;
@@ -255,9 +267,9 @@ namespace Icebreaker.Gameplay.Tests
                 },
                 specialDefinitions: Array.Empty<SpecialIceDefinition>());
 
-            var mixedField = new IceField(
-                1L, mixedConfig, new IceIdGenerator(),
-                new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var mixedField = new IceField(1L, mixedConfig, new IceIdGenerator(), positioner, mockClock);
 
             mixedField.IceDestroyed += _ => { };
             mixedField.Initialize(0d);
@@ -325,7 +337,10 @@ namespace Icebreaker.Gameplay.Tests
                 spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
                 specialDefinitions: new[] { new SpecialIceDefinition(SpecialIceType.Crystal, 1.0f, IceTier.T1, 1f, 1f) });
 
-            var testField = new IceField(1L, testConfig, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var idGenerator = new IceIdGenerator();
+            var testField = new IceField(1L, testConfig, idGenerator, positioner, mockClock);
             testField.Initialize(0d);
             
             var crystal = testField.ActiveIce[0];

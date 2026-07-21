@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
+using Icebreaker.Shared.State;
 using UnityEngine;
 
 namespace Icebreaker.Gameplay
@@ -20,6 +21,7 @@ namespace Icebreaker.Gameplay
         private readonly IceSpawnPositioner positioner;
         private readonly CriticalStrike? criticalStrike;
         private readonly List<IceInstance> activeIce;
+        private readonly IStageClock clock;
         
         private float lastClickDamage;
         
@@ -39,12 +41,13 @@ namespace Icebreaker.Gameplay
         private readonly Queue<QueuedDamage> effectQueue = new Queue<QueuedDamage>();
 
         public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner,
-            CriticalStrike? criticalStrike = null)
+            IStageClock clock, CriticalStrike? criticalStrike = null)
         {
             this.stageId = stageId;
             this.config = config;
             this.idGenerator = idGenerator;
             this.positioner = positioner;
+            this.clock = clock;
             this.criticalStrike = criticalStrike;
             activeIce = new List<IceInstance>(config.MaxActiveIceCount);
         }
