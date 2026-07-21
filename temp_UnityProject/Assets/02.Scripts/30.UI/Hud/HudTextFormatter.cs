@@ -26,6 +26,14 @@ namespace Icebreaker.UI.Hud
             return $"{minutes:00}:{seconds:00}";
         }
 
+        public static string FormatCountdownDigit(double remainingSeconds)
+        {
+            var digit = Math.Min(3, (int)Math.Ceiling(Math.Max(0d, remainingSeconds)));
+            return digit > 0
+                ? digit.ToString(CultureInfo.InvariantCulture)
+                : string.Empty;
+        }
+
         public static string FormatProgress(int current, int target)
         {
             return $"{current.ToString("N0", CultureInfo.InvariantCulture)}/{target.ToString("N0", CultureInfo.InvariantCulture)}";

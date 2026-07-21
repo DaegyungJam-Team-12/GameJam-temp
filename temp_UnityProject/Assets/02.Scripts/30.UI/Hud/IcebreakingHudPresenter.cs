@@ -18,6 +18,7 @@ namespace Icebreaker.UI.Hud
         [Header("State Text")]
         [SerializeField] private TMP_Text? fundsText;
         [SerializeField] private TMP_Text? timerText;
+        [SerializeField] private TMP_Text? countdownText;
 
         [Header("Actions")]
         [SerializeField] private Button? settingsButton;
@@ -84,7 +85,7 @@ namespace Icebreaker.UI.Hud
             stateSource = stateSourceBehaviour as IGameStateSource;
             if (stateSource == null)
             {
-                Debug.LogError("[UI-02] Icebreaking state source must implement IGameStateSource.", this);
+                Debug.LogError("[UI-03] Icebreaking state source must implement IGameStateSource.", this);
             }
         }
 
@@ -97,13 +98,13 @@ namespace Icebreaker.UI.Hud
 
             if (stateSource == null)
             {
-                Debug.LogError("[UI-02] Icebreaking state source is missing.", this);
+                Debug.LogError("[UI-03] Icebreaking state source is missing.", this);
                 return;
             }
 
-            if (fundsText == null || timerText == null || settingsButton == null)
+            if (fundsText == null || timerText == null || countdownText == null || settingsButton == null)
             {
-                Debug.LogError("[UI-02] Icebreaking HUD has one or more missing references.", this);
+                Debug.LogError("[UI-03] Icebreaking HUD has one or more missing references.", this);
                 return;
             }
 
@@ -139,14 +140,40 @@ namespace Icebreaker.UI.Hud
 
         private void Render(GameState state)
         {
+            var isCountdown = state.Phase == GamePhase.Countdown;
+            var isPlaying = state.Phase == GamePhase.Playing;
+
             if (fundsText != null)
             {
                 fundsText.text = $"정비 자금 {HudTextFormatter.FormatFunds(state.Funds)}";
+                SetActive(fundsText.transform.parent?.gameObject, isPlaying);
             }
 
             if (timerText != null)
             {
                 timerText.text = HudTextFormatter.FormatCountdown(state.RemainingSeconds);
+                SetActive(timerText.transform.parent?.gameObject, isPlaying);
+            }
+
+            if (countdownText != null)
+            {
+                var digit = HudTextFormatter.FormatCountdownDigit(state.RemainingSeconds);
+                countdownText.text = digit;
+                SetActive(countdownText.gameObject, isCountdown && digit.Length > 0);
+            }
+
+            if (settingsButton != null)
+            {
+                SetActive(settingsButton.gameObject, isPlaying);
+                settingsButton.interactable = isPlaying;
+            }
+        }
+
+        private static void SetActive(GameObject? target, bool active)
+        {
+            if (target != null && target.activeSelf != active)
+            {
+                target.SetActive(active);
             }
         }
 
