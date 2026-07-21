@@ -437,5 +437,80 @@ namespace Icebreaker.Gameplay.Tests
 
             Assert.That(ice4Survived, Is.True, "Ice 4 should survive because depth 3 destruction does not trigger chains.");
         }
+        [Test]
+        public void CombatBoundary_ExceedsDuration_BlocksClickAndClearsQueue()
+        {
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 10f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock);
+            testField.Initialize(0d);
+            
+            var target = testField.ActiveIce[0];
+            target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100, 100), 0d);
+
+            // Fast forward clock to 60 seconds (duration)
+            mockClock.StageElapsedSeconds = 60d;
+
+            int damageEventCount = 0;
+            testField.DamageApplied += _ => damageEventCount++;
+
+            // Click should be ignored
+            var clicked = testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 60d);
+            
+            Assert.That(clicked, Is.False, "ApplyClickAt should return false after duration has passed.");
+            Assert.That(damageEventCount, Is.EqualTo(0), "No damage events should be fired after combat ends.");
+            Assert.That(target.RemainingHp, Is.EqualTo(10f), "Target should not take damage after combat ends.");
+        }
+
+        [Test]
+        public void DuplicateDestruction_Prevented_WhenMultipleHitsInSameFrame()
+        {
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 10f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock);
+            testField.Initialize(0d);
+
+            var target = testField.ActiveIce[0];
+            target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100, 100), 0d);
+
+            int damageCount = 0;
+            int destroyCount = 0;
+            testField.DamageApplied += _ => damageCount++;
+            testField.IceDestroyed += _ => destroyCount++;
+
+            // Force multiple fatal damages on the exact same target in quick succession (simulating chain logic overlaps)
+            // We use ApplyClickAt multiple times. Since ProcessQueue empties the queue instantly, 
+            // a single ApplyClickAt processes its queue completely. 
+            // To simulate multiple queued damages in the same frame, we can just click it twice quickly. 
+            // Actually, clicking it twice triggers TryApplyDamage twice. The second TryApplyDamage should return false.
+            testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
+            testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
+            testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
+
+            Assert.That(damageCount, Is.EqualTo(1), "Only the first damage should be applied because it was destroyed.");
+            Assert.That(destroyCount, Is.EqualTo(1), "Only ONE destruction event should be fired, even with 3 fatal clicks.");
+            Assert.That(target.IsDestroyed, Is.True);
+            Assert.That(target.RemainingHp, Is.EqualTo(0f));
+        }
     }
 }
