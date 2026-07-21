@@ -117,6 +117,13 @@ namespace Icebreaker.Window
 
         private static bool ReadForceFallbackFlag()
         {
+            // Headless/batch and CI (including PlayMode test runs) have no attachable OS window;
+            // the native plugin crashes if it tries to grab one, so always use the plain window.
+            if (Application.isBatchMode)
+            {
+                return true;
+            }
+
             foreach (var argument in Environment.GetCommandLineArgs())
             {
                 if (string.Equals(argument, ForceFallbackArgument, StringComparison.Ordinal))

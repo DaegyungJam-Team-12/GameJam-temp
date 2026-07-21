@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using Icebreaker.UI.Hud;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -48,10 +47,8 @@ namespace Icebreaker.Integration.Editor
                     hudInstance.transform.SetParent(canvasObject.transform, false);
                 }
 
-                foreach (var sampleSource in hudInstance.GetComponentsInChildren<Ui02HudSampleSource>(true))
-                {
-                    UnityEngine.Object.DestroyImmediate(sampleSource);
-                }
+                // Keep the prefab's serialized preview source so the presenter has a source at
+                // OnEnable (avoids a startup error); IntegrationBootstrap rebinds the real one in Start.
 
                 var iceFieldObject = new GameObject("INT01_IceField");
                 iceFieldObject.AddComponent<Icebreaker.Gameplay.IceFieldView>();
