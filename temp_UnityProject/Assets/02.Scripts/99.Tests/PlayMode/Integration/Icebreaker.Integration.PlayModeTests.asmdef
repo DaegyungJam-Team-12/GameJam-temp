@@ -3,6 +3,7 @@
   "rootNamespace": "Icebreaker.Integration.Tests",
   "references": [
     "Icebreaker.Gameplay",
+    "Icebreaker.Shared",
     "Unity.TextMeshPro"
   ],
   "includePlatforms": [],

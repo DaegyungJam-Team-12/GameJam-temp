@@ -117,6 +117,13 @@ namespace Icebreaker.Window
 
         private static bool ReadForceFallbackFlag()
         {
+            // In the editor the native plugin attaches to the editor's own window and can leave
+            // it mangled (invisible/zero-size) when Play Mode exits; never attach in the editor.
+            if (Application.isEditor)
+            {
+                return true;
+            }
+
             // Headless/batch and CI (including PlayMode test runs) have no attachable OS window;
             // the native plugin crashes if it tries to grab one, so always use the plain window.
             if (Application.isBatchMode)

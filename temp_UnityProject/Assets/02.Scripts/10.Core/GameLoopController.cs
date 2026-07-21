@@ -10,16 +10,19 @@ namespace Icebreaker.Core
         private readonly double stageDurationSeconds;
         private readonly double countdownSeconds;
         private readonly double voyageSeconds;
+        private readonly double stageEndingSeconds;
 
         private double voyageRemaining;
         private double stageElapsed;
         private double countdownRemaining;
+        private double stageEndingRemaining;
         private bool settingsPaused;
 
         public GameLoopController(
             double stageDurationSeconds = 60d,
             double countdownSeconds = 3d,
-            double voyageSeconds = 30d)
+            double voyageSeconds = 30d,
+            double stageEndingSeconds = 1.2d)
         {
             if (!(stageDurationSeconds > 0d))
             {
@@ -45,14 +48,24 @@ namespace Icebreaker.Core
                     "Value must be greater than zero.");
             }
 
+            if (!(stageEndingSeconds > 0d))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(stageEndingSeconds),
+                    stageEndingSeconds,
+                    "Value must be greater than zero.");
+            }
+
             this.stageDurationSeconds = stageDurationSeconds;
             this.countdownSeconds = countdownSeconds;
             this.voyageSeconds = voyageSeconds;
+            this.stageEndingSeconds = stageEndingSeconds;
 
             Phase = GamePhase.Traveling;
             voyageRemaining = voyageSeconds;
             stageElapsed = 0d;
             countdownRemaining = countdownSeconds;
+            stageEndingRemaining = stageEndingSeconds;
             settingsPaused = false;
         }
 
@@ -115,7 +128,17 @@ namespace Icebreaker.Core
                     if (stageElapsed >= stageDurationSeconds)
                     {
                         stageElapsed = stageDurationSeconds;
+                        stageEndingRemaining = stageEndingSeconds;
                         SetPhase(GamePhase.StageEnding);
+                    }
+
+                    break;
+                case GamePhase.StageEnding:
+                    stageEndingRemaining -= deltaSeconds;
+                    if (stageEndingRemaining <= 0d)
+                    {
+                        stageEndingRemaining = 0d;
+                        EnterSettlement();
                     }
 
                     break;
@@ -142,6 +165,7 @@ namespace Icebreaker.Core
                     $"Settlement can only be entered from {GamePhase.StageEnding}; current phase is {Phase}.");
             }
 
+            stageEndingRemaining = 0d;
             SetPhase(GamePhase.Settlement);
         }
 

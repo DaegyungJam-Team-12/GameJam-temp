@@ -1,0 +1,295 @@
+#nullable enable
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Icebreaker.Shared.Events;
+using Icebreaker.Shared.Progression;
+using Icebreaker.Shared.State;
+
+namespace Icebreaker.Core
+{
+    public sealed class Int02LoopCoordinator : IProgressionEventSource, IDisposable
+    {
+        private readonly GameLoopController loop;
+        private readonly ProgressionLedger ledger;
+        private readonly SaveService saveService;
+        private readonly SaveData saveData;
+        private readonly Func<DateTimeOffset> utcNow;
+        private readonly MaintenanceLevel[] maintenanceLevels;
+
+        private SettlementSummary? pendingSettlement;
+        private long currentStageId;
+        private bool disposed;
+
+        public Int02LoopCoordinator(
+            GameLoopController loop,
+            ProgressionLedger ledger,
+            SaveService saveService,
+            Func<DateTimeOffset>? utcNow = null)
+        {
+            this.loop = loop ?? throw new ArgumentNullException(nameof(loop));
+            this.ledger = ledger ?? throw new ArgumentNullException(nameof(ledger));
+            this.saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
+            saveData = saveService.Data;
+            this.utcNow = utcNow ?? (() => DateTimeOffset.UtcNow);
+            maintenanceLevels = CreateMaintenanceLevels(saveData.maintenanceLevels);
+            loop.PhaseChanged += HandlePhaseChanged;
+        }
+
+        public event Action<StageStarted> StageStarted = delegate { };
+
+        public event Action<RewardGrantedEvent> RewardGranted = delegate { };
+
+        public event Action<StageEnded> StageEnded = delegate { };
+
+        public event Action<SettlementReady> SettlementReady = delegate { };
+
+        public event Action<GameState> StateChanged = delegate { };
+
+        public GameLoopController Loop => loop;
+
+        public ProgressionLedger Ledger => ledger;
+
+        public long CurrentStageId => currentStageId;
+
+        public GameState CurrentState => CreateState();
+
+        public void EnsureInitialized() => PublishState();
+
+        public void Tick(double unscaledDeltaSeconds)
+        {
+            ThrowIfDisposed();
+            loop.Tick(unscaledDeltaSeconds);
+            saveService.Tick(unscaledDeltaSeconds);
+            PublishState();
+        }
+
+        public void RequestStageStart()
+        {
+            ThrowIfDisposed();
+            loop.RequestStageStart();
+        }
+
+        public bool TryApproveDestruction(IceDestroyedEvent destruction)
+        {
+            ThrowIfDisposed();
+            if (loop.Phase != GamePhase.Playing)
+            {
+                return false;
+            }
+
+            var normalized = NormalizeStageId(destruction);
+            var pendingArrivalBeforeApproval = ledger.PendingArrivalDestinationId;
+            if (!ledger.TryApproveDestruction(normalized, out var reward))
+            {
+                return false;
+            }
+
+            RewardGranted(reward);
+            if (!saveData.firstDestroyShown)
+            {
+                saveData.firstDestroyShown = true;
+            }
+
+            CopyProgressionToSave();
+            saveService.MarkDirty();
+            if (pendingArrivalBeforeApproval == null && ledger.PendingArrivalDestinationId != null)
+            {
+                saveService.Flush();
+            }
+
+            PublishState();
+            return true;
+        }
+
+        public void ContinueSettlement()
+        {
+            ThrowIfDisposed();
+            if (loop.Phase != GamePhase.Settlement || !pendingSettlement.HasValue)
+            {
+                return;
+            }
+
+            var summary = pendingSettlement.Value;
+            pendingSettlement = null;
+
+            if (summary.ReachedDestination)
+            {
+                if (!ledger.ApplyArrival())
+                {
+                    throw new InvalidOperationException("Reached destination could not be applied.");
+                }
+
+                CopyProgressionToSave();
+                loop.CompleteSettlement(true);
+                loop.CompleteArrival(ledger.GameCompleted);
+                return;
+            }
+
+            loop.CompleteSettlement(false);
+        }
+
+        public void Flush()
+        {
+            ThrowIfDisposed();
+            CopyProgressionToSave();
+            saveService.MarkDirty();
+            saveService.Flush();
+        }
+
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            loop.PhaseChanged -= HandlePhaseChanged;
+            disposed = true;
+        }
+
+        private void HandlePhaseChanged(GamePhase phase)
+        {
+            switch (phase)
+            {
+                case GamePhase.Playing:
+                    currentStageId++;
+                    ledger.BeginStage();
+                    saveData.runInProgress = true;
+                    saveData.nextAvailableAtUtc = "";
+                    CopyProgressionToSave();
+                    saveService.MarkDirty();
+                    saveService.Flush();
+                    StageStarted(new StageStarted(
+                        currentStageId,
+                        FormatUtc(utcNow()),
+                        (float)loop.DurationSeconds));
+                    break;
+
+                case GamePhase.StageEnding:
+                    StageEnded(new StageEnded(currentStageId, FormatUtc(utcNow())));
+                    pendingSettlement = ledger.EndStage();
+                    saveData.runInProgress = true;
+                    CopyProgressionToSave();
+                    saveService.MarkDirty();
+                    saveService.Flush();
+                    break;
+
+                case GamePhase.Settlement:
+                    if (!pendingSettlement.HasValue)
+                    {
+                        throw new InvalidOperationException("Settlement entered without a completed stage summary.");
+                    }
+
+                    SettlementReady(new SettlementReady(currentStageId, pendingSettlement.Value));
+                    break;
+
+                case GamePhase.Traveling:
+                    saveData.runInProgress = false;
+                    saveData.nextAvailableAtUtc = FormatUtc(
+                        utcNow() + TimeSpan.FromSeconds(loop.VoyageRemainingSeconds));
+                    CopyProgressionToSave();
+                    saveService.MarkDirty();
+                    saveService.Flush();
+                    break;
+
+                case GamePhase.Ready:
+                    saveData.runInProgress = false;
+                    saveData.nextAvailableAtUtc = "";
+                    CopyProgressionToSave();
+                    saveService.MarkDirty();
+                    saveService.Flush();
+                    break;
+
+                case GamePhase.Completed:
+                    saveData.runInProgress = false;
+                    saveData.nextAvailableAtUtc = "";
+                    CopyProgressionToSave();
+                    saveService.MarkDirty();
+                    saveService.Flush();
+                    break;
+            }
+
+            PublishState();
+        }
+
+        private GameState CreateState()
+        {
+            var remainingSeconds = loop.Phase switch
+            {
+                GamePhase.Traveling => loop.VoyageRemainingSeconds,
+                GamePhase.Countdown => loop.CountdownRemainingSeconds,
+                GamePhase.Playing => loop.RemainingSeconds,
+                _ => 0d
+            };
+
+            return new GameState(
+                loop.Phase,
+                remainingSeconds,
+                loop.IsPaused,
+                ledger.Funds,
+                ledger.CurrentDestination.Id,
+                ledger.DestinationProgress,
+                ledger.DestinationTarget,
+                maintenanceLevels,
+                saveData.firstDestroyShown,
+                loop.Phase == GamePhase.Ready && !ledger.GameCompleted);
+        }
+
+        private IceDestroyedEvent NormalizeStageId(IceDestroyedEvent destruction)
+        {
+            if (destruction.StageId == currentStageId)
+            {
+                return destruction;
+            }
+
+            return new IceDestroyedEvent(
+                currentStageId,
+                destruction.IceInstanceId,
+                destruction.ChainId,
+                destruction.ChainDepth,
+                destruction.Tier,
+                destruction.SpecialType,
+                destruction.DestroyCategory,
+                destruction.EffectType,
+                destruction.ReferencePosition,
+                destruction.StageElapsedSeconds);
+        }
+
+        private void CopyProgressionToSave()
+        {
+            saveData.funds = ledger.Funds;
+            saveData.currentDestinationIndex = ledger.CurrentDestinationIndex;
+            saveData.destinationProgress = ledger.DestinationProgress;
+            saveData.completedDestinationIds = new List<string>(ledger.CompletedDestinationIds);
+            saveData.pendingArrivalDestinationId = ledger.PendingArrivalDestinationId ?? "";
+            saveData.gameCompleted = ledger.GameCompleted;
+        }
+
+        private void PublishState() => StateChanged(CreateState());
+
+        private void ThrowIfDisposed()
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException(nameof(Int02LoopCoordinator));
+            }
+        }
+
+        private static MaintenanceLevel[] CreateMaintenanceLevels(
+            IReadOnlyList<SaveMaintenanceLevel> savedLevels)
+        {
+            var levels = new MaintenanceLevel[savedLevels.Count];
+            for (var i = 0; i < savedLevels.Count; i++)
+            {
+                levels[i] = new MaintenanceLevel(savedLevels[i].id, savedLevels[i].level);
+            }
+
+            return levels;
+        }
+
+        private static string FormatUtc(DateTimeOffset value) =>
+            value.ToString("O", CultureInfo.InvariantCulture);
+    }
+}

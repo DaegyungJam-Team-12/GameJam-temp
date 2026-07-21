@@ -25,7 +25,12 @@ namespace Icebreaker.Core
             IReadOnlyList<DestinationDefinition> destinations,
             RewardTable rewardTable,
             long initialFunds = 0,
-            int maintenanceEfficiencyLevel = 0)
+            int maintenanceEfficiencyLevel = 0,
+            int initialDestinationIndex = 0,
+            int initialDestinationProgress = 0,
+            IReadOnlyCollection<string>? initialCompletedDestinationIds = null,
+            string? initialPendingArrivalDestinationId = null,
+            bool initialGameCompleted = false)
         {
             if (destinations == null)
             {
@@ -65,14 +70,60 @@ namespace Icebreaker.Core
                 this.destinations,
                 (left, right) => left.DisplayOrder.CompareTo(right.DisplayOrder));
 
+            if (initialDestinationIndex < 0 || initialDestinationIndex >= this.destinations.Length)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(initialDestinationIndex),
+                    initialDestinationIndex,
+                    "Value must identify an existing destination.");
+            }
+
+            var initialDestination = this.destinations[initialDestinationIndex];
+            if (initialDestinationProgress < 0 || initialDestinationProgress > initialDestination.TargetProgress)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(initialDestinationProgress),
+                    initialDestinationProgress,
+                    "Value must be between zero and the destination target.");
+            }
+
+            var pendingArrivalDestinationId = string.IsNullOrEmpty(initialPendingArrivalDestinationId)
+                ? null
+                : initialPendingArrivalDestinationId;
+            if (pendingArrivalDestinationId != null &&
+                (pendingArrivalDestinationId != initialDestination.Id ||
+                 initialDestinationProgress != initialDestination.TargetProgress))
+            {
+                throw new ArgumentException(
+                    "Pending arrival must match a completed current destination.",
+                    nameof(initialPendingArrivalDestinationId));
+            }
+
             this.rewardTable = rewardTable;
             this.maintenanceEfficiencyLevel = maintenanceEfficiencyLevel;
+            currentDestinationIndex = initialDestinationIndex;
             Funds = initialFunds;
+            DestinationProgress = initialDestinationProgress;
+            PendingArrivalDestinationId = pendingArrivalDestinationId;
+            GameCompleted = initialGameCompleted;
+
+            if (initialCompletedDestinationIds != null)
+            {
+                foreach (var destinationId in initialCompletedDestinationIds)
+                {
+                    if (!string.IsNullOrEmpty(destinationId))
+                    {
+                        completed.Add(destinationId);
+                    }
+                }
+            }
         }
 
         public long Funds { get; private set; }
 
         public DestinationDefinition CurrentDestination => destinations[currentDestinationIndex];
+
+        public int CurrentDestinationIndex => currentDestinationIndex;
 
         public int DestinationProgress { get; private set; }
 

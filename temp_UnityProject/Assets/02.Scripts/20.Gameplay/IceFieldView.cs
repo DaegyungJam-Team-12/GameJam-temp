@@ -28,6 +28,15 @@ namespace Icebreaker.Gameplay
         private const float CriticalChance = 0.05f;        // 5%
         private const float CriticalMultiplier = 3f;       // x3 damage
 
+        private static readonly Rect[] ProtectedSpawnAreas =
+        {
+            // Spec coordinates use a top-left origin; gameplay reference coordinates use bottom-left.
+            new Rect(0f, 476f, 252f, 64f),
+            new Rect(384f, 476f, 192f, 64f),
+            new Rect(888f, 476f, 72f, 64f),
+            new Rect(280f, 0f, 400f, 135f),
+        };
+
         [SerializeField] private Camera? sceneCamera;
         [SerializeField] private long stageId = 1L;
 
@@ -37,6 +46,8 @@ namespace Icebreaker.Gameplay
         private readonly List<SpriteRenderer> visuals = new();
         private Sprite? iceSprite;
         private double stageStartedAt;
+        private IStageClock? injectedClock;
+        private IStageClock? activeClock;
 
         private sealed class DummyClock : IStageClock
         {
@@ -50,9 +61,35 @@ namespace Icebreaker.Gameplay
             public bool IsPaused => false;
         }
 
-        /// <summary>Live combat-event source for integration wiring (INT-01).</summary>
+        /// <summary>Live combat-event source for integration wiring (INT-01/INT-02).</summary>
         public ICombatEventSource Source =>
             field ?? throw new InvalidOperationException("IceField is not initialized yet.");
+
+        public void InjectStageClock(IStageClock clock)
+        {
+            if (clock == null)
+            {
+                throw new ArgumentNullException(nameof(clock));
+            }
+
+            if (field != null)
+            {
+                throw new InvalidOperationException("Stage clock must be injected before IceFieldView.Awake.");
+            }
+
+            injectedClock = clock;
+        }
+
+        public void ResetStage()
+        {
+            if (field == null)
+            {
+                throw new InvalidOperationException("IceField is not initialized yet.");
+            }
+
+            field.Initialize(0d);
+            RefreshAllVisuals();
+        }
 
         private void Awake()
         {
@@ -65,11 +102,15 @@ namespace Icebreaker.Gameplay
                 SpawnMargin,
                 ReferenceWidth - SpawnMargin * 2f,
                 ReferenceHeight - SpawnMargin * 2f);
-            var positioner = new IceSpawnPositioner(spawnBounds, config.MinimumSpawnDistanceReferencePixels);
+            var positioner = new IceSpawnPositioner(
+                spawnBounds,
+                config.MinimumSpawnDistanceReferencePixels,
+                ProtectedSpawnAreas,
+                config.HitRadiusReferencePixels);
             var criticalStrike = new CriticalStrike(CriticalChance, CriticalMultiplier);
-            var clock = new DummyClock(this);
+            activeClock = injectedClock ?? new DummyClock(this);
 
-            field = new IceField(stageId, config, idGenerator, positioner, clock, criticalStrike);
+            field = new IceField(stageId, config, idGenerator, positioner, activeClock, criticalStrike);
             field.DamageApplied += HandleDamageApplied;
             field.IceDestroyed += HandleIceDestroyed;
             field.IceRespawned += HandleIceRespawned;
@@ -119,7 +160,7 @@ namespace Icebreaker.Gameplay
             var screenPos = mouse.position.ReadValue();
             var refPos = ScreenToReference(screenPos);
             var effectType = wasPressedThisFrame ? EffectType.Click : EffectType.Hold;
-            var elapsed = Time.timeAsDouble - stageStartedAt;
+            var elapsed = activeClock?.StageElapsedSeconds ?? Time.timeAsDouble - stageStartedAt;
 
             for (var i = 0; i < ticks; i++)
             {
@@ -283,23 +324,15 @@ namespace Icebreaker.Gameplay
                     break;
                 }
             }
-
-            var critLabel = e.WasCritical ? " CRITICAL!" : "";
-            Debug.Log($"[GP-03] Damage {e.Damage:F1}{critLabel}, remaining HP {e.RemainingHp:F1}, ice={e.IceInstanceId}.", this);
         }
 
         private void HandleIceDestroyed(IceDestroyedEvent e)
         {
-            Debug.Log($"[GP-03] IceDestroyedEvent ice={e.IceInstanceId} tier={e.Tier}.", this);
         }
 
         private void HandleIceRespawned(int index)
         {
             RefreshVisual(index);
-            if (field != null)
-            {
-                Debug.Log($"[GP-03] Respawned index={index}, newId={field.ActiveIce[index].IceInstanceId}, tier={field.ActiveIce[index].Tier}.", this);
-            }
         }
 
         // --- Sprite & Config creation ---
@@ -314,13 +347,10 @@ namespace Icebreaker.Gameplay
                 new IceDefinition(IceTier.T3, "심빙", 360f, 700L),
             };
 
-            // Spawn weights: T1 dominant, T2/T3 gradually mixed in.
-            // These weights will be adjusted by upgrade unlocks later.
+            // The default profile starts before T2/T3 response upgrades are unlocked.
             var spawnWeights = new[]
             {
-                new IceSpawnWeight(IceTier.T1, 70),
-                new IceSpawnWeight(IceTier.T2, 25),
-                new IceSpawnWeight(IceTier.T3, 5),
+                new IceSpawnWeight(IceTier.T1, 100),
             };
 
             var specialDefinitions = new[]

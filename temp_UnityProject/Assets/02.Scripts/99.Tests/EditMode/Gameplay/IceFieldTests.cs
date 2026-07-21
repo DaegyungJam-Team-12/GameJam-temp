@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
 using Icebreaker.Shared.State;
@@ -229,7 +230,14 @@ namespace Icebreaker.Gameplay.Tests
 
             var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
             var mockClock = new MockClock();
-            var critField = new IceField(1L, critConfig, new IceIdGenerator(), positioner, mockClock);
+            var criticalStrike = new CriticalStrike(1f, 3f);
+            var critField = new IceField(
+                1L,
+                critConfig,
+                new IceIdGenerator(),
+                positioner,
+                mockClock,
+                criticalStrike);
 
             DamageAppliedEvent capturedDamage = default;
             critField.DamageApplied += e => capturedDamage = e;
@@ -292,6 +300,102 @@ namespace Icebreaker.Gameplay.Tests
             Assert.That(hasT1, Is.True, "T1 should appear.");
             Assert.That(hasT2, Is.True, "T2 should appear.");
             Assert.That(hasT3, Is.True, "T3 should appear.");
+        }
+
+        [Test]
+        public void IceSpawnPositioner_ExcludesProtectedAreas()
+        {
+            var protectedAreas = new[]
+            {
+                new Rect(0f, 476f, 252f, 64f),
+                new Rect(384f, 476f, 192f, 64f),
+                new Rect(888f, 476f, 72f, 64f),
+                new Rect(280f, 0f, 400f, 135f),
+            };
+            var positioner = new IceSpawnPositioner(
+                new Rect(56f, 56f, 848f, 428f),
+                1f,
+                protectedAreas);
+
+            for (var i = 0; i < 1000; i++)
+            {
+                Assert.That(positioner.TryGetPosition(Array.Empty<Vector2>(), out var position), Is.True);
+                foreach (var protectedArea in protectedAreas)
+                {
+                    Assert.That(protectedArea.Contains(position), Is.False);
+                }
+            }
+        }
+
+        [Test]
+        public void IceSpawnPositioner_TwentyIceStayClearOfHudAndAtLeast104Apart()
+        {
+            var protectedAreas = new[]
+            {
+                new Rect(0f, 476f, 252f, 64f),
+                new Rect(384f, 476f, 192f, 64f),
+                new Rect(888f, 476f, 72f, 64f),
+                new Rect(280f, 0f, 400f, 135f),
+            };
+            var paddedProtectedAreas = new[]
+            {
+                new Rect(-56f, 420f, 364f, 176f),
+                new Rect(328f, 420f, 304f, 176f),
+                new Rect(832f, 420f, 184f, 176f),
+                new Rect(224f, -56f, 512f, 247f),
+            };
+
+            for (var seed = 0; seed < 25; seed++)
+            {
+                UnityEngine.Random.InitState(seed);
+                var positioner = new IceSpawnPositioner(
+                    new Rect(56f, 56f, 848f, 428f),
+                    120f,
+                    protectedAreas,
+                    excludedAreaPadding: 56f);
+                var positions = new List<Vector2>(20);
+
+                for (var layoutAttempt = 0; layoutAttempt < 10 && positions.Count < 20; layoutAttempt++)
+                {
+                    positions.Clear();
+                    for (var i = 0; i < 20; i++)
+                    {
+                        if (!positioner.TryGetPosition(positions, out var position))
+                        {
+                            break;
+                        }
+
+                        foreach (var protectedArea in paddedProtectedAreas)
+                        {
+                            Assert.That(protectedArea.Contains(position), Is.False);
+                        }
+
+                        foreach (var existingPosition in positions)
+                        {
+                            Assert.That(Vector2.Distance(position, existingPosition), Is.GreaterThanOrEqualTo(104f));
+                        }
+
+                        positions.Add(position);
+                    }
+                }
+
+                Assert.That(positions, Has.Count.EqualTo(20), $"seed {seed} did not produce a valid layout");
+            }
+        }
+
+        [Test]
+        public void IceFieldView_DefaultConfiguration_UsesOnlyT1Weight()
+        {
+            var createDefaultConfig = typeof(IceFieldView).GetMethod(
+                "CreateDefaultConfig",
+                BindingFlags.Static | BindingFlags.NonPublic);
+
+            Assert.That(createDefaultConfig, Is.Not.Null);
+            var defaultConfig = createDefaultConfig!.Invoke(null, null) as IceFieldConfig;
+            Assert.That(defaultConfig, Is.Not.Null);
+            Assert.That(defaultConfig!.SpawnWeights, Has.Count.EqualTo(1));
+            Assert.That(defaultConfig.SpawnWeights[0].Tier, Is.EqualTo(IceTier.T1));
+            Assert.That(defaultConfig.SpawnWeights[0].Weight, Is.EqualTo(100));
         }
 
         // --- GP-04 Tests ---
@@ -479,7 +583,7 @@ namespace Icebreaker.Gameplay.Tests
         }
 
         [Test]
-        public void DuplicateDestruction_Prevented_WhenMultipleHitsInSameFrame()
+        public void FatalDamage_PublishesOnce_ThenRespawnsWithNewId()
         {
             var testConfig = new IceFieldConfig(
                 maxActiveIceCount: 5,
@@ -497,6 +601,7 @@ namespace Icebreaker.Gameplay.Tests
             testField.Initialize(0d);
 
             var target = testField.ActiveIce[0];
+            var oldId = target.IceInstanceId;
             target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100, 100), 0d);
 
             int damageCount = 0;
@@ -504,19 +609,13 @@ namespace Icebreaker.Gameplay.Tests
             testField.DamageApplied += _ => damageCount++;
             testField.IceDestroyed += _ => destroyCount++;
 
-            // Force multiple fatal damages on the exact same target in quick succession (simulating chain logic overlaps)
-            // We use ApplyClickAt multiple times. Since ProcessQueue empties the queue instantly, 
-            // a single ApplyClickAt processes its queue completely. 
-            // To simulate multiple queued damages in the same frame, we can just click it twice quickly. 
-            // Actually, clicking it twice triggers TryApplyDamage twice. The second TryApplyDamage should return false.
-            testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
-            testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
             testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
 
-            Assert.That(damageCount, Is.EqualTo(1), "Only the first damage should be applied because it was destroyed.");
-            Assert.That(destroyCount, Is.EqualTo(1), "Only ONE destruction event should be fired, even with 3 fatal clicks.");
-            Assert.That(target.IsDestroyed, Is.True);
-            Assert.That(target.RemainingHp, Is.EqualTo(0f));
+            Assert.That(damageCount, Is.EqualTo(1));
+            Assert.That(destroyCount, Is.EqualTo(1));
+            Assert.That(target.IceInstanceId, Is.Not.EqualTo(oldId));
+            Assert.That(target.IsDestroyed, Is.False);
+            Assert.That(target.RemainingHp, Is.EqualTo(10f));
         }
     }
 }
