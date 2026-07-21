@@ -37,6 +37,10 @@ namespace Icebreaker.Gameplay
         private Sprite? iceSprite;
         private double stageStartedAt;
 
+        /// <summary>Live combat-event source for integration wiring (INT-01).</summary>
+        public ICombatEventSource Source =>
+            field ?? throw new InvalidOperationException("IceField is not initialized yet.");
+
         private void Awake()
         {
             stageStartedAt = Time.timeAsDouble;
