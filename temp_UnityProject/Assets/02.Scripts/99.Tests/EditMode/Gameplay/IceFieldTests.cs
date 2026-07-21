@@ -309,7 +309,9 @@ namespace Icebreaker.Gameplay.Tests
                 spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
                 specialDefinitions: new[] { new SpecialIceDefinition(SpecialIceType.Crack, 1.0f, IceTier.T1, 0.6f, 1.0f) });
 
-            var testField = new IceField(1L, crackConfig, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, crackConfig, new IceIdGenerator(), positioner, mockClock);
             testField.Initialize(0d);
 
             var specialCount = 0;
@@ -375,7 +377,9 @@ namespace Icebreaker.Gameplay.Tests
                 spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
                 specialDefinitions: Array.Empty<SpecialIceDefinition>());
 
-            var testField = new IceField(1L, testConfig, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock);
             testField.Initialize(0d);
 
             var crack = testField.ActiveIce[0];
@@ -398,7 +402,7 @@ namespace Icebreaker.Gameplay.Tests
             testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 100d);
 
             Assert.That(explosionEvent.HasValue, Is.True, "Explosion should hit target in radius.");
-            Assert.That(explosionEvent.Value.Damage, Is.EqualTo(30f), "Explosion damage should be 3x click damage.");
+            Assert.That(explosionEvent!.Value.Damage, Is.EqualTo(30f), "Explosion damage should be 3x click damage.");
             Assert.That(targetOutRadius.RemainingHp, Is.EqualTo(1000f), "Target outside radius should not be damaged.");
         }
 
@@ -415,7 +419,9 @@ namespace Icebreaker.Gameplay.Tests
                 spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
                 specialDefinitions: Array.Empty<SpecialIceDefinition>());
 
-            var testField = new IceField(1L, testConfig, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock);
             testField.Initialize(0d);
 
             for (var i = 0; i < 5; i++)
