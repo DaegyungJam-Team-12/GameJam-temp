@@ -61,6 +61,13 @@ namespace Icebreaker.Gameplay
 
         public IReadOnlyList<IceInstance> ActiveIce => activeIce;
 
+        private bool CanProcessCombat()
+        {
+            return clock.Phase == GamePhase.Playing && 
+                   !clock.IsPaused && 
+                   clock.StageElapsedSeconds < clock.DurationSeconds;
+        }
+
         /// <summary>
         /// Populate the field with the configured number of ice instances.
         /// Call once at the start of a stage.
@@ -86,6 +93,11 @@ namespace Icebreaker.Gameplay
         /// <param name="stageElapsedSeconds">Time since stage started.</param>
         public bool ApplyClickAt(Vector2 referencePosition, float clickDamage, EffectType effectType, double stageElapsedSeconds)
         {
+            if (!CanProcessCombat())
+            {
+                return false;
+            }
+
             var target = FindClosestAliveAt(referencePosition);
             if (target == null)
             {
@@ -126,6 +138,12 @@ namespace Icebreaker.Gameplay
 
         private void ProcessQueue(double stageElapsedSeconds)
         {
+            if (!CanProcessCombat())
+            {
+                effectQueue.Clear();
+                return;
+            }
+
             while (effectQueue.Count > 0)
             {
                 var queued = effectQueue.Dequeue();
