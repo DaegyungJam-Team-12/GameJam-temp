@@ -16,6 +16,7 @@ namespace Icebreaker.Gameplay.Tests
         private int destroyedCount;
         private int respawnedCount;
         private IceDestroyedEvent lastDestroyed;
+        private DamageAppliedEvent lastDamage;
 
         [SetUp]
         public void SetUp()
@@ -35,6 +36,7 @@ namespace Icebreaker.Gameplay.Tests
             var positioner = new IceSpawnPositioner(spawnBounds, config.MinimumSpawnDistanceReferencePixels);
 
             field = new IceField(1L, config, idGenerator, positioner);
+            field.DamageApplied += e => { lastDamage = e; };
             field.IceDestroyed += e => { destroyedCount++; lastDestroyed = e; };
             field.IceRespawned += _ => respawnedCount++;
 
@@ -77,7 +79,7 @@ namespace Icebreaker.Gameplay.Tests
             // Apply 10 clicks (T1 HP = 10, damage = 1).
             for (var i = 0; i < 10; i++)
             {
-                field.ApplyClickAt(pos, 1f, i * 0.1d);
+                field.ApplyClickAt(pos, 1f, EffectType.Click, i * 0.1d);
             }
 
             Assert.That(destroyedCount, Is.EqualTo(1));
@@ -102,7 +104,7 @@ namespace Icebreaker.Gameplay.Tests
 
             for (var i = 0; i < 10; i++)
             {
-                field.ApplyClickAt(pos, 1f, i * 0.1d);
+                field.ApplyClickAt(pos, 1f, EffectType.Click, i * 0.1d);
             }
 
             // The same IceInstance object is reused but with a new ID.
@@ -120,7 +122,7 @@ namespace Icebreaker.Gameplay.Tests
         public void ClickOnEmptySpace_ReturnsFalse()
         {
             // Click far away from any ice.
-            var result = field.ApplyClickAt(new Vector2(-9999f, -9999f), 1f, 0d);
+            var result = field.ApplyClickAt(new Vector2(-9999f, -9999f), 1f, EffectType.Click, 0d);
             Assert.That(result, Is.False);
         }
 
@@ -132,12 +134,293 @@ namespace Icebreaker.Gameplay.Tests
 
             for (var i = 0; i < 10; i++)
             {
-                field.ApplyClickAt(pos, 1f, i * 0.1d);
+                field.ApplyClickAt(pos, 1f, EffectType.Click, i * 0.1d);
             }
 
             Assert.That(destroyedCount, Is.EqualTo(1));
             Assert.That(lastDestroyed.Tier, Is.EqualTo(IceTier.T1));
             Assert.That(lastDestroyed.DestroyCategory, Is.EqualTo(DestroyCategory.Direct));
+        }
+
+        // --- GP-03 Tests ---
+
+        [Test]
+        public void CriticalStrike_Always_MultipliesDamage()
+        {
+            // 100% critical chance for deterministic testing.
+            var crit = new CriticalStrike(1.0f, 3.0f);
+            var finalDamage = crit.Apply(10f, out var wasCritical);
+
+            Assert.That(wasCritical, Is.True);
+            Assert.That(finalDamage, Is.EqualTo(30f));
+        }
+
+        [Test]
+        public void CriticalStrike_Never_ReturnsBaseDamage()
+        {
+            // 0% critical chance.
+            var crit = new CriticalStrike(0f, 3.0f);
+            var finalDamage = crit.Apply(10f, out var wasCritical);
+
+            Assert.That(wasCritical, Is.False);
+            Assert.That(finalDamage, Is.EqualTo(10f));
+        }
+
+        [Test]
+        public void HoldInput_FirstPress_ReturnsOneTick()
+        {
+            var handler = new HoldInputHandler(5f);
+            var ticks = handler.Update(isPressed: true, wasPressedThisFrame: true, deltaTime: 0.016f);
+
+            Assert.That(ticks, Is.EqualTo(1), "First press should fire exactly 1 tick.");
+        }
+
+        [Test]
+        public void HoldInput_HoldLongEnough_FiresMultipleTicks()
+        {
+            var handler = new HoldInputHandler(5f); // interval = 0.2s
+
+            // First press.
+            handler.Update(isPressed: true, wasPressedThisFrame: true, deltaTime: 0.016f);
+
+            // Simulate holding for 0.5s (should fire 2 ticks at 5/s = 0.2s interval).
+            var ticks = handler.Update(isPressed: true, wasPressedThisFrame: false, deltaTime: 0.5f);
+
+            Assert.That(ticks, Is.GreaterThanOrEqualTo(2),
+                "Holding for 0.5s at 5/s should fire at least 2 ticks.");
+        }
+
+        [Test]
+        public void HoldInput_Released_ReturnsZero()
+        {
+            var handler = new HoldInputHandler(5f);
+            handler.Update(isPressed: true, wasPressedThisFrame: true, deltaTime: 0.016f);
+            var ticks = handler.Update(isPressed: false, wasPressedThisFrame: false, deltaTime: 0.5f);
+
+            Assert.That(ticks, Is.EqualTo(0), "Releasing should return 0 ticks.");
+        }
+
+        [Test]
+        public void CriticalHit_AppliedToDirectAttack_InIceField()
+        {
+            // Create a field with 100% critical chance.
+            var critConfig = new IceFieldConfig(
+                maxActiveIceCount: 1,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 9999f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var critField = new IceField(
+                1L, critConfig, new IceIdGenerator(),
+                new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f),
+                new CriticalStrike(1.0f, 3.0f)); // Always crit
+
+            DamageAppliedEvent capturedDamage = default;
+            critField.DamageApplied += e => capturedDamage = e;
+            critField.IceDestroyed += _ => { };
+            critField.Initialize(0d);
+
+            var pos = critField.ActiveIce[0].ReferencePosition;
+            critField.ApplyClickAt(pos, 1f, EffectType.Click, 0d);
+
+            Assert.That(capturedDamage.WasCritical, Is.True, "Direct attack should be critical.");
+            Assert.That(capturedDamage.Damage, Is.EqualTo(3f), "Critical should multiply damage by 3.");
+        }
+
+        [Test]
+        public void T1T2T3_MixedSpawn_AllTiersPresent()
+        {
+            // Config with all tiers at equal weight.
+            var mixedConfig = new IceFieldConfig(
+                maxActiveIceCount: 60,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[]
+                {
+                    new IceDefinition(IceTier.T1, "백빙", 10f, 10L),
+                    new IceDefinition(IceTier.T2, "청빙", 60f, 80L),
+                    new IceDefinition(IceTier.T3, "심빙", 360f, 700L),
+                },
+                spawnWeights: new[]
+                {
+                    new IceSpawnWeight(IceTier.T1, 34),
+                    new IceSpawnWeight(IceTier.T2, 33),
+                    new IceSpawnWeight(IceTier.T3, 33),
+                },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var mixedField = new IceField(
+                1L, mixedConfig, new IceIdGenerator(),
+                new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+
+            mixedField.IceDestroyed += _ => { };
+            mixedField.Initialize(0d);
+
+            var hasT1 = false;
+            var hasT2 = false;
+            var hasT3 = false;
+
+            foreach (var ice in mixedField.ActiveIce)
+            {
+                switch (ice.Tier)
+                {
+                    case IceTier.T1: hasT1 = true; break;
+                    case IceTier.T2: hasT2 = true; break;
+                    case IceTier.T3: hasT3 = true; break;
+                }
+            }
+
+            // With 60 ice at ~33% each, all tiers should appear.
+            Assert.That(hasT1, Is.True, "T1 should appear.");
+            Assert.That(hasT2, Is.True, "T2 should appear.");
+            Assert.That(hasT3, Is.True, "T3 should appear.");
+        }
+
+        // --- GP-04 Tests ---
+
+        [Test]
+        public void SpecialIce_SpawnLimit_EnforcedTo2()
+        {
+            var crackConfig = new IceFieldConfig(
+                maxActiveIceCount: 20,
+                maxSpecialIceCount: 2,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: new[] { new SpecialIceDefinition(SpecialIceType.Crack, 1.0f, IceTier.T1, 0.6f, 1.0f) });
+
+            var testField = new IceField(1L, crackConfig, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            testField.Initialize(0d);
+
+            var specialCount = 0;
+            foreach (var ice in testField.ActiveIce)
+            {
+                if (ice.SpecialType == SpecialIceType.Crack) specialCount++;
+            }
+
+            Assert.That(specialCount, Is.EqualTo(2), "Exactly 2 special ice should spawn even with 100% chance.");
+        }
+
+        [Test]
+        public void CrystalIce_Destroyed_Spawns5Shards_ThatDestroyLowerTier()
+        {
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 10,
+                maxSpecialIceCount: 1,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { 
+                    new IceDefinition(IceTier.T1, "백빙", 10f, 10L),
+                    new IceDefinition(IceTier.T2, "청빙", 60f, 80L)
+                },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: new[] { new SpecialIceDefinition(SpecialIceType.Crystal, 1.0f, IceTier.T1, 1f, 1f) });
+
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            testField.Initialize(0d);
+            
+            var crystal = testField.ActiveIce[0];
+            crystal.Reset(crystal.IceInstanceId, IceTier.T2, SpecialIceType.Crystal, 60f, new Vector2(500, 500), 0d);
+            
+            for (var i = 1; i < testField.ActiveIce.Count; i++)
+            {
+                var ice = testField.ActiveIce[i];
+                ice.Reset(ice.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(0, 0), 0d);
+            }
+
+            var shardDamageCount = 0;
+            testField.DamageApplied += e => {
+                if (e.EffectType == EffectType.CrystalShard) shardDamageCount++;
+            };
+
+            testField.ApplyClickAt(new Vector2(500, 500), 60f, EffectType.Click, 100d);
+
+            Assert.That(shardDamageCount, Is.EqualTo(5), "Crystal should emit exactly 5 shards.");
+        }
+
+        [Test]
+        public void CrackIce_Destroyed_Explosion_DamagesRadius3x()
+        {
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 3,
+                maxSpecialIceCount: 1,
+                hitRadiusReferencePixels: 999f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            testField.Initialize(0d);
+
+            var crack = testField.ActiveIce[0];
+            crack.Reset(crack.IceInstanceId, IceTier.T1, SpecialIceType.Crack, 10f, new Vector2(100, 100), 0d);
+            
+            var targetInRadius = testField.ActiveIce[1];
+            targetInRadius.Reset(targetInRadius.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 200), 0d); // dist 100 <= 120
+
+            var targetOutRadius = testField.ActiveIce[2];
+            targetOutRadius.Reset(targetOutRadius.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 300), 0d); // dist 200 > 120
+
+            DamageAppliedEvent? explosionEvent = null;
+            testField.DamageApplied += e => {
+                if (e.EffectType == EffectType.CrackExplosion && e.IceInstanceId == targetInRadius.IceInstanceId)
+                {
+                    explosionEvent = e;
+                }
+            };
+
+            testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 100d);
+
+            Assert.That(explosionEvent.HasValue, Is.True, "Explosion should hit target in radius.");
+            Assert.That(explosionEvent.Value.Damage, Is.EqualTo(30f), "Explosion damage should be 3x click damage.");
+            Assert.That(targetOutRadius.RemainingHp, Is.EqualTo(1000f), "Target outside radius should not be damaged.");
+        }
+
+        [Test]
+        public void ChainDepth_Exceeds3_DoesNotTriggerFurtherChain()
+        {
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 999f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f));
+            testField.Initialize(0d);
+
+            for (var i = 0; i < 5; i++)
+            {
+                var ice = testField.ActiveIce[i];
+                ice.Reset(ice.IceInstanceId, IceTier.T1, SpecialIceType.Crack, 10f, new Vector2(0, i * 110), 0d); 
+            }
+
+            testField.ApplyClickAt(new Vector2(0, 0), 10f, EffectType.Click, 100d);
+
+            var ice4Survived = false;
+            foreach (var ice in testField.ActiveIce)
+            {
+                if (ice.IceInstanceId == testField.ActiveIce[4].IceInstanceId && !ice.IsDestroyed)
+                {
+                    ice4Survived = true;
+                }
+            }
+
+            Assert.That(ice4Survived, Is.True, "Ice 4 should survive because depth 3 destruction does not trigger chains.");
         }
     }
 }
