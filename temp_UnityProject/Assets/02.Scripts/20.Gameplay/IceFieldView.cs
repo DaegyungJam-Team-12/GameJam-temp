@@ -39,7 +39,6 @@ namespace Icebreaker.Gameplay
 
         private void Awake()
         {
-            sceneCamera ??= Camera.main;
             stageStartedAt = Time.timeAsDouble;
 
             config = CreateDefaultConfig();
@@ -61,8 +60,14 @@ namespace Icebreaker.Gameplay
 
             iceSprite = CreateIceSprite();
             field.Initialize(0d);
+        }
+
+        private void Start()
+        {
+            sceneCamera ??= Camera.main;
             CreateAllVisuals();
         }
+
 
         private void OnDestroy()
         {
