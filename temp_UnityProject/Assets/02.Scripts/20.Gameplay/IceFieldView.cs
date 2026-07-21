@@ -10,8 +10,8 @@ using UnityEngine.InputSystem;
 namespace Icebreaker.Gameplay
 {
     /// <summary>
-    /// MonoBehaviour that creates an <see cref="IceField"/> with 20 T1 ice blocks,
-    /// handles mouse input, and renders each ice as a coloured circle.
+    /// MonoBehaviour that creates an <see cref="IceField"/> with 20 ice blocks (T1~T3),
+    /// handles mouse click and hold input, and renders each ice as a coloured circle.
     /// Attach to a GameObject in siyeon.unity.
     /// </summary>
     public sealed class IceFieldView : MonoBehaviour
@@ -19,14 +19,20 @@ namespace Icebreaker.Gameplay
         private const float ReferenceWidth = 960f;
         private const float ReferenceHeight = 540f;
         private const int RuntimeSpriteSize = 64;
-        private const float ClickDamage = 1f;
         private const float SpawnMargin = 56f;
+
+        // --- Direct attack defaults (D01 level 0, D02 level 0) ---
+        private const float BaseClickDamage = 1f;
+        private const float BaseHoldAttacksPerSecond = 5f; // 5 + D02Level * 2, max 11
+        private const float CriticalChance = 0.05f;        // 5%
+        private const float CriticalMultiplier = 3f;       // x3 damage
 
         [SerializeField] private Camera? sceneCamera;
         [SerializeField] private long stageId = 1L;
 
         private IceField? field;
         private IceFieldConfig? config;
+        private HoldInputHandler? holdInput;
         private readonly List<SpriteRenderer> visuals = new();
         private Sprite? iceSprite;
         private double stageStartedAt;
@@ -44,11 +50,14 @@ namespace Icebreaker.Gameplay
                 ReferenceWidth - SpawnMargin * 2f,
                 ReferenceHeight - SpawnMargin * 2f);
             var positioner = new IceSpawnPositioner(spawnBounds, config.MinimumSpawnDistanceReferencePixels);
+            var criticalStrike = new CriticalStrike(CriticalChance, CriticalMultiplier);
 
-            field = new IceField(stageId, config, idGenerator, positioner);
+            field = new IceField(stageId, config, idGenerator, positioner, criticalStrike);
             field.DamageApplied += HandleDamageApplied;
             field.IceDestroyed += HandleIceDestroyed;
             field.IceRespawned += HandleIceRespawned;
+
+            holdInput = new HoldInputHandler(BaseHoldAttacksPerSecond);
 
             iceSprite = CreateIceSprite();
             field.Initialize(0d);
@@ -70,15 +79,31 @@ namespace Icebreaker.Gameplay
         private void Update()
         {
             var mouse = Mouse.current;
-            if (field == null || sceneCamera == null || mouse == null || !mouse.leftButton.wasPressedThisFrame)
+            if (field == null || sceneCamera == null || mouse == null || holdInput == null)
+            {
+                return;
+            }
+
+            var isPressed = mouse.leftButton.isPressed;
+            var wasPressedThisFrame = mouse.leftButton.wasPressedThisFrame;
+            var ticks = holdInput.Update(isPressed, wasPressedThisFrame, Time.deltaTime);
+
+            if (ticks <= 0)
             {
                 return;
             }
 
             var screenPos = mouse.position.ReadValue();
             var refPos = ScreenToReference(screenPos);
+            var effectType = wasPressedThisFrame ? EffectType.Click : EffectType.Hold;
+            var elapsed = Time.timeAsDouble - stageStartedAt;
 
-            field.ApplyClickAt(refPos, ClickDamage, Time.timeAsDouble - stageStartedAt);
+            for (var i = 0; i < ticks; i++)
+            {
+                field.ApplyClickAt(refPos, BaseClickDamage, effectType, elapsed);
+                // After the first tick, subsequent ones are Hold.
+                effectType = EffectType.Hold;
+            }
         }
 
         // --- Visual helpers ---
@@ -129,9 +154,21 @@ namespace Icebreaker.Gameplay
         private void UpdateVisualColor(SpriteRenderer renderer, IceInstance ice)
         {
             var hpRatio = ice.RemainingHp / ice.MaxHp;
-            renderer.color = ice.IsDestroyed
-                ? new Color(0.7f, 0.85f, 0.9f, 0.3f)
-                : Color.Lerp(new Color(0.7f, 0.92f, 1f, 1f), Color.white, hpRatio);
+            if (ice.IsDestroyed)
+            {
+                renderer.color = new Color(0.7f, 0.85f, 0.9f, 0.3f);
+                return;
+            }
+
+            // Tier-based colors from spec: T1=white, T2=sky blue, T3=cobalt blue.
+            var tierColor = ice.Tier switch
+            {
+                IceTier.T2 => new Color(0.53f, 0.81f, 0.98f, 1f), // Sky blue
+                IceTier.T3 => new Color(0.24f, 0.35f, 0.67f, 1f), // Cobalt blue
+                _          => new Color(0.87f, 0.98f, 1f, 1f),    // White/light blue (T1)
+            };
+
+            renderer.color = Color.Lerp(tierColor * 0.8f, tierColor, hpRatio);
         }
 
         private void RefreshVisual(int index)
@@ -215,12 +252,13 @@ namespace Icebreaker.Gameplay
                 }
             }
 
-            Debug.Log($"[GP-02] Damage {e.Damage}, remaining HP {e.RemainingHp}, ice={e.IceInstanceId}.", this);
+            var critLabel = e.WasCritical ? " CRITICAL!" : "";
+            Debug.Log($"[GP-03] Damage {e.Damage:F1}{critLabel}, remaining HP {e.RemainingHp:F1}, ice={e.IceInstanceId}.", this);
         }
 
         private void HandleIceDestroyed(IceDestroyedEvent e)
         {
-            Debug.Log($"[GP-02] IceDestroyedEvent ice={e.IceInstanceId} tier={e.Tier}.", this);
+            Debug.Log($"[GP-03] IceDestroyedEvent ice={e.IceInstanceId} tier={e.Tier}.", this);
         }
 
         private void HandleIceRespawned(int index)
@@ -228,7 +266,7 @@ namespace Icebreaker.Gameplay
             RefreshVisual(index);
             if (field != null)
             {
-                Debug.Log($"[GP-02] Respawned index={index}, newId={field.ActiveIce[index].IceInstanceId}.", this);
+                Debug.Log($"[GP-03] Respawned index={index}, newId={field.ActiveIce[index].IceInstanceId}, tier={field.ActiveIce[index].Tier}.", this);
             }
         }
 
@@ -236,8 +274,23 @@ namespace Icebreaker.Gameplay
 
         private static IceFieldConfig CreateDefaultConfig()
         {
-            var iceDefinitions = new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) };
-            var spawnWeights = new[] { new IceSpawnWeight(IceTier.T1, 100) };
+            // T1~T3 definitions from ice_types.md spec.
+            var iceDefinitions = new[]
+            {
+                new IceDefinition(IceTier.T1, "백빙", 10f, 10L),
+                new IceDefinition(IceTier.T2, "청빙", 60f, 80L),
+                new IceDefinition(IceTier.T3, "심빙", 360f, 700L),
+            };
+
+            // Spawn weights: T1 dominant, T2/T3 gradually mixed in.
+            // These weights will be adjusted by upgrade unlocks later.
+            var spawnWeights = new[]
+            {
+                new IceSpawnWeight(IceTier.T1, 70),
+                new IceSpawnWeight(IceTier.T2, 25),
+                new IceSpawnWeight(IceTier.T3, 5),
+            };
+
             var specialDefinitions = Array.Empty<SpecialIceDefinition>();
 
             return new IceFieldConfig(

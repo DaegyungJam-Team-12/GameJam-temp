@@ -18,14 +18,17 @@ namespace Icebreaker.Gameplay
         private readonly IceFieldConfig config;
         private readonly IceIdGenerator idGenerator;
         private readonly IceSpawnPositioner positioner;
+        private readonly CriticalStrike? criticalStrike;
         private readonly List<IceInstance> activeIce;
 
-        public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner)
+        public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner,
+            CriticalStrike? criticalStrike = null)
         {
             this.stageId = stageId;
             this.config = config;
             this.idGenerator = idGenerator;
             this.positioner = positioner;
+            this.criticalStrike = criticalStrike;
             activeIce = new List<IceInstance>(config.MaxActiveIceCount);
         }
 
@@ -54,9 +57,14 @@ namespace Icebreaker.Gameplay
         }
 
         /// <summary>
-        /// Apply a single click at the given reference position. Returns true if an ice was hit.
+        /// Apply a single direct attack at the given reference position. Returns true if an ice was hit.
+        /// Critical hit is rolled automatically for direct attacks.
         /// </summary>
-        public bool ApplyClickAt(Vector2 referencePosition, float clickDamage, double stageElapsedSeconds)
+        /// <param name="referencePosition">Click position in 960x540 space.</param>
+        /// <param name="clickDamage">Base damage before critical multiplier.</param>
+        /// <param name="effectType">Click or Hold to distinguish input type.</param>
+        /// <param name="stageElapsedSeconds">Time since stage started.</param>
+        public bool ApplyClickAt(Vector2 referencePosition, float clickDamage, EffectType effectType, double stageElapsedSeconds)
         {
             var target = FindClosestAliveAt(referencePosition);
             if (target == null)
@@ -64,11 +72,19 @@ namespace Icebreaker.Gameplay
                 return false;
             }
 
+            // Roll critical for direct attacks only.
+            var wasCritical = false;
+            var finalDamage = clickDamage;
+            if (criticalStrike != null)
+            {
+                finalDamage = criticalStrike.Apply(clickDamage, out wasCritical);
+            }
+
             if (!target.TryApplyDamage(
-                    clickDamage,
-                    EffectType.Click,
+                    finalDamage,
+                    effectType,
                     DestroyCategory.Direct,
-                    wasCritical: false,
+                    wasCritical,
                     chainId: 0L,
                     chainDepth: 0,
                     stageElapsedSeconds,
