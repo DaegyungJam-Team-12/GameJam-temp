@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
+using Icebreaker.Shared.State;
 using UnityEngine;
 
 namespace Icebreaker.Gameplay
@@ -20,6 +21,7 @@ namespace Icebreaker.Gameplay
         private readonly IceSpawnPositioner positioner;
         private readonly CriticalStrike? criticalStrike;
         private readonly List<IceInstance> activeIce;
+        private readonly IStageClock clock;
         
         private float lastClickDamage;
         
@@ -39,12 +41,13 @@ namespace Icebreaker.Gameplay
         private readonly Queue<QueuedDamage> effectQueue = new Queue<QueuedDamage>();
 
         public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner,
-            CriticalStrike? criticalStrike = null)
+            IStageClock clock, CriticalStrike? criticalStrike = null)
         {
             this.stageId = stageId;
             this.config = config;
             this.idGenerator = idGenerator;
             this.positioner = positioner;
+            this.clock = clock;
             this.criticalStrike = criticalStrike;
             activeIce = new List<IceInstance>(config.MaxActiveIceCount);
         }
@@ -57,6 +60,13 @@ namespace Icebreaker.Gameplay
         public event Action<int>? IceRespawned;
 
         public IReadOnlyList<IceInstance> ActiveIce => activeIce;
+
+        private bool CanProcessCombat()
+        {
+            return clock.Phase == GamePhase.Playing && 
+                   !clock.IsPaused && 
+                   clock.StageElapsedSeconds < clock.DurationSeconds;
+        }
 
         /// <summary>
         /// Populate the field with the configured number of ice instances.
@@ -83,6 +93,11 @@ namespace Icebreaker.Gameplay
         /// <param name="stageElapsedSeconds">Time since stage started.</param>
         public bool ApplyClickAt(Vector2 referencePosition, float clickDamage, EffectType effectType, double stageElapsedSeconds)
         {
+            if (!CanProcessCombat())
+            {
+                return false;
+            }
+
             var target = FindClosestAliveAt(referencePosition);
             if (target == null)
             {
@@ -123,6 +138,12 @@ namespace Icebreaker.Gameplay
 
         private void ProcessQueue(double stageElapsedSeconds)
         {
+            if (!CanProcessCombat())
+            {
+                effectQueue.Clear();
+                return;
+            }
+
             while (effectQueue.Count > 0)
             {
                 var queued = effectQueue.Dequeue();
