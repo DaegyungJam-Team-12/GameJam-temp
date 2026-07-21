@@ -296,7 +296,11 @@ namespace Icebreaker.Gameplay
                 new IceSpawnWeight(IceTier.T3, 5),
             };
 
-            var specialDefinitions = Array.Empty<SpecialIceDefinition>();
+            var specialDefinitions = new[]
+            {
+                new SpecialIceDefinition(SpecialIceType.Crystal, 0.025f, IceTier.T2, 1.0f, 4.0f),
+                new SpecialIceDefinition(SpecialIceType.Crack, 0.020f, IceTier.T1, 0.6f, 1.0f),
+            };
 
             return new IceFieldConfig(
                 maxActiveIceCount: 20,

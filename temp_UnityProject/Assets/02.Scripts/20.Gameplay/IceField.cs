@@ -180,7 +180,6 @@ namespace Icebreaker.Gameplay
             return closest;
         }
 
-        /// <summary>Reset a destroyed ice instance with a new ID and position.</summary>
         private void RespawnAt(IceInstance destroyed, double stageElapsedSeconds)
         {
             var tier = PickRandomTier();
@@ -188,12 +187,14 @@ namespace Icebreaker.Gameplay
             var positions = CollectAlivePositions(destroyed);
 
             positioner.TryGetPosition(positions, out var newPosition);
+            
+            DetermineSpecialIce(tier, out var specialType, out var hpMultiplier);
 
             destroyed.Reset(
                 idGenerator.NextId(),
                 tier,
-                SpecialIceType.None,
-                def.MaxHp,
+                specialType,
+                def.MaxHp * hpMultiplier,
                 newPosition,
                 stageElapsedSeconds);
 
@@ -211,13 +212,15 @@ namespace Icebreaker.Gameplay
             var positions = CollectAlivePositions(null);
 
             positioner.TryGetPosition(positions, out var position);
+            
+            DetermineSpecialIce(tier, out var specialType, out var hpMultiplier);
 
             return new IceInstance(
                 stageId,
                 idGenerator.NextId(),
                 tier,
-                SpecialIceType.None,
-                def.MaxHp,
+                specialType,
+                def.MaxHp * hpMultiplier,
                 position,
                 stageElapsedSeconds);
         }
@@ -235,6 +238,47 @@ namespace Icebreaker.Gameplay
             }
 
             return positions;
+        }
+
+        private void DetermineSpecialIce(IceTier tier, out SpecialIceType specialType, out float hpMultiplier)
+        {
+            specialType = SpecialIceType.None;
+            hpMultiplier = 1f;
+
+            if (config.SpecialDefinitions == null || config.SpecialDefinitions.Count == 0)
+            {
+                return;
+            }
+
+            var currentSpecialCount = 0;
+            for (var i = 0; i < activeIce.Count; i++)
+            {
+                if (!activeIce[i].IsDestroyed && activeIce[i].SpecialType != SpecialIceType.None)
+                {
+                    currentSpecialCount++;
+                }
+            }
+
+            if (currentSpecialCount >= config.MaxSpecialIceCount)
+            {
+                return;
+            }
+
+            var roll = UnityEngine.Random.value;
+            for (var i = 0; i < config.SpecialDefinitions.Count; i++)
+            {
+                var def = config.SpecialDefinitions[i];
+                if (tier >= def.MinimumTier)
+                {
+                    if (roll < def.SpawnChance)
+                    {
+                        specialType = def.Type;
+                        hpMultiplier = def.HpMultiplier;
+                        return;
+                    }
+                    roll -= def.SpawnChance;
+                }
+            }
         }
 
         private IceTier PickRandomTier()
