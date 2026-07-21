@@ -146,13 +146,76 @@ namespace Icebreaker.Gameplay
                     {
                         IceDestroyed(destroyEvent);
                         
-                        // TODO: Enqueue chain effects (D03, Special Ice, H01) here using BFS order.
-                        // if (queued.ChainDepth < 3) { ... }
+                        if (queued.ChainDepth < 3)
+                        {
+                            if (queued.Target.SpecialType == SpecialIceType.Crystal)
+                            {
+                                TriggerCrystalEffect(queued.Target, queued.ChainDepth + 1, stageElapsedSeconds);
+                            }
+                            // TODO: D03, CrackExplosion, H01
+                        }
 
                         RespawnAt(queued.Target, stageElapsedSeconds);
                     }
                 }
+        }
+
+        private void TriggerCrystalEffect(IceInstance source, int nextDepth, double stageElapsedSeconds)
+        {
+            const int shardCount = 5; // H02 0단계 기준 파편 수 5개
+            var targets = FindCrystalTargets(source, shardCount, stageElapsedSeconds);
+            
+            foreach (var target in targets)
+            {
+                // 파편 데미지는 대상을 즉시 파괴하므로 충분히 큰 데미지(MaxHp * 2)를 적용
+                EnqueueDamage(target, target.MaxHp * 2f, EffectType.CrystalShard, DestroyCategory.Chain, false, nextDepth);
             }
+        }
+
+        private List<IceInstance> FindCrystalTargets(IceInstance source, int count, double stageElapsedSeconds)
+        {
+            var candidates = new List<IceInstance>();
+            for (var i = 0; i < activeIce.Count; i++)
+            {
+                var ice = activeIce[i];
+                if (ice.IsDestroyed || ice == source)
+                {
+                    continue;
+                }
+
+                // 재생성 보호 (0.25초) 확인
+                if (stageElapsedSeconds - ice.SpawnTime < config.RespawnProtectionSeconds)
+                {
+                    continue;
+                }
+
+                // 결정빙 파편은 자신보다 낮은 단계의 얼음만 타겟
+                if (ice.Tier < source.Tier)
+                {
+                    candidates.Add(ice);
+                }
+            }
+
+            // 거리 오름차순 -> HP 내림차순 -> ID 오름차순
+            candidates.Sort((a, b) =>
+            {
+                var distA = Vector2.Distance(a.ReferencePosition, source.ReferencePosition);
+                var distB = Vector2.Distance(b.ReferencePosition, source.ReferencePosition);
+                var distCmp = distA.CompareTo(distB);
+                if (distCmp != 0) return distCmp;
+
+                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
+                if (hpCmp != 0) return hpCmp;
+
+                return a.IceInstanceId.CompareTo(b.IceInstanceId);
+            });
+
+            if (candidates.Count > count)
+            {
+                candidates.RemoveRange(count, candidates.Count - count);
+            }
+
+            return candidates;
         }
 
         /// <summary>Find the closest alive ice within hit radius of the given position.</summary>
