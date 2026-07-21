@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Icebreaker.UI.Hud
 {
     /// <summary>
-    /// Self-contained preview data for opening either UI-02 prefab in Prefab Mode.
+    /// Self-contained preview data for opening the HUD prefabs in Prefab Mode.
     /// Integration code can replace it through the presenter's Bind method.
     /// </summary>
     public sealed class Ui02HudSampleSource : MonoBehaviour, IGameStateSource
@@ -24,8 +24,14 @@ namespace Icebreaker.UI.Hud
 
         public event Action<GameState> StateChanged = delegate { };
 
-        public GameState CurrentState => currentState ?? throw new InvalidOperationException(
-            "The UI-02 preview state is not initialized yet.");
+        public GameState CurrentState
+        {
+            get
+            {
+                EnsureInitialized();
+                return currentState ?? throw new InvalidOperationException("The HUD preview state could not be initialized.");
+            }
+        }
 
         private void Awake()
         {
@@ -51,21 +57,46 @@ namespace Icebreaker.UI.Hud
         {
             var state = CurrentState;
             var remaining = Math.Max(0d, state.RemainingSeconds - 1d);
-            ReplaceState(remaining, state.Funds, remaining <= 0d || state.CanStartStage);
+
+            if (state.Phase == GamePhase.Countdown)
+            {
+                var nextPhase = remaining <= 0d ? GamePhase.Playing : GamePhase.Countdown;
+                var nextRemaining = nextPhase == GamePhase.Playing ? 60d : remaining;
+                ReplaceState(nextPhase, nextRemaining, state.Funds, ready: false);
+                return;
+            }
+
+            ReplaceState(state.Phase, remaining, state.Funds, remaining <= 0d || state.CanStartStage);
         }
 
         [ContextMenu("UI-02/Toggle Start Ready")]
         public void ToggleStartReady()
         {
             var state = CurrentState;
-            ReplaceState(state.RemainingSeconds, state.Funds, !state.CanStartStage);
+            ReplaceState(state.Phase, state.RemainingSeconds, state.Funds, !state.CanStartStage);
         }
 
         [ContextMenu("UI-02/Grant 80 Sample Funds")]
         public void GrantSampleFunds()
         {
             var state = CurrentState;
-            ReplaceState(state.RemainingSeconds, checked(state.Funds + 80L), state.CanStartStage);
+            ReplaceState(state.Phase, state.RemainingSeconds, checked(state.Funds + 80L), state.CanStartStage);
+        }
+
+        [ContextMenu("UI-03/Show Countdown 3")]
+        public void ShowCountdownThree() => ShowCountdown(3d);
+
+        [ContextMenu("UI-03/Show Countdown 2")]
+        public void ShowCountdownTwo() => ShowCountdown(2d);
+
+        [ContextMenu("UI-03/Show Countdown 1")]
+        public void ShowCountdownOne() => ShowCountdown(1d);
+
+        [ContextMenu("UI-03/Show Combat 60 Seconds")]
+        public void ShowCombat()
+        {
+            var state = CurrentState;
+            ReplaceState(GamePhase.Playing, 60d, state.Funds, ready: false);
         }
 
         private void ResetPreview(bool raiseEvent)
@@ -88,11 +119,17 @@ namespace Icebreaker.UI.Hud
             }
         }
 
-        private void ReplaceState(double remainingSeconds, long funds, bool ready)
+        private void ShowCountdown(double remainingSeconds)
+        {
+            var state = CurrentState;
+            ReplaceState(GamePhase.Countdown, remainingSeconds, state.Funds, ready: false);
+        }
+
+        private void ReplaceState(GamePhase phase, double remainingSeconds, long funds, bool ready)
         {
             var previous = CurrentState;
             currentState = new GameState(
-                phase: previous.Phase,
+                phase: phase,
                 remainingSeconds: remainingSeconds,
                 isPaused: previous.IsPaused,
                 funds: funds,

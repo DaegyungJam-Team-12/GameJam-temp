@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Icebreaker.Shared.State;
 using Icebreaker.UI.Hud;
 using Icebreaker.UI.Sandbox;
@@ -43,6 +44,31 @@ namespace Icebreaker.UI.Editor
             AssetDatabase.Refresh();
             Validate();
             Debug.Log("[UI-02] Launcher and icebreaking HUD prefabs were rebuilt and validated.");
+        }
+
+        [MenuItem("ICEBREAKER/UI/Rebuild UI-03 Combat HUD")]
+        public static void BuildCombatHud()
+        {
+            EnsureAssetFolder(PrefabFolder);
+
+            var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
+            if (theme == null)
+            {
+                throw new InvalidOperationException($"UI theme was not found at {ThemePath}.");
+            }
+
+            var tmpSettings = TMP_Settings.LoadDefaultSettings();
+            var font = tmpSettings != null ? TMP_Settings.defaultFontAsset : null;
+            if (font == null)
+            {
+                throw new InvalidOperationException("TMP default font is missing. Import TMP Essentials first.");
+            }
+
+            BuildIcebreaking(theme, font);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            ValidateCombatHud();
+            Debug.Log("[UI-03] Countdown and combat HUD prefab was rebuilt and validated.");
         }
 
         [MenuItem("ICEBREAKER/UI/Validate UI-02 HUD Prefabs")]
@@ -98,6 +124,7 @@ namespace Icebreaker.UI.Editor
                 ValidateRect(icebreaking, "HudRoot/FundsArea", 16f, 12f, 220f, 40f, errors);
                 ValidateRect(icebreaking, "HudRoot/TimerArea", 400f, 12f, 160f, 40f, errors);
                 ValidateRect(icebreaking, "HudRoot/SettingsHitArea", 904f, 12f, 40f, 40f, errors);
+                ValidateRect(icebreaking, "HudRoot/CountdownText", 380f, 150f, 200f, 240f, errors);
                 ValidateButtonSeparation(icebreaking, new[] { "HudRoot/SettingsHitArea" }, errors);
                 ValidatePresenterReferences<IcebreakingHudPresenter>(icebreaking, new[]
                 {
@@ -105,6 +132,7 @@ namespace Icebreaker.UI.Editor
                     "theme",
                     "fundsText",
                     "timerText",
+                    "countdownText",
                     "settingsButton"
                 }, errors);
             }
@@ -117,6 +145,47 @@ namespace Icebreaker.UI.Editor
             }
 
             Debug.Log("[UI-02] Prefab validation passed: exact bounds, separate hit areas, and no overlaps.");
+        }
+
+        [MenuItem("ICEBREAKER/UI/Validate UI-03 Combat HUD")]
+        public static void ValidateCombatHud()
+        {
+            var errors = new List<string>();
+            var icebreaking = AssetDatabase.LoadAssetAtPath<GameObject>(IcebreakingPrefabPath);
+
+            if (icebreaking == null)
+            {
+                errors.Add($"Missing prefab: {IcebreakingPrefabPath}");
+            }
+            else
+            {
+                ValidateCanvas(icebreaking, new Vector2(960f, 540f), errors);
+                ValidateRect(icebreaking, "HudRoot/FundsArea", 16f, 12f, 220f, 40f, errors);
+                ValidateRect(icebreaking, "HudRoot/TimerArea", 400f, 12f, 160f, 40f, errors);
+                ValidateRect(icebreaking, "HudRoot/SettingsHitArea", 904f, 12f, 40f, 40f, errors);
+                ValidateRect(icebreaking, "HudRoot/CountdownText", 380f, 150f, 200f, 240f, errors);
+                ValidateButtonSeparation(icebreaking, new[] { "HudRoot/SettingsHitArea" }, errors);
+                ValidatePresenterReferences<IcebreakingHudPresenter>(icebreaking, new[]
+                {
+                    "stateSourceBehaviour",
+                    "theme",
+                    "fundsText",
+                    "timerText",
+                    "countdownText",
+                    "settingsButton"
+                }, errors);
+                ValidateCombatHudScope(icebreaking, errors);
+                ValidateCombatHudBehavior(icebreaking, errors);
+            }
+
+            ValidateFormatting(errors);
+
+            if (errors.Count > 0)
+            {
+                throw new InvalidOperationException("[UI-03] Validation failed:\n- " + string.Join("\n- ", errors));
+            }
+
+            Debug.Log("[UI-03] Combat HUD validation passed: countdown, funds, timer, settings, and hidden out-of-scope views.");
         }
 
         private static void BuildLauncher(UiThemeAsset theme, TMP_FontAsset font)
@@ -210,7 +279,23 @@ namespace Icebreaker.UI.Editor
                 texts.Add(timerText);
 
                 var settings = CreateButton("SettingsHitArea", hudRoot.transform, 904f, 12f, 40f, 40f, "설정", font, 12f, theme.Panel, texts, panels, visualInset: 3f);
-                ConfigurePresenter(presenter, source, theme, fundsText, timerText, settings, texts, panels);
+
+                var countdownText = CreateTopLeftText(
+                    "CountdownText",
+                    hudRoot.transform,
+                    380f,
+                    150f,
+                    200f,
+                    240f,
+                    "3",
+                    font,
+                    160f,
+                    TextAlignmentOptions.Center);
+                countdownText.fontStyle = FontStyles.Bold;
+                countdownText.gameObject.SetActive(false);
+                texts.Add(countdownText);
+
+                ConfigurePresenter(presenter, source, theme, fundsText, timerText, countdownText, settings, texts, panels);
 
                 PrefabUtility.SaveAsPrefabAsset(root, IcebreakingPrefabPath);
             }
@@ -426,6 +511,7 @@ namespace Icebreaker.UI.Editor
             UiThemeAsset theme,
             TMP_Text fundsText,
             TMP_Text timerText,
+            TMP_Text countdownText,
             Button settings,
             List<TMP_Text> texts,
             List<Graphic> panels)
@@ -435,6 +521,7 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "theme", theme);
             SetObject(serialized, "fundsText", fundsText);
             SetObject(serialized, "timerText", timerText);
+            SetObject(serialized, "countdownText", countdownText);
             SetObject(serialized, "settingsButton", settings);
             SetArray(serialized, "themedTexts", texts);
             SetArray(serialized, "panelGraphics", panels);
@@ -506,10 +593,135 @@ namespace Icebreaker.UI.Editor
                 HudTextFormatter.FormatFunds(999L) != "999" ||
                 HudTextFormatter.FormatCountdown(42d) != "00:42" ||
                 HudTextFormatter.FormatCountdown(-1d) != "00:00" ||
+                HudTextFormatter.FormatCountdownDigit(3d) != "3" ||
+                HudTextFormatter.FormatCountdownDigit(2d) != "2" ||
+                HudTextFormatter.FormatCountdownDigit(1d) != "1" ||
+                HudTextFormatter.FormatCountdownDigit(0d) != string.Empty ||
                 HudTextFormatter.FormatProgress(37, 120) != "37/120")
             {
-                errors.Add("HUD state text formatting does not match the UI-02 contract.");
+                errors.Add("HUD state text formatting does not match the UI-02/UI-03 contract.");
             }
+        }
+
+        private static void ValidateCombatHudScope(GameObject prefab, List<string> errors)
+        {
+            var forbiddenPaths = new[]
+            {
+                "HudRoot/DestinationArea",
+                "HudRoot/MaintenanceHitArea",
+                "HudRoot/RouteHitArea",
+                "HudRoot/FoldHitArea",
+                "HudRoot/StatusPanel"
+            };
+
+            foreach (var path in forbiddenPaths)
+            {
+                if (prefab.transform.Find(path) != null)
+                {
+                    errors.Add($"{prefab.name}/{path} must be hidden from the combat HUD.");
+                }
+            }
+        }
+
+        private static void ValidateCombatHudBehavior(GameObject prefab, List<string> errors)
+        {
+            var instance = UnityEngine.Object.Instantiate(prefab);
+
+            try
+            {
+                var presenter = instance.GetComponent<IcebreakingHudPresenter>();
+                var source = instance.GetComponent<Ui02HudSampleSource>();
+                var render = typeof(IcebreakingHudPresenter).GetMethod(
+                    "Render",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                var awake = typeof(IcebreakingHudPresenter).GetMethod(
+                    "Awake",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+
+                if (presenter == null || source == null || render == null || awake == null)
+                {
+                    errors.Add("UI-03 behavior validation could not resolve the presenter, sample source, or render methods.");
+                    return;
+                }
+
+                awake.Invoke(presenter, null);
+                source.EnsureInitialized();
+                RenderAndValidateCombatState(instance, presenter, source.CurrentState, "00:42", errors);
+
+                ValidateCountdownState(instance, presenter, source, render, source.ShowCountdownThree, "3", errors);
+                ValidateCountdownState(instance, presenter, source, render, source.ShowCountdownTwo, "2", errors);
+                ValidateCountdownState(instance, presenter, source, render, source.ShowCountdownOne, "1", errors);
+
+                source.ShowCombat();
+                render.Invoke(presenter, new object[] { source.CurrentState });
+                RenderAndValidateCombatState(instance, presenter, source.CurrentState, "01:00", errors);
+
+                var requestCount = 0;
+                presenter.SettingsRequested += () => requestCount++;
+                instance.transform.Find("HudRoot/SettingsHitArea")?.GetComponent<Button>()?.onClick.Invoke();
+                if (requestCount != 1)
+                {
+                    errors.Add($"UI-03 settings click raised {requestCount} requests instead of exactly one.");
+                }
+            }
+            catch (Exception exception)
+            {
+                errors.Add($"UI-03 behavior validation threw {exception.GetType().Name}: {exception.Message}");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(instance);
+            }
+        }
+
+        private static void ValidateCountdownState(
+            GameObject instance,
+            IcebreakingHudPresenter presenter,
+            Ui02HudSampleSource source,
+            MethodInfo render,
+            Action showState,
+            string expectedDigit,
+            List<string> errors)
+        {
+            showState();
+            render.Invoke(presenter, new object[] { source.CurrentState });
+
+            var countdown = instance.transform.Find("HudRoot/CountdownText")?.GetComponent<TMP_Text>();
+            if (countdown == null || !countdown.gameObject.activeSelf || countdown.text != expectedDigit ||
+                IsActive(instance, "HudRoot/FundsArea") ||
+                IsActive(instance, "HudRoot/TimerArea") ||
+                IsActive(instance, "HudRoot/SettingsHitArea"))
+            {
+                errors.Add($"UI-03 countdown state {expectedDigit} does not show only the expected center digit.");
+            }
+        }
+
+        private static void RenderAndValidateCombatState(
+            GameObject instance,
+            IcebreakingHudPresenter presenter,
+            GameState state,
+            string expectedTimer,
+            List<string> errors)
+        {
+            var render = typeof(IcebreakingHudPresenter).GetMethod("Render", BindingFlags.Instance | BindingFlags.NonPublic);
+            render?.Invoke(presenter, new object[] { state });
+
+            var funds = instance.transform.Find("HudRoot/FundsArea/FundsText")?.GetComponent<TMP_Text>();
+            var timer = instance.transform.Find("HudRoot/TimerArea/TimerText")?.GetComponent<TMP_Text>();
+            if (!IsActive(instance, "HudRoot/FundsArea") ||
+                !IsActive(instance, "HudRoot/TimerArea") ||
+                !IsActive(instance, "HudRoot/SettingsHitArea") ||
+                IsActive(instance, "HudRoot/CountdownText") ||
+                funds?.text != "정비 자금 12.4K" ||
+                timer?.text != expectedTimer)
+            {
+                errors.Add($"UI-03 combat state does not show only funds, {expectedTimer}, and settings.");
+            }
+        }
+
+        private static bool IsActive(GameObject instance, string path)
+        {
+            return instance.transform.Find(path)?.gameObject.activeSelf == true;
         }
 
         private static void ValidateRect(GameObject prefab, string path, float x, float y, float width, float height, List<string> errors)
