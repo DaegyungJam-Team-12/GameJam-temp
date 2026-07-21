@@ -173,6 +173,15 @@ namespace Icebreaker.Gameplay
                 _          => new Color(0.87f, 0.98f, 1f, 1f),    // White/light blue (T1)
             };
 
+            if (ice.SpecialType == SpecialIceType.Crystal)
+            {
+                tierColor = new Color(1f, 0.92f, 0.5f, 1f); // Golden yellow for Crystal
+            }
+            else if (ice.SpecialType == SpecialIceType.Crack)
+            {
+                tierColor = new Color(1f, 0.4f, 0.4f, 1f); // Reddish for Crack
+            }
+
             renderer.color = Color.Lerp(tierColor * 0.8f, tierColor, hpRatio);
         }
 
