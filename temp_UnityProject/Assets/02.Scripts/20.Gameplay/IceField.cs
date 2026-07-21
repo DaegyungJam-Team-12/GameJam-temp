@@ -21,6 +21,8 @@ namespace Icebreaker.Gameplay
         private readonly CriticalStrike? criticalStrike;
         private readonly List<IceInstance> activeIce;
         
+        private float lastClickDamage;
+        
         private long nextChainId = 1L;
         private long currentChainId;
 
@@ -87,6 +89,8 @@ namespace Icebreaker.Gameplay
                 return false;
             }
 
+            lastClickDamage = clickDamage;
+
             // Start a new chain for this direct input
             currentChainId = nextChainId++;
 
@@ -152,12 +156,17 @@ namespace Icebreaker.Gameplay
                             {
                                 TriggerCrystalEffect(queued.Target, queued.ChainDepth + 1, stageElapsedSeconds);
                             }
-                            // TODO: D03, CrackExplosion, H01
+                            else if (queued.Target.SpecialType == SpecialIceType.Crack)
+                            {
+                                TriggerCrackEffect(queued.Target, queued.ChainDepth + 1, stageElapsedSeconds);
+                            }
+                            // TODO: D03, H01
                         }
 
                         RespawnAt(queued.Target, stageElapsedSeconds);
                     }
                 }
+            }
         }
 
         private void TriggerCrystalEffect(IceInstance source, int nextDepth, double stageElapsedSeconds)
@@ -216,6 +225,60 @@ namespace Icebreaker.Gameplay
             }
 
             return candidates;
+        }
+
+        private void TriggerCrackEffect(IceInstance source, int nextDepth, double stageElapsedSeconds)
+        {
+            const float crackRadius = 120f; // H02 0단계 기준 반경 120px
+            var targets = FindCrackTargets(source, crackRadius, stageElapsedSeconds);
+            var damageAmount = lastClickDamage * 3f;
+
+            foreach (var target in targets)
+            {
+                EnqueueDamage(target, damageAmount, EffectType.CrackExplosion, DestroyCategory.Chain, false, nextDepth);
+            }
+        }
+
+        private List<IceInstance> FindCrackTargets(IceInstance source, float radius, double stageElapsedSeconds)
+        {
+            var targets = new List<IceInstance>();
+            for (var i = 0; i < activeIce.Count; i++)
+            {
+                var ice = activeIce[i];
+                if (ice.IsDestroyed || ice == source)
+                {
+                    continue;
+                }
+
+                // 재생성 보호 확인
+                if (stageElapsedSeconds - ice.SpawnTime < config.RespawnProtectionSeconds)
+                {
+                    continue;
+                }
+
+                var dist = Vector2.Distance(ice.ReferencePosition, source.ReferencePosition);
+                if (dist <= radius)
+                {
+                    targets.Add(ice);
+                }
+            }
+
+            // 균열빙 폭발은 범위 내 모든 대상을 타격하지만, 
+            // 큐에 넣는 순서를 명확히 하기 위해 기획 규칙(HP -> 거리 -> ID)에 따라 정렬
+            targets.Sort((a, b) =>
+            {
+                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
+                if (hpCmp != 0) return hpCmp;
+
+                var distA = Vector2.Distance(a.ReferencePosition, source.ReferencePosition);
+                var distB = Vector2.Distance(b.ReferencePosition, source.ReferencePosition);
+                var distCmp = distA.CompareTo(distB);
+                if (distCmp != 0) return distCmp;
+
+                return a.IceInstanceId.CompareTo(b.IceInstanceId);
+            });
+
+            return targets;
         }
 
         /// <summary>Find the closest alive ice within hit radius of the given position.</summary>
