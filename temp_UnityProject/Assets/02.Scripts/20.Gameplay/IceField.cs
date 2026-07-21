@@ -20,6 +20,21 @@ namespace Icebreaker.Gameplay
         private readonly IceSpawnPositioner positioner;
         private readonly CriticalStrike? criticalStrike;
         private readonly List<IceInstance> activeIce;
+        
+        private long nextChainId = 1L;
+        private long currentChainId;
+
+        private struct QueuedDamage
+        {
+            public IceInstance Target;
+            public float Damage;
+            public EffectType EffectType;
+            public DestroyCategory Category;
+            public bool WasCritical;
+            public int ChainDepth;
+        }
+
+        private readonly Queue<QueuedDamage> effectQueue = new Queue<QueuedDamage>();
 
         public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner,
             CriticalStrike? criticalStrike = null)
@@ -72,6 +87,9 @@ namespace Icebreaker.Gameplay
                 return false;
             }
 
+            // Start a new chain for this direct input
+            currentChainId = nextChainId++;
+
             // Roll critical for direct attacks only.
             var wasCritical = false;
             var finalDamage = clickDamage;
@@ -80,29 +98,61 @@ namespace Icebreaker.Gameplay
                 finalDamage = criticalStrike.Apply(clickDamage, out wasCritical);
             }
 
-            if (!target.TryApplyDamage(
-                    finalDamage,
-                    effectType,
-                    DestroyCategory.Direct,
-                    wasCritical,
-                    chainId: 0L,
-                    chainDepth: 0,
-                    stageElapsedSeconds,
-                    out var damageEvent,
-                    out var destroyEvent))
-            {
-                return false;
-            }
-
-            DamageApplied(damageEvent);
-
-            if (target.IsDestroyed && damageEvent.RemainingHp <= 0f)
-            {
-                IceDestroyed(destroyEvent);
-                RespawnAt(target, stageElapsedSeconds);
-            }
+            EnqueueDamage(target, finalDamage, effectType, DestroyCategory.Direct, wasCritical, chainDepth: 0);
+            ProcessQueue(stageElapsedSeconds);
 
             return true;
+        }
+
+        private void EnqueueDamage(IceInstance target, float damage, EffectType effectType, DestroyCategory category, bool wasCritical, int chainDepth)
+        {
+            effectQueue.Enqueue(new QueuedDamage
+            {
+                Target = target,
+                Damage = damage,
+                EffectType = effectType,
+                Category = category,
+                WasCritical = wasCritical,
+                ChainDepth = chainDepth
+            });
+        }
+
+        private void ProcessQueue(double stageElapsedSeconds)
+        {
+            while (effectQueue.Count > 0)
+            {
+                var queued = effectQueue.Dequeue();
+                
+                // "같은 얼음에 여러 피해가 예약돼도 순서대로 처리하고, 처음 HP가 0 이하가 된 순간 한 번만 파괴한다. 이후 예약 피해는 취소한다."
+                if (queued.Target.IsDestroyed)
+                {
+                    continue;
+                }
+
+                if (queued.Target.TryApplyDamage(
+                        queued.Damage,
+                        queued.EffectType,
+                        queued.Category,
+                        queued.WasCritical,
+                        currentChainId,
+                        queued.ChainDepth,
+                        stageElapsedSeconds,
+                        out var damageEvent,
+                        out var destroyEvent))
+                {
+                    DamageApplied(damageEvent);
+
+                    if (queued.Target.IsDestroyed && damageEvent.RemainingHp <= 0f)
+                    {
+                        IceDestroyed(destroyEvent);
+                        
+                        // TODO: Enqueue chain effects (D03, Special Ice, H01) here using BFS order.
+                        // if (queued.ChainDepth < 3) { ... }
+
+                        RespawnAt(queued.Target, stageElapsedSeconds);
+                    }
+                }
+            }
         }
 
         /// <summary>Find the closest alive ice within hit radius of the given position.</summary>
