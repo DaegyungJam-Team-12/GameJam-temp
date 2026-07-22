@@ -1064,5 +1064,136 @@ namespace Icebreaker.Gameplay.Tests
             Assert.That(supportDamageEvents[0].Damage, Is.EqualTo(10f),
                 "Normal ice should not get ×2 multiplier.");
         }
+
+        [Test]
+        public void D03_OverkillTransfer_AppliesToClosestAliveIce()
+        {
+            var chainConfig = new ChainDestructionConfig(
+                enableOverkill: true,
+                overkillTransferRatio: 0.5f,
+                enableHullFragment: false,
+                hullFragmentDamageMultiplier: 0f,
+                hullFragmentRadius: 0f,
+                crystalShardCount: 0,
+                crackDamageMultiplier: 0f,
+                crackRadius: 0f,
+                enableIceCollapse: false,
+                iceCollapseDamageMultiplier: 0f,
+                iceCollapseRadius: 0f);
+
+            var testField = new IceField(1L, config, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0,0,960,540), 1f), new MockClock(),
+                chainConfig: chainConfig);
+            testField.Initialize(0d);
+
+            var target1 = testField.ActiveIce[0];
+            target1.Reset(target1.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100, 100), 0d);
+            
+            var target2 = testField.ActiveIce[1];
+            target2.Reset(target2.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(110, 100), 0d); // Close
+            
+            var target3 = testField.ActiveIce[2];
+            target3.Reset(target3.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(500, 500), 0d); // Far
+
+            var damageEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e => { if (e.EffectType == EffectType.Overkill) damageEvents.Add(e); };
+
+            // Apply 30 damage to a 10 HP target -> Overkill is 20.
+            // Ratio is 0.5 -> 10 damage transferred to closest.
+            testField.ApplyClickAt(new Vector2(100, 100), 30f, EffectType.Click, 10d);
+
+            Assert.That(damageEvents.Count, Is.EqualTo(1));
+            Assert.That(damageEvents[0].IceInstanceId, Is.EqualTo(target2.IceInstanceId));
+            Assert.That(damageEvents[0].Damage, Is.EqualTo(10f));
+            Assert.That(damageEvents[0].ChainDepth, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void H03_IceCollapse_TriggersOn5thDestruction()
+        {
+            var chainConfig = new ChainDestructionConfig(
+                enableOverkill: false, overkillTransferRatio: 0f,
+                enableHullFragment: false, hullFragmentDamageMultiplier: 0f, hullFragmentRadius: 0f,
+                crystalShardCount: 0, crackDamageMultiplier: 0f, crackRadius: 0f,
+                enableIceCollapse: true, iceCollapseDamageMultiplier: 1.5f, iceCollapseRadius: 140f);
+
+            var testField = new IceField(1L, config, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0,0,960,540), 1f), new MockClock(),
+                chainConfig: chainConfig);
+            testField.Initialize(0d);
+
+            for (var i = 0; i < 6; i++)
+            {
+                var ice = testField.ActiveIce[i];
+                ice.Reset(ice.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100 + i, 100), 0d);
+            }
+
+            var collapseEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e => { if (e.EffectType == EffectType.IceCollapse) collapseEvents.Add(e); };
+
+            // Manually destroy 4 without H03 triggering (simulate same chain using reflection or just direct apply)
+            // Wait, to simulate same chain, we can use D03 to create a chain reaction.
+            // Let's use D03 with 100% transfer and enough overkill to destroy 5.
+            var chainConfig2 = new ChainDestructionConfig(
+                enableOverkill: true, overkillTransferRatio: 1.0f,
+                enableHullFragment: false, hullFragmentDamageMultiplier: 0f, hullFragmentRadius: 0f,
+                crystalShardCount: 0, crackDamageMultiplier: 0f, crackRadius: 0f,
+                enableIceCollapse: true, iceCollapseDamageMultiplier: 1.5f, iceCollapseRadius: 140f);
+            
+            var testField2 = new IceField(1L, config, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0,0,960,540), 1f), new MockClock(),
+                chainConfig: chainConfig2);
+            testField2.Initialize(0d);
+
+            for (var i = 0; i < 6; i++)
+            {
+                var ice = testField2.ActiveIce[i];
+                // 10 HP each. Total 60 HP. 
+                ice.Reset(ice.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100 + i, 100), 0d);
+            }
+
+            testField2.DamageApplied += e => { if (e.EffectType == EffectType.IceCollapse) collapseEvents.Add(e); };
+
+            // Apply 60 damage -> destroys 1st, overkill 50 to 2nd -> destroys 2nd, overkill 40... 
+            // 5th destruction will trigger H03.
+            testField2.ApplyClickAt(new Vector2(100, 100), 60f, EffectType.Click, 10d);
+
+            Assert.That(collapseEvents.Count, Is.GreaterThan(0));
+            Assert.That(collapseEvents[0].Damage, Is.EqualTo(90f), "60 * 1.5 = 90");
+        }
+
+        [Test]
+        public void Depth3_StopsFurtherChain()
+        {
+            var chainConfig = new ChainDestructionConfig(
+                enableOverkill: true, overkillTransferRatio: 1.0f,
+                enableHullFragment: false, hullFragmentDamageMultiplier: 0f, hullFragmentRadius: 0f,
+                crystalShardCount: 0, crackDamageMultiplier: 0f, crackRadius: 0f,
+                enableIceCollapse: false, iceCollapseDamageMultiplier: 0f, iceCollapseRadius: 0f);
+
+            var testField = new IceField(1L, config, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0,0,960,540), 1f), new MockClock(),
+                chainConfig: chainConfig);
+            testField.Initialize(0d);
+
+            for (var i = 0; i < 5; i++)
+            {
+                var ice = testField.ActiveIce[i];
+                ice.Reset(ice.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100 + i, 100), 0d);
+            }
+
+            var damageEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e => { damageEvents.Add(e); };
+
+            // 50 damage -> 1(0) -> 2(1) -> 3(2) -> 4(3) -> 5(4? NO, depth 3 stops).
+            testField.ApplyClickAt(new Vector2(100, 100), 50f, EffectType.Click, 10d);
+
+            // Targets: 
+            // Depth 0: target 0 receives 50, destroyed. Overkill 40.
+            // Depth 1: target 1 receives 40, destroyed. Overkill 30.
+            // Depth 2: target 2 receives 30, destroyed. Overkill 20.
+            // Depth 3: target 3 receives 20, destroyed. Overkill 10.
+            // But target 3 was destroyed AT depth 3. It should NOT trigger Overkill (which would be depth 4).
+            // So target 4 should not be damaged.
+            
+            var target4Damage = damageEvents.FindAll(e => e.IceInstanceId == testField.ActiveIce[4].IceInstanceId);
+            Assert.That(target4Damage.Count, Is.EqualTo(0), "Target 4 should not be damaged because depth limit is 3.");
+        }
     }
 }

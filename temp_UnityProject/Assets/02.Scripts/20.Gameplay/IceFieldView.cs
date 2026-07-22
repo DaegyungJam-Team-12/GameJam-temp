@@ -37,8 +37,33 @@ namespace Icebreaker.Gameplay
             new Rect(280f, 0f, 400f, 135f),
         };
 
+        [Serializable]
+        public struct SandboxSettings
+        {
+            [Header("Spawn Weights (0~100)")]
+            [Range(0, 100)] public int weightT1;
+            [Range(0, 100)] public int weightT2;
+            [Range(0, 100)] public int weightT3;
+
+            [Header("Support Attack (GP-06)")]
+            public bool enableSupportAttack;
+            [Range(1, 20)] public int requiredHits;
+            [Range(0, 5)] public int additionalTargets;
+            public bool prioritizeSpecialIce;
+        }
+
         [SerializeField] private Camera? sceneCamera;
         [SerializeField] private long stageId = 1L;
+        [SerializeField] private SandboxSettings sandboxSettings = new SandboxSettings
+        {
+            weightT1 = 100,
+            weightT2 = 0,
+            weightT3 = 0,
+            enableSupportAttack = true,
+            requiredHits = 12,
+            additionalTargets = 2,
+            prioritizeSpecialIce = true
+        };
 
         private IceField? field;
         private IceFieldConfig? config;
@@ -110,14 +135,14 @@ namespace Icebreaker.Gameplay
             var criticalStrike = new CriticalStrike(CriticalChance, CriticalMultiplier);
             activeClock = injectedClock ?? new DummyClock(this);
 
-            // [GP-06] 가짜 보조 파쇄 설정 (12회 충전, 다중 표적 2개, 특수빙 우선순위)
+            // [GP-06] Inspector 설정에 따른 보조 파쇄 적용
             var supportConfig = new SupportAttackConfig(
-                enabled: true,
-                requiredDirectHitCount: 12,
+                enabled: sandboxSettings.enableSupportAttack,
+                requiredDirectHitCount: sandboxSettings.requiredHits,
                 primaryDamageMultiplier: 1.0f,
-                additionalTargetCount: 2,
+                additionalTargetCount: sandboxSettings.additionalTargets,
                 additionalDamageMultiplier: 0.7f,
-                prioritizeSpecialIce: true,
+                prioritizeSpecialIce: sandboxSettings.prioritizeSpecialIce,
                 specialIceDamageMultiplier: 2.0f);
 
             field = new IceField(stageId, config, idGenerator, positioner, activeClock, criticalStrike, supportConfig);
@@ -347,7 +372,7 @@ namespace Icebreaker.Gameplay
 
         // --- Sprite & Config creation ---
 
-        private static IceFieldConfig CreateDefaultConfig()
+        private IceFieldConfig CreateDefaultConfig()
         {
             // T1~T3 definitions from ice_types.md spec.
             var iceDefinitions = new[]
@@ -357,11 +382,16 @@ namespace Icebreaker.Gameplay
                 new IceDefinition(IceTier.T3, "심빙", 360f, 700L),
             };
 
-            // The default profile starts before T2/T3 response upgrades are unlocked.
-            var spawnWeights = new[]
+            // Inspector에서 설정한 가중치를 사용합니다 (0인 것은 제외)
+            var weightList = new List<IceSpawnWeight>();
+            if (sandboxSettings.weightT1 > 0) weightList.Add(new IceSpawnWeight(IceTier.T1, sandboxSettings.weightT1));
+            if (sandboxSettings.weightT2 > 0) weightList.Add(new IceSpawnWeight(IceTier.T2, sandboxSettings.weightT2));
+            if (sandboxSettings.weightT3 > 0) weightList.Add(new IceSpawnWeight(IceTier.T3, sandboxSettings.weightT3));
+
+            if (weightList.Count == 0)
             {
-                new IceSpawnWeight(IceTier.T1, 100),
-            };
+                weightList.Add(new IceSpawnWeight(IceTier.T1, 100));
+            }
 
             var specialDefinitions = new[]
             {
@@ -376,7 +406,7 @@ namespace Icebreaker.Gameplay
                 minimumSpawnDistanceReferencePixels: 120f,
                 respawnProtectionSeconds: 0.25f,
                 iceDefinitions: iceDefinitions,
-                spawnWeights: spawnWeights,
+                spawnWeights: weightList.ToArray(),
                 specialDefinitions: specialDefinitions);
         }
 
