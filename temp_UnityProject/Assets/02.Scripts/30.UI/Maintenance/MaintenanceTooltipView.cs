@@ -1,9 +1,11 @@
 #nullable enable
 
+using System;
 using System.Globalization;
 using Icebreaker.Shared.Maintenance;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Icebreaker.UI.Maintenance
 {
@@ -13,6 +15,26 @@ namespace Icebreaker.UI.Maintenance
         [SerializeField] private TMP_Text? effectText;
         [SerializeField] private TMP_Text? costText;
         [SerializeField] private TMP_Text? lockText;
+        [SerializeField] private Button? purchaseButton;
+        [SerializeField] private TMP_Text? purchaseButtonText;
+
+        public event Action PurchaseClicked = delegate { };
+
+        private void OnEnable()
+        {
+            if (purchaseButton != null)
+            {
+                purchaseButton.onClick.AddListener(HandlePurchaseClicked);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (purchaseButton != null)
+            {
+                purchaseButton.onClick.RemoveListener(HandlePurchaseClicked);
+            }
+        }
 
         public void Show(
             MaintenancePurchaseStepViewData data,
@@ -40,6 +62,8 @@ namespace Icebreaker.UI.Maintenance
                 lockText.text = ResolveLockText(data);
             }
 
+            ConfigurePurchaseButton(data);
+
             gameObject.SetActive(true);
             var rect = (RectTransform)transform;
             rect.anchoredPosition = MaintenanceTreeViewportMath.ClampTooltipTopLeft(
@@ -50,6 +74,30 @@ namespace Icebreaker.UI.Maintenance
         }
 
         public void Hide() => gameObject.SetActive(false);
+
+        private void HandlePurchaseClicked() => PurchaseClicked();
+
+        private void ConfigurePurchaseButton(MaintenancePurchaseStepViewData data)
+        {
+            if (purchaseButton != null)
+            {
+                purchaseButton.interactable = data.CanPurchase;
+            }
+
+            if (purchaseButtonText == null)
+            {
+                return;
+            }
+
+            purchaseButtonText.text = data.PurchaseState switch
+            {
+                MaintenanceStepPurchaseState.Purchased => "구매 완료",
+                MaintenanceStepPurchaseState.Available when data.CanPurchase => "구매",
+                MaintenanceStepPurchaseState.Available => "자금 부족",
+                _ when data.Visibility == MaintenanceStepVisibility.Preview => "미리보기",
+                _ => "잠김"
+            };
+        }
 
         private static string ResolveLockText(MaintenancePurchaseStepViewData data)
         {

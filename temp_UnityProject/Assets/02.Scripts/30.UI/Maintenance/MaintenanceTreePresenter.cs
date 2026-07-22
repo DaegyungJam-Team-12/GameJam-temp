@@ -126,6 +126,7 @@ namespace Icebreaker.UI.Maintenance
             source.StepsChanged += Render;
             viewport!.StepClicked += HandleStepClicked;
             viewport.BackgroundClicked += HandleBackgroundClicked;
+            tooltipView!.PurchaseClicked += HandleTooltipPurchaseClicked;
             subscribed = true;
             Render(source.CurrentSteps);
         }
@@ -142,6 +143,11 @@ namespace Icebreaker.UI.Maintenance
                 viewport.StepClicked -= HandleStepClicked;
                 viewport.BackgroundClicked -= HandleBackgroundClicked;
                 viewport.CancelPointer();
+            }
+
+            if (subscribed && tooltipView != null)
+            {
+                tooltipView.PurchaseClicked -= HandleTooltipPurchaseClicked;
             }
 
             subscribed = false;
@@ -314,10 +320,16 @@ namespace Icebreaker.UI.Maintenance
             selectedStepId = stepId;
             node.SetSelected(true);
             ShowTooltip(data, node);
+        }
 
-            if (data.CanPurchase && pendingPurchaseStepIds.Add(stepId))
+        private void HandleTooltipPurchaseClicked()
+        {
+            if (selectedStepId != null &&
+                dataById.TryGetValue(selectedStepId, out var data) &&
+                data.CanPurchase &&
+                pendingPurchaseStepIds.Add(selectedStepId))
             {
-                PurchaseRequested(stepId);
+                PurchaseRequested(selectedStepId);
             }
         }
 

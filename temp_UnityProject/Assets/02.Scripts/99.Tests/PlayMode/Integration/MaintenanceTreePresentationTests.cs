@@ -67,6 +67,7 @@ namespace Icebreaker.Integration.Tests
 
             var tooltip = AssetDatabase.LoadAssetAtPath<GameObject>(TooltipPrefabPath);
             Assert.That(tooltip!.GetComponent<Image>().type, Is.EqualTo(Image.Type.Sliced));
+            Assert.That(tooltip.transform.Find("PurchaseButton")!.GetComponent<Button>(), Is.Not.Null);
             var tree = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
             var bottomBar = tree!.transform.Find("BottomBar")!;
             Assert.That(bottomBar.GetComponent<Image>().type, Is.EqualTo(Image.Type.Sliced));
@@ -203,10 +204,15 @@ namespace Icebreaker.Integration.Tests
 
                 InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 1, Vector2.zero), "C01-L1");
                 InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 1, new Vector2(4f, 0f)), "C01-L1");
+                Assert.That(requests, Is.Empty, "Selecting a node must not purchase it.");
+
+                var tooltip = instance.transform.Find("TooltipOverlay/Tooltip");
+                var purchaseButton = tooltip!.Find("PurchaseButton")!.GetComponent<Button>();
+                Assert.That(purchaseButton.interactable, Is.True);
+                purchaseButton.onClick.Invoke();
                 Assert.That(requests, Is.EqualTo(new[] { "C01-L1" }));
 
-                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 2, Vector2.zero), "C01-L1");
-                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 2, Vector2.zero), "C01-L1");
+                purchaseButton.onClick.Invoke();
                 Assert.That(requests, Has.Count.EqualTo(1), "A pending Step must ignore duplicate clicks.");
 
                 var c01Purchased = Enum.Parse(previewStateType, "C01Purchased");
@@ -228,12 +234,15 @@ namespace Icebreaker.Integration.Tests
 
                 InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 5, Vector2.zero), "C02-L1");
                 InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 5, Vector2.zero), "C02-L1");
+                Assert.That(requests, Is.EqualTo(new[] { "C01-L1" }));
+                purchaseButton = tooltip.Find("PurchaseButton")!.GetComponent<Button>();
+                Assert.That(purchaseButton.interactable, Is.True);
+                purchaseButton.onClick.Invoke();
                 Assert.That(requests, Is.EqualTo(new[] { "C01-L1", "C02-L1" }));
 
                 viewportType.GetMethod("ApplyZoomAtPointer")!.Invoke(
                     viewport,
                     new object[] { 1f, new Vector2(400f, -200f) });
-                var tooltip = instance.transform.Find("TooltipOverlay/Tooltip");
                 Assert.That(tooltip, Is.Not.Null);
                 Assert.That(tooltip!.localScale, Is.EqualTo(Vector3.one));
                 Assert.That(tooltip.gameObject.activeSelf, Is.True);

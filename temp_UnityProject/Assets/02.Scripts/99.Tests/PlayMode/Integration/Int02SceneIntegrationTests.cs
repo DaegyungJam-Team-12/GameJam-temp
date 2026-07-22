@@ -230,6 +230,7 @@ namespace Icebreaker.Integration.Tests
             Assert.That(tree.activeSelf, Is.True);
 
             ClickMaintenanceStep(tree, "C01-L1");
+            ClickMaintenancePurchaseButton(tree);
             yield return null;
 
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.Zero);
@@ -469,6 +470,14 @@ namespace Icebreaker.Integration.Tests
                 .Invoke(viewport, new object[] { down, stepId });
             viewportType.GetMethod("ProcessPointerUp")!
                 .Invoke(viewport, new object[] { up, stepId });
+        }
+
+        private static void ClickMaintenancePurchaseButton(GameObject tree)
+        {
+            var button = tree.transform
+                .Find("TooltipOverlay/Tooltip/PurchaseButton")!
+                .GetComponent<Button>();
+            button.onClick.Invoke();
         }
 
         private static void AssertStepState(
