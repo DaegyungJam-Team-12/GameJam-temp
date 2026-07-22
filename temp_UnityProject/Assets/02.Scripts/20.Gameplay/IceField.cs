@@ -163,7 +163,121 @@ namespace Icebreaker.Gameplay
 
         private void FireSupport(Vector2 firePosition, double stageElapsedSeconds)
         {
-            // Will be implemented in Step 2
+            if (supportConfig == null || !supportConfig.Enabled)
+            {
+                return;
+            }
+
+            var targets = SelectSupportTargets(firePosition, stageElapsedSeconds);
+            if (targets.Count == 0)
+            {
+                return;
+            }
+
+            // Primary target: full damage
+            var primaryDamage = lastClickDamage * supportConfig.PrimaryDamageMultiplier;
+            if (supportConfig.PrioritizeSpecialIce &&
+                targets[0].SpecialType != SpecialIceType.None)
+            {
+                primaryDamage *= supportConfig.SpecialIceDamageMultiplier;
+            }
+
+            EnqueueDamage(targets[0], primaryDamage, EffectType.SupportShot, DestroyCategory.Support, false, 0);
+
+            // Additional targets (S02): reduced damage
+            var additionalDamage = lastClickDamage * supportConfig.AdditionalDamageMultiplier;
+            for (var i = 1; i < targets.Count; i++)
+            {
+                var damage = additionalDamage;
+                if (supportConfig.PrioritizeSpecialIce &&
+                    targets[i].SpecialType != SpecialIceType.None)
+                {
+                    damage *= supportConfig.SpecialIceDamageMultiplier;
+                }
+
+                EnqueueDamage(targets[i], damage, EffectType.SupportShot, DestroyCategory.Support, false, 0);
+            }
+
+            ProcessQueue(stageElapsedSeconds);
+        }
+
+        /// <summary>
+        /// Select support targets: 1 primary + AdditionalTargetCount additional.
+        /// S03: prioritize special ice, then highest HP.
+        /// Default: closest to fire position.
+        /// Tie-break: HP desc → distance asc → iceInstanceId asc.
+        /// </summary>
+        private List<IceInstance> SelectSupportTargets(Vector2 firePosition, double stageElapsedSeconds)
+        {
+            var candidates = new List<IceInstance>();
+            for (var i = 0; i < activeIce.Count; i++)
+            {
+                var ice = activeIce[i];
+                if (ice.IsDestroyed)
+                {
+                    continue;
+                }
+
+                // Respawn protection: non-direct damage excluded
+                if (stageElapsedSeconds - ice.SpawnTime < config.RespawnProtectionSeconds)
+                {
+                    continue;
+                }
+
+                candidates.Add(ice);
+            }
+
+            if (candidates.Count == 0)
+            {
+                return candidates;
+            }
+
+            var totalTargets = 1 + (supportConfig?.AdditionalTargetCount ?? 0);
+
+            if (supportConfig != null && supportConfig.PrioritizeSpecialIce)
+            {
+                // S03: special ice first → HP desc → distance asc → ID asc
+                candidates.Sort((a, b) =>
+                {
+                    var aSpecial = a.SpecialType != SpecialIceType.None ? 0 : 1;
+                    var bSpecial = b.SpecialType != SpecialIceType.None ? 0 : 1;
+                    var specialCmp = aSpecial.CompareTo(bSpecial);
+                    if (specialCmp != 0) return specialCmp;
+
+                    var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
+                    if (hpCmp != 0) return hpCmp;
+
+                    var distA = Vector2.Distance(a.ReferencePosition, firePosition);
+                    var distB = Vector2.Distance(b.ReferencePosition, firePosition);
+                    var distCmp = distA.CompareTo(distB);
+                    if (distCmp != 0) return distCmp;
+
+                    return a.IceInstanceId.CompareTo(b.IceInstanceId);
+                });
+            }
+            else
+            {
+                // Default (no S03): closest first → HP desc → ID asc
+                candidates.Sort((a, b) =>
+                {
+                    var distA = Vector2.Distance(a.ReferencePosition, firePosition);
+                    var distB = Vector2.Distance(b.ReferencePosition, firePosition);
+                    var distCmp = distA.CompareTo(distB);
+                    if (distCmp != 0) return distCmp;
+
+                    var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
+                    if (hpCmp != 0) return hpCmp;
+
+                    return a.IceInstanceId.CompareTo(b.IceInstanceId);
+                });
+            }
+
+            if (candidates.Count > totalTargets)
+            {
+                candidates.RemoveRange(totalTargets, candidates.Count - totalTargets);
+            }
+
+            return candidates;
         }
 
         private void EnqueueDamage(IceInstance target, float damage, EffectType effectType, DestroyCategory category, bool wasCritical, int chainDepth)
