@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
 using Icebreaker.Shared.Progression;
 using Icebreaker.Shared.State;
@@ -56,6 +57,12 @@ namespace Icebreaker.Core
         public long CurrentStageId => currentStageId;
 
         public GameState CurrentState => CreateState();
+
+        /// <summary>
+        /// Immutable combat values for the next stage. Maintenance is bought outside a stage,
+        /// so this snapshot is deliberately created before the field is reset for play.
+        /// </summary>
+        public CombatConfig CurrentCombatConfig => CombatConfigFactory.Build(maintenanceLevels);
 
         public void EnsureInitialized() => PublishState();
 

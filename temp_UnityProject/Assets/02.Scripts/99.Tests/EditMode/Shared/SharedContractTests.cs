@@ -336,10 +336,11 @@ namespace Icebreaker.Shared.Tests
         [TestCase(4.096f, 11f)]
         public void DirectAttackSnapshots_PreservePlannedProgression(float clickDamage, float holdRate)
         {
-            var config = new DirectAttackConfig(clickDamage, holdRate, 0.05f, 3f);
+            var config = new DirectAttackConfig(clickDamage, holdRate, 56f, 0.05f, 3f);
 
-            Assert.That(config.CurrentClickDamage, Is.EqualTo(clickDamage));
-            Assert.That(config.HoldAttacksPerSecond, Is.EqualTo(holdRate));
+            Assert.That(config.CurrentDirectDamage, Is.EqualTo(clickDamage));
+            Assert.That(config.AttackTicksPerSecond, Is.EqualTo(holdRate));
+            Assert.That(config.CursorRadiusReferencePixels, Is.EqualTo(56f));
         }
 
         [TestCase(0.25f)]
@@ -402,7 +403,7 @@ namespace Icebreaker.Shared.Tests
             SpecialIceDefinition[] specials)
         {
             return new CombatConfig(
-                directAttack: new DirectAttackConfig(1f, 5f, 0.05f, 3f),
+                directAttack: new DirectAttackConfig(1f, 5f, 56f, 0.05f, 3f),
                 iceField: new IceFieldConfig(20, 2, 56f, 120f, 0.25f, definitions, weights, specials),
                 supportAttack: new SupportAttackConfig(false, 12, 1f, 0, 0.7f, false, 2f),
                 chainEffect: new ChainEffectConfig(
@@ -426,7 +427,7 @@ namespace Icebreaker.Shared.Tests
             SpecialIceDefinition[] specials)
         {
             return new CombatConfig(
-                directAttack: new DirectAttackConfig(4.096f, 11f, 0.05f, 3f),
+                directAttack: new DirectAttackConfig(4.096f, 11f, 56f, 0.05f, 3f),
                 iceField: new IceFieldConfig(20, 2, 56f, 120f, 0.25f, definitions, weights, specials),
                 supportAttack: new SupportAttackConfig(true, 12, 1f, 2, 0.7f, true, 2f),
                 chainEffect: new ChainEffectConfig(

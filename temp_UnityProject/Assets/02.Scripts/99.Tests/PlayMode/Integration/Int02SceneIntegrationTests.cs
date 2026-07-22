@@ -96,6 +96,78 @@ namespace Icebreaker.Integration.Tests
         }
 
         [UnityTest]
+        public IEnumerator CompleteLoopScene_InjectsSavedD04RadiusIntoTheField()
+        {
+            File.WriteAllText(demoSavePath, @"{
+  ""saveVersion"": 1,
+  ""profileId"": ""demo"",
+  ""funds"": 0,
+  ""maintenanceLevels"": [{ ""id"": ""D04"", ""level"": 3 }],
+  ""currentDestinationIndex"": 0,
+  ""destinationProgress"": 0,
+  ""completedDestinationIds"": [],
+  ""pendingArrivalDestinationId"": """",
+  ""firstDestroyShown"": false,
+  ""nextAvailableAtUtc"": """",
+  ""runInProgress"": false,
+  ""gameCompleted"": false,
+  ""masterVolume"": 1,
+  ""screenShakeEnabled"": true
+}");
+
+            EditorSceneManager.LoadSceneInPlayMode(
+                Int02ScenePath,
+                new LoadSceneParameters(LoadSceneMode.Single));
+            yield return WaitForFrames(5);
+
+            var view = UnityEngine.Object.FindFirstObjectByType<IceFieldView>();
+            Assert.That(view, Is.Not.Null);
+            var directAttackConfig = typeof(IceFieldView)
+                .GetField("directAttackConfig", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(view) as DirectAttackConfig;
+
+            Assert.That(directAttackConfig, Is.Not.Null);
+            Assert.That(directAttackConfig!.CursorRadiusReferencePixels, Is.EqualTo(104f));
+
+            ClickStartButtonThroughEventSystem();
+            yield return null;
+
+            var ringRoot = typeof(IceFieldView)
+                .GetField("cursorRingRoot", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(view) as Transform;
+            var ringRotator = typeof(IceFieldView)
+                .GetField("cursorRingRotator", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(view) as Transform;
+            Assert.That(ringRoot, Is.Not.Null);
+            Assert.That(ringRotator, Is.Not.Null);
+
+            var camera = Camera.main;
+            Assert.That(camera, Is.Not.Null);
+            var expectedScale = camera!.orthographicSize *
+                (directAttackConfig.CursorRadiusReferencePixels * 2f / 540f) * 2f;
+            Assert.That(ringRotator!.localScale.x, Is.EqualTo(expectedScale).Within(0.0001f));
+            Assert.That(ringRotator.localScale.y, Is.EqualTo(expectedScale).Within(0.0001f));
+
+            var updateCursorRing = typeof(IceFieldView).GetMethod(
+                "UpdateCursorRing",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(updateCursorRing, Is.Not.Null);
+            var screenCenter = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+            updateCursorRing!.Invoke(view, new object[] { screenCenter, true });
+            var expectedPosition = camera.ScreenToWorldPoint(new Vector3(
+                screenCenter.x,
+                screenCenter.y,
+                -camera.transform.position.z));
+            Assert.That(ringRoot!.position.x, Is.EqualTo(expectedPosition.x).Within(0.0001f));
+            Assert.That(ringRoot.position.y, Is.EqualTo(expectedPosition.y).Within(0.0001f));
+
+            var rotationBefore = ringRotator.eulerAngles.z;
+            yield return null;
+            updateCursorRing.Invoke(view, new object[] { screenCenter, true });
+            Assert.That(Mathf.DeltaAngle(rotationBefore, ringRotator.eulerAngles.z), Is.LessThan(0f));
+        }
+
+        [UnityTest]
         public IEnumerator StartButton_UsesRealCountdownAndCompletesTwoSavedCycles()
         {
             if (File.Exists(demoSavePath))

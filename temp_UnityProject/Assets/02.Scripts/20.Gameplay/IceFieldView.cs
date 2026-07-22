@@ -12,7 +12,7 @@ namespace Icebreaker.Gameplay
 {
     /// <summary>
     /// MonoBehaviour that creates an <see cref="IceField"/> with 20 ice blocks (T1~T3),
-    /// handles mouse click and hold input, and renders each ice as a coloured circle.
+    /// applies automatic cursor-area attacks and renders ice plus the cursor range indicator.
     /// Attach to a GameObject in siyeon.unity.
     /// </summary>
     public sealed class IceFieldView : MonoBehaviour
@@ -23,10 +23,12 @@ namespace Icebreaker.Gameplay
         private const float SpawnMargin = 56f;
 
         // --- Direct attack defaults (D01 level 0, D02 level 0) ---
-        private const float BaseClickDamage = 1f;
-        private const float BaseHoldAttacksPerSecond = 5f; // 5 + D02Level * 2, max 11
+        private const float BaseDirectDamage = 1f;
+        private const float BaseAttackTicksPerSecond = 5f; // 5 + D02Level * 2, max 11
+        private const float BaseCursorRadiusReferencePixels = 56f;
         private const float CriticalChance = 0.05f;        // 5%
         private const float CriticalMultiplier = 3f;       // x3 damage
+        private const float CursorRingDegreesPerSecond = 60f;
 
         private static readonly Rect[] ProtectedSpawnAreas =
         {
@@ -95,12 +97,17 @@ namespace Icebreaker.Gameplay
 
         private IceField? field;
         private IceFieldConfig? config;
-        private HoldInputHandler? holdInput;
+        private DirectAttackConfig? directAttackConfig;
+        private AttackTickScheduler? attackTickScheduler;
         private readonly List<SpriteRenderer> visuals = new();
         private readonly List<FloatingText> floatingTexts = new();
         private Sprite? iceSprite;
+        private Sprite? cursorRingSprite;
+        private Transform? cursorRingRoot;
+        private Transform? cursorRingRotator;
         private double stageStartedAt;
         private IStageClock? injectedClock;
+        private CombatConfig? injectedCombatConfig;
         private IStageClock? activeClock;
 
         private sealed class DummyClock : IStageClock
@@ -134,6 +141,25 @@ namespace Icebreaker.Gameplay
             injectedClock = clock;
         }
 
+        /// <summary>
+        /// Supplies the immutable maintenance-derived values for the stage field.
+        /// This must happen before Awake so the visual ring and overlap test share one radius.
+        /// </summary>
+        public void InjectCombatConfig(CombatConfig combatConfig)
+        {
+            if (combatConfig == null)
+            {
+                throw new ArgumentNullException(nameof(combatConfig));
+            }
+
+            if (field != null)
+            {
+                throw new InvalidOperationException("Combat config must be injected before IceFieldView.Awake.");
+            }
+
+            injectedCombatConfig = combatConfig;
+        }
+
         public void ResetStage()
         {
             if (field == null)
@@ -143,6 +169,7 @@ namespace Icebreaker.Gameplay
 
             field.Initialize(0d);
             RefreshAllVisuals();
+            attackTickScheduler?.Reset();
         }
 
         [ContextMenu("Reset to Spec Defaults")]
@@ -175,7 +202,13 @@ namespace Icebreaker.Gameplay
         {
             stageStartedAt = Time.timeAsDouble;
 
-            config = CreateDefaultConfig();
+            config = injectedCombatConfig?.IceField ?? CreateDefaultConfig();
+            directAttackConfig = injectedCombatConfig?.DirectAttack ?? new DirectAttackConfig(
+                BaseDirectDamage,
+                BaseAttackTicksPerSecond,
+                BaseCursorRadiusReferencePixels,
+                CriticalChance,
+                CriticalMultiplier);
             var idGenerator = new IceIdGenerator();
             var spawnBounds = new Rect(
                 SpawnMargin,
@@ -186,12 +219,14 @@ namespace Icebreaker.Gameplay
                 spawnBounds,
                 config.MinimumSpawnDistanceReferencePixels,
                 ProtectedSpawnAreas,
-                config.HitRadiusReferencePixels);
-            var criticalStrike = new CriticalStrike(CriticalChance, CriticalMultiplier);
+                config.IceCollisionRadiusReferencePixels);
+            var criticalStrike = new CriticalStrike(
+                directAttackConfig.CriticalChance,
+                directAttackConfig.CriticalDamageMultiplier);
             activeClock = injectedClock ?? new DummyClock(this);
 
             // [GP-06] Inspector 설정에 따른 보조 파쇄 적용
-            var supportConfig = new SupportAttackConfig(
+            var supportConfig = injectedCombatConfig?.SupportAttack ?? new SupportAttackConfig(
                 enabled: sandboxSettings.enableSupportAttack,
                 requiredDirectHitCount: sandboxSettings.requiredHits,
                 primaryDamageMultiplier: 1.0f,
@@ -201,25 +236,26 @@ namespace Icebreaker.Gameplay
                 specialIceDamageMultiplier: 2.0f);
 
             // [GP-07] 연쇄 파괴 적용
-            var chainConfig = new ChainDestructionConfig(
-                enableOverkill: sandboxSettings.enableOverkill,
-                overkillTransferRatio: 0.5f,
-                enableHullFragment: sandboxSettings.enableHullFragment,
-                hullFragmentDamageMultiplier: 0.25f,
-                hullFragmentRadius: 90f,
+            var chainConfig = injectedCombatConfig?.ChainEffect ?? new ChainEffectConfig(
+                overkillEnabled: sandboxSettings.enableOverkill,
+                overkillTransferMultiplier: 0.5f,
+                hullFragmentDamageMultiplier: sandboxSettings.enableHullFragment ? 0.25f : 0f,
+                hullFragmentRadiusReferencePixels: 90f,
                 crystalShardCount: 5,
                 crackDamageMultiplier: 1.0f,
-                crackRadius: 120f,
-                enableIceCollapse: sandboxSettings.enableIceCollapse,
+                crackRadiusReferencePixels: 120f,
+                iceCollapseEnabled: sandboxSettings.enableIceCollapse,
+                iceCollapseRequiredDestroyCount: 5,
                 iceCollapseDamageMultiplier: 1.5f,
-                iceCollapseRadius: 140f);
+                iceCollapseRadiusReferencePixels: 140f,
+                maxChainDepth: 3);
 
             field = new IceField(stageId, config, idGenerator, positioner, activeClock, criticalStrike, supportConfig, chainConfig);
             field.DamageApplied += HandleDamageApplied;
             field.IceDestroyed += HandleIceDestroyed;
             field.IceRespawned += HandleIceRespawned;
 
-            holdInput = new HoldInputHandler(BaseHoldAttacksPerSecond);
+            attackTickScheduler = new AttackTickScheduler(directAttackConfig.AttackTicksPerSecond);
 
             iceSprite = CreateIceSprite();
             field.Initialize(0d);
@@ -229,8 +265,16 @@ namespace Icebreaker.Gameplay
         {
             sceneCamera ??= Camera.main;
             CreateAllVisuals();
+            CreateCursorRing();
         }
 
+        private void OnDisable()
+        {
+            if (cursorRingRoot != null)
+            {
+                cursorRingRoot.gameObject.SetActive(false);
+            }
+        }
 
         private void OnDestroy()
         {
@@ -242,35 +286,55 @@ namespace Icebreaker.Gameplay
             field.DamageApplied -= HandleDamageApplied;
             field.IceDestroyed -= HandleIceDestroyed;
             field.IceRespawned -= HandleIceRespawned;
+
+            if (iceSprite != null)
+            {
+                Destroy(iceSprite.texture);
+                Destroy(iceSprite);
+            }
+
+            if (cursorRingSprite != null)
+            {
+                Destroy(cursorRingSprite.texture);
+                Destroy(cursorRingSprite);
+            }
         }
 
         private void Update()
         {
             var mouse = Mouse.current;
-            if (field == null || sceneCamera == null || mouse == null || holdInput == null)
+            if (field == null || sceneCamera == null || mouse == null ||
+                attackTickScheduler == null || directAttackConfig == null)
             {
                 return;
             }
 
-            var isPressed = mouse.leftButton.isPressed;
-            var wasPressedThisFrame = mouse.leftButton.wasPressedThisFrame;
-            var ticks = holdInput.Update(isPressed, wasPressedThisFrame, Time.deltaTime);
+            var screenPosition = mouse.position.ReadValue();
+            var cursorIsOnScreen = IsInsideScreen(screenPosition);
+            UpdateCursorRing(screenPosition, cursorIsOnScreen);
 
-            if (ticks <= 0)
+            if (activeClock == null || activeClock.Phase != GamePhase.Playing || activeClock.IsPaused)
+            {
+                attackTickScheduler.Reset();
+                return;
+            }
+
+            var ticks = attackTickScheduler.Update(Time.deltaTime);
+            if (!cursorIsOnScreen || ticks <= 0)
             {
                 return;
             }
 
-            var screenPos = mouse.position.ReadValue();
-            var refPos = ScreenToReference(screenPos);
-            var effectType = wasPressedThisFrame ? EffectType.Click : EffectType.Hold;
+            var refPos = ScreenToReference(screenPosition);
             var elapsed = activeClock?.StageElapsedSeconds ?? Time.timeAsDouble - stageStartedAt;
 
             for (var i = 0; i < ticks; i++)
             {
-                field.ApplyClickAt(refPos, BaseClickDamage, effectType, elapsed);
-                // After the first tick, subsequent ones are Hold.
-                effectType = EffectType.Hold;
+                field.ApplyAreaTickAt(
+                    refPos,
+                    directAttackConfig.CursorRadiusReferencePixels,
+                    directAttackConfig.CurrentDirectDamage,
+                    elapsed);
             }
         }
 
@@ -315,7 +379,7 @@ namespace Icebreaker.Gameplay
             var worldPos = ReferenceToWorld(ice.ReferencePosition);
             renderer.transform.position = worldPos;
 
-            var worldRadius = ResolveWorldRadius();
+            var worldRadius = ResolveWorldRadius(config?.IceCollisionRadiusReferencePixels ?? 56f);
             renderer.transform.localScale = Vector3.one * (worldRadius * 2f);
         }
 
@@ -398,7 +462,62 @@ namespace Icebreaker.Gameplay
             return sceneCamera.ScreenToWorldPoint(screenPos);
         }
 
-        private float ResolveWorldRadius()
+        private static bool IsInsideScreen(Vector2 screenPosition)
+        {
+            return screenPosition.x >= 0f && screenPosition.x <= Screen.width &&
+                   screenPosition.y >= 0f && screenPosition.y <= Screen.height;
+        }
+
+        private void CreateCursorRing()
+        {
+            if (cursorRingRoot != null || sceneCamera == null || directAttackConfig == null)
+            {
+                return;
+            }
+
+            var root = new GameObject("CursorAreaRing");
+            root.transform.SetParent(transform, false);
+            cursorRingRoot = root.transform;
+
+            var rotatingChild = new GameObject("RotatingDashes");
+            rotatingChild.transform.SetParent(cursorRingRoot, false);
+            cursorRingRotator = rotatingChild.transform;
+
+            cursorRingSprite = CreateCursorRingSprite();
+            var renderer = rotatingChild.AddComponent<SpriteRenderer>();
+            renderer.sprite = cursorRingSprite;
+            renderer.sortingOrder = 20;
+            renderer.color = new Color(0.08f, 0.16f, 0.18f, 0.9f);
+
+            var worldRadius = ResolveWorldRadius(directAttackConfig.CursorRadiusReferencePixels);
+            cursorRingRotator.localScale = Vector3.one * (worldRadius * 2f);
+            root.SetActive(false);
+        }
+
+        private void UpdateCursorRing(Vector2 screenPosition, bool cursorIsOnScreen)
+        {
+            if (cursorRingRoot == null || cursorRingRotator == null || directAttackConfig == null)
+            {
+                return;
+            }
+
+            if (cursorRingRoot.gameObject.activeSelf != cursorIsOnScreen)
+            {
+                cursorRingRoot.gameObject.SetActive(cursorIsOnScreen);
+            }
+
+            if (!cursorIsOnScreen)
+            {
+                return;
+            }
+
+            cursorRingRoot.position = ReferenceToWorld(ScreenToReference(screenPosition));
+            var worldRadius = ResolveWorldRadius(directAttackConfig.CursorRadiusReferencePixels);
+            cursorRingRotator.localScale = Vector3.one * (worldRadius * 2f);
+            cursorRingRotator.Rotate(Vector3.back, CursorRingDegreesPerSecond * Time.deltaTime);
+        }
+
+        private float ResolveWorldRadius(float referenceRadius)
         {
             if (sceneCamera == null || !sceneCamera.orthographic)
             {
@@ -406,7 +525,7 @@ namespace Icebreaker.Gameplay
             }
 
             var worldHeight = sceneCamera.orthographicSize * 2f;
-            var displaySize = config?.HitRadiusReferencePixels * 2f ?? 112f;
+            var displaySize = referenceRadius * 2f;
             return worldHeight * (displaySize / ReferenceHeight) * 0.5f;
         }
 
@@ -440,7 +559,9 @@ namespace Icebreaker.Gameplay
                 else if (e.EffectType == EffectType.CrystalShard || e.EffectType == EffectType.CrackExplosion) color = Color.green;
 
                 var text = e.WasCritical ? $"Critical {e.Damage:F0}!" : $"{e.Damage:F0}";
-                if (e.EffectType != EffectType.Click && e.EffectType != EffectType.Hold)
+                if (e.EffectType != EffectType.CursorAreaPulse &&
+                    e.EffectType != EffectType.Click &&
+                    e.EffectType != EffectType.Hold)
                 {
                     text += $" ({e.EffectType})";
                 }
@@ -536,6 +657,53 @@ namespace Icebreaker.Gameplay
                 iceDefinitions: iceDefinitions,
                 spawnWeights: weightList.ToArray(),
                 specialDefinitions: specialDefinitions);
+        }
+
+        private static Sprite CreateCursorRingSprite()
+        {
+            const int textureSize = 128;
+            const int dashCount = 20;
+            const float dashFill = 0.52f;
+            var texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp
+            };
+
+            var center = new Vector2((textureSize - 1) * 0.5f, (textureSize - 1) * 0.5f);
+            var outerRadius = textureSize * 0.47f;
+            var innerRadius = textureSize * 0.40f;
+            for (var y = 0; y < textureSize; y++)
+            {
+                for (var x = 0; x < textureSize; x++)
+                {
+                    var offset = new Vector2(x, y) - center;
+                    var radius = offset.magnitude;
+                    if (radius < innerRadius || radius > outerRadius)
+                    {
+                        texture.SetPixel(x, y, Color.clear);
+                        continue;
+                    }
+
+                    var angle = Mathf.Atan2(offset.y, offset.x);
+                    if (angle < 0f)
+                    {
+                        angle += Mathf.PI * 2f;
+                    }
+
+                    var dashProgress = angle / (Mathf.PI * 2f) * dashCount;
+                    texture.SetPixel(x, y, dashProgress - Mathf.Floor(dashProgress) < dashFill
+                        ? Color.white
+                        : Color.clear);
+                }
+            }
+
+            texture.Apply();
+            return Sprite.Create(
+                texture,
+                new Rect(0, 0, textureSize, textureSize),
+                new Vector2(0.5f, 0.5f),
+                textureSize);
         }
 
         private static Sprite CreateIceSprite()

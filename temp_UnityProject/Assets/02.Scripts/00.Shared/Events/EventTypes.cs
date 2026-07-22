@@ -11,6 +11,7 @@ namespace Icebreaker.Shared.Events
 
     public enum EffectType
     {
+        CursorAreaPulse,
         Click,
         Hold,
         Overkill,

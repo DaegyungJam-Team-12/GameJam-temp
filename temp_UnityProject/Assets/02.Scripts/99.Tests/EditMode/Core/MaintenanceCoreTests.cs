@@ -36,8 +36,8 @@ namespace Icebreaker.Core.Tests
             var standard = MaintenanceCatalog.CreateStandard();
             var demo = MaintenanceCatalog.CreateDemo();
 
-            Assert.That(standard, Has.Count.EqualTo(13));
-            Assert.That(demo, Has.Count.EqualTo(13));
+            Assert.That(standard, Has.Count.EqualTo(14));
+            Assert.That(demo, Has.Count.EqualTo(14));
             for (var index = 0; index < expected.Length; index++)
             {
                 var item = expected[index];
@@ -78,7 +78,7 @@ namespace Icebreaker.Core.Tests
             var c02 = Find(initial, MaintenanceCatalog.C02);
             var s03 = Find(initial, MaintenanceCatalog.S03);
 
-            Assert.That(initial, Has.Count.EqualTo(13));
+            Assert.That(initial, Has.Count.EqualTo(14));
             Assert.That(c01.State, Is.EqualTo(MaintenanceNodeState.Available));
             Assert.That(c01.CurrentEffectText, Is.EqualTo("미보유"));
             Assert.That(c01.NextCost, Is.EqualTo(100));
@@ -161,6 +161,29 @@ namespace Icebreaker.Core.Tests
             Assert.That(core.TryPurchase(MaintenanceCatalog.S02), Is.True);
             Assert.That(core.TryPurchase(MaintenanceCatalog.S03), Is.True);
             Assert.That(core.Funds, Is.GreaterThanOrEqualTo(0));
+        }
+
+        [Test]
+        public void TryPurchase_D04RequiresC01AndPersistsAllRadiusLevels()
+        {
+            var data = SaveData.CreateNew("standard");
+            data.funds = 13_100;
+            var core = CreateCore(data, MaintenanceCatalog.CreateStandard());
+
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.False);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.C01), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.False);
+
+            var d04 = Find(core.GetNodeViewData(), MaintenanceCatalog.D04);
+            Assert.That(core.Funds, Is.Zero);
+            Assert.That(d04.CurrentLevel, Is.EqualTo(3));
+            Assert.That(d04.IsMaxLevel, Is.True);
+            Assert.That(data.maintenanceLevels, Has.Count.EqualTo(2));
+            Assert.That(data.maintenanceLevels[1].id, Is.EqualTo(MaintenanceCatalog.D04));
+            Assert.That(data.maintenanceLevels[1].level, Is.EqualTo(3));
         }
 
         [Test]
@@ -259,13 +282,17 @@ namespace Icebreaker.Core.Tests
                     Require(MaintenanceCatalog.C01)),
                 Expect(MaintenanceCatalog.D02, "고속 구동", MaintenanceBranch.Direct,
                     new long[] { 600, 1_800, 5_400 },
-                    new[] { "누르기 속도 +2/초", "누르기 속도 +4/초", "누르기 속도 +6/초" },
+                    new[] { "자동 타격 +2회/초", "자동 타격 +4회/초", "자동 타격 +6회/초" },
                     Require(MaintenanceCatalog.C01)),
                 Expect(MaintenanceCatalog.D03, "과잉 파쇄", MaintenanceBranch.Direct,
                     new long[] { 8_000 }, new[] { "초과 피해 50% 전달" },
                     Require(MaintenanceCatalog.D01, 2)),
+                Expect(MaintenanceCatalog.D04, "범위 확장", MaintenanceBranch.Direct,
+                    new long[] { 1_000, 3_000, 9_000 },
+                    new[] { "커서 반경 72px", "커서 반경 88px", "커서 반경 104px" },
+                    Require(MaintenanceCatalog.C01)),
                 Expect(MaintenanceCatalog.S01, "보조 파쇄기", MaintenanceBranch.Support,
-                    new long[] { 500 }, new[] { "12회 입력마다 보조탄" },
+                    new long[] { 500 }, new[] { "유효 자동 틱 12회마다 보조탄" },
                     Require(MaintenanceCatalog.C01)),
                 Expect(MaintenanceCatalog.S02, "다중 타격", MaintenanceBranch.Support,
                     new long[] { 3_000, 9_000 }, new[] { "보조 대상 +1", "보조 대상 +2" },
