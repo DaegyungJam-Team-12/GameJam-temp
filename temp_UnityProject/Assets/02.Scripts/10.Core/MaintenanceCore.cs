@@ -14,6 +14,7 @@ namespace Icebreaker.Core
         private readonly IReadOnlyList<MaintenanceDefinition> definitions;
         private readonly Dictionary<string, MaintenanceDefinition> definitionsById;
         private readonly Dictionary<string, int> levelsById;
+        private readonly MaintenanceStepProjector stepProjector;
         private readonly ProgressionLedger ledger;
         private readonly SaveService saveService;
 
@@ -65,6 +66,8 @@ namespace Icebreaker.Core
 
                 levelsById.Add(definition.Id, 0);
             }
+
+            stepProjector = new MaintenanceStepProjector(definitions);
 
             var loadedIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (var savedLevel in saveService.Data.maintenanceLevels)
@@ -128,6 +131,18 @@ namespace Icebreaker.Core
         public MaintenancePurchaseResult TryPurchaseDetailed(string nodeId)
         {
             if (string.IsNullOrEmpty(nodeId) ||
+                !definitionsById.TryGetValue(nodeId, out _))
+            {
+                return MaintenancePurchaseResult.InvalidNode;
+            }
+
+            var currentLevel = levelsById[nodeId];
+            return TryPurchaseDetailed(nodeId, currentLevel + 1);
+        }
+
+        public MaintenancePurchaseResult TryPurchaseDetailed(string nodeId, int targetLevel)
+        {
+            if (string.IsNullOrEmpty(nodeId) ||
                 !definitionsById.TryGetValue(nodeId, out var definition))
             {
                 return MaintenancePurchaseResult.InvalidNode;
@@ -137,6 +152,11 @@ namespace Icebreaker.Core
             if (currentLevel == definition.MaxLevel)
             {
                 return MaintenancePurchaseResult.MaxLevel;
+            }
+
+            if (targetLevel != currentLevel + 1)
+            {
+                return MaintenancePurchaseResult.Locked;
             }
 
             if (currentLevel == 0 && !RequirementsMet(definition))
@@ -153,6 +173,11 @@ namespace Icebreaker.Core
             levelsById[nodeId] = currentLevel + 1;
             SaveAndFlush();
             return MaintenancePurchaseResult.Success;
+        }
+
+        public IReadOnlyList<MaintenancePurchaseStepViewData> GetPurchaseStepViewData()
+        {
+            return stepProjector.Project(levelsById, Funds);
         }
 
         public IReadOnlyList<MaintenanceNodeViewData> GetNodeViewData()
