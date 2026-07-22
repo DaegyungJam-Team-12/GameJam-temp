@@ -50,6 +50,22 @@ namespace Icebreaker.Gameplay
             [Range(1, 20)] public int requiredHits;
             [Range(0, 5)] public int additionalTargets;
             public bool prioritizeSpecialIce;
+
+            [Header("Chain Destruction (GP-07)")]
+            public bool enableOverkill;
+            public bool enableHullFragment;
+            public bool enableIceCollapse;
+
+            [Header("Debug")]
+            public bool enableDebugText;
+        }
+
+        private struct FloatingText
+        {
+            public Vector2 Position;
+            public string Text;
+            public Color Color;
+            public double ExpiryTime;
         }
 
         [SerializeField] private Camera? sceneCamera;
@@ -62,13 +78,18 @@ namespace Icebreaker.Gameplay
             enableSupportAttack = true,
             requiredHits = 12,
             additionalTargets = 2,
-            prioritizeSpecialIce = true
+            prioritizeSpecialIce = true,
+            enableOverkill = true,
+            enableHullFragment = true,
+            enableIceCollapse = true,
+            enableDebugText = true
         };
 
         private IceField? field;
         private IceFieldConfig? config;
         private HoldInputHandler? holdInput;
         private readonly List<SpriteRenderer> visuals = new();
+        private readonly List<FloatingText> floatingTexts = new();
         private Sprite? iceSprite;
         private double stageStartedAt;
         private IStageClock? injectedClock;
@@ -145,7 +166,21 @@ namespace Icebreaker.Gameplay
                 prioritizeSpecialIce: sandboxSettings.prioritizeSpecialIce,
                 specialIceDamageMultiplier: 2.0f);
 
-            field = new IceField(stageId, config, idGenerator, positioner, activeClock, criticalStrike, supportConfig);
+            // [GP-07] 연쇄 파괴 적용
+            var chainConfig = new ChainDestructionConfig(
+                enableOverkill: sandboxSettings.enableOverkill,
+                overkillTransferRatio: 0.5f,
+                enableHullFragment: sandboxSettings.enableHullFragment,
+                hullFragmentDamageMultiplier: 0.25f,
+                hullFragmentRadius: 90f,
+                crystalShardCount: 5,
+                crackDamageMultiplier: 1.0f,
+                crackRadius: 120f,
+                enableIceCollapse: sandboxSettings.enableIceCollapse,
+                iceCollapseDamageMultiplier: 1.5f,
+                iceCollapseRadius: 140f);
+
+            field = new IceField(stageId, config, idGenerator, positioner, activeClock, criticalStrike, supportConfig, chainConfig);
             field.DamageApplied += HandleDamageApplied;
             field.IceDestroyed += HandleIceDestroyed;
             field.IceRespawned += HandleIceRespawned;
@@ -358,6 +393,65 @@ namespace Icebreaker.Gameplay
                     UpdateVisualColor(visuals[i], field.ActiveIce[i]);
                     break;
                 }
+            }
+
+            if (sandboxSettings.enableDebugText)
+            {
+                var color = Color.white;
+                if (e.WasCritical) color = Color.yellow;
+                else if (e.EffectType == EffectType.SupportShot) color = Color.cyan;
+                else if (e.EffectType == EffectType.Overkill) color = new Color(1f, 0.5f, 0f); // Orange
+                else if (e.EffectType == EffectType.HullFragment) color = Color.magenta;
+                else if (e.EffectType == EffectType.IceCollapse) color = Color.red;
+                else if (e.EffectType == EffectType.CrystalShard || e.EffectType == EffectType.CrackExplosion) color = Color.green;
+
+                var text = e.WasCritical ? $"Critical {e.Damage:F0}!" : $"{e.Damage:F0}";
+                if (e.EffectType != EffectType.Click && e.EffectType != EffectType.Hold)
+                {
+                    text += $" ({e.EffectType})";
+                }
+
+                floatingTexts.Add(new FloatingText
+                {
+                    Position = e.ReferencePosition,
+                    Text = text,
+                    Color = color,
+                    ExpiryTime = Time.timeAsDouble + 1.0 // 1 second duration
+                });
+            }
+        }
+
+        private void OnGUI()
+        {
+            if (!sandboxSettings.enableDebugText || sceneCamera == null) return;
+
+            var currentTime = Time.timeAsDouble;
+            var style = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 16,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+
+            for (var i = floatingTexts.Count - 1; i >= 0; i--)
+            {
+                var ft = floatingTexts[i];
+                var lifeRemaining = ft.ExpiryTime - currentTime;
+                if (lifeRemaining <= 0)
+                {
+                    floatingTexts.RemoveAt(i);
+                    continue;
+                }
+
+                // Move up over time
+                var floatOffset = new Vector2(0, (float)(1.0 - lifeRemaining) * 50f);
+                var screenPos = sceneCamera.WorldToScreenPoint(ReferenceToWorld(ft.Position));
+                
+                // Unity GUI y is inverted
+                var guiPos = new Vector2(screenPos.x, Screen.height - screenPos.y) - floatOffset;
+                
+                style.normal.textColor = ft.Color;
+                GUI.Label(new Rect(guiPos.x - 100, guiPos.y - 20, 200, 40), ft.Text, style);
             }
         }
 
