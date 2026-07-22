@@ -145,6 +145,32 @@ namespace Icebreaker.Gameplay
             RefreshAllVisuals();
         }
 
+        [ContextMenu("Reset to Spec Defaults")]
+        public void ResetToSpecDefaults()
+        {
+            sandboxSettings = new SandboxSettings
+            {
+                weightT1 = 100,
+                weightT2 = 0,
+                weightT3 = 0,
+                crystalSpawnProb = 0.025f,
+                crackSpawnProb = 0.020f,
+                maxSpecialIce = 2,
+                enableSupportAttack = true,
+                requiredHits = 12,
+                additionalTargets = 2,
+                prioritizeSpecialIce = true,
+                enableOverkill = true,
+                enableHullFragment = true,
+                enableIceCollapse = true,
+                enableDebugText = true
+            };
+            
+            #if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+            #endif
+        }
+
         private void Awake()
         {
             stageStartedAt = Time.timeAsDouble;
@@ -552,3 +578,33 @@ namespace Icebreaker.Gameplay
         }
     }
 }
+
+#if UNITY_EDITOR
+namespace Icebreaker.Gameplay.Editor
+{
+    using UnityEditor;
+
+    [CustomEditor(typeof(IceFieldView))]
+    public sealed class IceFieldViewEditor : UnityEditor.Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            EditorGUILayout.Space();
+            if (GUILayout.Button("기획 수치로 원상 복구 (Reset to Spec)", GUILayout.Height(30)))
+            {
+                var view = (IceFieldView)target;
+                Undo.RecordObject(view, "Reset Sandbox Settings to Spec");
+                view.ResetToSpecDefaults();
+                
+                // If in play mode, we might want to restart the stage to apply the new settings immediately
+                if (Application.isPlaying)
+                {
+                    // No debug log in production code
+                }
+            }
+        }
+    }
+}
+#endif
