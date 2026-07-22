@@ -288,8 +288,8 @@ namespace Icebreaker.Shared.Tests
             Assert.That(baseline.ChainEffect.OverkillEnabled, Is.False);
             Assert.That(baseline.ChainEffect.HullFragmentDamageMultiplier, Is.Zero);
             Assert.That(baseline.ChainEffect.IceCollapseEnabled, Is.False);
-            Assert.That(fullyUpgraded.DirectAttack.CurrentClickDamage, Is.EqualTo(4.096f).Within(0.0001f));
-            Assert.That(fullyUpgraded.DirectAttack.HoldAttacksPerSecond, Is.EqualTo(11f));
+            Assert.That(fullyUpgraded.DirectAttack.CurrentClickDamage, Is.EqualTo(7f));
+            Assert.That(fullyUpgraded.DirectAttack.HoldAttacksPerSecond, Is.EqualTo(8.75f));
             Assert.That(fullyUpgraded.DirectAttack.CriticalChance, Is.EqualTo(0.05f));
             Assert.That(fullyUpgraded.DirectAttack.CriticalDamageMultiplier, Is.EqualTo(3f));
             Assert.That(fullyUpgraded.IceField.MaxActiveIceCount, Is.EqualTo(20));
@@ -331,9 +331,9 @@ namespace Icebreaker.Shared.Tests
         }
 
         [TestCase(1f, 5f)]
-        [TestCase(1.6f, 7f)]
-        [TestCase(2.56f, 9f)]
-        [TestCase(4.096f, 11f)]
+        [TestCase(3f, 6.25f)]
+        [TestCase(5f, 7.5f)]
+        [TestCase(7f, 8.75f)]
         public void DirectAttackSnapshots_PreservePlannedProgression(float clickDamage, float holdRate)
         {
             var config = new DirectAttackConfig(clickDamage, holdRate, 56f, 0.05f, 3f);
@@ -427,7 +427,7 @@ namespace Icebreaker.Shared.Tests
             SpecialIceDefinition[] specials)
         {
             return new CombatConfig(
-                directAttack: new DirectAttackConfig(4.096f, 11f, 56f, 0.05f, 3f),
+                directAttack: new DirectAttackConfig(7f, 8.75f, 56f, 0.05f, 3f),
                 iceField: new IceFieldConfig(20, 2, 56f, 120f, 0.25f, definitions, weights, specials),
                 supportAttack: new SupportAttackConfig(true, 12, 1f, 2, 0.7f, true, 2f),
                 chainEffect: new ChainEffectConfig(

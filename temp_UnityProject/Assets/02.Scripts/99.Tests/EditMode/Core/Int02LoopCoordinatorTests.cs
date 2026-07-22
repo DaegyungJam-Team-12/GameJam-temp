@@ -118,7 +118,7 @@ namespace Icebreaker.Core.Tests
         public void TryPurchaseMaintenance_UpdatesLedgerSaveAndGameStateFundsTogether()
         {
             var saveData = SaveData.CreateNew("demo");
-            saveData.funds = 10;
+            saveData.funds = 100;
             using var coordinator = CreateCoordinator(
                 CreateSmallDestinations(),
                 out var ledger,
@@ -163,7 +163,7 @@ namespace Icebreaker.Core.Tests
         public void TryPurchaseMaintenance_ExactTargetRejectsStaleAndSkippedSteps()
         {
             var saveData = SaveData.CreateNew("demo");
-            saveData.funds = 100;
+            saveData.funds = 570;
             saveData.maintenanceLevels.Add(new SaveMaintenanceLevel(MaintenanceCatalog.C01, 1));
             using var coordinator = CreateCoordinator(
                 CreateSmallDestinations(),
@@ -182,7 +182,7 @@ namespace Icebreaker.Core.Tests
             Assert.That(
                 coordinator.TryPurchaseMaintenance(MaintenanceCatalog.D01, 3),
                 Is.EqualTo(MaintenancePurchaseResult.Locked));
-            Assert.That(ledger.Funds, Is.EqualTo(70));
+            Assert.That(ledger.Funds, Is.Zero);
             Assert.That(
                 saveData.maintenanceLevels,
                 Has.Some.Matches<SaveMaintenanceLevel>(level =>
@@ -193,7 +193,7 @@ namespace Icebreaker.Core.Tests
         public void RequestStageStart_PublishesLatestD04ConfigBeforeCountdown()
         {
             var saveData = SaveData.CreateNew("demo");
-            saveData.funds = 1_370;
+            saveData.funds = 24_900;
             using var coordinator = CreateCoordinator(
                 CreateDestinations(10, 1, 1),
                 out _,
@@ -248,7 +248,7 @@ namespace Icebreaker.Core.Tests
         public void C02Purchase_AppliesToNextStageReward()
         {
             var saveData = SaveData.CreateNew("demo");
-            saveData.funds = 50;
+            saveData.funds = 560;
             using var coordinator = CreateCoordinator(
                 CreateDestinations(10, 1, 1),
                 out _,

@@ -37,10 +37,10 @@ namespace Icebreaker.Core
                 Define(C04, "심빙 대응", MaintenanceBranch.Common, new long[] { 18_000 },
                     new[] { "심빙 출현" }, Require(C03)),
                 Define(D01, "주 파쇄기 출력", MaintenanceBranch.Direct, new long[] { 300, 900, 2_700 },
-                    new[] { "직접 피해 ×1.6", "직접 피해 ×2.56", "직접 피해 ×4.096" },
+                    new[] { "직접 피해 ×3", "직접 피해 ×5", "직접 피해 ×7" },
                     Require(C01)),
                 Define(D02, "고속 구동", MaintenanceBranch.Direct, new long[] { 600, 1_800, 5_400 },
-                    new[] { "자동 타격 +2회/초", "자동 타격 +4회/초", "자동 타격 +6회/초" },
+                    new[] { "자동 타격 6.25회/초", "자동 타격 7.5회/초", "자동 타격 8.75회/초" },
                     Require(C01)),
                 Define(D03, "과잉 파쇄", MaintenanceBranch.Direct, new long[] { 8_000 },
                     new[] { "초과 피해 50% 전달" }, Require(D01, 2)),
@@ -70,23 +70,39 @@ namespace Icebreaker.Core
             for (var index = 0; index < standard.Count; index++)
             {
                 var definition = standard[index];
-                var costs = new long[definition.CostsByLevel.Count];
-                for (var levelIndex = 0; levelIndex < costs.Length; levelIndex++)
-                {
-                    costs[levelIndex] = (definition.CostsByLevel[levelIndex] + 9) / 10;
-                }
-
                 demo[index] = new MaintenanceDefinition(
                     definition.Id,
                     definition.DisplayName,
                     definition.Branch,
                     definition.MaxLevel,
-                    costs,
+                    DemoCostsFor(definition.Id),
                     definition.EffectTextsByLevel,
                     definition.Requirements);
             }
 
             return Array.AsReadOnly(demo);
+        }
+
+        private static IReadOnlyList<long> DemoCostsFor(string id)
+        {
+            return id switch
+            {
+                C01 => new long[] { 100 },
+                C02 => new long[] { 470, 130, 4_000 },
+                C03 => new long[] { 350 },
+                C04 => new long[] { 18_000 },
+                D01 => new long[] { 570, 1_100, 6_000 },
+                D02 => new long[] { 2_400, 4_000, 7_200 },
+                D03 => new long[] { 10_000 },
+                D04 => new long[] { 2_400, 6_000, 14_000 },
+                S01 => new long[] { 200 },
+                S02 => new long[] { 5_000, 12_000 },
+                S03 => new long[] { 18_000 },
+                H01 => new long[] { 1_800, 5_000, 12_000 },
+                H02 => new long[] { 8_000, 18_000 },
+                H03 => new long[] { 30_000 },
+                _ => throw new ArgumentOutOfRangeException(nameof(id), id, "Unknown maintenance ID.")
+            };
         }
 
         private static MaintenanceDefinition Define(

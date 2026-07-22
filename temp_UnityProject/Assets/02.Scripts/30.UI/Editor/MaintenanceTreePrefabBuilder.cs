@@ -275,7 +275,7 @@ namespace Icebreaker.UI.Editor
                 ConfigureTopLeftAnchor(root.GetComponent<RectTransform>(), new Vector2(300f, 190f));
                 root.GetComponent<Image>().color = new Color(theme.Panel.r, theme.Panel.g, theme.Panel.b, 0.98f);
                 var title = CreateTopLeftText("Title", root.transform, 14f, 12f, 272f, 28f, "주 파쇄기 출력 · 2/3", font, 18f, TextAlignmentOptions.Left);
-                var effect = CreateTopLeftText("Effect", root.transform, 14f, 48f, 272f, 48f, "직접 피해 ×2.56\n현재값 → 구매 후 값", font, 14f, TextAlignmentOptions.TopLeft);
+                var effect = CreateTopLeftText("Effect", root.transform, 14f, 48f, 272f, 48f, "직접 피해 ×5\n현재값 → 구매 후 값", font, 14f, TextAlignmentOptions.TopLeft);
                 var cost = CreateTopLeftText("Cost", root.transform, 14f, 106f, 272f, 26f, "가격 900", font, 15f, TextAlignmentOptions.Left);
                 var lockText = CreateTopLeftText("Lock", root.transform, 14f, 138f, 272f, 38f, "잠금 조건 없음", font, 13f, TextAlignmentOptions.TopLeft);
                 var serialized = new SerializedObject(root.GetComponent<MaintenanceTooltipView>());

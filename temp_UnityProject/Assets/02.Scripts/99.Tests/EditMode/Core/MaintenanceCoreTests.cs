@@ -54,12 +54,9 @@ namespace Icebreaker.Core.Tests
 
                 Assert.That(demoDefinition.Id, Is.EqualTo(item.Id));
                 Assert.That(demoDefinition.MaxLevel, Is.EqualTo(item.Costs.Length));
-                for (var levelIndex = 0; levelIndex < item.Costs.Length; levelIndex++)
-                {
-                    Assert.That(
-                        demoDefinition.CostsByLevel[levelIndex],
-                        Is.EqualTo((item.Costs[levelIndex] + 9) / 10));
-                }
+                Assert.That(
+                    demoDefinition.CostsByLevel,
+                    Is.EqualTo(CreateDemoCostExpectations()[item.Id]));
 
                 Assert.That(demoDefinition.EffectTextsByLevel, Is.EqualTo(item.Effects));
                 AssertRequirements(demoDefinition, item.Requirements);
@@ -259,7 +256,7 @@ namespace Icebreaker.Core.Tests
         public void TryPurchase_UsesDemoCosts()
         {
             var data = SaveData.CreateNew("demo");
-            data.funds = 50;
+            data.funds = 570;
             var core = CreateCore(data, MaintenanceCatalog.CreateDemo());
 
             Assert.That(core.TryPurchase(MaintenanceCatalog.C01), Is.True);
@@ -378,11 +375,11 @@ namespace Icebreaker.Core.Tests
                     new long[] { 18_000 }, new[] { "심빙 출현" }, Require(MaintenanceCatalog.C03)),
                 Expect(MaintenanceCatalog.D01, "주 파쇄기 출력", MaintenanceBranch.Direct,
                     new long[] { 300, 900, 2_700 },
-                    new[] { "직접 피해 ×1.6", "직접 피해 ×2.56", "직접 피해 ×4.096" },
+                    new[] { "직접 피해 ×3", "직접 피해 ×5", "직접 피해 ×7" },
                     Require(MaintenanceCatalog.C01)),
                 Expect(MaintenanceCatalog.D02, "고속 구동", MaintenanceBranch.Direct,
                     new long[] { 600, 1_800, 5_400 },
-                    new[] { "자동 타격 +2회/초", "자동 타격 +4회/초", "자동 타격 +6회/초" },
+                    new[] { "자동 타격 6.25회/초", "자동 타격 7.5회/초", "자동 타격 8.75회/초" },
                     Require(MaintenanceCatalog.C01)),
                 Expect(MaintenanceCatalog.D03, "과잉 파쇄", MaintenanceBranch.Direct,
                     new long[] { 8_000 }, new[] { "초과 피해 50% 전달" },
@@ -410,6 +407,27 @@ namespace Icebreaker.Core.Tests
                 Expect(MaintenanceCatalog.H03, "빙판 붕괴", MaintenanceBranch.Chain,
                     new long[] { 20_000 }, new[] { "5연쇄 시 빙판 붕괴" },
                     Require(MaintenanceCatalog.H01, 3))
+            };
+        }
+
+        private static IReadOnlyDictionary<string, long[]> CreateDemoCostExpectations()
+        {
+            return new Dictionary<string, long[]>
+            {
+                [MaintenanceCatalog.C01] = new long[] { 100 },
+                [MaintenanceCatalog.C02] = new long[] { 470, 130, 4_000 },
+                [MaintenanceCatalog.C03] = new long[] { 350 },
+                [MaintenanceCatalog.C04] = new long[] { 18_000 },
+                [MaintenanceCatalog.D01] = new long[] { 570, 1_100, 6_000 },
+                [MaintenanceCatalog.D02] = new long[] { 2_400, 4_000, 7_200 },
+                [MaintenanceCatalog.D03] = new long[] { 10_000 },
+                [MaintenanceCatalog.D04] = new long[] { 2_400, 6_000, 14_000 },
+                [MaintenanceCatalog.S01] = new long[] { 200 },
+                [MaintenanceCatalog.S02] = new long[] { 5_000, 12_000 },
+                [MaintenanceCatalog.S03] = new long[] { 18_000 },
+                [MaintenanceCatalog.H01] = new long[] { 1_800, 5_000, 12_000 },
+                [MaintenanceCatalog.H02] = new long[] { 8_000, 18_000 },
+                [MaintenanceCatalog.H03] = new long[] { 30_000 }
             };
         }
 

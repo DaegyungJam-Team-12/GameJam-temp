@@ -28,8 +28,8 @@ namespace Icebreaker.Core
 
             return new CombatConfig(
                 directAttack: new DirectAttackConfig(
-                    (float)Math.Pow(1.6d, d01Level),
-                    Math.Min(11f, 5f + 2f * d02Level),
+                    d01Level == 0 ? 1f : 1f + 2f * d01Level,
+                    5f + 1.25f * d02Level,
                     56f + 16f * d04Level,
                     0.05f,
                     3f),

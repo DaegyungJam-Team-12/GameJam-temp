@@ -232,12 +232,12 @@ namespace Icebreaker.Integration.Tests
             ClickMaintenanceStep(tree, "C01-L1");
             yield return null;
 
-            Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.EqualTo(90));
+            Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.Zero);
             AssertStepState(orchestrator, orchestratorType, "C01-L1", "Purchased");
             AssertStepState(orchestrator, orchestratorType, "C02-L1", "Available");
             Assert.That(
                 tree.transform.Find("BottomBar/FundsText")!.GetComponent<TMPro.TMP_Text>().text,
-                Does.Contain("90"));
+                Does.Contain("0"));
 
             EditorSceneManager.LoadSceneInPlayMode(
                 Int02ScenePath,
@@ -245,7 +245,7 @@ namespace Icebreaker.Integration.Tests
             yield return WaitForFrames(5);
 
             orchestrator = FindOrchestrator(orchestratorType);
-            Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.EqualTo(90));
+            Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.Zero);
             AssertStepState(orchestrator, orchestratorType, "C01-L1", "Purchased");
 
             ClickLauncherMaintenanceButton();

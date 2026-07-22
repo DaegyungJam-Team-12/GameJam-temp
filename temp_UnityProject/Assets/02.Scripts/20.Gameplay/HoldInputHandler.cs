@@ -6,7 +6,7 @@ namespace Icebreaker.Gameplay
 {
     /// <summary>
     /// Tracks mouse-hold state and fires attack ticks at a configurable rate.
-    /// Spec: click fires immediately once, then holding fires at (5 + D02Level * 2) per second, max 11/s.
+    /// Legacy button adapter. The supplied rate follows the current D02 final-value snapshot.
     /// </summary>
     public sealed class HoldInputHandler
     {
@@ -15,8 +15,7 @@ namespace Icebreaker.Gameplay
         private bool isHolding;
 
         /// <param name="attacksPerSecond">
-        /// Hold attack frequency. Formula: 5 + D02Level * 2. Max 11.
-        /// At D02 level 0 = 5/s, level 1 = 7/s, level 2 = 9/s, level 3 = 11/s.
+        /// Hold attack frequency. D02 level snapshots are 5, 6.25, 7.5, and 8.75/s.
         /// </param>
         public HoldInputHandler(float attacksPerSecond)
         {

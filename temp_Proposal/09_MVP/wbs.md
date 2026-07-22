@@ -14,7 +14,7 @@
 
 | ID | 담당 | 작업 | 선행 | 난이도 | 예상 | 브랜치 | 완료 조건 |
 |---|---|---|---|---:|---:|---|---|
-| `GP-BH-01` | `GAMEPLAY` | 자동 커서 원형 범위 틱, 원-원 겹침 다중 직접 피해, 대상별 치명타, S01 틱 충전, GP-06/07 연쇄 순서 보존 | `GP-06`, `GP-07`, `INT-02` | 5 | 5.0h | `feature/gp-bh-cursor-area` | 첫 틱 즉시·5/7/9/11회/초·프레임당 최대 3회, 모든 겹침 대상이 같은 `chainId` depth 0으로 피해, 직접 큐가 연쇄보다 먼저 처리, S01은 유효 틱당 1회, 재생성 보호 예외와 종료 경계가 테스트로 확인됨 |
+| `GP-BH-01` | `GAMEPLAY` | 자동 커서 원형 범위 틱, 원-원 겹침 다중 직접 피해, 대상별 치명타, S01 틱 충전, GP-06/07 연쇄 순서 보존 | `GP-06`, `GP-07`, `INT-02` | 5 | 5.0h | `feature/gp-bh-cursor-area` | 첫 틱 즉시·5/6.25/7.5/8.75회/초·프레임당 최대 3회, 모든 겹침 대상이 같은 `chainId` depth 0으로 피해, 직접 큐가 연쇄보다 먼저 처리, S01은 유효 틱당 1회, 재생성 보호 예외와 종료 경계가 테스트로 확인됨 |
 | `UI-BH-01` | `GAMEPLAY` | 실제 판정과 동일한 점선 원 표시, 마우스 동기화, 카운트다운 표시, 시계 방향 회전 | `GP-BH-01` | 3 | 1.5h | `feature/gp-bh-cursor-area` | 게임 창 안에서 커서 중심·반지름이 판정과 같고 60도/초로 오른쪽 회전, 창 밖·종료 상태에서는 숨김 |
 | `QA-BH-01` | `UIQA` | 커서 경계 접촉, 다중 대상·치명타, S01 12틱, D03/H03 동시 파괴, 일시정지·60초 경계 회귀 | `GP-BH-01`, `UI-BH-01` | 4 | 2.0h | `test/qa-bh-cursor-area` | EditMode 결과와 Unity 수동 체크리스트·스크린샷을 기록하고 차단 오류를 우선 등록 |
 | `UPG-D04` | `LEAD` | 범위 확장 D04 3단계의 정의·구매·저장·`CombatConfig`·정비 ViewData 연동 | `GP-BH-01`, `UPG-01` | 4 | 2.5h | `codex/feature/gp-bh-cursor-area` | 1K/3K/9K, v2.8에서 D02 1단계 조건, 56→72→88→104px, 재실행 유지와 다음 쇄빙 적용을 EditMode로 확인. 점선 원과 실제 판정은 같은 `DirectAttackConfig` 반지름을 사용. |
@@ -120,7 +120,7 @@ WBS 행만 에이전트에 전달하지 않는다. `ai_agent_development_plan.md
 | `CORE-01` | `LEAD` | 전체 상태 흐름과 항해·카운트다운·쇄빙·종료·정산 시계 | `INT-01` | 5 | 3.0h | `feature/core-01-game-loop` | 정의된 순서만 전환하고 설정 일시정지 외에는 쇄빙 시계가 계속 진행됨 |
 | `CORE-02` | `LEAD` | 파괴 승인, 자금·목적지, 작업별 누적, `SettlementSummary`, 도착 예약, 첫 파괴 플래그 | `CORE-01` | 4 | 2.5h | `feature/core-02-progression-settlement` | 중복 파괴 보상 없음. 정산 값과 실제 지급 합계가 같고 목표 초과 진행이 없음. 게임 최초 승인 파괴 시 `firstDestroyShown`을 한 번만 `true`로 바꿔 `GameState`·저장에 반영 |
 | `SAVE-01` | `LEAD` | 표준·시연 분리 저장, debounce·강제 저장·atomic replace, 진행 중 종료 복구, 항해 중 설정 일시정지 시각 보정 | `CORE-02` | 5 | 2.5h | `feature/save-01-local-persistence` | 자금·목적지·구매·첫 파괴 유지. 진행 중 종료 시 작업을 복원하지 않고 전체 항해로 복귀. 항해 중 설정을 열고 닫으면 열린 시간만큼 `nextAvailableAtUtc`를 뒤로 이동해 저장 |
-| `GP-03` | `GAMEPLAY` | 누르기, D02 속도, 직접 치명타, T1~T3 HP·해금별 생성 설정 | `GP-02` | 4 | 3.0h | `feature/gp-03-input-tiers-critical` | 클릭 즉시 1회, 홀드 최대 11회/초, 직접 공격만 치명타, 설정값에 따라 T1~T3 생성 |
+| `GP-03` | `GAMEPLAY` | 누르기, D02 속도, 직접 치명타, T1~T3 HP·해금별 생성 설정 | `GP-02` | 4 | 3.0h | `feature/gp-03-input-tiers-critical` | 클릭 즉시 1회, 자동 틱 최대 8.75회/초, 직접 공격만 치명타, 설정값에 따라 T1~T3 생성 |
 | `GP-04` | `GAMEPLAY` | 결정빙·균열빙과 재생성 보호 0.25초 | `GP-03` | 4 | 3.5h | `feature/gp-04-special-ice` | 결정 파편·균열 범위가 구현 잠금 규칙과 일치하고 보호 중 비직접 피해가 적용되지 않음 |
 | `GP-05` | `GAMEPLAY` | 파괴 중복 방지, 남은 시간이 0초가 된 뒤 피해·투사체·재생성 취소, 이벤트 순서 로그 | `GP-04`, `CORE-01` | 4 | 2.0h | `fix/gp-05-combat-boundaries` | 같은 얼음 보상 1회. 60초 이후 피해·파괴·보상 이벤트 없음 |
 | `UI-03` | `UIQA` | 카운트다운·쇄빙 중 자금/시간 표시·설정 버튼 상태 화면 | `UI-02`, `FND-01` | 3 | 2.5h | `feature/ui-03-combat-hud` | 가짜 상태로 3·2·1, 자금, 남은 시간, 설정만 표시되고 목적지·정비·접기는 숨김 |

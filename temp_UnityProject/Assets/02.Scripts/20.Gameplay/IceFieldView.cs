@@ -24,7 +24,7 @@ namespace Icebreaker.Gameplay
 
         // --- Direct attack defaults (D01 level 0, D02 level 0) ---
         private const float BaseDirectDamage = 1f;
-        private const float BaseAttackTicksPerSecond = 5f; // 5 + D02Level * 2, max 11
+        private const float BaseAttackTicksPerSecond = 5f;
         private const float BaseCursorRadiusReferencePixels = 56f;
         private const float CriticalChance = 0.05f;        // 5%
         private const float CriticalMultiplier = 3f;       // x3 damage

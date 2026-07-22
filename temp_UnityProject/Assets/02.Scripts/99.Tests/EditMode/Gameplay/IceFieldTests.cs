@@ -1231,6 +1231,48 @@ namespace Icebreaker.Gameplay.Tests
             Assert.That(scheduler.Update(0f), Is.EqualTo(0));
         }
 
+        [TestCase(5f, 300)]
+        [TestCase(6.25f, 375)]
+        [TestCase(7.5f, 450)]
+        [TestCase(8.75f, 525)]
+        public void AttackTickScheduler_SixtySecondsStaysWithinOneTick(
+            float attacksPerSecond,
+            int expectedTicks)
+        {
+            var scheduler = new AttackTickScheduler(attacksPerSecond);
+            var totalTicks = 0;
+            for (var frame = 0; frame < 60 * 60; frame++)
+            {
+                var ticks = scheduler.Update(frame == 0 ? 0f : 1f / 60f);
+                Assert.That(ticks, Is.InRange(0, 3));
+                totalTicks += ticks;
+            }
+
+            Assert.That(totalTicks, Is.EqualTo(expectedTicks).Within(1));
+        }
+
+        [Test]
+        public void AreaTick_PauseAndStageEndDoNotDamageOrChargeSupport()
+        {
+            var supportConfig = CreateBasicSupportConfig();
+            var testClock = new MockClock();
+            var testField = CreateAreaTestField(1, 10f, testClock, supportConfig);
+            var damageCount = 0;
+            var chargeCount = 0;
+            testField.DamageApplied += _ => damageCount++;
+            testField.SupportChargeChanged += _ => chargeCount++;
+            var position = testField.ActiveIce[0].ReferencePosition;
+
+            testClock.IsPaused = true;
+            Assert.That(testField.ApplyAreaTickAt(position, 20f, 10f, 1d), Is.Zero);
+            testClock.IsPaused = false;
+            testClock.StageElapsedSeconds = testClock.DurationSeconds;
+            Assert.That(testField.ApplyAreaTickAt(position, 20f, 10f, 60d), Is.Zero);
+
+            Assert.That(damageCount, Is.Zero);
+            Assert.That(chargeCount, Is.Zero);
+        }
+
         private static IceField CreateAreaTestField(
             int iceCount,
             float collisionRadius,
