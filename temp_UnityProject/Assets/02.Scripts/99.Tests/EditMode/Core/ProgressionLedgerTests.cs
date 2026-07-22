@@ -54,7 +54,7 @@ namespace Icebreaker.Core.Tests
         public void Approve_GrantsRealFundsAndProgress()
         {
             var ledger = CreateLedger(CreateDestinations());
-            ledger.BeginStage();
+            ledger.BeginStage(0);
 
             var approved = ledger.TryApproveDestruction(CreateIceDestroyedEvent(1, 1), out var reward);
 
@@ -70,7 +70,7 @@ namespace Icebreaker.Core.Tests
         {
             var ledger = CreateLedger(CreateDestinations());
             var destruction = CreateIceDestroyedEvent(1, 1);
-            ledger.BeginStage();
+            ledger.BeginStage(0);
 
             var firstApproved = ledger.TryApproveDestruction(destruction, out _);
             var secondApproved = ledger.TryApproveDestruction(destruction, out var duplicateReward);
@@ -87,7 +87,7 @@ namespace Icebreaker.Core.Tests
         public void ProgressCapsAtTarget_ThenFundsOnly()
         {
             var ledger = CreateLedger(CreateSmallDestinations());
-            ledger.BeginStage();
+            ledger.BeginStage(0);
 
             ledger.TryApproveDestruction(CreateIceDestroyedEvent(1, 1), out _);
             ledger.TryApproveDestruction(CreateIceDestroyedEvent(1, 2), out _);
@@ -104,7 +104,7 @@ namespace Icebreaker.Core.Tests
         public void EndStage_SummaryMatchesAccumulation()
         {
             var ledger = CreateLedger(CreateSmallDestinations());
-            ledger.BeginStage();
+            ledger.BeginStage(0);
 
             ledger.TryApproveDestruction(CreateIceDestroyedEvent(1, 1), out _);
             ledger.TryApproveDestruction(
@@ -125,7 +125,7 @@ namespace Icebreaker.Core.Tests
         public void ApplyArrival_AdvancesToNextDestination()
         {
             var ledger = CreateLedger(CreateSmallDestinations());
-            ledger.BeginStage();
+            ledger.BeginStage(0);
             ledger.TryApproveDestruction(CreateIceDestroyedEvent(1, 1), out _);
             ledger.TryApproveDestruction(CreateIceDestroyedEvent(1, 2), out _);
 
@@ -147,7 +147,7 @@ namespace Icebreaker.Core.Tests
             ReachCurrentDestinationAndApply(ledger, 1, 2);
             ReachCurrentDestinationAndApply(ledger, 2, 1);
 
-            ledger.BeginStage();
+            ledger.BeginStage(0);
             ledger.TryApproveDestruction(CreateIceDestroyedEvent(3, 1), out _);
             Assert.That(ledger.ApplyArrival(), Is.True);
 
@@ -157,7 +157,7 @@ namespace Icebreaker.Core.Tests
             Assert.That(ledger.PendingArrivalDestinationId, Is.Null);
             Assert.That(ledger.CompletedDestinationIds, Does.Contain("north-base"));
 
-            ledger.BeginStage();
+            ledger.BeginStage(0);
             var approved = ledger.TryApproveDestruction(
                 CreateIceDestroyedEvent(4, 1),
                 out var rewardAfterCompletion);
@@ -186,6 +186,59 @@ namespace Icebreaker.Core.Tests
                 () => new ProgressionLedger(CreateDestinations(), null!),
                 Throws.TypeOf<ArgumentNullException>()
                     .With.Property("ParamName").EqualTo("rewardTable"));
+        }
+
+        [Test]
+        public void TrySpendFunds_RejectsNegativeAmount()
+        {
+            var ledger = new ProgressionLedger(
+                CreateDestinations(),
+                RewardTable.CreateDefault(),
+                initialFunds: 100);
+
+            Assert.That(
+                () => ledger.TrySpendFunds(-1),
+                Throws.TypeOf<ArgumentOutOfRangeException>()
+                    .With.Property("ParamName").EqualTo("amount"));
+            Assert.That(ledger.Funds, Is.EqualTo(100));
+        }
+
+        [Test]
+        public void TrySpendFunds_InsufficientAmountReturnsFalseWithoutMutation()
+        {
+            var ledger = new ProgressionLedger(
+                CreateDestinations(),
+                RewardTable.CreateDefault(),
+                initialFunds: 99);
+
+            Assert.That(ledger.TrySpendFunds(100), Is.False);
+            Assert.That(ledger.Funds, Is.EqualTo(99));
+        }
+
+        [Test]
+        public void TrySpendFunds_ExactAmountSucceedsAndReachesZero()
+        {
+            var ledger = new ProgressionLedger(
+                CreateDestinations(),
+                RewardTable.CreateDefault(),
+                initialFunds: 100);
+
+            Assert.That(ledger.TrySpendFunds(100), Is.True);
+            Assert.That(ledger.Funds, Is.Zero);
+        }
+
+        [Test]
+        public void BeginStage_FreezesMaintenanceEfficiencyForThatStage()
+        {
+            var ledger = CreateLedger(CreateDestinations());
+
+            ledger.BeginStage(0);
+            ledger.TryApproveDestruction(CreateIceDestroyedEvent(1, 1), out var baselineReward);
+            ledger.BeginStage(2);
+            ledger.TryApproveDestruction(CreateIceDestroyedEvent(2, 1), out var upgradedReward);
+
+            Assert.That(baselineReward.FundsGranted, Is.EqualTo(10));
+            Assert.That(upgradedReward.FundsGranted, Is.EqualTo(12));
         }
 
         private static ProgressionLedger CreateLedger(DestinationDefinition[] destinations)
@@ -218,7 +271,7 @@ namespace Icebreaker.Core.Tests
             long stageId,
             int targetProgress)
         {
-            ledger.BeginStage();
+            ledger.BeginStage(0);
             for (var iceInstanceId = 1; iceInstanceId <= targetProgress; iceInstanceId++)
             {
                 ledger.TryApproveDestruction(

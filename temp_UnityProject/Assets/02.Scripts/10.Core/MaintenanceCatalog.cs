@@ -37,25 +37,25 @@ namespace Icebreaker.Core
                 Define(C04, "심빙 대응", MaintenanceBranch.Common, new long[] { 18_000 },
                     new[] { "심빙 출현" }, Require(C03)),
                 Define(D01, "주 파쇄기 출력", MaintenanceBranch.Direct, new long[] { 300, 900, 2_700 },
-                    new[] { "직접 피해 ×1.6", "직접 피해 ×2.56", "직접 피해 ×4.096" },
+                    new[] { "직접 피해 ×3", "직접 피해 ×5", "직접 피해 ×7" },
                     Require(C01)),
                 Define(D02, "고속 구동", MaintenanceBranch.Direct, new long[] { 600, 1_800, 5_400 },
-                    new[] { "자동 타격 +2회/초", "자동 타격 +4회/초", "자동 타격 +6회/초" },
+                    new[] { "자동 타격 6.25회/초", "자동 타격 7.5회/초", "자동 타격 8.75회/초" },
                     Require(C01)),
                 Define(D03, "과잉 파쇄", MaintenanceBranch.Direct, new long[] { 8_000 },
                     new[] { "초과 피해 50% 전달" }, Require(D01, 2)),
                 Define(D04, "범위 확장", MaintenanceBranch.Direct, new long[] { 1_000, 3_000, 9_000 },
                     new[] { "커서 반경 72px", "커서 반경 88px", "커서 반경 104px" },
-                    Require(C01)),
+                    Require(D02)),
                 Define(S01, "보조 파쇄기", MaintenanceBranch.Support, new long[] { 500 },
-                    new[] { "유효 자동 틱 12회마다 보조탄" }, Require(C01)),
+                    new[] { "유효 자동 틱 12회마다 보조탄" }, Require(D01)),
                 Define(S02, "다중 타격", MaintenanceBranch.Support, new long[] { 3_000, 9_000 },
                     new[] { "보조 대상 +1", "보조 대상 +2" }, Require(S01)),
                 Define(S03, "표적 분석", MaintenanceBranch.Support, new long[] { 15_000 },
                     new[] { "특수빙 우선 · 피해 ×2" }, Require(S01), Require(S02)),
                 Define(H01, "파편 비산", MaintenanceBranch.Chain, new long[] { 700, 2_100, 6_300 },
                     new[] { "파괴 반경 피해 ×0.25", "파괴 반경 피해 ×0.50", "파괴 반경 피해 ×0.75" },
-                    Require(C01)),
+                    Require(D01, 2)),
                 Define(H02, "특수빙 증폭", MaintenanceBranch.Chain, new long[] { 4_000, 12_000 },
                     new[] { "특수빙 효과 +30%", "특수빙 효과 +60%" }, Require(H01)),
                 Define(H03, "빙판 붕괴", MaintenanceBranch.Chain, new long[] { 20_000 },
@@ -70,23 +70,39 @@ namespace Icebreaker.Core
             for (var index = 0; index < standard.Count; index++)
             {
                 var definition = standard[index];
-                var costs = new long[definition.CostsByLevel.Count];
-                for (var levelIndex = 0; levelIndex < costs.Length; levelIndex++)
-                {
-                    costs[levelIndex] = (definition.CostsByLevel[levelIndex] + 9) / 10;
-                }
-
                 demo[index] = new MaintenanceDefinition(
                     definition.Id,
                     definition.DisplayName,
                     definition.Branch,
                     definition.MaxLevel,
-                    costs,
+                    DemoCostsFor(definition.Id),
                     definition.EffectTextsByLevel,
                     definition.Requirements);
             }
 
             return Array.AsReadOnly(demo);
+        }
+
+        private static IReadOnlyList<long> DemoCostsFor(string id)
+        {
+            return id switch
+            {
+                C01 => new long[] { 100 },
+                C02 => new long[] { 470, 130, 4_000 },
+                C03 => new long[] { 350 },
+                C04 => new long[] { 18_000 },
+                D01 => new long[] { 570, 1_100, 6_000 },
+                D02 => new long[] { 2_400, 4_000, 7_200 },
+                D03 => new long[] { 10_000 },
+                D04 => new long[] { 2_400, 6_000, 14_000 },
+                S01 => new long[] { 200 },
+                S02 => new long[] { 5_000, 12_000 },
+                S03 => new long[] { 18_000 },
+                H01 => new long[] { 1_800, 5_000, 12_000 },
+                H02 => new long[] { 8_000, 18_000 },
+                H03 => new long[] { 30_000 },
+                _ => throw new ArgumentOutOfRangeException(nameof(id), id, "Unknown maintenance ID.")
+            };
         }
 
         private static MaintenanceDefinition Define(

@@ -16,4 +16,14 @@ namespace Icebreaker.Shared.Maintenance
         Available,
         Locked
     }
+
+    public enum MaintenancePurchaseResult
+    {
+        Success,
+        InvalidPhase,
+        InvalidNode,
+        Locked,
+        InsufficientFunds,
+        MaxLevel
+    }
 }

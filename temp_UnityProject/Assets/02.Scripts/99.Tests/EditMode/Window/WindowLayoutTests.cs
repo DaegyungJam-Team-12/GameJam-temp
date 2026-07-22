@@ -92,6 +92,21 @@ namespace Icebreaker.Window.Tests
             Assert.That(WindowLayout.ViewForPhase(phase), Is.EqualTo(expected));
         }
 
+        [TestCase(GamePhase.Traveling, ManagementScreen.None, WindowView.Collapsed)]
+        [TestCase(GamePhase.Traveling, ManagementScreen.Maintenance, WindowView.Expanded)]
+        [TestCase(GamePhase.Ready, ManagementScreen.Maintenance, WindowView.Expanded)]
+        [TestCase(GamePhase.Ready, ManagementScreen.None, WindowView.Collapsed)]
+        [TestCase(GamePhase.Playing, ManagementScreen.None, WindowView.Expanded)]
+        public void ViewForState_ManagementScreenOverridesPhase(
+            GamePhase phase,
+            ManagementScreen managementScreen,
+            WindowView expected)
+        {
+            Assert.That(
+                WindowLayout.ViewForState(phase, managementScreen),
+                Is.EqualTo(expected));
+        }
+
         private static void AssertRect(
             PixelRect actual,
             int x,

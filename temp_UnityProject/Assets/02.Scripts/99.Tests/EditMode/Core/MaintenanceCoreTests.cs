@@ -54,12 +54,9 @@ namespace Icebreaker.Core.Tests
 
                 Assert.That(demoDefinition.Id, Is.EqualTo(item.Id));
                 Assert.That(demoDefinition.MaxLevel, Is.EqualTo(item.Costs.Length));
-                for (var levelIndex = 0; levelIndex < item.Costs.Length; levelIndex++)
-                {
-                    Assert.That(
-                        demoDefinition.CostsByLevel[levelIndex],
-                        Is.EqualTo((item.Costs[levelIndex] + 9) / 10));
-                }
+                Assert.That(
+                    demoDefinition.CostsByLevel,
+                    Is.EqualTo(CreateDemoCostExpectations()[item.Id]));
 
                 Assert.That(demoDefinition.EffectTextsByLevel, Is.EqualTo(item.Effects));
                 AssertRequirements(demoDefinition, item.Requirements);
@@ -143,6 +140,34 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
+        public void TryPurchaseDetailed_DistinguishesLockedInsufficientFundsAndMaxLevel()
+        {
+            var insufficientData = SaveData.CreateNew("standard");
+            insufficientData.funds = 99;
+            var insufficientCore = CreateCore(
+                insufficientData,
+                MaintenanceCatalog.CreateStandard());
+
+            Assert.That(
+                insufficientCore.TryPurchaseDetailed(MaintenanceCatalog.D01),
+                Is.EqualTo(MaintenancePurchaseResult.Locked));
+            Assert.That(
+                insufficientCore.TryPurchaseDetailed(MaintenanceCatalog.C01),
+                Is.EqualTo(MaintenancePurchaseResult.InsufficientFunds));
+
+            var maxLevelData = SaveData.CreateNew("standard-max");
+            maxLevelData.funds = 100;
+            var maxLevelCore = CreateCore(maxLevelData, MaintenanceCatalog.CreateStandard());
+
+            Assert.That(
+                maxLevelCore.TryPurchaseDetailed(MaintenanceCatalog.C01),
+                Is.EqualTo(MaintenancePurchaseResult.Success));
+            Assert.That(
+                maxLevelCore.TryPurchaseDetailed(MaintenanceCatalog.C01),
+                Is.EqualTo(MaintenancePurchaseResult.MaxLevel));
+        }
+
+        [Test]
         public void TryPurchase_EnforcesLevelAndMultipleRequirements()
         {
             var data = SaveData.CreateNew("standard");
@@ -164,14 +189,16 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
-        public void TryPurchase_D04RequiresC01AndPersistsAllRadiusLevels()
+        public void TryPurchase_D04RequiresD02AndPersistsAllRadiusLevels()
         {
             var data = SaveData.CreateNew("standard");
-            data.funds = 13_100;
+            data.funds = 13_700;
             var core = CreateCore(data, MaintenanceCatalog.CreateStandard());
 
             Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.False);
             Assert.That(core.TryPurchase(MaintenanceCatalog.C01), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.False);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D02), Is.True);
             Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.True);
             Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.True);
             Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.True);
@@ -181,16 +208,55 @@ namespace Icebreaker.Core.Tests
             Assert.That(core.Funds, Is.Zero);
             Assert.That(d04.CurrentLevel, Is.EqualTo(3));
             Assert.That(d04.IsMaxLevel, Is.True);
-            Assert.That(data.maintenanceLevels, Has.Count.EqualTo(2));
-            Assert.That(data.maintenanceLevels[1].id, Is.EqualTo(MaintenanceCatalog.D04));
-            Assert.That(data.maintenanceLevels[1].level, Is.EqualTo(3));
+            Assert.That(data.maintenanceLevels, Has.Count.EqualTo(3));
+            Assert.That(data.maintenanceLevels[2].id, Is.EqualTo(MaintenanceCatalog.D04));
+            Assert.That(data.maintenanceLevels[2].level, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void TryPurchase_NewSaveEnforcesReferenceTreeFirstPurchaseRequirements()
+        {
+            var data = SaveData.CreateNew("standard");
+            data.funds = 100_000;
+            var core = CreateCore(data, MaintenanceCatalog.CreateStandard());
+
+            Assert.That(core.TryPurchase(MaintenanceCatalog.C01), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.False);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.S01), Is.False);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.H01), Is.False);
+
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D02), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D01), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.S01), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.H01), Is.False);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D01), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.H01), Is.True);
+        }
+
+        [Test]
+        public void ExistingOwnedNodes_GrandfatherMissingFirstPurchaseRequirements()
+        {
+            var data = SaveData.CreateNew("standard");
+            data.funds = 10_000;
+            data.maintenanceLevels.Add(new SaveMaintenanceLevel(MaintenanceCatalog.D04, 1));
+            data.maintenanceLevels.Add(new SaveMaintenanceLevel(MaintenanceCatalog.S01, 1));
+            data.maintenanceLevels.Add(new SaveMaintenanceLevel(MaintenanceCatalog.H01, 1));
+            var core = CreateCore(data, MaintenanceCatalog.CreateStandard());
+
+            Assert.That(core.TryPurchase(MaintenanceCatalog.D04), Is.True);
+            Assert.That(core.TryPurchase(MaintenanceCatalog.H01), Is.True);
+
+            Assert.That(Find(core.GetNodeViewData(), MaintenanceCatalog.D04).CurrentLevel, Is.EqualTo(2));
+            Assert.That(Find(core.GetNodeViewData(), MaintenanceCatalog.S01).CurrentLevel, Is.EqualTo(1));
+            Assert.That(Find(core.GetNodeViewData(), MaintenanceCatalog.H01).CurrentLevel, Is.EqualTo(2));
         }
 
         [Test]
         public void TryPurchase_UsesDemoCosts()
         {
             var data = SaveData.CreateNew("demo");
-            data.funds = 50;
+            data.funds = 570;
             var core = CreateCore(data, MaintenanceCatalog.CreateDemo());
 
             Assert.That(core.TryPurchase(MaintenanceCatalog.C01), Is.True);
@@ -206,7 +272,8 @@ namespace Icebreaker.Core.Tests
             var data = SaveData.CreateNew("standard");
             data.funds = 1_000;
             var service = new SaveService(store, data);
-            var core = new MaintenanceCore(MaintenanceCatalog.CreateStandard(), service);
+            var ledger = CreateLedger(data.funds);
+            var core = new MaintenanceCore(MaintenanceCatalog.CreateStandard(), ledger, service);
 
             Assert.That(core.TryPurchase(MaintenanceCatalog.C01), Is.True);
             Assert.That(core.TryPurchase(MaintenanceCatalog.C02), Is.True);
@@ -216,9 +283,11 @@ namespace Icebreaker.Core.Tests
 
             var loaded = store.TryLoad("standard");
             Assert.That(loaded, Is.Not.Null);
+            var reloadedService = new SaveService(store, loaded!);
             var reloaded = new MaintenanceCore(
                 MaintenanceCatalog.CreateStandard(),
-                new SaveService(store, loaded!));
+                CreateLedger(loaded!.funds),
+                reloadedService);
 
             Assert.That(reloaded.Funds, Is.EqualTo(500));
             Assert.That(reloaded.MaintenanceEfficiencyLevel, Is.EqualTo(1));
@@ -226,11 +295,39 @@ namespace Icebreaker.Core.Tests
             Assert.That(Find(reloaded.GetNodeViewData(), MaintenanceCatalog.C02).CurrentLevel, Is.EqualTo(1));
         }
 
+        [Test]
+        public void Purchase_MarksDirtyAndFlushesExactlyOnce()
+        {
+            var data = SaveData.CreateNew("standard");
+            data.funds = 100;
+            var service = new SaveService(new SaveStore(tempDir), data);
+            var core = new MaintenanceCore(
+                MaintenanceCatalog.CreateStandard(),
+                CreateLedger(data.funds),
+                service);
+
+            Assert.That(core.TryPurchase(MaintenanceCatalog.C01), Is.True);
+
+            Assert.That(service.DirtyMarkCount, Is.EqualTo(1));
+            Assert.That(service.FlushCount, Is.EqualTo(1));
+        }
+
         private MaintenanceCore CreateCore(
             SaveData data,
             IReadOnlyList<MaintenanceDefinition> definitions)
         {
-            return new MaintenanceCore(definitions, new SaveService(new SaveStore(tempDir), data));
+            return new MaintenanceCore(
+                definitions,
+                CreateLedger(data.funds),
+                new SaveService(new SaveStore(tempDir), data));
+        }
+
+        private static ProgressionLedger CreateLedger(long initialFunds)
+        {
+            return new ProgressionLedger(
+                DestinationCatalog.CreateDemo(),
+                RewardTable.CreateDefault(),
+                initialFunds: initialFunds);
         }
 
         private static MaintenanceNodeViewData Find(
@@ -278,11 +375,11 @@ namespace Icebreaker.Core.Tests
                     new long[] { 18_000 }, new[] { "심빙 출현" }, Require(MaintenanceCatalog.C03)),
                 Expect(MaintenanceCatalog.D01, "주 파쇄기 출력", MaintenanceBranch.Direct,
                     new long[] { 300, 900, 2_700 },
-                    new[] { "직접 피해 ×1.6", "직접 피해 ×2.56", "직접 피해 ×4.096" },
+                    new[] { "직접 피해 ×3", "직접 피해 ×5", "직접 피해 ×7" },
                     Require(MaintenanceCatalog.C01)),
                 Expect(MaintenanceCatalog.D02, "고속 구동", MaintenanceBranch.Direct,
                     new long[] { 600, 1_800, 5_400 },
-                    new[] { "자동 타격 +2회/초", "자동 타격 +4회/초", "자동 타격 +6회/초" },
+                    new[] { "자동 타격 6.25회/초", "자동 타격 7.5회/초", "자동 타격 8.75회/초" },
                     Require(MaintenanceCatalog.C01)),
                 Expect(MaintenanceCatalog.D03, "과잉 파쇄", MaintenanceBranch.Direct,
                     new long[] { 8_000 }, new[] { "초과 피해 50% 전달" },
@@ -290,10 +387,10 @@ namespace Icebreaker.Core.Tests
                 Expect(MaintenanceCatalog.D04, "범위 확장", MaintenanceBranch.Direct,
                     new long[] { 1_000, 3_000, 9_000 },
                     new[] { "커서 반경 72px", "커서 반경 88px", "커서 반경 104px" },
-                    Require(MaintenanceCatalog.C01)),
+                    Require(MaintenanceCatalog.D02)),
                 Expect(MaintenanceCatalog.S01, "보조 파쇄기", MaintenanceBranch.Support,
                     new long[] { 500 }, new[] { "유효 자동 틱 12회마다 보조탄" },
-                    Require(MaintenanceCatalog.C01)),
+                    Require(MaintenanceCatalog.D01)),
                 Expect(MaintenanceCatalog.S02, "다중 타격", MaintenanceBranch.Support,
                     new long[] { 3_000, 9_000 }, new[] { "보조 대상 +1", "보조 대상 +2" },
                     Require(MaintenanceCatalog.S01)),
@@ -303,13 +400,34 @@ namespace Icebreaker.Core.Tests
                 Expect(MaintenanceCatalog.H01, "파편 비산", MaintenanceBranch.Chain,
                     new long[] { 700, 2_100, 6_300 },
                     new[] { "파괴 반경 피해 ×0.25", "파괴 반경 피해 ×0.50", "파괴 반경 피해 ×0.75" },
-                    Require(MaintenanceCatalog.C01)),
+                    Require(MaintenanceCatalog.D01, 2)),
                 Expect(MaintenanceCatalog.H02, "특수빙 증폭", MaintenanceBranch.Chain,
                     new long[] { 4_000, 12_000 }, new[] { "특수빙 효과 +30%", "특수빙 효과 +60%" },
                     Require(MaintenanceCatalog.H01)),
                 Expect(MaintenanceCatalog.H03, "빙판 붕괴", MaintenanceBranch.Chain,
                     new long[] { 20_000 }, new[] { "5연쇄 시 빙판 붕괴" },
                     Require(MaintenanceCatalog.H01, 3))
+            };
+        }
+
+        private static IReadOnlyDictionary<string, long[]> CreateDemoCostExpectations()
+        {
+            return new Dictionary<string, long[]>
+            {
+                [MaintenanceCatalog.C01] = new long[] { 100 },
+                [MaintenanceCatalog.C02] = new long[] { 470, 130, 4_000 },
+                [MaintenanceCatalog.C03] = new long[] { 350 },
+                [MaintenanceCatalog.C04] = new long[] { 18_000 },
+                [MaintenanceCatalog.D01] = new long[] { 570, 1_100, 6_000 },
+                [MaintenanceCatalog.D02] = new long[] { 2_400, 4_000, 7_200 },
+                [MaintenanceCatalog.D03] = new long[] { 10_000 },
+                [MaintenanceCatalog.D04] = new long[] { 2_400, 6_000, 14_000 },
+                [MaintenanceCatalog.S01] = new long[] { 200 },
+                [MaintenanceCatalog.S02] = new long[] { 5_000, 12_000 },
+                [MaintenanceCatalog.S03] = new long[] { 18_000 },
+                [MaintenanceCatalog.H01] = new long[] { 1_800, 5_000, 12_000 },
+                [MaintenanceCatalog.H02] = new long[] { 8_000, 18_000 },
+                [MaintenanceCatalog.H03] = new long[] { 30_000 }
             };
         }
 

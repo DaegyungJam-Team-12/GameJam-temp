@@ -168,6 +168,119 @@ namespace Icebreaker.Integration.Tests
         }
 
         [UnityTest]
+        public IEnumerator MaintenanceScreen_PurchasesWithRealFundsAndPersistsAcrossReload()
+        {
+            File.WriteAllText(demoSavePath, @"{
+  ""saveVersion"": 1,
+  ""profileId"": ""demo"",
+  ""funds"": 100,
+  ""maintenanceLevels"": [],
+  ""currentDestinationIndex"": 0,
+  ""destinationProgress"": 0,
+  ""completedDestinationIds"": [],
+  ""pendingArrivalDestinationId"": """",
+  ""firstDestroyShown"": false,
+  ""nextAvailableAtUtc"": """",
+  ""runInProgress"": false,
+  ""gameCompleted"": false,
+  ""masterVolume"": 1,
+  ""screenShakeEnabled"": true
+}");
+
+            EditorSceneManager.LoadSceneInPlayMode(
+                Int02ScenePath,
+                new LoadSceneParameters(LoadSceneMode.Single));
+            yield return WaitForFrames(5);
+
+            var orchestratorType = FindType("Icebreaker.Integration.Int02IntegrationOrchestrator");
+            var orchestrator = FindOrchestrator(orchestratorType);
+            Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("Ready"));
+
+            ClickLauncherMaintenanceButton();
+            yield return null;
+
+            Assert.That(
+                orchestratorType.GetProperty("CurrentManagementScreen")!.GetValue(orchestrator)!.ToString(),
+                Is.EqualTo("Maintenance"));
+            Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("Ready"));
+            var launcher = GameObject.Find("INT02_LauncherHud");
+            Assert.That(launcher, Is.Null, "Launcher must be hidden while maintenance is open.");
+            var tree = GameObject.Find("INT02_MaintenanceTree");
+            Assert.That(tree, Is.Not.Null);
+            Assert.That(
+                tree!.transform.Find("BottomBar/FundsText")!.GetComponent<TMPro.TMP_Text>().text,
+                Does.Contain("100"));
+
+            var presenterType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePresenter");
+            var presenter = tree.GetComponent(presenterType);
+            var closeButton = (Button)presenterType
+                .GetField("closeButton", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(presenter)!;
+            closeButton.onClick.Invoke();
+            yield return null;
+
+            Assert.That(
+                orchestratorType.GetProperty("CurrentManagementScreen")!.GetValue(orchestrator)!.ToString(),
+                Is.EqualTo("None"));
+            Assert.That(tree.activeSelf, Is.False);
+            Assert.That(GameObject.Find("INT02_LauncherHud"), Is.Not.Null);
+
+            ClickLauncherMaintenanceButton();
+            yield return null;
+            Assert.That(tree.activeSelf, Is.True);
+
+            ClickMaintenanceStep(tree, "C01-L1");
+            ClickMaintenancePurchaseButton(tree);
+            yield return null;
+
+            Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.Zero);
+            AssertStepState(orchestrator, orchestratorType, "C01-L1", "Purchased");
+            AssertStepState(orchestrator, orchestratorType, "C02-L1", "Available");
+            Assert.That(
+                tree.transform.Find("BottomBar/FundsText")!.GetComponent<TMPro.TMP_Text>().text,
+                Does.Contain("0"));
+
+            EditorSceneManager.LoadSceneInPlayMode(
+                Int02ScenePath,
+                new LoadSceneParameters(LoadSceneMode.Single));
+            yield return WaitForFrames(5);
+
+            orchestrator = FindOrchestrator(orchestratorType);
+            Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.Zero);
+            AssertStepState(orchestrator, orchestratorType, "C01-L1", "Purchased");
+
+            ClickLauncherMaintenanceButton();
+            yield return null;
+            tree = GameObject.Find("INT02_MaintenanceTree");
+            Assert.That(tree, Is.Not.Null);
+            presenter = tree!.GetComponent(presenterType);
+            var startButton = (Button)presenterType
+                .GetField("stageStartButton", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(presenter)!;
+
+            startButton.onClick.Invoke();
+            startButton.onClick.Invoke();
+            yield return null;
+
+            Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("Countdown"));
+            Assert.That(
+                orchestratorType.GetProperty("CurrentManagementScreen")!.GetValue(orchestrator)!.ToString(),
+                Is.EqualTo("None"));
+            Assert.That(tree.activeSelf, Is.False);
+            Assert.That(startButton.interactable, Is.False);
+            var requestResult = (bool)orchestratorType
+                .GetMethod("RequestManagementScreen")!
+                .Invoke(orchestrator, new[]
+                {
+                    Enum.Parse(FindType("Icebreaker.Shared.State.ManagementScreen"), "Maintenance")
+                })!;
+            Assert.That(requestResult, Is.False);
+            Assert.That(
+                orchestratorType.GetProperty("CurrentManagementScreen")!.GetValue(orchestrator)!.ToString(),
+                Is.EqualTo("None"));
+        }
+
+        [UnityTest]
         public IEnumerator StartButton_UsesRealCountdownAndCompletesTwoSavedCycles()
         {
             if (File.Exists(demoSavePath))
@@ -322,6 +435,65 @@ namespace Icebreaker.Integration.Tests
             ExecuteEvents.ExecuteHierarchy(hit.gameObject, pointer, ExecuteEvents.pointerUpHandler);
             var clickReceiver = ExecuteEvents.ExecuteHierarchy(hit.gameObject, pointer, ExecuteEvents.pointerClickHandler);
             Assert.That(clickReceiver, Is.EqualTo(startButton.gameObject));
+        }
+
+        private static void ClickLauncherMaintenanceButton()
+        {
+            var launcherObject = GameObject.Find("INT02_LauncherHud");
+            Assert.That(launcherObject, Is.Not.Null);
+            var launcherType = FindType("Icebreaker.UI.Hud.LauncherHudPresenter");
+            var launcher = launcherObject!.GetComponent(launcherType);
+            var button = (Button)launcherType
+                .GetField("maintenanceButton", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(launcher)!;
+            button.onClick.Invoke();
+        }
+
+        private static void ClickMaintenanceStep(GameObject tree, string stepId)
+        {
+            var viewportType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeViewport");
+            var viewport = tree.GetComponentInChildren(viewportType, true);
+            Assert.That(viewport, Is.Not.Null);
+            var eventSystem = EventSystem.current;
+            Assert.That(eventSystem, Is.Not.Null);
+            var down = new PointerEventData(eventSystem!)
+            {
+                pointerId = 1,
+                position = Vector2.zero
+            };
+            var up = new PointerEventData(eventSystem)
+            {
+                pointerId = 1,
+                position = new Vector2(2f, 0f)
+            };
+            viewportType.GetMethod("ProcessPointerDown")!
+                .Invoke(viewport, new object[] { down, stepId });
+            viewportType.GetMethod("ProcessPointerUp")!
+                .Invoke(viewport, new object[] { up, stepId });
+        }
+
+        private static void ClickMaintenancePurchaseButton(GameObject tree)
+        {
+            var button = tree.transform
+                .Find("TooltipOverlay/Tooltip/PurchaseButton")!
+                .GetComponent<Button>();
+            button.onClick.Invoke();
+        }
+
+        private static void AssertStepState(
+            Component orchestrator,
+            Type orchestratorType,
+            string stepId,
+            string expectedState)
+        {
+            var steps = (IEnumerable)orchestratorType
+                .GetProperty("CurrentSteps")!
+                .GetValue(orchestrator)!;
+            var step = steps.Cast<object>().Single(candidate =>
+                candidate.GetType().GetProperty("StepId")!.GetValue(candidate)!.ToString() == stepId);
+            Assert.That(
+                step.GetType().GetProperty("PurchaseState")!.GetValue(step)!.ToString(),
+                Is.EqualTo(expectedState));
         }
 
         private static void DestroyOneNormalT1(IceField field)

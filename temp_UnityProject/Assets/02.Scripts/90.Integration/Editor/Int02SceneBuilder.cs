@@ -13,6 +13,7 @@ namespace Icebreaker.Integration.Editor
     {
         private const string ScenePath = "Assets/01.Scenes/int02_complete_loop.unity";
         private const string LauncherPrefabPath = "Assets/03.Prefabs/30.UI/Hud/UI_LauncherHud.prefab";
+        private const string MaintenancePrefabPath = "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceTree.prefab";
         private const string IcebreakingPrefabPath = "Assets/03.Prefabs/30.UI/Hud/UI_IcebreakingHud.prefab";
         private const string SettlementPrefabPath = "Assets/03.Prefabs/30.UI/Hud/UI_RewardSettlement.prefab";
 
@@ -25,6 +26,8 @@ namespace Icebreaker.Integration.Editor
                 CreateCamera();
                 CreateEventSystem();
                 InstantiatePrefab(LauncherPrefabPath, "INT02_LauncherHud");
+                var maintenance = InstantiatePrefab(MaintenancePrefabPath, "INT02_MaintenanceTree");
+                maintenance.SetActive(false);
                 InstantiatePrefab(IcebreakingPrefabPath, "INT02_IcebreakingHud");
                 InstantiatePrefab(SettlementPrefabPath, "INT02_RewardSettlement");
 
@@ -80,7 +83,7 @@ namespace Icebreaker.Integration.Editor
                 typeof(InputSystemUIInputModule));
         }
 
-        private static void InstantiatePrefab(string path, string instanceName)
+        private static GameObject InstantiatePrefab(string path, string instanceName)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             if (prefab == null)
@@ -96,6 +99,7 @@ namespace Icebreaker.Integration.Editor
 
             instance.name = instanceName;
             instance.transform.SetParent(null, false);
+            return instance;
         }
     }
 }

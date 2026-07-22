@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using Icebreaker.Core;
 using Icebreaker.Gameplay;
+using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
+using Icebreaker.Shared.Maintenance;
 using Icebreaker.Shared.State;
 using Icebreaker.UI.Hud;
+using Icebreaker.UI.Maintenance;
 using UnityEngine;
 
 namespace Icebreaker.Integration
@@ -15,7 +18,9 @@ namespace Icebreaker.Integration
     public sealed class Int02IntegrationOrchestrator : MonoBehaviour,
         ICombatEventSource,
         IProgressionEventSource,
-        IGameStateSource
+        IGameStateSource,
+        IManagementScreenSource,
+        IMaintenanceStepViewDataSource
     {
         public const string DemoProfileId = "demo";
         public const double DemoStageSeconds = 60d;
@@ -28,6 +33,9 @@ namespace Icebreaker.Integration
         private LauncherHudPresenter? launcherHud;
         private IcebreakingHudPresenter? icebreakingHud;
         private RewardSettlementPresenter? settlementPresenter;
+        private MaintenanceTreePresenter? maintenanceTree;
+        private ManagementScreen currentManagementScreen;
+        private bool stageStartRequestPending;
         private bool shutdownFlushed;
 
         public event Action<DamageAppliedEvent> DamageApplied = delegate { };
@@ -48,8 +56,22 @@ namespace Icebreaker.Integration
 
         public event Action<GameState> StateChanged = delegate { };
 
+        public event Action<ManagementScreen> ManagementScreenChanged = delegate { };
+
+        public event Action<IReadOnlyList<MaintenancePurchaseStepViewData>> StepsChanged = delegate { };
+
         public GameState CurrentState => coordinator?.CurrentState ??
             throw new InvalidOperationException("INT-02 loop is not initialized.");
+
+        public ManagementScreen CurrentManagementScreen => currentManagementScreen;
+
+        public IReadOnlyList<MaintenancePurchaseStepViewData> CurrentSteps =>
+            coordinator?.GetMaintenancePurchaseStepViewData() ??
+            Array.Empty<MaintenancePurchaseStepViewData>();
+
+        public long CurrentFunds => coordinator?.CurrentState.Funds ?? 0L;
+
+        public string CurrentPreviewStateLabel => "실제 저장";
 
         private void Awake()
         {
@@ -95,13 +117,23 @@ namespace Icebreaker.Integration
             }
 
             var loop = CreateLoop(bootState);
-            coordinator = new Int02LoopCoordinator(loop, ledger, saveService);
+            var maintenanceCore = new MaintenanceCore(
+                MaintenanceCatalog.CreateDemo(),
+                ledger,
+                saveService);
+            coordinator = new Int02LoopCoordinator(
+                loop,
+                ledger,
+                maintenanceCore,
+                saveService);
+            coordinator.StageConfigurationPrepared += HandleStageConfigurationPrepared;
             coordinator.StageStarted += HandleStageStarted;
             coordinator.RewardGranted += HandleRewardGranted;
             coordinator.StageEnded += HandleStageEnded;
             coordinator.SettlementReady += HandleSettlementReady;
             coordinator.ArrivalPresentationRequested += HandleArrivalPresentationRequested;
             coordinator.StateChanged += HandleCoordinatorStateChanged;
+            coordinator.MaintenanceChanged += HandleMaintenanceChanged;
 
             iceFieldView.InjectStageClock(loop);
             iceFieldView.InjectCombatConfig(coordinator.CurrentCombatConfig);
@@ -117,9 +149,11 @@ namespace Icebreaker.Integration
             launcherHud = FindFirstObjectByType<LauncherHudPresenter>();
             icebreakingHud = FindFirstObjectByType<IcebreakingHudPresenter>();
             settlementPresenter = FindFirstObjectByType<RewardSettlementPresenter>();
-            if (launcherHud == null || icebreakingHud == null || settlementPresenter == null)
+            maintenanceTree = FindFirstObjectByType<MaintenanceTreePresenter>(FindObjectsInactive.Include);
+            if (launcherHud == null || icebreakingHud == null || settlementPresenter == null ||
+                maintenanceTree == null)
             {
-                Debug.LogError("[INT-02] Launcher, icebreaking, or settlement HUD is missing.", this);
+                Debug.LogError("[INT-TREE-01] Launcher, maintenance, icebreaking, or settlement UI is missing.", this);
                 enabled = false;
                 return;
             }
@@ -133,7 +167,12 @@ namespace Icebreaker.Integration
             icebreakingHud.Bind(this);
             settlementPresenter.Bind(this, this, this);
             settlementPresenter.SetInputTargets(iceFieldView);
+            maintenanceTree.Bind(this);
             launcherHud.StageStartRequested += HandleStageStartRequested;
+            launcherHud.MaintenanceRequested += HandleMaintenanceRequested;
+            maintenanceTree.PurchaseRequested += HandleMaintenancePurchaseRequested;
+            maintenanceTree.CloseRequested += HandleMaintenanceCloseRequested;
+            maintenanceTree.StageStartRequested += HandleMaintenanceStageStartRequested;
             settlementPresenter.ContinueRequested += HandleContinueRequested;
 
             ApplyViewState(coordinator.CurrentState);
@@ -146,13 +185,27 @@ namespace Icebreaker.Integration
             coordinator?.Tick(Time.unscaledDeltaTime);
         }
 
-        private void OnApplicationQuit() => FlushForShutdown();
+        private void OnApplicationQuit()
+        {
+            CloseManagementScreen();
+            FlushForShutdown();
+        }
 
         private void OnDestroy()
         {
+            SetManagementScreen(ManagementScreen.None);
+
             if (launcherHud != null)
             {
                 launcherHud.StageStartRequested -= HandleStageStartRequested;
+                launcherHud.MaintenanceRequested -= HandleMaintenanceRequested;
+            }
+
+            if (maintenanceTree != null)
+            {
+                maintenanceTree.PurchaseRequested -= HandleMaintenancePurchaseRequested;
+                maintenanceTree.CloseRequested -= HandleMaintenanceCloseRequested;
+                maintenanceTree.StageStartRequested -= HandleMaintenanceStageStartRequested;
             }
 
             if (settlementPresenter != null)
@@ -169,12 +222,14 @@ namespace Icebreaker.Integration
 
             if (coordinator != null)
             {
+                coordinator.StageConfigurationPrepared -= HandleStageConfigurationPrepared;
                 coordinator.StageStarted -= HandleStageStarted;
                 coordinator.RewardGranted -= HandleRewardGranted;
                 coordinator.StageEnded -= HandleStageEnded;
                 coordinator.SettlementReady -= HandleSettlementReady;
                 coordinator.ArrivalPresentationRequested -= HandleArrivalPresentationRequested;
                 coordinator.StateChanged -= HandleCoordinatorStateChanged;
+                coordinator.MaintenanceChanged -= HandleMaintenanceChanged;
                 FlushForShutdown();
                 coordinator.Dispose();
             }
@@ -182,11 +237,90 @@ namespace Icebreaker.Integration
 
         public void EnsureInitialized() => coordinator?.EnsureInitialized();
 
+        public bool RequestManagementScreen(ManagementScreen screen)
+        {
+            if (screen == ManagementScreen.None)
+            {
+                CloseManagementScreen();
+                return true;
+            }
+
+            if (screen != ManagementScreen.Maintenance || coordinator == null ||
+                !CanOpenManagement(coordinator.CurrentState.Phase))
+            {
+                return false;
+            }
+
+            SetManagementScreen(screen);
+            ApplyViewState(coordinator.CurrentState);
+            return true;
+        }
+
+        public void CloseManagementScreen()
+        {
+            if (currentManagementScreen == ManagementScreen.None)
+            {
+                return;
+            }
+
+            SetManagementScreen(ManagementScreen.None);
+            if (coordinator != null)
+            {
+                ApplyViewState(coordinator.CurrentState);
+            }
+        }
+
         private void HandleStageStartRequested()
         {
             if (coordinator?.CurrentState.CanStartStage == true)
             {
                 coordinator.RequestStageStart();
+            }
+        }
+
+        private void HandleMaintenanceRequested() =>
+            RequestManagementScreen(ManagementScreen.Maintenance);
+
+        private void HandleMaintenanceCloseRequested() => CloseManagementScreen();
+
+        private void HandleMaintenanceStageStartRequested()
+        {
+            if (stageStartRequestPending || coordinator == null ||
+                currentManagementScreen != ManagementScreen.Maintenance ||
+                !coordinator.CurrentState.CanStartStage)
+            {
+                maintenanceTree?.RejectStageStartRequest();
+                return;
+            }
+
+            stageStartRequestPending = true;
+            coordinator.RequestStageStart();
+        }
+
+        private void HandleMaintenancePurchaseRequested(string stepId)
+        {
+            if (coordinator == null || currentManagementScreen != ManagementScreen.Maintenance)
+            {
+                StepsChanged(CurrentSteps);
+                return;
+            }
+
+            MaintenancePurchaseStepViewData? requestedStep = null;
+            foreach (var step in CurrentSteps)
+            {
+                if (string.Equals(step.StepId, stepId, StringComparison.Ordinal))
+                {
+                    requestedStep = step;
+                    break;
+                }
+            }
+
+            if (requestedStep == null || !requestedStep.CanPurchase ||
+                coordinator.TryPurchaseMaintenance(
+                    requestedStep.MaintenanceId,
+                    requestedStep.TargetLevel) != MaintenancePurchaseResult.Success)
+            {
+                StepsChanged(CurrentSteps);
             }
         }
 
@@ -245,6 +379,11 @@ namespace Icebreaker.Integration
             coordinator.TryApproveDestruction(normalized);
         }
 
+        private void HandleStageConfigurationPrepared(CombatConfig config)
+        {
+            iceFieldView?.InjectCombatConfig(config);
+        }
+
         private void HandleStageStarted(StageStarted payload)
         {
             iceFieldView?.ResetStage();
@@ -262,9 +401,22 @@ namespace Icebreaker.Integration
 
         private void HandleCoordinatorStateChanged(GameState state)
         {
+            if (!CanOpenManagement(state.Phase) &&
+                currentManagementScreen != ManagementScreen.None)
+            {
+                SetManagementScreen(ManagementScreen.None);
+            }
+
+            if (state.Phase != GamePhase.Ready)
+            {
+                stageStartRequestPending = false;
+            }
+
             StateChanged(state);
             ApplyViewState(state);
         }
+
+        private void HandleMaintenanceChanged() => StepsChanged(CurrentSteps);
 
         private void ApplyViewState(GameState state)
         {
@@ -273,9 +425,21 @@ namespace Icebreaker.Integration
                 var showLauncher = state.Phase == GamePhase.Traveling ||
                                    state.Phase == GamePhase.Ready ||
                                    state.Phase == GamePhase.Completed;
+                showLauncher &= currentManagementScreen == ManagementScreen.None;
                 if (launcherHud.gameObject.activeSelf != showLauncher)
                 {
                     launcherHud.gameObject.SetActive(showLauncher);
+                }
+            }
+
+            if (maintenanceTree != null)
+            {
+                maintenanceTree.SetStageStartAvailable(state.CanStartStage);
+                var showMaintenance = currentManagementScreen == ManagementScreen.Maintenance &&
+                                      CanOpenManagement(state.Phase);
+                if (maintenanceTree.gameObject.activeSelf != showMaintenance)
+                {
+                    maintenanceTree.gameObject.SetActive(showMaintenance);
                 }
             }
 
@@ -285,6 +449,20 @@ namespace Icebreaker.Integration
                                        state.Phase == GamePhase.Playing;
             }
         }
+
+        private void SetManagementScreen(ManagementScreen screen)
+        {
+            if (currentManagementScreen == screen)
+            {
+                return;
+            }
+
+            currentManagementScreen = screen;
+            ManagementScreenChanged(screen);
+        }
+
+        private static bool CanOpenManagement(GamePhase phase) =>
+            phase == GamePhase.Traveling || phase == GamePhase.Ready;
 
         private void FlushForShutdown()
         {
@@ -303,27 +481,11 @@ namespace Icebreaker.Integration
                 DestinationCatalog.CreateDemo(),
                 RewardTable.CreateDefault(),
                 initialFunds: saveData.funds,
-                maintenanceEfficiencyLevel: CombatConfigFactory.GetMaintenanceEfficiencyLevel(
-                    CreateMaintenanceLevels(saveData.maintenanceLevels)),
                 initialDestinationIndex: saveData.currentDestinationIndex,
                 initialDestinationProgress: saveData.destinationProgress,
                 initialCompletedDestinationIds: saveData.completedDestinationIds,
                 initialPendingArrivalDestinationId: saveData.pendingArrivalDestinationId,
                 initialGameCompleted: saveData.gameCompleted);
-        }
-
-        private static MaintenanceLevel[] CreateMaintenanceLevels(
-            IReadOnlyList<SaveMaintenanceLevel> savedLevels)
-        {
-            var levels = new MaintenanceLevel[savedLevels.Count];
-            for (var index = 0; index < savedLevels.Count; index++)
-            {
-                levels[index] = new MaintenanceLevel(
-                    savedLevels[index].id,
-                    savedLevels[index].level);
-            }
-
-            return levels;
         }
 
         private static bool ApplyPendingArrival(ProgressionLedger ledger, SaveData saveData)

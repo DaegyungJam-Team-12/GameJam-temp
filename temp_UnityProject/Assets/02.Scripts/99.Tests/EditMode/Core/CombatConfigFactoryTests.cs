@@ -72,8 +72,8 @@ namespace Icebreaker.Core.Tests
         {
             var config = CombatConfigFactory.Build(CreateFullyUpgradedLevels());
 
-            Assert.That(config.DirectAttack.CurrentClickDamage, Is.EqualTo(4.096f).Within(0.0001f));
-            Assert.That(config.DirectAttack.HoldAttacksPerSecond, Is.EqualTo(11f));
+            Assert.That(config.DirectAttack.CurrentClickDamage, Is.EqualTo(7f));
+            Assert.That(config.DirectAttack.HoldAttacksPerSecond, Is.EqualTo(8.75f));
             Assert.That(config.DirectAttack.CursorRadiusReferencePixels, Is.EqualTo(104f));
             Assert.That(config.DirectAttack.CriticalChance, Is.EqualTo(0.05f));
             Assert.That(config.DirectAttack.CriticalDamageMultiplier, Is.EqualTo(3f));
@@ -113,6 +113,29 @@ namespace Icebreaker.Core.Tests
             Assert.That(config.ChainEffect.CrystalShardCount, Is.EqualTo(7));
             Assert.That(config.ChainEffect.CrackDamageMultiplier, Is.EqualTo(3.9f).Within(0.0001f));
             Assert.That(config.ChainEffect.CrackRadiusReferencePixels, Is.EqualTo(156f).Within(0.01f));
+        }
+
+        [TestCase(0, 1f, 5f)]
+        [TestCase(1, 3f, 6.25f)]
+        [TestCase(2, 5f, 7.5f)]
+        [TestCase(3, 7f, 8.75f)]
+        public void Build_DirectProgressionUsesReferenceStyleSteps(
+            int level,
+            float expectedDamage,
+            float expectedTicksPerSecond)
+        {
+            var levels = level == 0
+                ? Array.Empty<MaintenanceLevel>()
+                : new[]
+                {
+                    new MaintenanceLevel(MaintenanceCatalog.D01, level),
+                    new MaintenanceLevel(MaintenanceCatalog.D02, level)
+                };
+
+            var config = CombatConfigFactory.Build(levels);
+
+            Assert.That(config.DirectAttack.CurrentDirectDamage, Is.EqualTo(expectedDamage));
+            Assert.That(config.DirectAttack.AttackTicksPerSecond, Is.EqualTo(expectedTicksPerSecond));
         }
 
         [TestCase(0, 56f)]

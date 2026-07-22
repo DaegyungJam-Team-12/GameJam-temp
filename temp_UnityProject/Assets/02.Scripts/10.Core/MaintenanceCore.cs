@@ -14,10 +14,13 @@ namespace Icebreaker.Core
         private readonly IReadOnlyList<MaintenanceDefinition> definitions;
         private readonly Dictionary<string, MaintenanceDefinition> definitionsById;
         private readonly Dictionary<string, int> levelsById;
+        private readonly MaintenanceStepProjector stepProjector;
+        private readonly ProgressionLedger ledger;
         private readonly SaveService saveService;
 
         public MaintenanceCore(
             IReadOnlyList<MaintenanceDefinition> definitions,
+            ProgressionLedger ledger,
             SaveService saveService)
         {
             if (definitions == null)
@@ -30,6 +33,11 @@ namespace Icebreaker.Core
                 throw new ArgumentNullException(nameof(saveService));
             }
 
+            if (ledger == null)
+            {
+                throw new ArgumentNullException(nameof(ledger));
+            }
+
             if (saveService.Data.funds < 0)
             {
                 throw new ArgumentOutOfRangeException(
@@ -39,6 +47,7 @@ namespace Icebreaker.Core
             }
 
             this.definitions = definitions;
+            this.ledger = ledger;
             this.saveService = saveService;
             definitionsById = new Dictionary<string, MaintenanceDefinition>(StringComparer.Ordinal);
             levelsById = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -57,6 +66,8 @@ namespace Icebreaker.Core
 
                 levelsById.Add(definition.Id, 0);
             }
+
+            stepProjector = new MaintenanceStepProjector(definitions);
 
             var loadedIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (var savedLevel in saveService.Data.maintenanceLevels)
@@ -85,10 +96,15 @@ namespace Icebreaker.Core
                 levelsById[savedLevel.id] = savedLevel.level;
             }
 
-            Funds = saveService.Data.funds;
+            if (ledger.Funds != saveService.Data.funds)
+            {
+                throw new ArgumentException(
+                    "Ledger and saved funds must match when maintenance is initialized.",
+                    nameof(ledger));
+            }
         }
 
-        public long Funds { get; private set; }
+        public long Funds => ledger.Funds;
 
         public int MaintenanceEfficiencyLevel => levelsById[MaintenanceCatalog.C02];
 
@@ -109,28 +125,59 @@ namespace Icebreaker.Core
 
         public bool TryPurchase(string nodeId)
         {
+            return TryPurchaseDetailed(nodeId) == MaintenancePurchaseResult.Success;
+        }
+
+        public MaintenancePurchaseResult TryPurchaseDetailed(string nodeId)
+        {
             if (string.IsNullOrEmpty(nodeId) ||
-                !definitionsById.TryGetValue(nodeId, out var definition))
+                !definitionsById.TryGetValue(nodeId, out _))
             {
-                return false;
+                return MaintenancePurchaseResult.InvalidNode;
             }
 
             var currentLevel = levelsById[nodeId];
-            if (currentLevel == definition.MaxLevel || !RequirementsMet(definition))
+            return TryPurchaseDetailed(nodeId, currentLevel + 1);
+        }
+
+        public MaintenancePurchaseResult TryPurchaseDetailed(string nodeId, int targetLevel)
+        {
+            if (string.IsNullOrEmpty(nodeId) ||
+                !definitionsById.TryGetValue(nodeId, out var definition))
             {
-                return false;
+                return MaintenancePurchaseResult.InvalidNode;
+            }
+
+            var currentLevel = levelsById[nodeId];
+            if (currentLevel == definition.MaxLevel)
+            {
+                return MaintenancePurchaseResult.MaxLevel;
+            }
+
+            if (targetLevel != currentLevel + 1)
+            {
+                return MaintenancePurchaseResult.Locked;
+            }
+
+            if (currentLevel == 0 && !RequirementsMet(definition))
+            {
+                return MaintenancePurchaseResult.Locked;
             }
 
             var cost = definition.CostsByLevel[currentLevel];
-            if (Funds < cost)
+            if (!ledger.TrySpendFunds(cost))
             {
-                return false;
+                return MaintenancePurchaseResult.InsufficientFunds;
             }
 
-            Funds -= cost;
             levelsById[nodeId] = currentLevel + 1;
             SaveAndFlush();
-            return true;
+            return MaintenancePurchaseResult.Success;
+        }
+
+        public IReadOnlyList<MaintenancePurchaseStepViewData> GetPurchaseStepViewData()
+        {
+            return stepProjector.Project(levelsById, Funds);
         }
 
         public IReadOnlyList<MaintenanceNodeViewData> GetNodeViewData()
@@ -207,7 +254,7 @@ namespace Icebreaker.Core
         private void SaveAndFlush()
         {
             var data = saveService.Data;
-            data.funds = Funds;
+            data.funds = ledger.Funds;
             data.maintenanceLevels = new List<SaveMaintenanceLevel>();
             foreach (var definition in definitions)
             {

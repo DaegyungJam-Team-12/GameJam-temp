@@ -12,10 +12,10 @@ namespace Icebreaker.Core
     {
         private readonly DestinationDefinition[] destinations;
         private readonly RewardTable rewardTable;
-        private readonly int maintenanceEfficiencyLevel;
         private readonly HashSet<string> completed = new();
         private HashSet<(long StageId, long IceInstanceId)> approvedDestructions = new();
         private int currentDestinationIndex;
+        private int stageMaintenanceEfficiencyLevel;
         private long stageFunds;
         private int stageDestroyed;
         private int stageProgressGain;
@@ -25,7 +25,6 @@ namespace Icebreaker.Core
             IReadOnlyList<DestinationDefinition> destinations,
             RewardTable rewardTable,
             long initialFunds = 0,
-            int maintenanceEfficiencyLevel = 0,
             int initialDestinationIndex = 0,
             int initialDestinationProgress = 0,
             IReadOnlyCollection<string>? initialCompletedDestinationIds = null,
@@ -50,14 +49,6 @@ namespace Icebreaker.Core
             if (initialFunds < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(initialFunds), initialFunds, "Value cannot be negative.");
-            }
-
-            if (maintenanceEfficiencyLevel < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(maintenanceEfficiencyLevel),
-                    maintenanceEfficiencyLevel,
-                    "Value cannot be negative.");
             }
 
             this.destinations = new DestinationDefinition[destinations.Count];
@@ -100,7 +91,6 @@ namespace Icebreaker.Core
             }
 
             this.rewardTable = rewardTable;
-            this.maintenanceEfficiencyLevel = maintenanceEfficiencyLevel;
             currentDestinationIndex = initialDestinationIndex;
             Funds = initialFunds;
             DestinationProgress = initialDestinationProgress;
@@ -135,8 +125,33 @@ namespace Icebreaker.Core
 
         public IReadOnlyCollection<string> CompletedDestinationIds => completed;
 
-        public void BeginStage()
+        public bool TrySpendFunds(long amount)
         {
+            if (amount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), amount, "Value cannot be negative.");
+            }
+
+            if (Funds < amount)
+            {
+                return false;
+            }
+
+            Funds -= amount;
+            return true;
+        }
+
+        public void BeginStage(int maintenanceEfficiencyLevel)
+        {
+            if (maintenanceEfficiencyLevel < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(maintenanceEfficiencyLevel),
+                    maintenanceEfficiencyLevel,
+                    "Value cannot be negative.");
+            }
+
+            stageMaintenanceEfficiencyLevel = maintenanceEfficiencyLevel;
             stageFunds = 0;
             stageDestroyed = 0;
             stageProgressGain = 0;
@@ -152,7 +167,10 @@ namespace Icebreaker.Core
                 return false;
             }
 
-            var funds = rewardTable.ComputeFunds(e.Tier, e.SpecialType, maintenanceEfficiencyLevel);
+            var funds = rewardTable.ComputeFunds(
+                e.Tier,
+                e.SpecialType,
+                stageMaintenanceEfficiencyLevel);
             Funds += funds;
             stageFunds += funds;
             stageDestroyed++;

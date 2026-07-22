@@ -41,8 +41,13 @@ namespace Icebreaker.Core
 
         public bool HasPendingWrite => pendingDirty;
 
+        public int DirtyMarkCount { get; private set; }
+
+        public int FlushCount { get; private set; }
+
         public void MarkDirty()
         {
+            DirtyMarkCount++;
             pendingDirty = true;
             elapsedSinceDirty = 0d;
         }
@@ -77,6 +82,7 @@ namespace Icebreaker.Core
             }
 
             store.Save(data);
+            FlushCount++;
             pendingDirty = false;
             elapsedSinceDirty = 0d;
         }

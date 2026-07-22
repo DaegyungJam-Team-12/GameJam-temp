@@ -85,6 +85,13 @@ namespace Icebreaker.Window
             _ => throw new ArgumentOutOfRangeException(nameof(phase), phase, null)
         };
 
+        public static WindowView ViewForState(
+            GamePhase phase,
+            ManagementScreen managementScreen) =>
+            managementScreen != ManagementScreen.None
+                ? WindowView.Expanded
+                : ViewForPhase(phase);
+
         public static PixelRect Calculate(
             PixelRect workArea,
             PixelSize targetClientSize,

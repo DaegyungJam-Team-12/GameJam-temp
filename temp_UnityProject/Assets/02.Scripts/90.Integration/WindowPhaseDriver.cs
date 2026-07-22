@@ -14,6 +14,7 @@ namespace Icebreaker.Integration
             "Icebreaker.Integration.Int02IntegrationOrchestrator";
 
         private IGameStateSource? source;
+        private IManagementScreenSource? managementSource;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
@@ -38,13 +39,15 @@ namespace Icebreaker.Integration
             }
 
             source = FindStateSource();
-            if (source == null)
+            managementSource = source as IManagementScreenSource;
+            if (source == null || managementSource == null)
             {
                 return;
             }
 
             source.StateChanged += HandleStateChanged;
-            WindowBootstrap.Instance?.ApplyPhase(source.CurrentState.Phase);
+            managementSource.ManagementScreenChanged += HandleManagementScreenChanged;
+            ApplyWindowView();
         }
 
         private void OnDestroy()
@@ -53,10 +56,28 @@ namespace Icebreaker.Integration
             {
                 source.StateChanged -= HandleStateChanged;
             }
+
+            if (managementSource != null)
+            {
+                managementSource.ManagementScreenChanged -= HandleManagementScreenChanged;
+            }
         }
 
-        private static void HandleStateChanged(GameState state) =>
-            WindowBootstrap.Instance?.ApplyPhase(state.Phase);
+        private void HandleStateChanged(GameState state) => ApplyWindowView();
+
+        private void HandleManagementScreenChanged(ManagementScreen screen) => ApplyWindowView();
+
+        private void ApplyWindowView()
+        {
+            if (source == null || managementSource == null)
+            {
+                return;
+            }
+
+            WindowBootstrap.Instance?.ApplyView(WindowLayout.ViewForState(
+                source.CurrentState.Phase,
+                managementSource.CurrentManagementScreen));
+        }
 
         private static IGameStateSource? FindStateSource()
         {
