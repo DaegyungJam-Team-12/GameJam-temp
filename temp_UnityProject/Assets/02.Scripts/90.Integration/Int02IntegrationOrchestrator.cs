@@ -104,6 +104,7 @@ namespace Icebreaker.Integration
             coordinator.StateChanged += HandleCoordinatorStateChanged;
 
             iceFieldView.InjectStageClock(loop);
+            iceFieldView.InjectCombatConfig(coordinator.CurrentCombatConfig);
         }
 
         private void Start()
@@ -280,7 +281,8 @@ namespace Icebreaker.Integration
 
             if (iceFieldView != null)
             {
-                iceFieldView.enabled = state.Phase == GamePhase.Playing;
+                iceFieldView.enabled = state.Phase == GamePhase.Countdown ||
+                                       state.Phase == GamePhase.Playing;
             }
         }
 
@@ -301,12 +303,27 @@ namespace Icebreaker.Integration
                 DestinationCatalog.CreateDemo(),
                 RewardTable.CreateDefault(),
                 initialFunds: saveData.funds,
-                maintenanceEfficiencyLevel: 0,
+                maintenanceEfficiencyLevel: CombatConfigFactory.GetMaintenanceEfficiencyLevel(
+                    CreateMaintenanceLevels(saveData.maintenanceLevels)),
                 initialDestinationIndex: saveData.currentDestinationIndex,
                 initialDestinationProgress: saveData.destinationProgress,
                 initialCompletedDestinationIds: saveData.completedDestinationIds,
                 initialPendingArrivalDestinationId: saveData.pendingArrivalDestinationId,
                 initialGameCompleted: saveData.gameCompleted);
+        }
+
+        private static MaintenanceLevel[] CreateMaintenanceLevels(
+            IReadOnlyList<SaveMaintenanceLevel> savedLevels)
+        {
+            var levels = new MaintenanceLevel[savedLevels.Count];
+            for (var index = 0; index < savedLevels.Count; index++)
+            {
+                levels[index] = new MaintenanceLevel(
+                    savedLevels[index].id,
+                    savedLevels[index].level);
+            }
+
+            return levels;
         }
 
         private static bool ApplyPendingArrival(ProgressionLedger ledger, SaveData saveData)

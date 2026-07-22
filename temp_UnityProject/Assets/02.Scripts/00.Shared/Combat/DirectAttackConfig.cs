@@ -7,22 +7,36 @@ namespace Icebreaker.Shared.Combat
     public sealed class DirectAttackConfig
     {
         public DirectAttackConfig(
-            float currentClickDamage,
-            float holdAttacksPerSecond,
+            float currentDirectDamage,
+            float attackTicksPerSecond,
+            float cursorRadiusReferencePixels,
             float criticalChance,
             float criticalDamageMultiplier)
         {
-            CurrentClickDamage = ContractGuards.Positive(currentClickDamage, nameof(currentClickDamage));
-            HoldAttacksPerSecond = ContractGuards.Positive(holdAttacksPerSecond, nameof(holdAttacksPerSecond));
+            CurrentDirectDamage = ContractGuards.Positive(currentDirectDamage, nameof(currentDirectDamage));
+            AttackTicksPerSecond = ContractGuards.Positive(attackTicksPerSecond, nameof(attackTicksPerSecond));
+            CursorRadiusReferencePixels = ContractGuards.Positive(
+                cursorRadiusReferencePixels,
+                nameof(cursorRadiusReferencePixels));
             CriticalChance = ContractGuards.Probability(criticalChance, nameof(criticalChance));
             CriticalDamageMultiplier = ContractGuards.Positive(
                 criticalDamageMultiplier,
                 nameof(criticalDamageMultiplier));
         }
 
-        public float CurrentClickDamage { get; }
+        /// <summary>Base damage for each automatic cursor-area tick.</summary>
+        public float CurrentDirectDamage { get; }
 
-        public float HoldAttacksPerSecond { get; }
+        /// <summary>Automatic area-attack ticks per second.</summary>
+        public float AttackTicksPerSecond { get; }
+
+        /// <summary>Radius in the 960 x 540 bottom-left-origin reference space.</summary>
+        public float CursorRadiusReferencePixels { get; }
+
+        // Kept as source-compatible aliases for callers not yet migrated from click-and-hold terminology.
+        public float CurrentClickDamage => CurrentDirectDamage;
+
+        public float HoldAttacksPerSecond => AttackTicksPerSecond;
 
         public float CriticalChance { get; }
 
