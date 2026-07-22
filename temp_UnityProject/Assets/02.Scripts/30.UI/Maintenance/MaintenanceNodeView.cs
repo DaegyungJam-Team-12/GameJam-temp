@@ -19,7 +19,16 @@ namespace Icebreaker.UI.Maintenance
         [SerializeField] private CanvasGroup? canvasGroup;
         [SerializeField] private Image? selectionFrame;
         [SerializeField] private Image? frame;
+        [SerializeField] private Image? stateFrame;
         [SerializeField] private Image? icon;
+        [SerializeField] private Image? checkIndicator;
+        [SerializeField] private Image? lockIndicator;
+        [SerializeField] private Sprite? rootFrameSprite;
+        [SerializeField] private Sprite? normalFrameSprite;
+        [SerializeField] private Sprite? purchasedFrameSprite;
+        [SerializeField] private Sprite? availableFrameSprite;
+        [SerializeField] private Sprite? lockedFrameSprite;
+        [SerializeField] private Sprite? previewFrameSprite;
         [SerializeField] private TMP_Text? idText;
         [SerializeField] private TMP_Text? nameText;
         [SerializeField] private TMP_Text? levelText;
@@ -61,6 +70,45 @@ namespace Icebreaker.UI.Maintenance
             {
                 frame.rectTransform.sizeDelta = layout.VisualSize;
                 frame.raycastTarget = !isHidden;
+                frame.sprite = data.StepId == MaintenanceTreeLayoutAsset.RootStepId
+                    ? rootFrameSprite
+                    : normalFrameSprite;
+                frame.color = Color.white;
+            }
+
+            if (stateFrame != null)
+            {
+                stateFrame.rectTransform.sizeDelta = layout.VisualSize + new Vector2(4f, 4f);
+                stateFrame.sprite = data.Visibility == MaintenanceStepVisibility.Preview
+                    ? previewFrameSprite
+                    : data.PurchaseState switch
+                    {
+                        MaintenanceStepPurchaseState.Purchased => purchasedFrameSprite,
+                        MaintenanceStepPurchaseState.Available => availableFrameSprite,
+                        _ => lockedFrameSprite
+                    };
+                stateFrame.color = data.PurchaseState == MaintenanceStepPurchaseState.Available && !data.CanAfford
+                    ? new Color(1f, 1f, 1f, 0.55f)
+                    : Color.white;
+                stateFrame.raycastTarget = false;
+            }
+
+            if (checkIndicator != null)
+            {
+                checkIndicator.gameObject.SetActive(
+                    data.Visibility != MaintenanceStepVisibility.Preview &&
+                    data.PurchaseState == MaintenanceStepPurchaseState.Purchased);
+            }
+
+            if (lockIndicator != null)
+            {
+                lockIndicator.gameObject.SetActive(
+                    data.Visibility != MaintenanceStepVisibility.Preview &&
+                    data.PurchaseState == MaintenanceStepPurchaseState.Locked);
+            }
+
+            if (frame != null && frame.sprite == null)
+            {
                 frame.color = data.PurchaseState switch
                 {
                     MaintenanceStepPurchaseState.Purchased => success,
@@ -72,7 +120,7 @@ namespace Icebreaker.UI.Maintenance
             if (selectionFrame != null)
             {
                 selectionFrame.rectTransform.sizeDelta = layout.VisualSize + new Vector2(10f, 10f);
-                selectionFrame.color = action;
+                selectionFrame.color = Color.white;
                 selectionFrame.raycastTarget = false;
                 selectionFrame.gameObject.SetActive(false);
             }

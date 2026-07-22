@@ -253,6 +253,8 @@ namespace Icebreaker.UI.Maintenance
                 }
 
                 var color = ResolveEdgeColor(target);
+                var lit = target.PurchaseState is MaintenanceStepPurchaseState.Purchased or
+                    MaintenanceStepPurchaseState.Available;
                 var points = new List<Vector2>(edge.BendPoints.Count + 2)
                 {
                     ToAnchored(layoutById[edge.FromStepId].Position)
@@ -267,7 +269,7 @@ namespace Icebreaker.UI.Maintenance
                 {
                     var segment = Instantiate(edgePrefab!, edgeLayer!, false);
                     segment.name = $"Edge_{edge.FromStepId}_{edge.ToStepId}_{index}";
-                    segment.Render(points[index], points[index + 1], 6f, color);
+                    segment.Render(points[index], points[index + 1], 6f, color, lit);
                 }
             }
         }

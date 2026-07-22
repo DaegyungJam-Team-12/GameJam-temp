@@ -8,8 +8,10 @@ namespace Icebreaker.UI.Maintenance
     public sealed class MaintenanceTreeEdgeView : MonoBehaviour
     {
         [SerializeField] private Image? lineImage;
+        [SerializeField] private Sprite? defaultSprite;
+        [SerializeField] private Sprite? litSprite;
 
-        public void Render(Vector2 start, Vector2 end, float thickness, Color color)
+        public void Render(Vector2 start, Vector2 end, float thickness, Color color, bool lit)
         {
             if (lineImage == null)
             {
@@ -24,6 +26,7 @@ namespace Icebreaker.UI.Maintenance
                 0f,
                 0f,
                 Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+            lineImage.sprite = lit ? litSprite : defaultSprite;
             lineImage.color = color;
             lineImage.raycastTarget = false;
         }

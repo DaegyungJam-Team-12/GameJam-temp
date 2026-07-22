@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using Icebreaker.Shared.Maintenance;
 using NUnit.Framework;
 using TMPro;
 using UnityEditor;
@@ -20,6 +21,62 @@ namespace Icebreaker.Integration.Tests
             "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceTree.prefab";
         private const string TooltipPrefabPath =
             "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceTooltip.prefab";
+        private const string NodePrefabPath =
+            "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceNode.prefab";
+        private const string EdgePrefabPath =
+            "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceEdge.prefab";
+        private const string LayoutPath =
+            "Assets/09.Data/UI/MaintenanceTreeLayout.asset";
+
+        [Test]
+        public void ArtAssets_ReuseFourteenLogicalIconsAndProvideNonColorStateCues()
+        {
+            var layout = AssetDatabase.LoadAssetAtPath<MaintenanceTreeLayoutAsset>(LayoutPath);
+            Assert.That(layout, Is.Not.Null);
+            Assert.That(layout!.Nodes, Has.Count.EqualTo(26));
+            Assert.That(layout.Nodes.Select(node => node.Icon).Distinct().Count(), Is.EqualTo(14));
+            foreach (var logicalGroup in layout.Nodes.GroupBy(node => node.StepId[..3]))
+            {
+                Assert.That(logicalGroup.Select(node => node.Icon).Distinct().Count(), Is.EqualTo(1));
+                Assert.That(
+                    AssetDatabase.GetAssetPath(logicalGroup.First().Icon),
+                    Is.EqualTo($"Assets/04.Images/30.UI/Maintenance/Icons/{logicalGroup.Key}.png"));
+            }
+
+            var node = AssetDatabase.LoadAssetAtPath<GameObject>(NodePrefabPath);
+            Assert.That(node, Is.Not.Null);
+            foreach (var childName in new[]
+                     {
+                         "SelectionFrame", "Frame", "StateFrame", "Icon",
+                         "CheckIndicator", "LockIndicator"
+                     })
+            {
+                Assert.That(node!.transform.Find(childName), Is.Not.Null, childName);
+            }
+
+            var nodeView = node!.GetComponent(FindType("Icebreaker.UI.Maintenance.MaintenanceNodeView"));
+            AssertSpriteReferences(
+                nodeView,
+                "rootFrameSprite", "normalFrameSprite", "purchasedFrameSprite",
+                "availableFrameSprite", "lockedFrameSprite", "previewFrameSprite");
+
+            var edge = AssetDatabase.LoadAssetAtPath<GameObject>(EdgePrefabPath);
+            Assert.That(edge, Is.Not.Null);
+            var edgeView = edge!.GetComponent(FindType("Icebreaker.UI.Maintenance.MaintenanceTreeEdgeView"));
+            AssertSpriteReferences(edgeView, "defaultSprite", "litSprite");
+
+            var tooltip = AssetDatabase.LoadAssetAtPath<GameObject>(TooltipPrefabPath);
+            Assert.That(tooltip!.GetComponent<Image>().type, Is.EqualTo(Image.Type.Sliced));
+            var tree = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
+            var bottomBar = tree!.transform.Find("BottomBar")!;
+            Assert.That(bottomBar.GetComponent<Image>().type, Is.EqualTo(Image.Type.Sliced));
+            foreach (var controlName in new[] { "WasdIcon", "DragIcon", "WheelIcon" })
+            {
+                Assert.That(bottomBar.Find(controlName)!.GetComponent<Image>().sprite, Is.Not.Null);
+            }
+
+            AssertNoMissingComponents(node, edge, tooltip, tree);
+        }
 
         [UnityTest]
         public IEnumerator StaticTree_RendersFiveInitialAndAllFullyPurchasedNodesWithoutRaycastsOnHidden()
@@ -70,6 +127,12 @@ namespace Icebreaker.Integration.Tests
                 Assert.That(nodeLayer.childCount, Is.EqualTo(26));
                 Assert.That(CountActiveChildren(nodeLayer), Is.EqualTo(26));
                 Assert.That(GetVisibleNodeCount(presenter!, presenterType), Is.EqualTo(26));
+                foreach (Transform node in nodeLayer)
+                {
+                    Assert.That(node.Find("StateFrame")!.GetComponent<Image>().sprite.name, Is.EqualTo("StatePurchased"));
+                    Assert.That(node.Find("CheckIndicator")!.gameObject.activeSelf, Is.True);
+                    Assert.That(node.Find("LockIndicator")!.gameObject.activeSelf, Is.False);
+                }
             }
             finally
             {
@@ -245,6 +308,33 @@ namespace Icebreaker.Integration.Tests
         private static int GetVisibleNodeCount(Component presenter, Type presenterType)
         {
             return (int)presenterType.GetProperty("VisibleNodeCount")!.GetValue(presenter)!;
+        }
+
+        private static void AssertSpriteReferences(Component component, params string[] propertyNames)
+        {
+            Assert.That(component, Is.Not.Null);
+            var serialized = new SerializedObject(component);
+            foreach (var propertyName in propertyNames)
+            {
+                Assert.That(
+                    serialized.FindProperty(propertyName)!.objectReferenceValue,
+                    Is.Not.Null,
+                    propertyName);
+            }
+        }
+
+        private static void AssertNoMissingComponents(params GameObject[] prefabs)
+        {
+            foreach (var prefab in prefabs)
+            {
+                foreach (var transform in prefab.GetComponentsInChildren<Transform>(true))
+                {
+                    Assert.That(
+                        transform.GetComponents<Component>().Any(component => component == null),
+                        Is.False,
+                        $"{prefab.name}/{transform.name} has a missing component reference.");
+                }
+            }
         }
 
         private static Type FindType(string fullName)

@@ -32,6 +32,7 @@ namespace Icebreaker.UI.Editor
         {
             EnsureAssetFolder(DataFolder);
             EnsureAssetFolder(PrefabFolder);
+            MaintenanceTreeArtBuilder.Build();
 
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
             if (theme == null)
@@ -47,13 +48,7 @@ namespace Icebreaker.UI.Editor
                 throw new InvalidOperationException("No TMP font is available for the maintenance tree.");
             }
 
-            var icon = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-            if (icon == null)
-            {
-                throw new InvalidOperationException("Unity built-in UI Sprite is unavailable.");
-            }
-
-            var layout = BuildLayout(icon);
+            var layout = BuildLayout(LoadLogicalIcons());
             BuildNodePrefab(font);
             BuildEdgePrefab();
             BuildTooltipPrefab(theme, font);
@@ -94,6 +89,17 @@ namespace Icebreaker.UI.Editor
                     {
                         errors.Add($"Layout node {nodeLayout.StepId} has no icon reference.");
                     }
+                    else if (AssetDatabase.GetAssetPath(nodeLayout.Icon) !=
+                             $"{MaintenanceTreeArtBuilder.IconFolder}/{nodeLayout.StepId[..3]}.png")
+                    {
+                        errors.Add($"Layout node {nodeLayout.StepId} uses the wrong logical icon.");
+                    }
+                }
+
+                var distinctIcons = layout.Nodes.Select(nodeLayout => nodeLayout.Icon).Distinct().Count();
+                if (distinctIcons != 14)
+                {
+                    errors.Add($"Layout must reuse exactly 14 logical icons, found {distinctIcons}.");
                 }
             }
 
@@ -136,7 +142,8 @@ namespace Icebreaker.UI.Editor
             Debug.Log("[UI-TREE-01] Layout, 26 nodes, fake states, prefabs, and hierarchy passed validation.");
         }
 
-        private static MaintenanceTreeLayoutAsset BuildLayout(Sprite placeholderIcon)
+        private static MaintenanceTreeLayoutAsset BuildLayout(
+            IReadOnlyDictionary<string, Sprite> logicalIcons)
         {
             var positions = CreatePositions();
             var branchStarts = new HashSet<string>(StringComparer.Ordinal)
@@ -161,7 +168,7 @@ namespace Icebreaker.UI.Editor
                     stepId,
                     positions[stepId],
                     new Vector2(size, size),
-                    placeholderIcon,
+                    logicalIcons[stepId[..3]],
                     branchLabels.TryGetValue(stepId, out var label) ? label : ""));
             }
 
@@ -198,6 +205,12 @@ namespace Icebreaker.UI.Editor
 
         private static void BuildNodePrefab(TMP_FontAsset font)
         {
+            var rootFrameSprite = LoadChrome("RootFrame");
+            var normalFrameSprite = LoadChrome("NodeFrame");
+            var purchasedFrameSprite = LoadChrome("StatePurchased");
+            var availableFrameSprite = LoadChrome("StateAvailable");
+            var lockedFrameSprite = LoadChrome("StateLocked");
+            var previewFrameSprite = LoadChrome("StatePreview");
             var root = new GameObject(
                 "UI_MaintenanceNode",
                 typeof(RectTransform),
@@ -208,11 +221,22 @@ namespace Icebreaker.UI.Editor
                 var rootRect = root.GetComponent<RectTransform>();
                 ConfigureTopLeftAnchor(rootRect, new Vector2(140f, 120f));
                 var selectionFrame = CreateCenteredImage("SelectionFrame", root.transform, Vector2.zero, new Vector2(70f, 70f), Color.white);
+                selectionFrame.sprite = LoadChrome("SelectionOutline");
                 selectionFrame.gameObject.SetActive(false);
                 var frame = CreateCenteredImage("Frame", root.transform, Vector2.zero, new Vector2(60f, 60f), Color.white);
-                var icon = CreateCenteredImage("Icon", frame.transform, Vector2.zero, new Vector2(34f, 34f), Color.white);
-                var idText = CreateCenteredText("IdText", frame.transform, Vector2.zero, new Vector2(54f, 24f), "C01", font, 14f, TextAlignmentOptions.Center);
-                var levelText = CreateCenteredText("LevelText", frame.transform, new Vector2(22f, 22f), new Vector2(34f, 18f), "1/1", font, 10f, TextAlignmentOptions.Center);
+                frame.sprite = normalFrameSprite;
+                var stateFrame = CreateCenteredImage("StateFrame", root.transform, Vector2.zero, new Vector2(64f, 64f), Color.white);
+                stateFrame.sprite = availableFrameSprite;
+                var icon = CreateCenteredImage("Icon", root.transform, Vector2.zero, new Vector2(38f, 38f), Color.white);
+                icon.preserveAspect = true;
+                var idText = CreateCenteredText("IdText", root.transform, new Vector2(0f, 20f), new Vector2(40f, 14f), "C01", font, 9f, TextAlignmentOptions.Center);
+                var levelText = CreateCenteredText("LevelText", root.transform, new Vector2(22f, 22f), new Vector2(34f, 18f), "1/1", font, 10f, TextAlignmentOptions.Center);
+                var checkIndicator = CreateCenteredImage("CheckIndicator", root.transform, new Vector2(22f, -21f), new Vector2(18f, 18f), Color.white);
+                checkIndicator.sprite = LoadChrome("Check");
+                var lockIndicator = CreateCenteredImage("LockIndicator", root.transform, new Vector2(22f, -21f), new Vector2(18f, 18f), Color.white);
+                lockIndicator.sprite = LoadChrome("Lock");
+                checkIndicator.gameObject.SetActive(false);
+                lockIndicator.gameObject.SetActive(false);
                 var nameText = CreateCenteredText("NameText", root.transform, new Vector2(0f, -40f), new Vector2(136f, 22f), "강화 장비", font, 14f, TextAlignmentOptions.Center);
                 var statusText = CreateCenteredText("StatusText", root.transform, new Vector2(0f, -58f), new Vector2(136f, 18f), "구매 가능", font, 11f, TextAlignmentOptions.Center);
                 var branchText = CreateCenteredText("BranchLabelText", root.transform, new Vector2(0f, 48f), new Vector2(150f, 22f), "공통 장비", font, 13f, TextAlignmentOptions.Center);
@@ -222,7 +246,16 @@ namespace Icebreaker.UI.Editor
                 SetReference(serialized, "canvasGroup", root.GetComponent<CanvasGroup>());
                 SetReference(serialized, "selectionFrame", selectionFrame);
                 SetReference(serialized, "frame", frame);
+                SetReference(serialized, "stateFrame", stateFrame);
                 SetReference(serialized, "icon", icon);
+                SetReference(serialized, "checkIndicator", checkIndicator);
+                SetReference(serialized, "lockIndicator", lockIndicator);
+                SetReference(serialized, "rootFrameSprite", rootFrameSprite);
+                SetReference(serialized, "normalFrameSprite", normalFrameSprite);
+                SetReference(serialized, "purchasedFrameSprite", purchasedFrameSprite);
+                SetReference(serialized, "availableFrameSprite", availableFrameSprite);
+                SetReference(serialized, "lockedFrameSprite", lockedFrameSprite);
+                SetReference(serialized, "previewFrameSprite", previewFrameSprite);
                 SetReference(serialized, "idText", idText);
                 SetReference(serialized, "nameText", nameText);
                 SetReference(serialized, "levelText", levelText);
@@ -251,8 +284,11 @@ namespace Icebreaker.UI.Editor
                 ConfigureTopLeftAnchor(root.GetComponent<RectTransform>(), new Vector2(100f, 6f));
                 var image = root.GetComponent<Image>();
                 image.raycastTarget = false;
+                image.sprite = LoadChrome("EdgeDefault");
                 var serialized = new SerializedObject(root.GetComponent<MaintenanceTreeEdgeView>());
                 SetReference(serialized, "lineImage", image);
+                SetReference(serialized, "defaultSprite", LoadChrome("EdgeDefault"));
+                SetReference(serialized, "litSprite", LoadChrome("EdgeLit"));
                 serialized.ApplyModifiedPropertiesWithoutUndo();
                 PrefabUtility.SaveAsPrefabAsset(root, EdgePrefabPath);
             }
@@ -273,7 +309,10 @@ namespace Icebreaker.UI.Editor
             try
             {
                 ConfigureTopLeftAnchor(root.GetComponent<RectTransform>(), new Vector2(300f, 190f));
-                root.GetComponent<Image>().color = new Color(theme.Panel.r, theme.Panel.g, theme.Panel.b, 0.98f);
+                var panel = root.GetComponent<Image>();
+                panel.sprite = LoadChrome("TooltipPanel");
+                panel.type = Image.Type.Sliced;
+                panel.color = Color.white;
                 var title = CreateTopLeftText("Title", root.transform, 14f, 12f, 272f, 28f, "주 파쇄기 출력 · 2/3", font, 18f, TextAlignmentOptions.Left);
                 var effect = CreateTopLeftText("Effect", root.transform, 14f, 48f, 272f, 48f, "직접 피해 ×5\n현재값 → 구매 후 값", font, 14f, TextAlignmentOptions.TopLeft);
                 var cost = CreateTopLeftText("Cost", root.transform, 14f, 106f, 272f, 26f, "가격 900", font, 15f, TextAlignmentOptions.Left);
@@ -344,8 +383,13 @@ namespace Icebreaker.UI.Editor
                 tooltipRect.anchoredPosition = Vector2.zero;
                 tooltip.SetActive(false);
 
-                var bottomBar = CreateTopLeftImage("BottomBar", root.transform, 0f, 468f, 960f, 72f, theme.Panel, false);
-                CreateTopLeftText("ControlGuide", bottomBar.transform, 16f, 12f, 360f, 48f, "드래그·WASD 이동 · 휠 확대/축소 · R 복귀", font, 14f, TextAlignmentOptions.Left);
+                var bottomBar = CreateTopLeftImage("BottomBar", root.transform, 0f, 468f, 960f, 72f, Color.white, false);
+                bottomBar.sprite = LoadChrome("BottomBar");
+                bottomBar.type = Image.Type.Sliced;
+                CreateTopLeftSprite("WasdIcon", bottomBar.transform, 16f, 20f, 28f, 28f, LoadChrome("ControlWasd"));
+                CreateTopLeftSprite("DragIcon", bottomBar.transform, 48f, 20f, 28f, 28f, LoadChrome("ControlDrag"));
+                CreateTopLeftSprite("WheelIcon", bottomBar.transform, 80f, 20f, 28f, 28f, LoadChrome("ControlWheel"));
+                CreateTopLeftText("ControlGuide", bottomBar.transform, 116f, 12f, 260f, 48f, "이동 · 드래그 · 확대/축소 · R 복귀", font, 13f, TextAlignmentOptions.Left);
                 var fundsText = CreateTopLeftText("FundsText", bottomBar.transform, 388f, 12f, 220f, 48f, "정비 자금 100,000", font, 17f, TextAlignmentOptions.Center);
                 var stageStartButton = CreateButton("StageStartButton", bottomBar.transform, 620f, 12f, 324f, 48f, "쇄빙 시작", font, theme.ActionAccent);
 
@@ -373,6 +417,39 @@ namespace Icebreaker.UI.Editor
             {
                 UnityEngine.Object.DestroyImmediate(root);
             }
+        }
+
+        private static Dictionary<string, Sprite> LoadLogicalIcons()
+        {
+            var icons = new Dictionary<string, Sprite>(StringComparer.Ordinal);
+            foreach (var logicalId in new[]
+                     {
+                         "C01", "C02", "C03", "C04", "D01", "D02", "D03", "D04",
+                         "S01", "S02", "S03", "H01", "H02", "H03"
+                     })
+            {
+                var path = $"{MaintenanceTreeArtBuilder.IconFolder}/{logicalId}.png";
+                var icon = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                if (icon == null)
+                {
+                    throw new InvalidOperationException($"Logical maintenance icon is missing: {path}");
+                }
+
+                icons.Add(logicalId, icon);
+            }
+
+            return icons;
+        }
+
+        private static Sprite LoadChrome(string name)
+        {
+            var sprite = MaintenanceTreeArtBuilder.LoadChrome(name);
+            if (sprite == null)
+            {
+                throw new InvalidOperationException($"Maintenance tree chrome sprite is missing: {name}");
+            }
+
+            return sprite;
         }
 
         private static Dictionary<string, Vector2> CreatePositions()
@@ -560,6 +637,15 @@ namespace Icebreaker.UI.Editor
             var image = rect.gameObject.AddComponent<Image>();
             image.color = color;
             image.raycastTarget = raycast;
+            return image;
+        }
+
+        private static Image CreateTopLeftSprite(
+            string name, Transform parent, float x, float y, float width, float height, Sprite sprite)
+        {
+            var image = CreateTopLeftImage(name, parent, x, y, width, height, Color.white, false);
+            image.sprite = sprite;
+            image.preserveAspect = true;
             return image;
         }
 
