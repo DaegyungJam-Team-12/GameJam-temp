@@ -110,7 +110,17 @@ namespace Icebreaker.Gameplay
             var criticalStrike = new CriticalStrike(CriticalChance, CriticalMultiplier);
             activeClock = injectedClock ?? new DummyClock(this);
 
-            field = new IceField(stageId, config, idGenerator, positioner, activeClock, criticalStrike);
+            // [GP-06] 가짜 보조 파쇄 설정 (12회 충전, 다중 표적 2개, 특수빙 우선순위)
+            var supportConfig = new SupportAttackConfig(
+                enabled: true,
+                requiredDirectHitCount: 12,
+                primaryDamageMultiplier: 1.0f,
+                additionalTargetCount: 2,
+                additionalDamageMultiplier: 0.7f,
+                prioritizeSpecialIce: true,
+                specialIceDamageMultiplier: 2.0f);
+
+            field = new IceField(stageId, config, idGenerator, positioner, activeClock, criticalStrike, supportConfig);
             field.DamageApplied += HandleDamageApplied;
             field.IceDestroyed += HandleIceDestroyed;
             field.IceRespawned += HandleIceRespawned;

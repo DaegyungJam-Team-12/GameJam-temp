@@ -124,13 +124,11 @@ namespace Icebreaker.Gameplay
         private void HandleDamageApplied(DamageAppliedEvent e)
         {
             RenderHp();
-            Debug.Log($"[GP-01] T1 damage {e.Damage}, remaining HP {e.RemainingHp}.", this);
         }
 
         private void HandleIceDestroyed(IceDestroyedEvent e)
         {
             RenderHp();
-            Debug.Log($"[GP-01] IceDestroyedEvent stage={e.StageId} ice={e.IceInstanceId} tier={e.Tier}.", this);
         }
 
         private void RenderHp()

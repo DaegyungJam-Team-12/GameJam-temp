@@ -617,5 +617,452 @@ namespace Icebreaker.Gameplay.Tests
             Assert.That(target.IsDestroyed, Is.False);
             Assert.That(target.RemainingHp, Is.EqualTo(10f));
         }
+
+        // ===== GP-06: S01 Support Charge =====
+
+        private static SupportAttackConfig CreateBasicSupportConfig()
+        {
+            return new SupportAttackConfig(
+                enabled: true,
+                requiredDirectHitCount: 12,
+                primaryDamageMultiplier: 1.0f,
+                additionalTargetCount: 0,
+                additionalDamageMultiplier: 0.7f,
+                prioritizeSpecialIce: false,
+                specialIceDamageMultiplier: 2.0f);
+        }
+
+        [Test]
+        public void S01_ValidDirectHit_IncrementsSupportCharge()
+        {
+            var supportConfig = CreateBasicSupportConfig();
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: supportConfig);
+            testField.Initialize(0d);
+
+            var chargeEvents = new List<SupportChargeChangedEvent>();
+            testField.SupportChargeChanged += e => chargeEvents.Add(e);
+
+            var target = testField.ActiveIce[0];
+            target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+
+            // 3 valid hits → charge should be 1, 2, 3
+            for (var i = 0; i < 3; i++)
+            {
+                testField.ApplyClickAt(new Vector2(100, 100), 1f, EffectType.Click, 0d);
+            }
+
+            Assert.That(chargeEvents.Count, Is.EqualTo(3));
+            Assert.That(chargeEvents[0].CurrentCharge, Is.EqualTo(1));
+            Assert.That(chargeEvents[1].CurrentCharge, Is.EqualTo(2));
+            Assert.That(chargeEvents[2].CurrentCharge, Is.EqualTo(3));
+            Assert.That(chargeEvents[0].MaxCharge, Is.EqualTo(12));
+        }
+
+        [Test]
+        public void S01_12thValidHit_ResetsChargeToZero()
+        {
+            var supportConfig = CreateBasicSupportConfig();
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: supportConfig);
+            testField.Initialize(0d);
+
+            var chargeEvents = new List<SupportChargeChangedEvent>();
+            testField.SupportChargeChanged += e => chargeEvents.Add(e);
+
+            var target = testField.ActiveIce[0];
+            target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+
+            // 12 valid hits
+            for (var i = 0; i < 12; i++)
+            {
+                testField.ApplyClickAt(new Vector2(100, 100), 1f, EffectType.Click, 0d);
+            }
+
+            Assert.That(chargeEvents.Count, Is.EqualTo(12));
+            // 12th hit should reset to 0
+            Assert.That(chargeEvents[11].CurrentCharge, Is.EqualTo(0));
+
+            // Hit 13 should increment to 1 again
+            testField.ApplyClickAt(new Vector2(100, 100), 1f, EffectType.Click, 0d);
+            Assert.That(chargeEvents.Count, Is.EqualTo(13));
+            Assert.That(chargeEvents[12].CurrentCharge, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void S01_MissedClick_DoesNotCharge()
+        {
+            var supportConfig = CreateBasicSupportConfig();
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: supportConfig);
+            testField.Initialize(0d);
+
+            var chargeEvents = new List<SupportChargeChangedEvent>();
+            testField.SupportChargeChanged += e => chargeEvents.Add(e);
+
+            // Click in empty space (far from any ice)
+            testField.ApplyClickAt(new Vector2(-9999, -9999), 1f, EffectType.Click, 0d);
+
+            Assert.That(chargeEvents.Count, Is.EqualTo(0), "Missed clicks should not charge support.");
+        }
+
+        [Test]
+        public void S01_TimerExpired_DoesNotCharge()
+        {
+            var supportConfig = CreateBasicSupportConfig();
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: supportConfig);
+            testField.Initialize(0d);
+
+            var chargeEvents = new List<SupportChargeChangedEvent>();
+            testField.SupportChargeChanged += e => chargeEvents.Add(e);
+
+            // Expire the timer
+            mockClock.StageElapsedSeconds = 60d;
+
+            var target = testField.ActiveIce[0];
+            target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+
+            testField.ApplyClickAt(new Vector2(100, 100), 1f, EffectType.Click, 60d);
+
+            Assert.That(chargeEvents.Count, Is.EqualTo(0), "Timer expired clicks should not charge support.");
+        }
+
+        [Test]
+        public void S01_Initialize_ResetsCharge()
+        {
+            var supportConfig = CreateBasicSupportConfig();
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: supportConfig);
+            testField.Initialize(0d);
+
+            var target = testField.ActiveIce[0];
+            target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+
+            // Hit 5 times to accumulate charge
+            for (var i = 0; i < 5; i++)
+            {
+                testField.ApplyClickAt(new Vector2(100, 100), 1f, EffectType.Click, 0d);
+            }
+
+            // Re-initialize the field (new stage)
+            testField.Initialize(0d);
+
+            var chargeEvents = new List<SupportChargeChangedEvent>();
+            testField.SupportChargeChanged += e => chargeEvents.Add(e);
+
+            target = testField.ActiveIce[0];
+            target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+
+            // First hit after re-init should be charge 1, not 6
+            testField.ApplyClickAt(new Vector2(100, 100), 1f, EffectType.Click, 0d);
+            Assert.That(chargeEvents[0].CurrentCharge, Is.EqualTo(1),
+                "Support charge should reset to 0 on Initialize.");
+        }
+
+        // ===== GP-06 Step 2: S01 Single Target Fire =====
+
+        [Test]
+        public void S01_12thHit_FiresSupportShot_AtClosestTarget()
+        {
+            var supportConfig = CreateBasicSupportConfig();
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 3,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 999f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: supportConfig);
+            testField.Initialize(0d);
+
+            // Place targets at known positions
+            var clickTarget = testField.ActiveIce[0];
+            clickTarget.Reset(clickTarget.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+            var nearTarget = testField.ActiveIce[1];
+            nearTarget.Reset(nearTarget.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(200, 100), 0d);
+            var farTarget = testField.ActiveIce[2];
+            farTarget.Reset(farTarget.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(800, 400), 0d);
+
+            var supportDamageEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.SupportShot)
+                    supportDamageEvents.Add(e);
+            };
+
+            // 12 valid hits to trigger support fire
+            for (var i = 0; i < 12; i++)
+            {
+                testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
+            }
+
+            Assert.That(supportDamageEvents.Count, Is.EqualTo(1), "Should fire exactly 1 support shot.");
+            Assert.That(supportDamageEvents[0].IceInstanceId, Is.EqualTo(nearTarget.IceInstanceId),
+                "Support should target the closest non-click-target ice.");
+            Assert.That(supportDamageEvents[0].Damage, Is.EqualTo(10f),
+                "Primary damage = clickDamage × 1.0.");
+            Assert.That(supportDamageEvents[0].WasCritical, Is.False,
+                "Support shots should never be critical.");
+        }
+
+        // ===== GP-06 Step 3: S02 Multi-Target =====
+
+        [Test]
+        public void S02_AdditionalTargets_FireWithReducedDamage()
+        {
+            var multiTargetConfig = new SupportAttackConfig(
+                enabled: true,
+                requiredDirectHitCount: 12,
+                primaryDamageMultiplier: 1.0f,
+                additionalTargetCount: 2,
+                additionalDamageMultiplier: 0.7f,
+                prioritizeSpecialIce: false,
+                specialIceDamageMultiplier: 2.0f);
+
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 5,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 999f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: multiTargetConfig);
+            testField.Initialize(0d);
+
+            // Place targets at known positions
+            var clickTarget = testField.ActiveIce[0];
+            clickTarget.Reset(clickTarget.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+            testField.ActiveIce[1].Reset(testField.ActiveIce[1].IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(200, 100), 0d);
+            testField.ActiveIce[2].Reset(testField.ActiveIce[2].IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(300, 100), 0d);
+            testField.ActiveIce[3].Reset(testField.ActiveIce[3].IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(400, 100), 0d);
+            testField.ActiveIce[4].Reset(testField.ActiveIce[4].IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(500, 100), 0d);
+
+            var supportDamageEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.SupportShot)
+                    supportDamageEvents.Add(e);
+            };
+
+            // 12 valid hits to trigger support fire
+            for (var i = 0; i < 12; i++)
+            {
+                testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
+            }
+
+            // 1 primary + 2 additional = 3 total
+            Assert.That(supportDamageEvents.Count, Is.EqualTo(3), "Should fire 1 primary + 2 additional.");
+            Assert.That(supportDamageEvents[0].Damage, Is.EqualTo(10f), "Primary = 10 × 1.0.");
+            Assert.That(supportDamageEvents[1].Damage, Is.EqualTo(7f), "Additional = 10 × 0.7.");
+            Assert.That(supportDamageEvents[2].Damage, Is.EqualTo(7f), "Additional = 10 × 0.7.");
+
+            // No duplicate targets
+            var targetIds = new HashSet<long>();
+            foreach (var e in supportDamageEvents)
+            {
+                Assert.That(targetIds.Add(e.IceInstanceId), Is.True,
+                    $"Duplicate support target: {e.IceInstanceId}");
+            }
+        }
+
+        // ===== GP-06 Step 4: S03 Special Ice Priority =====
+
+        [Test]
+        public void S03_PrioritizesSpecialIce_WithDoubledDamage()
+        {
+            var s03Config = new SupportAttackConfig(
+                enabled: true,
+                requiredDirectHitCount: 12,
+                primaryDamageMultiplier: 1.0f,
+                additionalTargetCount: 1,
+                additionalDamageMultiplier: 0.7f,
+                prioritizeSpecialIce: true,
+                specialIceDamageMultiplier: 2.0f);
+
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 4,
+                maxSpecialIceCount: 2,
+                hitRadiusReferencePixels: 999f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] {
+                    new IceDefinition(IceTier.T1, "백빙", 1000f, 10L),
+                    new IceDefinition(IceTier.T2, "청빙", 2000f, 80L)
+                },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: s03Config);
+            testField.Initialize(0d);
+
+            // Click target (normal, closest)
+            var clickTarget = testField.ActiveIce[0];
+            clickTarget.Reset(clickTarget.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+            // Normal ice, close to fire position
+            var normalClose = testField.ActiveIce[1];
+            normalClose.Reset(normalClose.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(150, 100), 0d);
+            // Crystal ice, far from fire position
+            var crystalFar = testField.ActiveIce[2];
+            crystalFar.Reset(crystalFar.IceInstanceId, IceTier.T2, SpecialIceType.Crystal, 2000f, new Vector2(800, 400), 0d);
+            // Normal ice, far
+            var normalFar = testField.ActiveIce[3];
+            normalFar.Reset(normalFar.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(700, 300), 0d);
+
+            var supportDamageEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.SupportShot)
+                    supportDamageEvents.Add(e);
+            };
+
+            for (var i = 0; i < 12; i++)
+            {
+                testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
+            }
+
+            // S03: crystal should be primary (special ice priority), normal should be additional
+            Assert.That(supportDamageEvents.Count, Is.EqualTo(2));
+            Assert.That(supportDamageEvents[0].IceInstanceId, Is.EqualTo(crystalFar.IceInstanceId),
+                "S03 should prioritize special ice even if it's farther.");
+            Assert.That(supportDamageEvents[0].Damage, Is.EqualTo(20f),
+                "Special ice primary damage = 10 × 1.0 × 2.0 = 20.");
+            // Second target: highest HP normal ice (normalClose and normalFar have same HP=1000,
+            // normalClose is closer)
+            Assert.That(supportDamageEvents[1].IceInstanceId, Is.EqualTo(normalClose.IceInstanceId));
+            Assert.That(supportDamageEvents[1].Damage, Is.EqualTo(7f),
+                "Normal additional damage = 10 × 0.7 (no ×2 for non-special).");
+        }
+
+        [Test]
+        public void S03_NoSpecialIce_FallsBackToHighestHp()
+        {
+            var s03Config = new SupportAttackConfig(
+                enabled: true,
+                requiredDirectHitCount: 12,
+                primaryDamageMultiplier: 1.0f,
+                additionalTargetCount: 0,
+                additionalDamageMultiplier: 0.7f,
+                prioritizeSpecialIce: true,
+                specialIceDamageMultiplier: 2.0f);
+
+            var testConfig = new IceFieldConfig(
+                maxActiveIceCount: 3,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 999f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 1000f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+
+            var positioner = new IceSpawnPositioner(new Rect(0, 0, 960, 540), 1f);
+            var mockClock = new MockClock();
+            var testField = new IceField(1L, testConfig, new IceIdGenerator(), positioner, mockClock,
+                supportConfig: s03Config);
+            testField.Initialize(0d);
+
+            var clickTarget = testField.ActiveIce[0];
+            clickTarget.Reset(clickTarget.IceInstanceId, IceTier.T1, SpecialIceType.None, 1000f, new Vector2(100, 100), 0d);
+            // Low HP, close
+            var lowHpClose = testField.ActiveIce[1];
+            lowHpClose.Reset(lowHpClose.IceInstanceId, IceTier.T1, SpecialIceType.None, 200f, new Vector2(150, 100), 0d);
+            // High HP, far
+            var highHpFar = testField.ActiveIce[2];
+            highHpFar.Reset(highHpFar.IceInstanceId, IceTier.T1, SpecialIceType.None, 800f, new Vector2(500, 300), 0d);
+
+            var supportDamageEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.SupportShot)
+                    supportDamageEvents.Add(e);
+            };
+
+            for (var i = 0; i < 12; i++)
+            {
+                testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
+            }
+
+            Assert.That(supportDamageEvents.Count, Is.EqualTo(1));
+            Assert.That(supportDamageEvents[0].IceInstanceId, Is.EqualTo(highHpFar.IceInstanceId),
+                "S03 without special ice should fallback to highest HP.");
+            Assert.That(supportDamageEvents[0].Damage, Is.EqualTo(10f),
+                "Normal ice should not get ×2 multiplier.");
+        }
     }
 }
