@@ -46,6 +46,70 @@ namespace Icebreaker.Gameplay
         }
 
         private readonly Queue<QueuedDamage> effectQueue = new Queue<QueuedDamage>();
+        
+        // GP-08: Reusable lists to prevent GC allocations
+        private readonly List<IceInstance> tempTargets = new List<IceInstance>(32);
+        private readonly List<Vector2> tempPositions = new List<Vector2>(32);
+
+        // GP-08: Allocation-free comparers
+        private readonly struct DistanceHpIdComparer : IComparer<IceInstance>
+        {
+            private readonly Vector2 origin;
+            public DistanceHpIdComparer(Vector2 origin) => this.origin = origin;
+            public int Compare(IceInstance a, IceInstance b)
+            {
+                var distA = Vector2.SqrMagnitude(a.ReferencePosition - origin);
+                var distB = Vector2.SqrMagnitude(b.ReferencePosition - origin);
+                var distCmp = distA.CompareTo(distB);
+                if (distCmp != 0) return distCmp;
+                
+                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
+                if (hpCmp != 0) return hpCmp;
+                
+                return a.IceInstanceId.CompareTo(b.IceInstanceId);
+            }
+        }
+
+        private readonly struct HpDistanceIdComparer : IComparer<IceInstance>
+        {
+            private readonly Vector2 origin;
+            public HpDistanceIdComparer(Vector2 origin) => this.origin = origin;
+            public int Compare(IceInstance a, IceInstance b)
+            {
+                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
+                if (hpCmp != 0) return hpCmp;
+
+                var distA = Vector2.SqrMagnitude(a.ReferencePosition - origin);
+                var distB = Vector2.SqrMagnitude(b.ReferencePosition - origin);
+                var distCmp = distA.CompareTo(distB);
+                if (distCmp != 0) return distCmp;
+
+                return a.IceInstanceId.CompareTo(b.IceInstanceId);
+            }
+        }
+
+        private readonly struct SupportTargetComparer : IComparer<IceInstance>
+        {
+            private readonly Vector2 origin;
+            public SupportTargetComparer(Vector2 origin) => this.origin = origin;
+            public int Compare(IceInstance a, IceInstance b)
+            {
+                var specialA = a.SpecialType != SpecialIceType.None ? 1 : 0;
+                var specialB = b.SpecialType != SpecialIceType.None ? 1 : 0;
+                var specialCmp = specialB.CompareTo(specialA);
+                if (specialCmp != 0) return specialCmp;
+
+                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
+                if (hpCmp != 0) return hpCmp;
+
+                var distA = Vector2.SqrMagnitude(a.ReferencePosition - origin);
+                var distB = Vector2.SqrMagnitude(b.ReferencePosition - origin);
+                var distCmp = distA.CompareTo(distB);
+                if (distCmp != 0) return distCmp;
+
+                return a.IceInstanceId.CompareTo(b.IceInstanceId);
+            }
+        }
 
         public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner,
             IStageClock clock, CriticalStrike? criticalStrike = null, SupportAttackConfig? supportConfig = null,
@@ -273,14 +337,11 @@ namespace Icebreaker.Gameplay
         /// </summary>
         private List<IceInstance> SelectSupportTargets(Vector2 firePosition, double stageElapsedSeconds)
         {
-            var candidates = new List<IceInstance>();
+            tempTargets.Clear();
             for (var i = 0; i < activeIce.Count; i++)
             {
                 var ice = activeIce[i];
-                if (ice.IsDestroyed)
-                {
-                    continue;
-                }
+                if (ice.IsDestroyed) continue;
 
                 // Respawn protection: non-direct damage excluded
                 if (stageElapsedSeconds - ice.SpawnTime < config.RespawnProtectionSeconds)
@@ -288,12 +349,12 @@ namespace Icebreaker.Gameplay
                     continue;
                 }
 
-                candidates.Add(ice);
+                tempTargets.Add(ice);
             }
 
-            if (candidates.Count == 0)
+            if (tempTargets.Count == 0)
             {
-                return candidates;
+                return tempTargets;
             }
 
             var totalTargets = 1 + (supportConfig?.AdditionalTargetCount ?? 0);
@@ -301,47 +362,20 @@ namespace Icebreaker.Gameplay
             if (supportConfig != null && supportConfig.PrioritizeSpecialIce)
             {
                 // S03: special ice first → HP desc → distance asc → ID asc
-                candidates.Sort((a, b) =>
-                {
-                    var aSpecial = a.SpecialType != SpecialIceType.None ? 0 : 1;
-                    var bSpecial = b.SpecialType != SpecialIceType.None ? 0 : 1;
-                    var specialCmp = aSpecial.CompareTo(bSpecial);
-                    if (specialCmp != 0) return specialCmp;
-
-                    var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
-                    if (hpCmp != 0) return hpCmp;
-
-                    var distA = Vector2.Distance(a.ReferencePosition, firePosition);
-                    var distB = Vector2.Distance(b.ReferencePosition, firePosition);
-                    var distCmp = distA.CompareTo(distB);
-                    if (distCmp != 0) return distCmp;
-
-                    return a.IceInstanceId.CompareTo(b.IceInstanceId);
-                });
+                tempTargets.Sort(new SupportTargetComparer(firePosition));
             }
             else
             {
                 // Default (no S03): closest first → HP desc → ID asc
-                candidates.Sort((a, b) =>
-                {
-                    var distA = Vector2.Distance(a.ReferencePosition, firePosition);
-                    var distB = Vector2.Distance(b.ReferencePosition, firePosition);
-                    var distCmp = distA.CompareTo(distB);
-                    if (distCmp != 0) return distCmp;
-
-                    var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
-                    if (hpCmp != 0) return hpCmp;
-
-                    return a.IceInstanceId.CompareTo(b.IceInstanceId);
-                });
+                tempTargets.Sort(new DistanceHpIdComparer(firePosition));
             }
 
-            if (candidates.Count > totalTargets)
+            if (tempTargets.Count > totalTargets)
             {
-                candidates.RemoveRange(totalTargets, candidates.Count - totalTargets);
+                tempTargets.RemoveRange(totalTargets, tempTargets.Count - totalTargets);
             }
 
-            return candidates;
+            return tempTargets;
         }
 
         private void EnqueueDamage(IceInstance target, float damage, EffectType effectType, DestroyCategory category, bool wasCritical, int chainDepth)
@@ -459,14 +493,11 @@ namespace Icebreaker.Gameplay
 
         private List<IceInstance> FindCrystalTargets(IceInstance source, int count, double stageElapsedSeconds)
         {
-            var candidates = new List<IceInstance>();
+            tempTargets.Clear();
             for (var i = 0; i < activeIce.Count; i++)
             {
                 var ice = activeIce[i];
-                if (ice.IsDestroyed || ice == source)
-                {
-                    continue;
-                }
+                if (ice.IsDestroyed || ice == source) continue;
 
                 // 재생성 보호 (0.25초) 확인
                 if (stageElapsedSeconds - ice.SpawnTime < config.RespawnProtectionSeconds)
@@ -477,30 +508,19 @@ namespace Icebreaker.Gameplay
                 // 결정빙 파편은 자신보다 낮은 단계의 얼음만 타겟
                 if (ice.Tier < source.Tier)
                 {
-                    candidates.Add(ice);
+                    tempTargets.Add(ice);
                 }
             }
 
             // 거리 오름차순 -> HP 내림차순 -> ID 오름차순
-            candidates.Sort((a, b) =>
+            tempTargets.Sort(new DistanceHpIdComparer(source.ReferencePosition));
+
+            if (tempTargets.Count > count)
             {
-                var distA = Vector2.Distance(a.ReferencePosition, source.ReferencePosition);
-                var distB = Vector2.Distance(b.ReferencePosition, source.ReferencePosition);
-                var distCmp = distA.CompareTo(distB);
-                if (distCmp != 0) return distCmp;
-
-                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
-                if (hpCmp != 0) return hpCmp;
-
-                return a.IceInstanceId.CompareTo(b.IceInstanceId);
-            });
-
-            if (candidates.Count > count)
-            {
-                candidates.RemoveRange(count, candidates.Count - count);
+                tempTargets.RemoveRange(count, tempTargets.Count - count);
             }
 
-            return candidates;
+            return tempTargets;
         }
 
         private void TriggerCrackEffect(IceInstance source, int nextDepth, double stageElapsedSeconds)
@@ -519,14 +539,12 @@ namespace Icebreaker.Gameplay
 
         private List<IceInstance> FindCrackTargets(IceInstance source, float radius, double stageElapsedSeconds)
         {
-            var targets = new List<IceInstance>();
+            tempTargets.Clear();
+            var radiusSqr = radius * radius;
             for (var i = 0; i < activeIce.Count; i++)
             {
                 var ice = activeIce[i];
-                if (ice.IsDestroyed || ice == source)
-                {
-                    continue;
-                }
+                if (ice.IsDestroyed || ice == source) continue;
 
                 // 재생성 보호 확인
                 if (stageElapsedSeconds - ice.SpawnTime < config.RespawnProtectionSeconds)
@@ -534,29 +552,18 @@ namespace Icebreaker.Gameplay
                     continue;
                 }
 
-                var dist = Vector2.Distance(ice.ReferencePosition, source.ReferencePosition);
-                if (dist <= radius)
+                var distSqr = Vector2.SqrMagnitude(ice.ReferencePosition - source.ReferencePosition);
+                if (distSqr <= radiusSqr)
                 {
-                    targets.Add(ice);
+                    tempTargets.Add(ice);
                 }
             }
 
             // 균열빙 폭발은 범위 내 모든 대상을 타격하지만, 
             // 큐에 넣는 순서를 명확히 하기 위해 기획 규칙(HP -> 거리 -> ID)에 따라 정렬
-            targets.Sort((a, b) =>
-            {
-                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
-                if (hpCmp != 0) return hpCmp;
+            tempTargets.Sort(new HpDistanceIdComparer(source.ReferencePosition));
 
-                var distA = Vector2.Distance(a.ReferencePosition, source.ReferencePosition);
-                var distB = Vector2.Distance(b.ReferencePosition, source.ReferencePosition);
-                var distCmp = distA.CompareTo(distB);
-                if (distCmp != 0) return distCmp;
-
-                return a.IceInstanceId.CompareTo(b.IceInstanceId);
-            });
-
-            return targets;
+            return tempTargets;
         }
 
         private void TriggerHullFragment(Vector2 position, int nextDepth, double stageElapsedSeconds)
@@ -591,7 +598,8 @@ namespace Icebreaker.Gameplay
 
         private List<IceInstance> FindTargetsInRadius(Vector2 position, float radius, double stageElapsedSeconds)
         {
-            var targets = new List<IceInstance>();
+            tempTargets.Clear();
+            var radiusSqr = radius * radius;
             for (var i = 0; i < activeIce.Count; i++)
             {
                 var ice = activeIce[i];
@@ -602,60 +610,40 @@ namespace Icebreaker.Gameplay
                     continue;
                 }
 
-                if (Vector2.Distance(ice.ReferencePosition, position) <= radius)
+                var distSqr = Vector2.SqrMagnitude(ice.ReferencePosition - position);
+                if (distSqr <= radiusSqr)
                 {
-                    targets.Add(ice);
+                    tempTargets.Add(ice);
                 }
             }
 
-            targets.Sort((a, b) =>
-            {
-                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
-                if (hpCmp != 0) return hpCmp;
+            tempTargets.Sort(new HpDistanceIdComparer(position));
 
-                var distA = Vector2.Distance(a.ReferencePosition, position);
-                var distB = Vector2.Distance(b.ReferencePosition, position);
-                var distCmp = distA.CompareTo(distB);
-                if (distCmp != 0) return distCmp;
-
-                return a.IceInstanceId.CompareTo(b.IceInstanceId);
-            });
-
-            return targets;
+            return tempTargets;
         }
 
         private List<IceInstance> FindAliveOverlappingCursor(
             Vector2 cursorPosition,
             float cursorRadiusReferencePixels)
         {
-            var targets = new List<IceInstance>();
+            tempTargets.Clear();
             var overlapDistance = cursorRadiusReferencePixels + config.IceCollisionRadiusReferencePixels;
             var overlapDistanceSquared = overlapDistance * overlapDistance;
 
             for (var i = 0; i < activeIce.Count; i++)
             {
                 var ice = activeIce[i];
-                if (ice.IsDestroyed)
-                {
-                    continue;
-                }
+                if (ice.IsDestroyed) continue;
 
-                if ((ice.ReferencePosition - cursorPosition).sqrMagnitude <= overlapDistanceSquared)
+                if (Vector2.SqrMagnitude(ice.ReferencePosition - cursorPosition) <= overlapDistanceSquared)
                 {
-                    targets.Add(ice);
+                    tempTargets.Add(ice);
                 }
             }
 
-            targets.Sort((a, b) =>
-            {
-                var distanceComparison = (a.ReferencePosition - cursorPosition).sqrMagnitude.CompareTo(
-                    (b.ReferencePosition - cursorPosition).sqrMagnitude);
-                return distanceComparison != 0
-                    ? distanceComparison
-                    : a.IceInstanceId.CompareTo(b.IceInstanceId);
-            });
+            tempTargets.Sort(new DistanceHpIdComparer(cursorPosition));
 
-            return targets;
+            return tempTargets;
         }
 
         /// <summary>Find the closest alive ice excluding a specific instance.</summary>
@@ -763,17 +751,17 @@ namespace Icebreaker.Gameplay
 
         private List<Vector2> CollectAlivePositions(IceInstance? exclude)
         {
-            var positions = new List<Vector2>(activeIce.Count);
+            tempPositions.Clear();
             for (var i = 0; i < activeIce.Count; i++)
             {
                 var ice = activeIce[i];
                 if (!ice.IsDestroyed && ice != exclude)
                 {
-                    positions.Add(ice.ReferencePosition);
+                    tempPositions.Add(ice.ReferencePosition);
                 }
             }
 
-            return positions;
+            return tempPositions;
         }
 
         private void DetermineSpecialIce(IceTier tier, out SpecialIceType specialType, out float hpMultiplier)
