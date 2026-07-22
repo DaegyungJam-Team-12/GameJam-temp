@@ -11,7 +11,7 @@ namespace Icebreaker.UI.Maintenance
         [SerializeField] private Sprite? defaultSprite;
         [SerializeField] private Sprite? litSprite;
 
-        public void Render(Vector2 start, Vector2 end, float thickness, Color color, bool lit)
+        public void Render(Vector2 start, Vector2 end, float thickness, bool lit)
         {
             if (lineImage == null)
             {
@@ -27,7 +27,7 @@ namespace Icebreaker.UI.Maintenance
                 0f,
                 Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
             lineImage.sprite = lit ? litSprite : defaultSprite;
-            lineImage.color = color;
+            lineImage.color = Color.white;
             lineImage.raycastTarget = false;
         }
     }

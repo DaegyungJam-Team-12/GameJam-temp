@@ -125,6 +125,7 @@ namespace Icebreaker.UI.Maintenance
             source!.EnsureInitialized();
             source.StepsChanged += Render;
             viewport!.StepClicked += HandleStepClicked;
+            viewport.BackgroundClicked += HandleBackgroundClicked;
             subscribed = true;
             Render(source.CurrentSteps);
         }
@@ -139,6 +140,7 @@ namespace Icebreaker.UI.Maintenance
             if (subscribed && viewport != null)
             {
                 viewport.StepClicked -= HandleStepClicked;
+                viewport.BackgroundClicked -= HandleBackgroundClicked;
                 viewport.CancelPointer();
             }
 
@@ -252,7 +254,6 @@ namespace Icebreaker.UI.Maintenance
                     continue;
                 }
 
-                var color = ResolveEdgeColor(target);
                 var lit = target.PurchaseState is MaintenanceStepPurchaseState.Purchased or
                     MaintenanceStepPurchaseState.Available;
                 var points = new List<Vector2>(edge.BendPoints.Count + 2)
@@ -269,7 +270,7 @@ namespace Icebreaker.UI.Maintenance
                 {
                     var segment = Instantiate(edgePrefab!, edgeLayer!, false);
                     segment.name = $"Edge_{edge.FromStepId}_{edge.ToStepId}_{index}";
-                    segment.Render(points[index], points[index + 1], 6f, color, lit);
+                    segment.Render(points[index], points[index + 1], 6f, lit);
                 }
             }
         }
@@ -320,6 +321,17 @@ namespace Icebreaker.UI.Maintenance
             }
         }
 
+        private void HandleBackgroundClicked()
+        {
+            if (selectedStepId != null && nodesById.TryGetValue(selectedStepId, out var selected))
+            {
+                selected.SetSelected(false);
+            }
+
+            selectedStepId = null;
+            tooltipView?.Hide();
+        }
+
         private void RestoreSelection()
         {
             if (selectedStepId != null &&
@@ -357,21 +369,6 @@ namespace Icebreaker.UI.Maintenance
                 data,
                 localPosition + new Vector2(54f, 28f),
                 tooltipOverlay.rect);
-        }
-
-        private Color ResolveEdgeColor(MaintenancePurchaseStepViewData target)
-        {
-            var primary = theme != null ? theme.PrimaryText : Color.white;
-            var success = theme != null ? theme.Success : Color.cyan;
-            var action = theme != null ? theme.ActionAccent : new Color(1f, 0.6f, 0.2f, 1f);
-            return target.PurchaseState switch
-            {
-                MaintenanceStepPurchaseState.Purchased => success,
-                MaintenanceStepPurchaseState.Available => action,
-                _ when target.Visibility == MaintenanceStepVisibility.Preview =>
-                    new Color(primary.r, primary.g, primary.b, 0.22f),
-                _ => new Color(primary.r, primary.g, primary.b, 0.4f)
-            };
         }
 
         private bool ValidateReferences()

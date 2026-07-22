@@ -18,6 +18,23 @@ namespace Icebreaker.Shared.Tests
         }
 
         [Test]
+        public void KeyboardPanDirection_MapsWUpAndSDownWithoutChangingHorizontalControls()
+        {
+            Assert.That(
+                MaintenanceTreeViewportMath.KeyboardPanDirection(false, false, true, false),
+                Is.EqualTo(Vector2.down));
+            Assert.That(
+                MaintenanceTreeViewportMath.KeyboardPanDirection(false, false, false, true),
+                Is.EqualTo(Vector2.up));
+            Assert.That(
+                MaintenanceTreeViewportMath.KeyboardPanDirection(true, false, false, false),
+                Is.EqualTo(Vector2.right));
+            Assert.That(
+                MaintenanceTreeViewportMath.KeyboardPanDirection(false, true, false, false),
+                Is.EqualTo(Vector2.left));
+        }
+
+        [Test]
         public void KeepPointerStable_PreservesTheSameContentPointDuringZoom()
         {
             var currentPosition = new Vector2(-120f, 80f);

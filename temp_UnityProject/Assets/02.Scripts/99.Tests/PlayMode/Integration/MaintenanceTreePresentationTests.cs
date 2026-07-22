@@ -120,6 +120,14 @@ namespace Icebreaker.Integration.Tests
                     Assert.That(node.GetComponent<CanvasGroup>()!.blocksRaycasts, Is.False);
                 }
 
+                foreach (var edgeImage in instance.transform
+                             .Find("TreeViewport/TreeContent/EdgeLayer")!
+                             .GetComponentsInChildren<Image>())
+                {
+                    Assert.That(edgeImage.color, Is.EqualTo(Color.white));
+                    Assert.That(edgeImage.sprite.name, Is.EqualTo("EdgeDefault"));
+                }
+
                 var fullyPurchased = Enum.Parse(previewStateType, "FullyPurchased");
                 sourceType.GetMethod("SetPreviewState")!.Invoke(source, new[] { fullyPurchased });
                 yield return null;
@@ -132,6 +140,14 @@ namespace Icebreaker.Integration.Tests
                     Assert.That(node.Find("StateFrame")!.GetComponent<Image>().sprite.name, Is.EqualTo("StatePurchased"));
                     Assert.That(node.Find("CheckIndicator")!.gameObject.activeSelf, Is.True);
                     Assert.That(node.Find("LockIndicator")!.gameObject.activeSelf, Is.False);
+                }
+
+                foreach (var edgeImage in instance.transform
+                             .Find("TreeViewport/TreeContent/EdgeLayer")!
+                             .GetComponentsInChildren<Image>())
+                {
+                    Assert.That(edgeImage.color, Is.EqualTo(Color.white));
+                    Assert.That(edgeImage.sprite.name, Is.EqualTo("EdgeLit"));
                 }
             }
             finally
@@ -220,6 +236,15 @@ namespace Icebreaker.Integration.Tests
                 var tooltip = instance.transform.Find("TooltipOverlay/Tooltip");
                 Assert.That(tooltip, Is.Not.Null);
                 Assert.That(tooltip!.localScale, Is.EqualTo(Vector3.one));
+                Assert.That(tooltip.gameObject.activeSelf, Is.True);
+
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 6, Vector2.zero), null);
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 6, new Vector2(2f, 0f)), null);
+                Assert.That(tooltip.gameObject.activeSelf, Is.False);
+                Assert.That(
+                    instance.transform.Find("TreeViewport/TreeContent/NodeLayer/Node_C02-L1/SelectionFrame")!
+                        .gameObject.activeSelf,
+                    Is.False);
             }
             finally
             {
@@ -259,7 +284,7 @@ namespace Icebreaker.Integration.Tests
             Component viewport,
             string methodName,
             PointerEventData pointer,
-            string stepId)
+            string? stepId)
         {
             viewportType.GetMethod(methodName)!.Invoke(viewport, new object[] { pointer, stepId });
         }

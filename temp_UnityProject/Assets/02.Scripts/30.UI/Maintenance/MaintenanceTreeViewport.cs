@@ -28,6 +28,7 @@ namespace Icebreaker.UI.Maintenance
         private string? pointerDownStepId;
 
         public event Action<string> StepClicked = delegate { };
+        public event Action BackgroundClicked = delegate { };
 
         public float CurrentZoom => content != null
             ? content.localScale.x
@@ -86,11 +87,11 @@ namespace Icebreaker.UI.Maintenance
                 return;
             }
 
-            var direction = Vector2.zero;
-            if (Keyboard.current.aKey.isPressed) direction.x += 1f;
-            if (Keyboard.current.dKey.isPressed) direction.x -= 1f;
-            if (Keyboard.current.wKey.isPressed) direction.y += 1f;
-            if (Keyboard.current.sKey.isPressed) direction.y -= 1f;
+            var direction = MaintenanceTreeViewportMath.KeyboardPanDirection(
+                Keyboard.current.aKey.isPressed,
+                Keyboard.current.dKey.isPressed,
+                Keyboard.current.wKey.isPressed,
+                Keyboard.current.sKey.isPressed);
             if (direction.sqrMagnitude <= 0f)
             {
                 return;
@@ -153,13 +154,21 @@ namespace Icebreaker.UI.Maintenance
 
             var movedPixels = Vector2.Distance(pointerDownScreenPosition, eventData.position);
             var clickedStepId = pointerDownStepId;
-            var isClick = movedPixels < MaintenanceTreeViewportMath.ClickDragThresholdPixels &&
+            var isShortClick = movedPixels < MaintenanceTreeViewportMath.ClickDragThresholdPixels;
+            var isStepClick = isShortClick &&
                           !string.IsNullOrEmpty(clickedStepId) &&
                           string.Equals(clickedStepId, stepId, StringComparison.Ordinal);
+            var isBackgroundClick = isShortClick &&
+                                    string.IsNullOrEmpty(clickedStepId) &&
+                                    string.IsNullOrEmpty(stepId);
             CancelPointer();
-            if (isClick)
+            if (isStepClick)
             {
                 StepClicked(clickedStepId!);
+            }
+            else if (isBackgroundClick)
+            {
+                BackgroundClicked();
             }
         }
 

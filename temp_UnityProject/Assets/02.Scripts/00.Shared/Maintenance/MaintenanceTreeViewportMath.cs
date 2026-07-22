@@ -25,6 +25,18 @@ namespace Icebreaker.Shared.Maintenance
                 MaximumZoom);
         }
 
+        public static Vector2 KeyboardPanDirection(
+            bool left,
+            bool right,
+            bool up,
+            bool down)
+        {
+            var direction = new Vector2(
+                (left ? 1f : 0f) - (right ? 1f : 0f),
+                (down ? 1f : 0f) - (up ? 1f : 0f));
+            return direction.sqrMagnitude > 0f ? direction.normalized : Vector2.zero;
+        }
+
         public static Vector2 KeepPointerStable(
             Vector2 currentContentPosition,
             float oldZoom,
