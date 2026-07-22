@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Icebreaker.Core;
 using Icebreaker.Gameplay;
+using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
 using Icebreaker.Shared.State;
 using Icebreaker.UI.Hud;
@@ -95,7 +96,16 @@ namespace Icebreaker.Integration
             }
 
             var loop = CreateLoop(bootState);
-            coordinator = new Int02LoopCoordinator(loop, ledger, saveService);
+            var maintenanceCore = new MaintenanceCore(
+                MaintenanceCatalog.CreateDemo(),
+                ledger,
+                saveService);
+            coordinator = new Int02LoopCoordinator(
+                loop,
+                ledger,
+                maintenanceCore,
+                saveService);
+            coordinator.StageConfigurationPrepared += HandleStageConfigurationPrepared;
             coordinator.StageStarted += HandleStageStarted;
             coordinator.RewardGranted += HandleRewardGranted;
             coordinator.StageEnded += HandleStageEnded;
@@ -169,6 +179,7 @@ namespace Icebreaker.Integration
 
             if (coordinator != null)
             {
+                coordinator.StageConfigurationPrepared -= HandleStageConfigurationPrepared;
                 coordinator.StageStarted -= HandleStageStarted;
                 coordinator.RewardGranted -= HandleRewardGranted;
                 coordinator.StageEnded -= HandleStageEnded;
@@ -245,6 +256,11 @@ namespace Icebreaker.Integration
             coordinator.TryApproveDestruction(normalized);
         }
 
+        private void HandleStageConfigurationPrepared(CombatConfig config)
+        {
+            iceFieldView?.InjectCombatConfig(config);
+        }
+
         private void HandleStageStarted(StageStarted payload)
         {
             iceFieldView?.ResetStage();
@@ -303,27 +319,11 @@ namespace Icebreaker.Integration
                 DestinationCatalog.CreateDemo(),
                 RewardTable.CreateDefault(),
                 initialFunds: saveData.funds,
-                maintenanceEfficiencyLevel: CombatConfigFactory.GetMaintenanceEfficiencyLevel(
-                    CreateMaintenanceLevels(saveData.maintenanceLevels)),
                 initialDestinationIndex: saveData.currentDestinationIndex,
                 initialDestinationProgress: saveData.destinationProgress,
                 initialCompletedDestinationIds: saveData.completedDestinationIds,
                 initialPendingArrivalDestinationId: saveData.pendingArrivalDestinationId,
                 initialGameCompleted: saveData.gameCompleted);
-        }
-
-        private static MaintenanceLevel[] CreateMaintenanceLevels(
-            IReadOnlyList<SaveMaintenanceLevel> savedLevels)
-        {
-            var levels = new MaintenanceLevel[savedLevels.Count];
-            for (var index = 0; index < savedLevels.Count; index++)
-            {
-                levels[index] = new MaintenanceLevel(
-                    savedLevels[index].id,
-                    savedLevels[index].level);
-            }
-
-            return levels;
         }
 
         private static bool ApplyPendingArrival(ProgressionLedger ledger, SaveData saveData)

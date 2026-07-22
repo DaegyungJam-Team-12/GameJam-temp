@@ -18,14 +18,14 @@ namespace Icebreaker.Gameplay
         private const int MaxInitialLayoutAttempts = 10;
 
         private readonly long stageId;
-        private readonly IceFieldConfig config;
+        private IceFieldConfig config;
         private readonly IceIdGenerator idGenerator;
-        private readonly IceSpawnPositioner positioner;
-        private readonly CriticalStrike? criticalStrike;
+        private IceSpawnPositioner positioner;
+        private CriticalStrike? criticalStrike;
         private readonly List<IceInstance> activeIce;
         private readonly IStageClock clock;
-        private readonly SupportAttackConfig? supportConfig;
-        private readonly ChainEffectConfig? chainConfig;
+        private SupportAttackConfig? supportConfig;
+        private ChainEffectConfig? chainConfig;
         
         private float lastClickDamage;
         
@@ -70,6 +70,20 @@ namespace Icebreaker.Gameplay
         public event Action<int>? IceRespawned;
 
         public IReadOnlyList<IceInstance> ActiveIce => activeIce;
+
+        public void Reconfigure(
+            IceFieldConfig nextConfig,
+            IceSpawnPositioner nextPositioner,
+            CriticalStrike? nextCriticalStrike,
+            SupportAttackConfig? nextSupportConfig,
+            ChainEffectConfig? nextChainConfig)
+        {
+            config = nextConfig ?? throw new ArgumentNullException(nameof(nextConfig));
+            positioner = nextPositioner ?? throw new ArgumentNullException(nameof(nextPositioner));
+            criticalStrike = nextCriticalStrike;
+            supportConfig = nextSupportConfig;
+            chainConfig = nextChainConfig;
+        }
 
         private bool CanProcessCombat()
         {

@@ -43,7 +43,16 @@ namespace Icebreaker.Core.Tests
             var loop = new GameLoopController(60d, 3d, 10d);
             loop.Tick(10d);
             var ledger = new ProgressionLedger(CreateDemoDestinations(), RewardTable.CreateDefault());
-            using var coordinator = new Int02LoopCoordinator(loop, ledger, saveService, () => now);
+            var maintenanceCore = new MaintenanceCore(
+                MaintenanceCatalog.CreateDemo(),
+                ledger,
+                saveService);
+            using var coordinator = new Int02LoopCoordinator(
+                loop,
+                ledger,
+                maintenanceCore,
+                saveService,
+                () => now);
 
             var progressionEvents = new List<string>();
             var rewards = new List<RewardGrantedEvent>();
@@ -147,7 +156,16 @@ namespace Icebreaker.Core.Tests
             var loop = new GameLoopController(60d, 3d, 10d);
             loop.Tick(10d);
             var ledger = new ProgressionLedger(CreateDemoDestinations(), RewardTable.CreateDefault());
-            using var coordinator = new Int02LoopCoordinator(loop, ledger, saveService, () => now);
+            var maintenanceCore = new MaintenanceCore(
+                MaintenanceCatalog.CreateDemo(),
+                ledger,
+                saveService);
+            using var coordinator = new Int02LoopCoordinator(
+                loop,
+                ledger,
+                maintenanceCore,
+                saveService,
+                () => now);
 
             coordinator.RequestStageStart();
             coordinator.Tick(3d);

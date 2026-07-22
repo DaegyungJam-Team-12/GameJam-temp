@@ -142,8 +142,8 @@ namespace Icebreaker.Gameplay
         }
 
         /// <summary>
-        /// Supplies the immutable maintenance-derived values for the stage field.
-        /// This must happen before Awake so the visual ring and overlap test share one radius.
+        /// Supplies the immutable maintenance-derived values for the next stage field.
+        /// The values are applied together by <see cref="ResetStage"/> before play begins.
         /// </summary>
         public void InjectCombatConfig(CombatConfig combatConfig)
         {
@@ -152,9 +152,9 @@ namespace Icebreaker.Gameplay
                 throw new ArgumentNullException(nameof(combatConfig));
             }
 
-            if (field != null)
+            if (activeClock?.Phase == GamePhase.Playing)
             {
-                throw new InvalidOperationException("Combat config must be injected before IceFieldView.Awake.");
+                throw new InvalidOperationException("Combat config cannot change while a stage is playing.");
             }
 
             injectedCombatConfig = combatConfig;
@@ -167,6 +167,7 @@ namespace Icebreaker.Gameplay
                 throw new InvalidOperationException("IceField is not initialized yet.");
             }
 
+            ApplyCombatConfig();
             field.Initialize(0d);
             RefreshAllVisuals();
             attackTickScheduler?.Reset();
@@ -201,7 +202,18 @@ namespace Icebreaker.Gameplay
         private void Awake()
         {
             stageStartedAt = Time.timeAsDouble;
+            activeClock = injectedClock ?? new DummyClock(this);
+            ApplyCombatConfig();
+            field.DamageApplied += HandleDamageApplied;
+            field.IceDestroyed += HandleIceDestroyed;
+            field.IceRespawned += HandleIceRespawned;
 
+            iceSprite = CreateIceSprite();
+            field.Initialize(0d);
+        }
+
+        private void ApplyCombatConfig()
+        {
             config = injectedCombatConfig?.IceField ?? CreateDefaultConfig();
             directAttackConfig = injectedCombatConfig?.DirectAttack ?? new DirectAttackConfig(
                 BaseDirectDamage,
@@ -209,7 +221,6 @@ namespace Icebreaker.Gameplay
                 BaseCursorRadiusReferencePixels,
                 CriticalChance,
                 CriticalMultiplier);
-            var idGenerator = new IceIdGenerator();
             var spawnBounds = new Rect(
                 SpawnMargin,
                 SpawnMargin,
@@ -223,9 +234,6 @@ namespace Icebreaker.Gameplay
             var criticalStrike = new CriticalStrike(
                 directAttackConfig.CriticalChance,
                 directAttackConfig.CriticalDamageMultiplier);
-            activeClock = injectedClock ?? new DummyClock(this);
-
-            // [GP-06] Inspector 설정에 따른 보조 파쇄 적용
             var supportConfig = injectedCombatConfig?.SupportAttack ?? new SupportAttackConfig(
                 enabled: sandboxSettings.enableSupportAttack,
                 requiredDirectHitCount: sandboxSettings.requiredHits,
@@ -234,8 +242,6 @@ namespace Icebreaker.Gameplay
                 additionalDamageMultiplier: 0.7f,
                 prioritizeSpecialIce: sandboxSettings.prioritizeSpecialIce,
                 specialIceDamageMultiplier: 2.0f);
-
-            // [GP-07] 연쇄 파괴 적용
             var chainConfig = injectedCombatConfig?.ChainEffect ?? new ChainEffectConfig(
                 overkillEnabled: sandboxSettings.enableOverkill,
                 overkillTransferMultiplier: 0.5f,
@@ -250,15 +256,24 @@ namespace Icebreaker.Gameplay
                 iceCollapseRadiusReferencePixels: 140f,
                 maxChainDepth: 3);
 
-            field = new IceField(stageId, config, idGenerator, positioner, activeClock, criticalStrike, supportConfig, chainConfig);
-            field.DamageApplied += HandleDamageApplied;
-            field.IceDestroyed += HandleIceDestroyed;
-            field.IceRespawned += HandleIceRespawned;
+            if (field == null)
+            {
+                field = new IceField(
+                    stageId,
+                    config,
+                    new IceIdGenerator(),
+                    positioner,
+                    activeClock!,
+                    criticalStrike,
+                    supportConfig,
+                    chainConfig);
+            }
+            else
+            {
+                field.Reconfigure(config, positioner, criticalStrike, supportConfig, chainConfig);
+            }
 
             attackTickScheduler = new AttackTickScheduler(directAttackConfig.AttackTicksPerSecond);
-
-            iceSprite = CreateIceSprite();
-            field.Initialize(0d);
         }
 
         private void Start()

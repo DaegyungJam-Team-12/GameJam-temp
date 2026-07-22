@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
+using Icebreaker.Shared.Maintenance;
 using Icebreaker.Shared.Progression;
 using Icebreaker.Shared.State;
 
@@ -14,11 +15,13 @@ namespace Icebreaker.Core
     {
         private readonly GameLoopController loop;
         private readonly ProgressionLedger ledger;
+        private readonly MaintenanceCore maintenanceCore;
         private readonly SaveService saveService;
         private readonly SaveData saveData;
         private readonly Func<DateTimeOffset> utcNow;
-        private readonly MaintenanceLevel[] maintenanceLevels;
 
+        private CombatConfig? currentStageCombatConfig;
+        private int currentStageMaintenanceEfficiencyLevel;
         private SettlementSummary? pendingSettlement;
         private long currentStageId;
         private bool disposed;
@@ -26,17 +29,21 @@ namespace Icebreaker.Core
         public Int02LoopCoordinator(
             GameLoopController loop,
             ProgressionLedger ledger,
+            MaintenanceCore maintenanceCore,
             SaveService saveService,
             Func<DateTimeOffset>? utcNow = null)
         {
             this.loop = loop ?? throw new ArgumentNullException(nameof(loop));
             this.ledger = ledger ?? throw new ArgumentNullException(nameof(ledger));
+            this.maintenanceCore = maintenanceCore ??
+                throw new ArgumentNullException(nameof(maintenanceCore));
             this.saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
             saveData = saveService.Data;
             this.utcNow = utcNow ?? (() => DateTimeOffset.UtcNow);
-            maintenanceLevels = CreateMaintenanceLevels(saveData.maintenanceLevels);
             loop.PhaseChanged += HandlePhaseChanged;
         }
+
+        public event Action<CombatConfig> StageConfigurationPrepared = delegate { };
 
         public event Action<StageStarted> StageStarted = delegate { };
 
@@ -50,6 +57,8 @@ namespace Icebreaker.Core
 
         public event Action<GameState> StateChanged = delegate { };
 
+        public event Action MaintenanceChanged = delegate { };
+
         public GameLoopController Loop => loop;
 
         public ProgressionLedger Ledger => ledger;
@@ -58,11 +67,8 @@ namespace Icebreaker.Core
 
         public GameState CurrentState => CreateState();
 
-        /// <summary>
-        /// Immutable combat values for the next stage. Maintenance is bought outside a stage,
-        /// so this snapshot is deliberately created before the field is reset for play.
-        /// </summary>
-        public CombatConfig CurrentCombatConfig => CombatConfigFactory.Build(maintenanceLevels);
+        public CombatConfig CurrentCombatConfig => currentStageCombatConfig ??
+            CombatConfigFactory.Build(maintenanceCore.MaintenanceLevels);
 
         public void EnsureInitialized() => PublishState();
 
@@ -77,7 +83,40 @@ namespace Icebreaker.Core
         public void RequestStageStart()
         {
             ThrowIfDisposed();
+            if (loop.Phase != GamePhase.Ready)
+            {
+                loop.RequestStageStart();
+                return;
+            }
+
+            currentStageCombatConfig = CombatConfigFactory.Build(maintenanceCore.MaintenanceLevels);
+            currentStageMaintenanceEfficiencyLevel = maintenanceCore.MaintenanceEfficiencyLevel;
+            StageConfigurationPrepared(currentStageCombatConfig);
             loop.RequestStageStart();
+        }
+
+        public IReadOnlyList<MaintenanceNodeViewData> GetMaintenanceNodeViewData()
+        {
+            ThrowIfDisposed();
+            return maintenanceCore.GetNodeViewData();
+        }
+
+        public MaintenancePurchaseResult TryPurchaseMaintenance(string nodeId)
+        {
+            ThrowIfDisposed();
+            if (loop.Phase != GamePhase.Traveling && loop.Phase != GamePhase.Ready)
+            {
+                return MaintenancePurchaseResult.InvalidPhase;
+            }
+
+            var result = maintenanceCore.TryPurchaseDetailed(nodeId);
+            if (result == MaintenancePurchaseResult.Success)
+            {
+                MaintenanceChanged();
+                PublishState();
+            }
+
+            return result;
         }
 
         public bool TryApproveDestruction(IceDestroyedEvent destruction)
@@ -168,7 +207,7 @@ namespace Icebreaker.Core
             {
                 case GamePhase.Playing:
                     currentStageId++;
-                    ledger.BeginStage();
+                    ledger.BeginStage(currentStageMaintenanceEfficiencyLevel);
                     saveData.runInProgress = true;
                     saveData.nextAvailableAtUtc = "";
                     CopyProgressionToSave();
@@ -199,6 +238,7 @@ namespace Icebreaker.Core
                     break;
 
                 case GamePhase.Traveling:
+                    currentStageCombatConfig = null;
                     saveData.runInProgress = false;
                     saveData.nextAvailableAtUtc = FormatUtc(
                         utcNow() + TimeSpan.FromSeconds(loop.VoyageRemainingSeconds));
@@ -245,7 +285,7 @@ namespace Icebreaker.Core
                 ledger.CurrentDestination.Id,
                 ledger.DestinationProgress,
                 ledger.DestinationTarget,
-                maintenanceLevels,
+                maintenanceCore.MaintenanceLevels,
                 saveData.firstDestroyShown,
                 loop.Phase == GamePhase.Ready && !ledger.GameCompleted);
         }
@@ -288,18 +328,6 @@ namespace Icebreaker.Core
             {
                 throw new ObjectDisposedException(nameof(Int02LoopCoordinator));
             }
-        }
-
-        private static MaintenanceLevel[] CreateMaintenanceLevels(
-            IReadOnlyList<SaveMaintenanceLevel> savedLevels)
-        {
-            var levels = new MaintenanceLevel[savedLevels.Count];
-            for (var i = 0; i < savedLevels.Count; i++)
-            {
-                levels[i] = new MaintenanceLevel(savedLevels[i].id, savedLevels[i].level);
-            }
-
-            return levels;
         }
 
         private static string FormatUtc(DateTimeOffset value) =>
