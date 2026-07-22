@@ -24,11 +24,13 @@ namespace Icebreaker.Gameplay
         private readonly CriticalStrike? criticalStrike;
         private readonly List<IceInstance> activeIce;
         private readonly IStageClock clock;
+        private readonly SupportAttackConfig? supportConfig;
         
         private float lastClickDamage;
         
         private long nextChainId = 1L;
         private long currentChainId;
+        private int supportChargeCount;
 
         private struct QueuedDamage
         {
@@ -43,7 +45,7 @@ namespace Icebreaker.Gameplay
         private readonly Queue<QueuedDamage> effectQueue = new Queue<QueuedDamage>();
 
         public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner,
-            IStageClock clock, CriticalStrike? criticalStrike = null)
+            IStageClock clock, CriticalStrike? criticalStrike = null, SupportAttackConfig? supportConfig = null)
         {
             this.stageId = stageId;
             this.config = config;
@@ -51,6 +53,7 @@ namespace Icebreaker.Gameplay
             this.positioner = positioner;
             this.clock = clock;
             this.criticalStrike = criticalStrike;
+            this.supportConfig = supportConfig;
             activeIce = new List<IceInstance>(config.MaxActiveIceCount);
         }
 
@@ -76,6 +79,8 @@ namespace Icebreaker.Gameplay
         /// </summary>
         public void Initialize(double stageElapsedSeconds)
         {
+            supportChargeCount = 0;
+
             for (var layoutAttempt = 0; layoutAttempt < MaxInitialLayoutAttempts; layoutAttempt++)
             {
                 activeIce.Clear();
@@ -135,7 +140,30 @@ namespace Icebreaker.Gameplay
             EnqueueDamage(target, finalDamage, effectType, DestroyCategory.Direct, wasCritical, chainDepth: 0);
             ProcessQueue(stageElapsedSeconds);
 
+            // S01: charge support on valid direct hit
+            if (supportConfig != null && supportConfig.Enabled)
+            {
+                supportChargeCount++;
+                if (supportChargeCount >= supportConfig.RequiredDirectHitCount)
+                {
+                    supportChargeCount = 0;
+                    SupportChargeChanged(new SupportChargeChangedEvent(
+                        stageId, supportChargeCount, supportConfig.RequiredDirectHitCount));
+                    FireSupport(referencePosition, stageElapsedSeconds);
+                }
+                else
+                {
+                    SupportChargeChanged(new SupportChargeChangedEvent(
+                        stageId, supportChargeCount, supportConfig.RequiredDirectHitCount));
+                }
+            }
+
             return true;
+        }
+
+        private void FireSupport(Vector2 firePosition, double stageElapsedSeconds)
+        {
+            // Will be implemented in Step 2
         }
 
         private void EnqueueDamage(IceInstance target, float damage, EffectType effectType, DestroyCategory category, bool wasCritical, int chainDepth)
