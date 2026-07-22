@@ -83,7 +83,7 @@ namespace Icebreaker.UI.Maintenance
 
         public long CurrentFunds { get; private set; }
 
-        public string CurrentPreviewStateLabel => previewState switch
+        public string CurrentPreviewStateLabel => "가짜 상태 · " + (previewState switch
         {
             MaintenanceTreePreviewState.NewSave => "새 저장",
             MaintenanceTreePreviewState.C01Purchased => "C01만 구매",
@@ -91,7 +91,7 @@ namespace Icebreaker.UI.Maintenance
             MaintenanceTreePreviewState.RequirementsMetFundsShort => "선행 충족 · 자금 부족",
             MaintenanceTreePreviewState.FullyPurchased => "전부 구매",
             _ => previewState.ToString()
-        };
+        });
 
         private void OnEnable() => EnsureInitialized();
 

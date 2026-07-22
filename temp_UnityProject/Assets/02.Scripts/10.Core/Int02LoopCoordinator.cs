@@ -101,6 +101,12 @@ namespace Icebreaker.Core
             return maintenanceCore.GetNodeViewData();
         }
 
+        public IReadOnlyList<MaintenancePurchaseStepViewData> GetMaintenancePurchaseStepViewData()
+        {
+            ThrowIfDisposed();
+            return maintenanceCore.GetPurchaseStepViewData();
+        }
+
         public MaintenancePurchaseResult TryPurchaseMaintenance(string nodeId)
         {
             ThrowIfDisposed();
@@ -110,6 +116,24 @@ namespace Icebreaker.Core
             }
 
             var result = maintenanceCore.TryPurchaseDetailed(nodeId);
+            if (result == MaintenancePurchaseResult.Success)
+            {
+                MaintenanceChanged();
+                PublishState();
+            }
+
+            return result;
+        }
+
+        public MaintenancePurchaseResult TryPurchaseMaintenance(string nodeId, int targetLevel)
+        {
+            ThrowIfDisposed();
+            if (loop.Phase != GamePhase.Traveling && loop.Phase != GamePhase.Ready)
+            {
+                return MaintenancePurchaseResult.InvalidPhase;
+            }
+
+            var result = maintenanceCore.TryPurchaseDetailed(nodeId, targetLevel);
             if (result == MaintenancePurchaseResult.Success)
             {
                 MaintenanceChanged();

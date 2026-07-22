@@ -7,6 +7,7 @@ using Icebreaker.Shared.Maintenance;
 using Icebreaker.UI.Sandbox;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Icebreaker.UI.Maintenance
 {
@@ -32,9 +33,14 @@ namespace Icebreaker.UI.Maintenance
         [Header("Chrome")]
         [SerializeField] private TMP_Text? fundsText;
         [SerializeField] private TMP_Text? previewStateText;
+        [SerializeField] private Button? closeButton;
+        [SerializeField] private Button? stageStartButton;
 
         private IMaintenanceStepViewDataSource? source;
         private bool subscribed;
+        private bool listenersAdded;
+        private bool stageStartAvailable = true;
+        private bool stageStartRequestPending;
         private readonly Dictionary<string, MaintenancePurchaseStepViewData> dataById =
             new(StringComparer.Ordinal);
         private readonly Dictionary<string, MaintenanceNodeView> nodesById =
@@ -43,13 +49,75 @@ namespace Icebreaker.UI.Maintenance
         private string? selectedStepId;
 
         public event Action<string> PurchaseRequested = delegate { };
+        public event Action CloseRequested = delegate { };
+        public event Action StageStartRequested = delegate { };
 
         public int VisibleNodeCount { get; private set; }
 
+        private void Awake() => AddButtonListeners();
+
         private void OnEnable()
         {
-            source = sourceBehaviour as IMaintenanceStepViewDataSource;
-            if (!ValidateReferences())
+            source ??= sourceBehaviour as IMaintenanceStepViewDataSource;
+            stageStartRequestPending = false;
+            if (stageStartButton != null)
+            {
+                stageStartButton.interactable = stageStartAvailable;
+            }
+
+            AddButtonListeners();
+            Subscribe();
+        }
+
+        private void OnDisable() => Unsubscribe();
+
+        private void OnDestroy()
+        {
+            Unsubscribe();
+            RemoveButtonListeners();
+        }
+
+        public void Bind(IMaintenanceStepViewDataSource dataSource)
+        {
+            if (dataSource == null)
+            {
+                throw new ArgumentNullException(nameof(dataSource));
+            }
+
+            Unsubscribe();
+            source = dataSource;
+            if (isActiveAndEnabled)
+            {
+                Subscribe();
+            }
+        }
+
+        public void RejectStageStartRequest()
+        {
+            stageStartRequestPending = false;
+            if (stageStartButton != null)
+            {
+                stageStartButton.interactable = stageStartAvailable;
+            }
+        }
+
+        public void SetStageStartAvailable(bool available)
+        {
+            stageStartAvailable = available;
+            if (!available)
+            {
+                stageStartRequestPending = false;
+            }
+
+            if (stageStartButton != null)
+            {
+                stageStartButton.interactable = available && !stageStartRequestPending;
+            }
+        }
+
+        private void Subscribe()
+        {
+            if (subscribed || !ValidateReferences())
             {
                 return;
             }
@@ -61,7 +129,7 @@ namespace Icebreaker.UI.Maintenance
             Render(source.CurrentSteps);
         }
 
-        private void OnDisable()
+        private void Unsubscribe()
         {
             if (subscribed && source != null)
             {
@@ -71,6 +139,7 @@ namespace Icebreaker.UI.Maintenance
             if (subscribed && viewport != null)
             {
                 viewport.StepClicked -= HandleStepClicked;
+                viewport.CancelPointer();
             }
 
             subscribed = false;
@@ -124,9 +193,51 @@ namespace Icebreaker.UI.Maintenance
 
                 if (previewStateText != null)
                 {
-                    previewStateText.text = "가짜 상태 · " + source.CurrentPreviewStateLabel;
+                    previewStateText.text = source.CurrentPreviewStateLabel;
                 }
             }
+        }
+
+        private void AddButtonListeners()
+        {
+            if (listenersAdded || closeButton == null || stageStartButton == null)
+            {
+                return;
+            }
+
+            closeButton.onClick.AddListener(HandleCloseClicked);
+            stageStartButton.onClick.AddListener(HandleStageStartClicked);
+            listenersAdded = true;
+        }
+
+        private void RemoveButtonListeners()
+        {
+            if (!listenersAdded)
+            {
+                return;
+            }
+
+            closeButton?.onClick.RemoveListener(HandleCloseClicked);
+            stageStartButton?.onClick.RemoveListener(HandleStageStartClicked);
+            listenersAdded = false;
+        }
+
+        private void HandleCloseClicked() => CloseRequested();
+
+        private void HandleStageStartClicked()
+        {
+            if (!stageStartAvailable || stageStartRequestPending)
+            {
+                return;
+            }
+
+            stageStartRequestPending = true;
+            if (stageStartButton != null)
+            {
+                stageStartButton.interactable = false;
+            }
+
+            StageStartRequested();
         }
 
         private void RenderEdges(
@@ -263,10 +374,11 @@ namespace Icebreaker.UI.Maintenance
 
         private bool ValidateReferences()
         {
-            if (layout != null && sourceBehaviour != null && sourceBehaviour is IMaintenanceStepViewDataSource &&
+            if (layout != null && source != null &&
                 content != null && edgeLayer != null && nodeLayer != null &&
                 viewport != null && nodePrefab != null && edgePrefab != null &&
-                tooltipOverlay != null && tooltipView != null)
+                tooltipOverlay != null && tooltipView != null &&
+                closeButton != null && stageStartButton != null)
             {
                 return true;
             }

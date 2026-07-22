@@ -318,7 +318,7 @@ namespace Icebreaker.UI.Editor
                 CreateTopLeftText("Title", topBar.transform, 310f, 10f, 250f, 40f, "선박 정비·강화", font, 19f, TextAlignmentOptions.Center);
                 var previewStateText = CreateTopLeftText("PreviewStateText", topBar.transform, 570f, 10f, 180f, 40f, "가짜 상태 · 새 저장", font, 12f, TextAlignmentOptions.Center);
                 CreateButton("SettingsButton", topBar.transform, 758f, 10f, 82f, 40f, "설정", font, theme.Background);
-                CreateButton("CollapseButton", topBar.transform, 848f, 10f, 96f, 40f, "접기", font, theme.Background);
+                var closeButton = CreateButton("CollapseButton", topBar.transform, 848f, 10f, 96f, 40f, "접기", font, theme.Background);
 
                 var viewport = CreateTopLeftImage("TreeViewport", root.transform, 16f, 60f, 928f, 408f, new Color(0.025f, 0.08f, 0.13f, 1f), true);
                 viewport.gameObject.AddComponent<RectMask2D>();
@@ -347,7 +347,7 @@ namespace Icebreaker.UI.Editor
                 var bottomBar = CreateTopLeftImage("BottomBar", root.transform, 0f, 468f, 960f, 72f, theme.Panel, false);
                 CreateTopLeftText("ControlGuide", bottomBar.transform, 16f, 12f, 360f, 48f, "드래그·WASD 이동 · 휠 확대/축소 · R 복귀", font, 14f, TextAlignmentOptions.Left);
                 var fundsText = CreateTopLeftText("FundsText", bottomBar.transform, 388f, 12f, 220f, 48f, "정비 자금 100,000", font, 17f, TextAlignmentOptions.Center);
-                CreateButton("StageStartButton", bottomBar.transform, 620f, 12f, 324f, 48f, "쇄빙 시작", font, theme.ActionAccent);
+                var stageStartButton = CreateButton("StageStartButton", bottomBar.transform, 620f, 12f, 324f, 48f, "쇄빙 시작", font, theme.ActionAccent);
 
                 var serialized = new SerializedObject(presenter);
                 SetReference(serialized, "layout", layout);
@@ -363,6 +363,8 @@ namespace Icebreaker.UI.Editor
                 SetReference(serialized, "tooltipView", tooltip.GetComponent<MaintenanceTooltipView>());
                 SetReference(serialized, "fundsText", fundsText);
                 SetReference(serialized, "previewStateText", previewStateText);
+                SetReference(serialized, "closeButton", closeButton);
+                SetReference(serialized, "stageStartButton", stageStartButton);
                 serialized.ApplyModifiedPropertiesWithoutUndo();
 
                 PrefabUtility.SaveAsPrefabAsset(root, TreePrefabPath);
@@ -470,7 +472,7 @@ namespace Icebreaker.UI.Editor
                      {
                          "layout", "sourceBehaviour", "theme", "content", "edgeLayer", "nodeLayer",
                          "viewport", "nodePrefab", "edgePrefab", "tooltipOverlay", "tooltipView",
-                         "fundsText", "previewStateText"
+                         "fundsText", "previewStateText", "closeButton", "stageStartButton"
                      })
             {
                 var property = serialized.FindProperty(propertyName);

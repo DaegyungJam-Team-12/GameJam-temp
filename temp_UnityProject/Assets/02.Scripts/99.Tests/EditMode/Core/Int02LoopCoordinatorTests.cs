@@ -160,6 +160,36 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
+        public void TryPurchaseMaintenance_ExactTargetRejectsStaleAndSkippedSteps()
+        {
+            var saveData = SaveData.CreateNew("demo");
+            saveData.funds = 100;
+            saveData.maintenanceLevels.Add(new SaveMaintenanceLevel(MaintenanceCatalog.C01, 1));
+            using var coordinator = CreateCoordinator(
+                CreateSmallDestinations(),
+                out var ledger,
+                saveData);
+
+            Assert.That(
+                coordinator.TryPurchaseMaintenance(MaintenanceCatalog.D01, 2),
+                Is.EqualTo(MaintenancePurchaseResult.Locked));
+            Assert.That(
+                coordinator.TryPurchaseMaintenance(MaintenanceCatalog.D01, 1),
+                Is.EqualTo(MaintenancePurchaseResult.Success));
+            Assert.That(
+                coordinator.TryPurchaseMaintenance(MaintenanceCatalog.D01, 1),
+                Is.EqualTo(MaintenancePurchaseResult.Locked));
+            Assert.That(
+                coordinator.TryPurchaseMaintenance(MaintenanceCatalog.D01, 3),
+                Is.EqualTo(MaintenancePurchaseResult.Locked));
+            Assert.That(ledger.Funds, Is.EqualTo(70));
+            Assert.That(
+                saveData.maintenanceLevels,
+                Has.Some.Matches<SaveMaintenanceLevel>(level =>
+                    level.id == MaintenanceCatalog.D01 && level.level == 1));
+        }
+
+        [Test]
         public void RequestStageStart_PublishesLatestD04ConfigBeforeCountdown()
         {
             var saveData = SaveData.CreateNew("demo");
