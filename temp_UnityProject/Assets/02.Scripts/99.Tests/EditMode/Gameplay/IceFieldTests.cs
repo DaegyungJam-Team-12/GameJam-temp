@@ -388,14 +388,23 @@ namespace Icebreaker.Gameplay.Tests
         {
             var createDefaultConfig = typeof(IceFieldView).GetMethod(
                 "CreateDefaultConfig",
-                BindingFlags.Static | BindingFlags.NonPublic);
+                BindingFlags.Instance | BindingFlags.NonPublic);
 
             Assert.That(createDefaultConfig, Is.Not.Null);
-            var defaultConfig = createDefaultConfig!.Invoke(null, null) as IceFieldConfig;
-            Assert.That(defaultConfig, Is.Not.Null);
-            Assert.That(defaultConfig!.SpawnWeights, Has.Count.EqualTo(1));
-            Assert.That(defaultConfig.SpawnWeights[0].Tier, Is.EqualTo(IceTier.T1));
-            Assert.That(defaultConfig.SpawnWeights[0].Weight, Is.EqualTo(100));
+            var gameObject = new GameObject("IceFieldViewTest");
+            try
+            {
+                var view = gameObject.AddComponent<IceFieldView>();
+                var defaultConfig = createDefaultConfig!.Invoke(view, null) as IceFieldConfig;
+                Assert.That(defaultConfig, Is.Not.Null);
+                Assert.That(defaultConfig!.SpawnWeights, Has.Count.EqualTo(1));
+                Assert.That(defaultConfig.SpawnWeights[0].Tier, Is.EqualTo(IceTier.T1));
+                Assert.That(defaultConfig.SpawnWeights[0].Weight, Is.EqualTo(100));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(gameObject);
+            }
         }
 
         // --- GP-04 Tests ---
@@ -864,8 +873,8 @@ namespace Icebreaker.Gameplay.Tests
             }
 
             Assert.That(supportDamageEvents.Count, Is.EqualTo(1), "Should fire exactly 1 support shot.");
-            Assert.That(supportDamageEvents[0].IceInstanceId, Is.EqualTo(nearTarget.IceInstanceId),
-                "Support should target the closest non-click-target ice.");
+            Assert.That(supportDamageEvents[0].IceInstanceId, Is.EqualTo(clickTarget.IceInstanceId),
+                "Support should target the closest alive ice, including the direct target.");
             Assert.That(supportDamageEvents[0].Damage, Is.EqualTo(10f),
                 "Primary damage = clickDamage × 1.0.");
             Assert.That(supportDamageEvents[0].WasCritical, Is.False,
@@ -1059,10 +1068,325 @@ namespace Icebreaker.Gameplay.Tests
             }
 
             Assert.That(supportDamageEvents.Count, Is.EqualTo(1));
-            Assert.That(supportDamageEvents[0].IceInstanceId, Is.EqualTo(highHpFar.IceInstanceId),
-                "S03 without special ice should fallback to highest HP.");
+            Assert.That(supportDamageEvents[0].IceInstanceId, Is.EqualTo(clickTarget.IceInstanceId),
+                "S03 without special ice should select the highest remaining HP after direct hits.");
             Assert.That(supportDamageEvents[0].Damage, Is.EqualTo(10f),
                 "Normal ice should not get ×2 multiplier.");
+        }
+
+        [Test]
+        public void CursorAreaTick_HitsEveryIceWhoseCollisionCircleOverlaps()
+        {
+            var areaClock = new MockClock();
+            var testField = CreateAreaTestField(3, 10f, areaClock);
+            var center = new Vector2(100f, 100f);
+            var first = testField.ActiveIce[0];
+            var second = testField.ActiveIce[1];
+            var outside = testField.ActiveIce[2];
+            first.Reset(first.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, center, 0d);
+            second.Reset(second.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, new Vector2(130f, 100f), 0d);
+            outside.Reset(outside.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, new Vector2(131f, 100f), 0d);
+
+            var directEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.CursorAreaPulse)
+                {
+                    directEvents.Add(e);
+                }
+            };
+
+            var hitCount = testField.ApplyAreaTickAt(center, 20f, 10f, 1d);
+
+            Assert.That(hitCount, Is.EqualTo(2));
+            Assert.That(directEvents.Count, Is.EqualTo(2));
+            Assert.That(directEvents[0].IceInstanceId, Is.EqualTo(first.IceInstanceId));
+            Assert.That(directEvents[1].IceInstanceId, Is.EqualTo(second.IceInstanceId));
+            Assert.That(directEvents[0].Damage, Is.EqualTo(10f));
+            Assert.That(directEvents[1].Damage, Is.EqualTo(10f));
+            Assert.That(directEvents[0].ChainId, Is.EqualTo(directEvents[1].ChainId));
+            Assert.That(directEvents[0].ChainDepth, Is.EqualTo(0));
+            Assert.That(directEvents[1].ChainDepth, Is.EqualTo(0));
+            Assert.That(outside.RemainingHp, Is.EqualTo(100f));
+        }
+
+        [Test]
+        public void CursorAreaTick_RollsCriticalForEachOverlappedTarget()
+        {
+            var areaClock = new MockClock();
+            var testField = CreateAreaTestField(
+                2,
+                10f,
+                areaClock,
+                criticalStrike: new CriticalStrike(1f, 3f));
+            var first = testField.ActiveIce[0];
+            var second = testField.ActiveIce[1];
+            first.Reset(first.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, new Vector2(100f, 100f), 0d);
+            second.Reset(second.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, new Vector2(110f, 100f), 0d);
+
+            var directEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.CursorAreaPulse)
+                {
+                    directEvents.Add(e);
+                }
+            };
+
+            testField.ApplyAreaTickAt(new Vector2(100f, 100f), 20f, 10f, 1d);
+
+            Assert.That(directEvents.Count, Is.EqualTo(2));
+            Assert.That(directEvents[0].WasCritical, Is.True);
+            Assert.That(directEvents[1].WasCritical, Is.True);
+            Assert.That(directEvents[0].Damage, Is.EqualTo(30f));
+            Assert.That(directEvents[1].Damage, Is.EqualTo(30f));
+        }
+
+        [Test]
+        public void CursorAreaTick_IgnoresRespawnProtectionAndChargesSupportOnce()
+        {
+            var areaClock = new MockClock();
+            var supportConfig = new SupportAttackConfig(
+                enabled: true,
+                requiredDirectHitCount: 2,
+                primaryDamageMultiplier: 1f,
+                additionalTargetCount: 0,
+                additionalDamageMultiplier: 0.7f,
+                prioritizeSpecialIce: false,
+                specialIceDamageMultiplier: 2f);
+            var testField = CreateAreaTestField(2, 10f, areaClock, supportConfig: supportConfig,
+                respawnProtectionSeconds: 1f);
+            var first = testField.ActiveIce[0];
+            var second = testField.ActiveIce[1];
+            first.Reset(first.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, new Vector2(100f, 100f), 0.75d);
+            second.Reset(second.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, new Vector2(110f, 100f), 0.75d);
+
+            var directEvents = 0;
+            var chargeEvents = new List<SupportChargeChangedEvent>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.CursorAreaPulse)
+                {
+                    directEvents++;
+                }
+            };
+            testField.SupportChargeChanged += e => chargeEvents.Add(e);
+
+            testField.ApplyAreaTickAt(new Vector2(100f, 100f), 20f, 10f, 1d);
+
+            Assert.That(directEvents, Is.EqualTo(2));
+            Assert.That(chargeEvents.Count, Is.EqualTo(1));
+            Assert.That(chargeEvents[0].CurrentCharge, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void CursorAreaTick_QueuesAllDirectDamageBeforeOverkill()
+        {
+            var chainConfig = new ChainEffectConfig(
+                overkillEnabled: true,
+                overkillTransferMultiplier: 0.5f,
+                hullFragmentDamageMultiplier: 0f,
+                hullFragmentRadiusReferencePixels: 0f,
+                crystalShardCount: 0,
+                crackDamageMultiplier: 0f,
+                crackRadiusReferencePixels: 0f,
+                iceCollapseEnabled: false,
+                iceCollapseRequiredDestroyCount: 5,
+                iceCollapseDamageMultiplier: 0f,
+                iceCollapseRadiusReferencePixels: 0f,
+                maxChainDepth: 3);
+            var testField = CreateAreaTestField(2, 10f, new MockClock(), chainConfig: chainConfig);
+            var first = testField.ActiveIce[0];
+            var second = testField.ActiveIce[1];
+            first.Reset(first.IceInstanceId, IceTier.T1, SpecialIceType.None, 1f, new Vector2(100f, 100f), 0d);
+            second.Reset(second.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, new Vector2(110f, 100f), 0d);
+
+            var damageOrder = new List<EffectType>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.CursorAreaPulse || e.EffectType == EffectType.Overkill)
+                {
+                    damageOrder.Add(e.EffectType);
+                }
+            };
+
+            testField.ApplyAreaTickAt(new Vector2(100f, 100f), 20f, 10f, 1d);
+
+            Assert.That(damageOrder, Is.EqualTo(new[]
+            {
+                EffectType.CursorAreaPulse,
+                EffectType.CursorAreaPulse,
+                EffectType.Overkill
+            }));
+        }
+
+        [Test]
+        public void AttackTickScheduler_FiresImmediatelyThenCapsRecoveryTicks()
+        {
+            var scheduler = new AttackTickScheduler(5f);
+
+            Assert.That(scheduler.Update(0f), Is.EqualTo(1));
+            Assert.That(scheduler.Update(0.2f), Is.EqualTo(1));
+            Assert.That(scheduler.Update(1.1f), Is.EqualTo(3));
+            Assert.That(scheduler.Update(0f), Is.EqualTo(0));
+        }
+
+        private static IceField CreateAreaTestField(
+            int iceCount,
+            float collisionRadius,
+            MockClock clock,
+            SupportAttackConfig? supportConfig = null,
+            ChainEffectConfig? chainConfig = null,
+            CriticalStrike? criticalStrike = null,
+            float respawnProtectionSeconds = 0f)
+        {
+            var areaConfig = new IceFieldConfig(
+                maxActiveIceCount: iceCount,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: collisionRadius,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: respawnProtectionSeconds,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 100f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+            var testField = new IceField(
+                1L,
+                areaConfig,
+                new IceIdGenerator(),
+                new IceSpawnPositioner(new Rect(0f, 0f, 960f, 540f), 1f),
+                clock,
+                criticalStrike,
+                supportConfig,
+                chainConfig);
+            testField.Initialize(0d);
+            return testField;
+        }
+
+        [Test]
+        public void D03_OverkillTransfer_AppliesToClosestAliveIce()
+        {
+            var chainConfig = new ChainEffectConfig(
+                overkillEnabled: true,
+                overkillTransferMultiplier: 0.5f,
+                hullFragmentDamageMultiplier: 0f,
+                hullFragmentRadiusReferencePixels: 0f,
+                crystalShardCount: 0,
+                crackDamageMultiplier: 0f,
+                crackRadiusReferencePixels: 0f,
+                iceCollapseEnabled: false,
+                iceCollapseRequiredDestroyCount: 5,
+                iceCollapseDamageMultiplier: 0f,
+                iceCollapseRadiusReferencePixels: 0f,
+                maxChainDepth: 3);
+
+            var testField = new IceField(1L, config, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0,0,960,540), 1f), new MockClock(),
+                chainConfig: chainConfig);
+            testField.Initialize(0d);
+
+            var target1 = testField.ActiveIce[0];
+            target1.Reset(target1.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100, 100), 0d);
+            
+            var target2 = testField.ActiveIce[1];
+            target2.Reset(target2.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(110, 100), 0d); // Close
+            var target2Id = target2.IceInstanceId;
+            
+            var target3 = testField.ActiveIce[2];
+            target3.Reset(target3.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(500, 500), 0d); // Far
+
+            var damageEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e => { if (e.EffectType == EffectType.Overkill) damageEvents.Add(e); };
+
+            // Apply 30 damage to a 10 HP target -> Overkill is 20.
+            // Ratio is 0.5 -> 10 damage transferred to closest.
+            testField.ApplyClickAt(new Vector2(100, 100), 30f, EffectType.Click, 10d);
+
+            Assert.That(damageEvents.Count, Is.EqualTo(1));
+            Assert.That(damageEvents[0].IceInstanceId, Is.EqualTo(target2Id));
+            Assert.That(damageEvents[0].Damage, Is.EqualTo(10f));
+            Assert.That(damageEvents[0].ChainDepth, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void H03_IceCollapse_TriggersOn5thDestruction()
+        {
+            var chainConfig = new ChainEffectConfig(
+                overkillEnabled: false, overkillTransferMultiplier: 0f,
+                hullFragmentDamageMultiplier: 0f, hullFragmentRadiusReferencePixels: 0f,
+                crystalShardCount: 0, crackDamageMultiplier: 0f, crackRadiusReferencePixels: 0f,
+                iceCollapseEnabled: true, iceCollapseRequiredDestroyCount: 5,
+                iceCollapseDamageMultiplier: 1.5f, iceCollapseRadiusReferencePixels: 140f,
+                maxChainDepth: 3);
+
+            var testField = CreateAreaTestField(7, 10f, new MockClock(), chainConfig: chainConfig);
+            for (var i = 0; i < 6; i++)
+            {
+                var ice = testField.ActiveIce[i];
+                ice.Reset(ice.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100 + i, 100), 0d);
+            }
+
+            var collapseTarget = testField.ActiveIce[6];
+            collapseTarget.Reset(
+                collapseTarget.IceInstanceId,
+                IceTier.T1,
+                SpecialIceType.None,
+                100f,
+                new Vector2(200, 100),
+                0d);
+            var collapseTargetId = collapseTarget.IceInstanceId;
+
+            var collapseEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.IceCollapse)
+                {
+                    collapseEvents.Add(e);
+                }
+            };
+
+            testField.ApplyAreaTickAt(new Vector2(100, 100), 30f, 10f, 1d);
+
+            var collapseTargetEvent = collapseEvents.Find(e => e.IceInstanceId == collapseTargetId);
+            Assert.That(collapseTargetEvent, Is.Not.Null);
+            Assert.That(collapseTargetEvent!.Damage, Is.EqualTo(15f), "10 * 1.5 = 15");
+        }
+
+        [Test]
+        public void Depth3_StopsFurtherChain()
+        {
+            var chainConfig = new ChainEffectConfig(
+                overkillEnabled: true, overkillTransferMultiplier: 1.0f,
+                hullFragmentDamageMultiplier: 0f, hullFragmentRadiusReferencePixels: 0f,
+                crystalShardCount: 0, crackDamageMultiplier: 0f, crackRadiusReferencePixels: 0f,
+                iceCollapseEnabled: false, iceCollapseRequiredDestroyCount: 5,
+                iceCollapseDamageMultiplier: 0f, iceCollapseRadiusReferencePixels: 0f,
+                maxChainDepth: 3);
+
+            var testField = new IceField(1L, config, new IceIdGenerator(), new IceSpawnPositioner(new Rect(0,0,960,540), 1f), new MockClock(),
+                chainConfig: chainConfig);
+            testField.Initialize(0d);
+
+            for (var i = 0; i < 5; i++)
+            {
+                var ice = testField.ActiveIce[i];
+                ice.Reset(ice.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100 + i, 100), 0d);
+            }
+
+            var damageEvents = new List<DamageAppliedEvent>();
+            testField.DamageApplied += e => { damageEvents.Add(e); };
+
+            // 50 damage -> 1(0) -> 2(1) -> 3(2) -> 4(3) -> 5(4? NO, depth 3 stops).
+            testField.ApplyClickAt(new Vector2(100, 100), 50f, EffectType.Click, 10d);
+
+            // Targets: 
+            // Depth 0: target 0 receives 50, destroyed. Overkill 40.
+            // Depth 1: target 1 receives 40, destroyed. Overkill 30.
+            // Depth 2: target 2 receives 30, destroyed. Overkill 20.
+            // Depth 3: target 3 receives 20, destroyed. Overkill 10.
+            // But target 3 was destroyed AT depth 3. It should NOT trigger Overkill (which would be depth 4).
+            // So target 4 should not be damaged.
+            
+            var target4Damage = damageEvents.FindAll(e => e.IceInstanceId == testField.ActiveIce[4].IceInstanceId);
+            Assert.That(target4Damage.Count, Is.EqualTo(0), "Target 4 should not be damaged because depth limit is 3.");
         }
     }
 }

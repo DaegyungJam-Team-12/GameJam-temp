@@ -25,12 +25,15 @@ namespace Icebreaker.Gameplay
         private readonly List<IceInstance> activeIce;
         private readonly IStageClock clock;
         private readonly SupportAttackConfig? supportConfig;
+        private readonly ChainEffectConfig? chainConfig;
         
         private float lastClickDamage;
         
         private long nextChainId = 1L;
         private long currentChainId;
         private int supportChargeCount;
+        private int destroyedCountInCurrentChain;
+        private bool hasTriggeredIceCollapseInCurrentChain;
 
         private struct QueuedDamage
         {
@@ -45,7 +48,8 @@ namespace Icebreaker.Gameplay
         private readonly Queue<QueuedDamage> effectQueue = new Queue<QueuedDamage>();
 
         public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner,
-            IStageClock clock, CriticalStrike? criticalStrike = null, SupportAttackConfig? supportConfig = null)
+            IStageClock clock, CriticalStrike? criticalStrike = null, SupportAttackConfig? supportConfig = null,
+            ChainEffectConfig? chainConfig = null)
         {
             this.stageId = stageId;
             this.config = config;
@@ -54,6 +58,7 @@ namespace Icebreaker.Gameplay
             this.clock = clock;
             this.criticalStrike = criticalStrike;
             this.supportConfig = supportConfig;
+            this.chainConfig = chainConfig;
             activeIce = new List<IceInstance>(config.MaxActiveIceCount);
         }
 
@@ -128,6 +133,8 @@ namespace Icebreaker.Gameplay
 
             // Start a new chain for this direct input
             currentChainId = nextChainId++;
+            destroyedCountInCurrentChain = 0;
+            hasTriggeredIceCollapseInCurrentChain = false;
 
             // Roll critical for direct attacks only.
             var wasCritical = false;
@@ -140,25 +147,82 @@ namespace Icebreaker.Gameplay
             EnqueueDamage(target, finalDamage, effectType, DestroyCategory.Direct, wasCritical, chainDepth: 0);
             ProcessQueue(stageElapsedSeconds);
 
-            // S01: charge support on valid direct hit
-            if (supportConfig != null && supportConfig.Enabled)
-            {
-                supportChargeCount++;
-                if (supportChargeCount >= supportConfig.RequiredDirectHitCount)
-                {
-                    supportChargeCount = 0;
-                    SupportChargeChanged(new SupportChargeChangedEvent(
-                        stageId, supportChargeCount, supportConfig.RequiredDirectHitCount));
-                    FireSupport(referencePosition, stageElapsedSeconds);
-                }
-                else
-                {
-                    SupportChargeChanged(new SupportChargeChangedEvent(
-                        stageId, supportChargeCount, supportConfig.RequiredDirectHitCount));
-                }
-            }
+            ChargeSupportForDirectTick(referencePosition, stageElapsedSeconds);
 
             return true;
+        }
+
+        /// <summary>
+        /// Applies one automatic cursor-area tick to every alive ice whose collision circle overlaps
+        /// the cursor circle. Direct area damage ignores respawn protection; secondary effects do not.
+        /// Returns the count of overlapped targets at the moment the tick begins.
+        /// </summary>
+        public int ApplyAreaTickAt(
+            Vector2 referencePosition,
+            float cursorRadiusReferencePixels,
+            float directDamage,
+            double stageElapsedSeconds)
+        {
+            if (!CanProcessCombat())
+            {
+                return 0;
+            }
+
+            var targets = FindAliveOverlappingCursor(referencePosition, cursorRadiusReferencePixels);
+            if (targets.Count == 0)
+            {
+                return 0;
+            }
+
+            lastClickDamage = directDamage;
+            currentChainId = nextChainId++;
+            destroyedCountInCurrentChain = 0;
+            hasTriggeredIceCollapseInCurrentChain = false;
+
+            // Enqueue every direct target before processing any destruction-driven secondary effect.
+            // Critical rolls are intentionally independent for each target.
+            for (var i = 0; i < targets.Count; i++)
+            {
+                var wasCritical = false;
+                var finalDamage = directDamage;
+                if (criticalStrike != null)
+                {
+                    finalDamage = criticalStrike.Apply(directDamage, out wasCritical);
+                }
+
+                EnqueueDamage(
+                    targets[i],
+                    finalDamage,
+                    EffectType.CursorAreaPulse,
+                    DestroyCategory.Direct,
+                    wasCritical,
+                    chainDepth: 0);
+            }
+
+            ProcessQueue(stageElapsedSeconds);
+            ChargeSupportForDirectTick(referencePosition, stageElapsedSeconds);
+            return targets.Count;
+        }
+
+        private void ChargeSupportForDirectTick(Vector2 firePosition, double stageElapsedSeconds)
+        {
+            if (supportConfig == null || !supportConfig.Enabled)
+            {
+                return;
+            }
+
+            supportChargeCount++;
+            if (supportChargeCount >= supportConfig.RequiredDirectHitCount)
+            {
+                supportChargeCount = 0;
+                SupportChargeChanged(new SupportChargeChangedEvent(
+                    stageId, supportChargeCount, supportConfig.RequiredDirectHitCount));
+                FireSupport(firePosition, stageElapsedSeconds);
+                return;
+            }
+
+            SupportChargeChanged(new SupportChargeChangedEvent(
+                stageId, supportChargeCount, supportConfig.RequiredDirectHitCount));
         }
 
         private void FireSupport(Vector2 firePosition, double stageElapsedSeconds)
@@ -311,6 +375,8 @@ namespace Icebreaker.Gameplay
                     continue;
                 }
 
+                var hpBeforeDamage = queued.Target.RemainingHp;
+
                 if (queued.Target.TryApplyDamage(
                         queued.Damage,
                         queued.EffectType,
@@ -327,9 +393,27 @@ namespace Icebreaker.Gameplay
                     if (queued.Target.IsDestroyed && damageEvent.RemainingHp <= 0f)
                     {
                         IceDestroyed(destroyEvent);
+                        destroyedCountInCurrentChain++;
                         
-                        if (queued.ChainDepth < 3)
+                        var maxChainDepth = chainConfig?.MaxChainDepth ?? 3;
+                        if (queued.ChainDepth < maxChainDepth)
                         {
+                            // 1. D03 과잉 파쇄
+                            if (queued.Category == DestroyCategory.Direct && chainConfig != null && chainConfig.OverkillEnabled)
+                            {
+                                var overkillDamage = queued.Damage - hpBeforeDamage;
+                                if (overkillDamage > 0f)
+                                {
+                                    var transferDamage = overkillDamage * chainConfig.OverkillTransferMultiplier;
+                                    var closest = FindClosestAliveExclude(queued.Target.ReferencePosition, queued.Target);
+                                    if (closest != null)
+                                    {
+                                        EnqueueDamage(closest, transferDamage, EffectType.Overkill, DestroyCategory.Chain, false, queued.ChainDepth + 1);
+                                    }
+                                }
+                            }
+
+                            // 2. 특수빙 효과
                             if (queued.Target.SpecialType == SpecialIceType.Crystal)
                             {
                                 TriggerCrystalEffect(queued.Target, queued.ChainDepth + 1, stageElapsedSeconds);
@@ -338,7 +422,21 @@ namespace Icebreaker.Gameplay
                             {
                                 TriggerCrackEffect(queued.Target, queued.ChainDepth + 1, stageElapsedSeconds);
                             }
-                            // TODO: D03, H01
+                            
+                            // 3. H01 파편 비산
+                            if (chainConfig != null && chainConfig.HullFragmentDamageMultiplier > 0f)
+                            {
+                                TriggerHullFragment(queued.Target.ReferencePosition, queued.ChainDepth + 1, stageElapsedSeconds);
+                            }
+                        }
+
+                        // 4. H03 빙판 붕괴 (depth 3이어도 피해 발동)
+                        if (chainConfig != null && chainConfig.IceCollapseEnabled &&
+                            !hasTriggeredIceCollapseInCurrentChain &&
+                            destroyedCountInCurrentChain >= chainConfig.IceCollapseRequiredDestroyCount)
+                        {
+                            hasTriggeredIceCollapseInCurrentChain = true;
+                            TriggerIceCollapse(queued.Target.ReferencePosition, stageElapsedSeconds);
                         }
 
                         RespawnAt(queued.Target, stageElapsedSeconds);
@@ -349,7 +447,7 @@ namespace Icebreaker.Gameplay
 
         private void TriggerCrystalEffect(IceInstance source, int nextDepth, double stageElapsedSeconds)
         {
-            const int shardCount = 5; // H02 0단계 기준 파편 수 5개
+            var shardCount = chainConfig != null ? chainConfig.CrystalShardCount : 5;
             var targets = FindCrystalTargets(source, shardCount, stageElapsedSeconds);
             
             foreach (var target in targets)
@@ -407,9 +505,11 @@ namespace Icebreaker.Gameplay
 
         private void TriggerCrackEffect(IceInstance source, int nextDepth, double stageElapsedSeconds)
         {
-            const float crackRadius = 120f; // H02 0단계 기준 반경 120px
+            var crackRadius = chainConfig != null ? chainConfig.CrackRadiusReferencePixels : 120f;
+            var crackMultiplier = chainConfig != null ? chainConfig.CrackDamageMultiplier : 1.0f;
+            
             var targets = FindCrackTargets(source, crackRadius, stageElapsedSeconds);
-            var damageAmount = lastClickDamage * 3f;
+            var damageAmount = lastClickDamage * 3f * crackMultiplier;
 
             foreach (var target in targets)
             {
@@ -459,6 +559,130 @@ namespace Icebreaker.Gameplay
             return targets;
         }
 
+        private void TriggerHullFragment(Vector2 position, int nextDepth, double stageElapsedSeconds)
+        {
+            if (chainConfig == null || chainConfig.HullFragmentDamageMultiplier <= 0f) return;
+
+            var radius = chainConfig.HullFragmentRadiusReferencePixels;
+            var damageAmount = lastClickDamage * chainConfig.HullFragmentDamageMultiplier;
+
+            var targets = FindTargetsInRadius(position, radius, stageElapsedSeconds);
+            foreach (var target in targets)
+            {
+                EnqueueDamage(target, damageAmount, EffectType.HullFragment, DestroyCategory.Chain, false, nextDepth);
+            }
+        }
+
+        private void TriggerIceCollapse(Vector2 position, double stageElapsedSeconds)
+        {
+            if (chainConfig == null || !chainConfig.IceCollapseEnabled) return;
+
+            var radius = chainConfig.IceCollapseRadiusReferencePixels;
+            var damageAmount = lastClickDamage * chainConfig.IceCollapseDamageMultiplier;
+
+            var targets = FindTargetsInRadius(position, radius, stageElapsedSeconds);
+            foreach (var target in targets)
+            {
+                // H03은 최대 깊이를 우회하여 무조건 깊이 3으로 기록.
+                EnqueueDamage(target, damageAmount, EffectType.IceCollapse, DestroyCategory.Chain, false,
+                    chainConfig.MaxChainDepth);
+            }
+        }
+
+        private List<IceInstance> FindTargetsInRadius(Vector2 position, float radius, double stageElapsedSeconds)
+        {
+            var targets = new List<IceInstance>();
+            for (var i = 0; i < activeIce.Count; i++)
+            {
+                var ice = activeIce[i];
+                if (ice.IsDestroyed) continue;
+
+                if (stageElapsedSeconds - ice.SpawnTime < config.RespawnProtectionSeconds)
+                {
+                    continue;
+                }
+
+                if (Vector2.Distance(ice.ReferencePosition, position) <= radius)
+                {
+                    targets.Add(ice);
+                }
+            }
+
+            targets.Sort((a, b) =>
+            {
+                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
+                if (hpCmp != 0) return hpCmp;
+
+                var distA = Vector2.Distance(a.ReferencePosition, position);
+                var distB = Vector2.Distance(b.ReferencePosition, position);
+                var distCmp = distA.CompareTo(distB);
+                if (distCmp != 0) return distCmp;
+
+                return a.IceInstanceId.CompareTo(b.IceInstanceId);
+            });
+
+            return targets;
+        }
+
+        private List<IceInstance> FindAliveOverlappingCursor(
+            Vector2 cursorPosition,
+            float cursorRadiusReferencePixels)
+        {
+            var targets = new List<IceInstance>();
+            var overlapDistance = cursorRadiusReferencePixels + config.IceCollisionRadiusReferencePixels;
+            var overlapDistanceSquared = overlapDistance * overlapDistance;
+
+            for (var i = 0; i < activeIce.Count; i++)
+            {
+                var ice = activeIce[i];
+                if (ice.IsDestroyed)
+                {
+                    continue;
+                }
+
+                if ((ice.ReferencePosition - cursorPosition).sqrMagnitude <= overlapDistanceSquared)
+                {
+                    targets.Add(ice);
+                }
+            }
+
+            targets.Sort((a, b) =>
+            {
+                var distanceComparison = (a.ReferencePosition - cursorPosition).sqrMagnitude.CompareTo(
+                    (b.ReferencePosition - cursorPosition).sqrMagnitude);
+                return distanceComparison != 0
+                    ? distanceComparison
+                    : a.IceInstanceId.CompareTo(b.IceInstanceId);
+            });
+
+            return targets;
+        }
+
+        /// <summary>Find the closest alive ice excluding a specific instance.</summary>
+        private IceInstance? FindClosestAliveExclude(Vector2 referencePosition, IceInstance exclude)
+        {
+            IceInstance? closest = null;
+            var closestDist = float.MaxValue;
+
+            for (var i = 0; i < activeIce.Count; i++)
+            {
+                var ice = activeIce[i];
+                if (ice.IsDestroyed || ice == exclude)
+                {
+                    continue;
+                }
+
+                var dist = Vector2.Distance(ice.ReferencePosition, referencePosition);
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    closest = ice;
+                }
+            }
+
+            return closest;
+        }
+
         /// <summary>Find the closest alive ice within hit radius of the given position.</summary>
         private IceInstance? FindClosestAliveAt(Vector2 referencePosition)
         {
@@ -474,7 +698,7 @@ namespace Icebreaker.Gameplay
                 }
 
                 var dist = Vector2.Distance(ice.ReferencePosition, referencePosition);
-                if (dist <= config.HitRadiusReferencePixels && dist < closestDist)
+                if (dist <= config.IceCollisionRadiusReferencePixels && dist < closestDist)
                 {
                     closestDist = dist;
                     closest = ice;

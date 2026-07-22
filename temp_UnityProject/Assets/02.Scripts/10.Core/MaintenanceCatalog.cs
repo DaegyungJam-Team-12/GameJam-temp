@@ -15,6 +15,7 @@ namespace Icebreaker.Core
         public const string D01 = "D01";
         public const string D02 = "D02";
         public const string D03 = "D03";
+        public const string D04 = "D04";
         public const string S01 = "S01";
         public const string S02 = "S02";
         public const string S03 = "S03";
@@ -39,12 +40,15 @@ namespace Icebreaker.Core
                     new[] { "직접 피해 ×1.6", "직접 피해 ×2.56", "직접 피해 ×4.096" },
                     Require(C01)),
                 Define(D02, "고속 구동", MaintenanceBranch.Direct, new long[] { 600, 1_800, 5_400 },
-                    new[] { "누르기 속도 +2/초", "누르기 속도 +4/초", "누르기 속도 +6/초" },
+                    new[] { "자동 타격 +2회/초", "자동 타격 +4회/초", "자동 타격 +6회/초" },
                     Require(C01)),
                 Define(D03, "과잉 파쇄", MaintenanceBranch.Direct, new long[] { 8_000 },
                     new[] { "초과 피해 50% 전달" }, Require(D01, 2)),
+                Define(D04, "범위 확장", MaintenanceBranch.Direct, new long[] { 1_000, 3_000, 9_000 },
+                    new[] { "커서 반경 72px", "커서 반경 88px", "커서 반경 104px" },
+                    Require(C01)),
                 Define(S01, "보조 파쇄기", MaintenanceBranch.Support, new long[] { 500 },
-                    new[] { "12회 입력마다 보조탄" }, Require(C01)),
+                    new[] { "유효 자동 틱 12회마다 보조탄" }, Require(C01)),
                 Define(S02, "다중 타격", MaintenanceBranch.Support, new long[] { 3_000, 9_000 },
                     new[] { "보조 대상 +1", "보조 대상 +2" }, Require(S01)),
                 Define(S03, "표적 분석", MaintenanceBranch.Support, new long[] { 15_000 },

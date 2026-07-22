@@ -17,6 +17,7 @@ namespace Icebreaker.Core
             var d01Level = GetLevel(levelsById, MaintenanceCatalog.D01, 3);
             var d02Level = GetLevel(levelsById, MaintenanceCatalog.D02, 3);
             var d03Level = GetLevel(levelsById, MaintenanceCatalog.D03, 1);
+            var d04Level = GetLevel(levelsById, MaintenanceCatalog.D04, 3);
             var s01Level = GetLevel(levelsById, MaintenanceCatalog.S01, 1);
             var s02Level = GetLevel(levelsById, MaintenanceCatalog.S02, 2);
             var s03Level = GetLevel(levelsById, MaintenanceCatalog.S03, 1);
@@ -29,6 +30,7 @@ namespace Icebreaker.Core
                 directAttack: new DirectAttackConfig(
                     (float)Math.Pow(1.6d, d01Level),
                     Math.Min(11f, 5f + 2f * d02Level),
+                    56f + 16f * d04Level,
                     0.05f,
                     3f),
                 iceField: CreateIceField(c03Level, c04Level),

@@ -97,9 +97,26 @@ namespace Icebreaker.Core.Tests
             Assert.That(coordinator.CurrentState.CanStartStage, Is.False);
         }
 
+        [Test]
+        public void CurrentCombatConfig_UsesSavedD04RadiusForTheNextStage()
+        {
+            var saveData = SaveData.CreateNew("demo");
+            saveData.maintenanceLevels.Add(new SaveMaintenanceLevel(MaintenanceCatalog.D04, 3));
+
+            using var coordinator = CreateCoordinator(
+                CreateSmallDestinations(),
+                out _,
+                saveData);
+
+            Assert.That(
+                coordinator.CurrentCombatConfig.DirectAttack.CursorRadiusReferencePixels,
+                Is.EqualTo(104f));
+        }
+
         private Int02LoopCoordinator CreateCoordinator(
             DestinationDefinition[] destinations,
-            out ProgressionLedger ledger)
+            out ProgressionLedger ledger,
+            SaveData? saveData = null)
         {
             var loop = new GameLoopController(
                 PhaseSeconds,
@@ -110,7 +127,7 @@ namespace Icebreaker.Core.Tests
             ledger = new ProgressionLedger(destinations, RewardTable.CreateDefault());
             var saveService = new SaveService(
                 new SaveStore(tempDirectory),
-                SaveData.CreateNew("demo"));
+                saveData ?? SaveData.CreateNew("demo"));
             return new Int02LoopCoordinator(
                 loop,
                 ledger,

@@ -27,7 +27,7 @@ namespace Icebreaker.Shared.Combat
                     nameof(maxSpecialIceCount));
             }
 
-            HitRadiusReferencePixels = ContractGuards.Positive(
+            IceCollisionRadiusReferencePixels = ContractGuards.Positive(
                 hitRadiusReferencePixels,
                 nameof(hitRadiusReferencePixels));
             MinimumSpawnDistanceReferencePixels = ContractGuards.Positive(
@@ -48,7 +48,11 @@ namespace Icebreaker.Shared.Combat
         public int MaxSpecialIceCount { get; }
 
         /// <summary>Radius in the 960 x 540 bottom-left-origin reference space.</summary>
-        public float HitRadiusReferencePixels { get; }
+        /// <summary>Ice collision radius in the 960 x 540 bottom-left-origin reference space.</summary>
+        public float IceCollisionRadiusReferencePixels { get; }
+
+        /// <summary>Legacy alias for the ice collision radius.</summary>
+        public float HitRadiusReferencePixels => IceCollisionRadiusReferencePixels;
 
         /// <summary>Distance in the 960 x 540 bottom-left-origin reference space.</summary>
         public float MinimumSpawnDistanceReferencePixels { get; }

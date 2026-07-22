@@ -17,6 +17,7 @@ namespace Icebreaker.Core.Tests
 
             Assert.That(config.DirectAttack.CurrentClickDamage, Is.EqualTo(1f));
             Assert.That(config.DirectAttack.HoldAttacksPerSecond, Is.EqualTo(5f));
+            Assert.That(config.DirectAttack.CursorRadiusReferencePixels, Is.EqualTo(56f));
             Assert.That(config.DirectAttack.CriticalChance, Is.EqualTo(0.05f));
             Assert.That(config.DirectAttack.CriticalDamageMultiplier, Is.EqualTo(3f));
             Assert.That(config.SupportAttack.Enabled, Is.False);
@@ -73,6 +74,7 @@ namespace Icebreaker.Core.Tests
 
             Assert.That(config.DirectAttack.CurrentClickDamage, Is.EqualTo(4.096f).Within(0.0001f));
             Assert.That(config.DirectAttack.HoldAttacksPerSecond, Is.EqualTo(11f));
+            Assert.That(config.DirectAttack.CursorRadiusReferencePixels, Is.EqualTo(104f));
             Assert.That(config.DirectAttack.CriticalChance, Is.EqualTo(0.05f));
             Assert.That(config.DirectAttack.CriticalDamageMultiplier, Is.EqualTo(3f));
             Assert.That(config.SupportAttack.Enabled, Is.True);
@@ -113,6 +115,23 @@ namespace Icebreaker.Core.Tests
             Assert.That(config.ChainEffect.CrackRadiusReferencePixels, Is.EqualTo(156f).Within(0.01f));
         }
 
+        [TestCase(0, 56f)]
+        [TestCase(1, 72f)]
+        [TestCase(2, 88f)]
+        [TestCase(3, 104f)]
+        public void Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(
+            int d04Level,
+            float expectedRadius)
+        {
+            var levels = d04Level == 0
+                ? Array.Empty<MaintenanceLevel>()
+                : new[] { new MaintenanceLevel(MaintenanceCatalog.D04, d04Level) };
+
+            var config = CombatConfigFactory.Build(levels);
+
+            Assert.That(config.DirectAttack.CursorRadiusReferencePixels, Is.EqualTo(expectedRadius));
+        }
+
         [Test]
         public void MaintenanceEfficiencyLevel_FeedsRewardTableFormula()
         {
@@ -142,6 +161,7 @@ namespace Icebreaker.Core.Tests
                 new MaintenanceLevel(MaintenanceCatalog.D01, 3),
                 new MaintenanceLevel(MaintenanceCatalog.D02, 3),
                 new MaintenanceLevel(MaintenanceCatalog.D03, 1),
+                new MaintenanceLevel(MaintenanceCatalog.D04, 3),
                 new MaintenanceLevel(MaintenanceCatalog.S01, 1),
                 new MaintenanceLevel(MaintenanceCatalog.S02, 2),
                 new MaintenanceLevel(MaintenanceCatalog.S03, 1),
