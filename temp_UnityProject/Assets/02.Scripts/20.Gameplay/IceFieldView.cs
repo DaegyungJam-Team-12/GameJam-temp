@@ -45,6 +45,11 @@ namespace Icebreaker.Gameplay
             [Range(0, 100)] public int weightT2;
             [Range(0, 100)] public int weightT3;
 
+            [Header("Special Ice (GP-04)")]
+            [Range(0f, 1f)] public float crystalSpawnProb;
+            [Range(0f, 1f)] public float crackSpawnProb;
+            [Range(0, 20)] public int maxSpecialIce;
+
             [Header("Support Attack (GP-06)")]
             public bool enableSupportAttack;
             [Range(1, 20)] public int requiredHits;
@@ -75,6 +80,9 @@ namespace Icebreaker.Gameplay
             weightT1 = 100,
             weightT2 = 0,
             weightT3 = 0,
+            crystalSpawnProb = 0.2f, // 20% for easier testing
+            crackSpawnProb = 0.2f,   // 20% for easier testing
+            maxSpecialIce = 5,       // Max 5 special ice blocks at a time
             enableSupportAttack = true,
             requiredHits = 12,
             additionalTargets = 2,
@@ -489,13 +497,13 @@ namespace Icebreaker.Gameplay
 
             var specialDefinitions = new[]
             {
-                new SpecialIceDefinition(SpecialIceType.Crystal, 0.025f, IceTier.T2, 1.0f, 4.0f),
-                new SpecialIceDefinition(SpecialIceType.Crack, 0.020f, IceTier.T1, 0.6f, 1.0f),
+                new SpecialIceDefinition(SpecialIceType.Crystal, sandboxSettings.crystalSpawnProb, IceTier.T2, 1.0f, 4.0f),
+                new SpecialIceDefinition(SpecialIceType.Crack, sandboxSettings.crackSpawnProb, IceTier.T1, 0.6f, 1.0f),
             };
 
             return new IceFieldConfig(
                 maxActiveIceCount: 20,
-                maxSpecialIceCount: 2,
+                maxSpecialIceCount: sandboxSettings.maxSpecialIce,
                 hitRadiusReferencePixels: 56f,
                 minimumSpawnDistanceReferencePixels: 120f,
                 respawnProtectionSeconds: 0.25f,
