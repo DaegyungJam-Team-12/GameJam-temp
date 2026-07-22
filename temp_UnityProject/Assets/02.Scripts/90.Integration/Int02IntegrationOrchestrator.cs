@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Icebreaker.Core;
 using Icebreaker.Gameplay;
 using Icebreaker.Shared.Events;
-using Icebreaker.Shared.Progression;
 using Icebreaker.Shared.State;
 using Icebreaker.UI.Hud;
 using UnityEngine;
@@ -44,6 +43,8 @@ namespace Icebreaker.Integration
         public event Action<StageEnded> StageEnded = delegate { };
 
         public event Action<SettlementReady> SettlementReady = delegate { };
+
+        public event Action<ArrivalPresentationRequested> ArrivalPresentationRequested = delegate { };
 
         public event Action<GameState> StateChanged = delegate { };
 
@@ -99,6 +100,7 @@ namespace Icebreaker.Integration
             coordinator.RewardGranted += HandleRewardGranted;
             coordinator.StageEnded += HandleStageEnded;
             coordinator.SettlementReady += HandleSettlementReady;
+            coordinator.ArrivalPresentationRequested += HandleArrivalPresentationRequested;
             coordinator.StateChanged += HandleCoordinatorStateChanged;
 
             iceFieldView.InjectStageClock(loop);
@@ -170,6 +172,7 @@ namespace Icebreaker.Integration
                 coordinator.RewardGranted -= HandleRewardGranted;
                 coordinator.StageEnded -= HandleStageEnded;
                 coordinator.SettlementReady -= HandleSettlementReady;
+                coordinator.ArrivalPresentationRequested -= HandleArrivalPresentationRequested;
                 coordinator.StateChanged -= HandleCoordinatorStateChanged;
                 FlushForShutdown();
                 coordinator.Dispose();
@@ -253,6 +256,9 @@ namespace Icebreaker.Integration
 
         private void HandleSettlementReady(SettlementReady payload) => SettlementReady(payload);
 
+        private void HandleArrivalPresentationRequested(ArrivalPresentationRequested payload) =>
+            ArrivalPresentationRequested(payload);
+
         private void HandleCoordinatorStateChanged(GameState state)
         {
             StateChanged(state);
@@ -292,7 +298,7 @@ namespace Icebreaker.Integration
         private static ProgressionLedger CreateLedger(SaveData saveData)
         {
             return new ProgressionLedger(
-                CreateDemoDestinations(),
+                DestinationCatalog.CreateDemo(),
                 RewardTable.CreateDefault(),
                 initialFunds: saveData.funds,
                 maintenanceEfficiencyLevel: 0,
@@ -301,16 +307,6 @@ namespace Icebreaker.Integration
                 initialCompletedDestinationIds: saveData.completedDestinationIds,
                 initialPendingArrivalDestinationId: saveData.pendingArrivalDestinationId,
                 initialGameCompleted: saveData.gameCompleted);
-        }
-
-        private static DestinationDefinition[] CreateDemoDestinations()
-        {
-            return new[]
-            {
-                new DestinationDefinition("island-village", "섬마을", 40, "식료품·우편", 0),
-                new DestinationDefinition("lighthouse-port", "등대항", 120, "발전기 연료·의약품", 1),
-                new DestinationDefinition("northern-base", "북쪽 기지", 300, "기계 부품·우편", 2)
-            };
         }
 
         private static bool ApplyPendingArrival(ProgressionLedger ledger, SaveData saveData)

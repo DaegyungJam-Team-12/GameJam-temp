@@ -24,5 +24,11 @@ namespace Icebreaker.Shared.Events
         event Action<StageEnded> StageEnded;
 
         event Action<SettlementReady> SettlementReady;
+
+        event Action<ArrivalPresentationRequested> ArrivalPresentationRequested
+        {
+            add { }
+            remove { }
+        }
     }
 }

@@ -80,4 +80,19 @@ namespace Icebreaker.Shared.Events
 
         public SettlementSummary Summary { get; }
     }
+
+    public readonly struct ArrivalPresentationRequested
+    {
+        public ArrivalPresentationRequested(string destinationId, string destinationDisplayName)
+        {
+            DestinationId = ContractGuards.Required(destinationId, nameof(destinationId));
+            DestinationDisplayName = ContractGuards.Required(
+                destinationDisplayName,
+                nameof(destinationDisplayName));
+        }
+
+        public string DestinationId { get; }
+
+        public string DestinationDisplayName { get; }
+    }
 }

@@ -45,6 +45,8 @@ namespace Icebreaker.Core
 
         public event Action<SettlementReady> SettlementReady = delegate { };
 
+        public event Action<ArrivalPresentationRequested> ArrivalPresentationRequested = delegate { };
+
         public event Action<GameState> StateChanged = delegate { };
 
         public GameLoopController Loop => loop;
@@ -116,11 +118,15 @@ namespace Icebreaker.Core
 
             if (summary.ReachedDestination)
             {
+                var arrivedDestination = ledger.CurrentDestination;
                 if (!ledger.ApplyArrival())
                 {
                     throw new InvalidOperationException("Reached destination could not be applied.");
                 }
 
+                ArrivalPresentationRequested(new ArrivalPresentationRequested(
+                    arrivedDestination.Id,
+                    arrivedDestination.DisplayName));
                 CopyProgressionToSave();
                 loop.CompleteSettlement(true);
                 loop.CompleteArrival(ledger.GameCompleted);
