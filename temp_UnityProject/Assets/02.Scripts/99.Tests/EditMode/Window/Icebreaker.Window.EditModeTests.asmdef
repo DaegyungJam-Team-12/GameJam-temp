@@ -2,7 +2,8 @@
   "name": "Icebreaker.Window.EditModeTests",
   "rootNamespace": "Icebreaker.Window.Tests",
   "references": [
-    "Icebreaker.Window"
+    "Icebreaker.Window",
+    "Icebreaker.Shared"
   ],
   "includePlatforms": [
     "Editor"

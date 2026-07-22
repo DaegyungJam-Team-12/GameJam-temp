@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using Icebreaker.Shared.State;
 using UnityEngine;
 
 namespace Icebreaker.Window
@@ -14,11 +15,20 @@ namespace Icebreaker.Window
 
         private Kirurobo.UniWindowController? _controller;
         private bool _finalized;
+        private bool _hasRequestedView;
+        private WindowView _requestedView = WindowView.Collapsed;
+
+        public static WindowBootstrap? Instance { get; private set; }
 
         /// <summary>
         /// Gets the final startup result, or null while native attach is still pending.
         /// </summary>
         public WindowStartupResult? LastResult { get; private set; }
+
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Boot()
@@ -103,16 +113,82 @@ namespace Icebreaker.Window
             }
 
             _finalized = true;
-            LastResult = result;
 
             if (result.Mode == WindowStartupMode.PluginWindow)
             {
-                Debug.Log("[WIN-00] UniWindowController plugin path active: " + result.Reason);
+                try
+                {
+                    ApplyPluginView(_requestedView);
+                    _hasRequestedView = true;
+                    LastResult = result;
+                    Debug.Log("[WIN-00] UniWindowController plugin path active: " + result.Reason);
+                    return;
+                }
+                catch (Exception exception)
+                {
+                    Destroy(_controller);
+                    _controller = null;
+                    UseNormalWindowFallback(
+                        $"Native window apply threw {exception.GetType().Name}: {exception.Message}");
+                    return;
+                }
+            }
+
+            UseNormalWindowFallback(result.Reason);
+        }
+
+        public void ApplyPhase(GamePhase phase) =>
+            ApplyView(WindowLayout.ViewForPhase(phase));
+
+        public void ApplyView(WindowView view)
+        {
+            WindowLayout.ClientSizeForView(view);
+            var viewChanged = !_hasRequestedView || _requestedView != view;
+            _requestedView = view;
+            _hasRequestedView = true;
+
+            if (!_finalized || !viewChanged)
+            {
                 return;
             }
 
+            if (LastResult?.Mode == WindowStartupMode.PluginWindow && _controller != null)
+            {
+                try
+                {
+                    ApplyPluginView(view);
+                }
+                catch (Exception exception)
+                {
+                    Destroy(_controller);
+                    _controller = null;
+                    UseNormalWindowFallback(
+                        $"Native window apply threw {exception.GetType().Name}: {exception.Message}");
+                }
+
+                return;
+            }
+            // The safe fallback deliberately remains a normal 960x540 window.
+        }
+
+        private void ApplyPluginView(WindowView view)
+        {
+            if (_controller == null)
+            {
+                throw new InvalidOperationException("UniWindowController is not attached.");
+            }
+
+            var workArea = WindowWorkAreaProvider.GetPrimary();
+            var nativeWindow = new UniWindowAdapter(_controller, workArea.CoordinateSpaceBottom);
+            var viewController = new WindowViewController(nativeWindow);
+            viewController.ApplyView(view, workArea.WorkArea);
+        }
+
+        private void UseNormalWindowFallback(string reason)
+        {
+            LastResult = new WindowStartupResult(WindowStartupMode.NormalWindowFallback, reason);
             Screen.SetResolution(960, 540, FullScreenMode.Windowed);
-            Debug.LogWarning("[WIN-00] normal-window fallback 960x540: " + result.Reason);
+            Debug.LogWarning("[WIN-00] normal-window fallback 960x540: " + reason);
         }
 
         private static bool ReadForceFallbackFlag()
@@ -149,6 +225,14 @@ namespace Icebreaker.Window
                 ? existing
                 : gameObject.AddComponent<Kirurobo.UniWindowController>();
             return _controller != null;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
     }
 }

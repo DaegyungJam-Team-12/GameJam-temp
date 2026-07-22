@@ -2,6 +2,7 @@
   "name": "Icebreaker.Window",
   "rootNamespace": "Icebreaker.Window",
   "references": [
+    "Icebreaker.Shared",
     "Kirurobo.UniWindowController"
   ],
   "includePlatforms": [],
