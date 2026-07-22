@@ -4,13 +4,20 @@ using Icebreaker.Shared.Maintenance;
 using Icebreaker.UI.Sandbox;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Icebreaker.UI.Maintenance
 {
-    public sealed class MaintenanceNodeView : MonoBehaviour
+    public sealed class MaintenanceNodeView : MonoBehaviour,
+        IPointerDownHandler,
+        IPointerUpHandler,
+        IBeginDragHandler,
+        IDragHandler,
+        IEndDragHandler
     {
         [SerializeField] private CanvasGroup? canvasGroup;
+        [SerializeField] private Image? selectionFrame;
         [SerializeField] private Image? frame;
         [SerializeField] private Image? icon;
         [SerializeField] private TMP_Text? idText;
@@ -18,6 +25,8 @@ namespace Icebreaker.UI.Maintenance
         [SerializeField] private TMP_Text? levelText;
         [SerializeField] private TMP_Text? statusText;
         [SerializeField] private TMP_Text? branchLabelText;
+
+        private MaintenanceTreeViewport? viewport;
 
         public string StepId { get; private set; } = "";
 
@@ -33,8 +42,8 @@ namespace Icebreaker.UI.Maintenance
                 canvasGroup.alpha = isHidden
                     ? 0f
                     : data.Visibility == MaintenanceStepVisibility.Preview ? 0.42f : 1f;
-                canvasGroup.interactable = false;
-                canvasGroup.blocksRaycasts = false;
+                canvasGroup.interactable = !isHidden;
+                canvasGroup.blocksRaycasts = !isHidden;
             }
 
             gameObject.SetActive(!isHidden);
@@ -51,13 +60,21 @@ namespace Icebreaker.UI.Maintenance
             if (frame != null)
             {
                 frame.rectTransform.sizeDelta = layout.VisualSize;
-                frame.raycastTarget = false;
+                frame.raycastTarget = !isHidden;
                 frame.color = data.PurchaseState switch
                 {
                     MaintenanceStepPurchaseState.Purchased => success,
                     MaintenanceStepPurchaseState.Available => data.CanAfford ? action : panel,
                     _ => panel
                 };
+            }
+
+            if (selectionFrame != null)
+            {
+                selectionFrame.rectTransform.sizeDelta = layout.VisualSize + new Vector2(10f, 10f);
+                selectionFrame.color = action;
+                selectionFrame.raycastTarget = false;
+                selectionFrame.gameObject.SetActive(false);
             }
 
             if (icon != null)
@@ -82,6 +99,38 @@ namespace Icebreaker.UI.Maintenance
                 branchLabelText.gameObject.SetActive(!string.IsNullOrEmpty(layout.BranchLabel));
             }
         }
+
+        public void ConfigureInput(MaintenanceTreeViewport inputViewport)
+        {
+            viewport = inputViewport;
+        }
+
+        public void SetSelected(bool selected)
+        {
+            if (selectionFrame != null)
+            {
+                selectionFrame.gameObject.SetActive(selected && gameObject.activeSelf);
+            }
+        }
+
+        public void OnPointerDown(PointerEventData eventData) =>
+            viewport?.ProcessPointerDown(eventData, StepId);
+
+        public void OnPointerUp(PointerEventData eventData) =>
+            viewport?.ProcessPointerUp(eventData, StepId);
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+        }
+
+        public void OnDrag(PointerEventData eventData) =>
+            viewport?.ProcessPointerDrag(eventData);
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+        }
+
+        private void OnDisable() => viewport?.CancelPointer();
 
         private static string ResolveStatus(MaintenancePurchaseStepViewData data)
         {

@@ -21,8 +21,13 @@ namespace Icebreaker.UI.Maintenance
         [SerializeField] private RectTransform? content;
         [SerializeField] private RectTransform? edgeLayer;
         [SerializeField] private RectTransform? nodeLayer;
+        [SerializeField] private MaintenanceTreeViewport? viewport;
         [SerializeField] private MaintenanceNodeView? nodePrefab;
         [SerializeField] private MaintenanceTreeEdgeView? edgePrefab;
+
+        [Header("Selection")]
+        [SerializeField] private RectTransform? tooltipOverlay;
+        [SerializeField] private MaintenanceTooltipView? tooltipView;
 
         [Header("Chrome")]
         [SerializeField] private TMP_Text? fundsText;
@@ -30,6 +35,14 @@ namespace Icebreaker.UI.Maintenance
 
         private IMaintenanceStepViewDataSource? source;
         private bool subscribed;
+        private readonly Dictionary<string, MaintenancePurchaseStepViewData> dataById =
+            new(StringComparer.Ordinal);
+        private readonly Dictionary<string, MaintenanceNodeView> nodesById =
+            new(StringComparer.Ordinal);
+        private readonly HashSet<string> pendingPurchaseStepIds = new(StringComparer.Ordinal);
+        private string? selectedStepId;
+
+        public event Action<string> PurchaseRequested = delegate { };
 
         public int VisibleNodeCount { get; private set; }
 
@@ -43,6 +56,7 @@ namespace Icebreaker.UI.Maintenance
 
             source!.EnsureInitialized();
             source.StepsChanged += Render;
+            viewport!.StepClicked += HandleStepClicked;
             subscribed = true;
             Render(source.CurrentSteps);
         }
@@ -52,6 +66,11 @@ namespace Icebreaker.UI.Maintenance
             if (subscribed && source != null)
             {
                 source.StepsChanged -= Render;
+            }
+
+            if (subscribed && viewport != null)
+            {
+                viewport.StepClicked -= HandleStepClicked;
             }
 
             subscribed = false;
@@ -65,7 +84,8 @@ namespace Icebreaker.UI.Maintenance
             }
 
             var expectedIds = new string[steps.Count];
-            var dataById = new Dictionary<string, MaintenancePurchaseStepViewData>(StringComparer.Ordinal);
+            dataById.Clear();
+            pendingPurchaseStepIds.Clear();
             for (var index = 0; index < steps.Count; index++)
             {
                 expectedIds[index] = steps[index].StepId;
@@ -92,6 +112,7 @@ namespace Icebreaker.UI.Maintenance
 
             RenderEdges(layoutById, dataById);
             RenderNodes(layoutById, dataById);
+            RestoreSelection();
 
             if (source != null)
             {
@@ -145,6 +166,7 @@ namespace Icebreaker.UI.Maintenance
             IReadOnlyDictionary<string, MaintenancePurchaseStepViewData> dataById)
         {
             VisibleNodeCount = 0;
+            nodesById.Clear();
             foreach (var pair in dataById)
             {
                 var node = Instantiate(nodePrefab!, nodeLayer!, false);
@@ -152,11 +174,76 @@ namespace Icebreaker.UI.Maintenance
                 var rect = (RectTransform)node.transform;
                 rect.anchoredPosition = ToAnchored(layoutById[pair.Key].Position);
                 node.Render(pair.Value, layoutById[pair.Key], theme);
+                node.ConfigureInput(viewport!);
+                nodesById.Add(pair.Key, node);
                 if (pair.Value.Visibility != MaintenanceStepVisibility.Hidden)
                 {
                     VisibleNodeCount++;
                 }
             }
+        }
+
+        private void HandleStepClicked(string stepId)
+        {
+            if (!dataById.TryGetValue(stepId, out var data) ||
+                data.Visibility == MaintenanceStepVisibility.Hidden ||
+                !nodesById.TryGetValue(stepId, out var node))
+            {
+                return;
+            }
+
+            if (selectedStepId != null && nodesById.TryGetValue(selectedStepId, out var previous))
+            {
+                previous.SetSelected(false);
+            }
+
+            selectedStepId = stepId;
+            node.SetSelected(true);
+            ShowTooltip(data, node);
+
+            if (data.CanPurchase && pendingPurchaseStepIds.Add(stepId))
+            {
+                PurchaseRequested(stepId);
+            }
+        }
+
+        private void RestoreSelection()
+        {
+            if (selectedStepId != null &&
+                dataById.TryGetValue(selectedStepId, out var data) &&
+                data.Visibility != MaintenanceStepVisibility.Hidden &&
+                nodesById.TryGetValue(selectedStepId, out var node))
+            {
+                node.SetSelected(true);
+                ShowTooltip(data, node);
+                return;
+            }
+
+            selectedStepId = null;
+            tooltipView?.Hide();
+        }
+
+        private void ShowTooltip(MaintenancePurchaseStepViewData data, MaintenanceNodeView node)
+        {
+            if (tooltipOverlay == null || tooltipView == null)
+            {
+                return;
+            }
+
+            var screenPosition = RectTransformUtility.WorldToScreenPoint(null, node.transform.position);
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    tooltipOverlay,
+                    screenPosition,
+                    null,
+                    out var localPosition))
+            {
+                return;
+            }
+
+            tooltipView.Show(
+                data,
+                localPosition + new Vector2(54f, 28f),
+                tooltipOverlay.rect);
         }
 
         private Color ResolveEdgeColor(MaintenancePurchaseStepViewData target)
@@ -178,7 +265,8 @@ namespace Icebreaker.UI.Maintenance
         {
             if (layout != null && sourceBehaviour != null && sourceBehaviour is IMaintenanceStepViewDataSource &&
                 content != null && edgeLayer != null && nodeLayer != null &&
-                nodePrefab != null && edgePrefab != null)
+                viewport != null && nodePrefab != null && edgePrefab != null &&
+                tooltipOverlay != null && tooltipView != null)
             {
                 return true;
             }

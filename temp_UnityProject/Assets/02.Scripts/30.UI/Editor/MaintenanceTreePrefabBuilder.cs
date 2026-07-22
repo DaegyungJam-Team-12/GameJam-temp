@@ -207,6 +207,8 @@ namespace Icebreaker.UI.Editor
             {
                 var rootRect = root.GetComponent<RectTransform>();
                 ConfigureTopLeftAnchor(rootRect, new Vector2(140f, 120f));
+                var selectionFrame = CreateCenteredImage("SelectionFrame", root.transform, Vector2.zero, new Vector2(70f, 70f), Color.white);
+                selectionFrame.gameObject.SetActive(false);
                 var frame = CreateCenteredImage("Frame", root.transform, Vector2.zero, new Vector2(60f, 60f), Color.white);
                 var icon = CreateCenteredImage("Icon", frame.transform, Vector2.zero, new Vector2(34f, 34f), Color.white);
                 var idText = CreateCenteredText("IdText", frame.transform, Vector2.zero, new Vector2(54f, 24f), "C01", font, 14f, TextAlignmentOptions.Center);
@@ -218,6 +220,7 @@ namespace Icebreaker.UI.Editor
                 var view = root.GetComponent<MaintenanceNodeView>();
                 var serialized = new SerializedObject(view);
                 SetReference(serialized, "canvasGroup", root.GetComponent<CanvasGroup>());
+                SetReference(serialized, "selectionFrame", selectionFrame);
                 SetReference(serialized, "frame", frame);
                 SetReference(serialized, "icon", icon);
                 SetReference(serialized, "idText", idText);
@@ -265,15 +268,22 @@ namespace Icebreaker.UI.Editor
                 "UI_MaintenanceTooltip",
                 typeof(RectTransform),
                 typeof(CanvasRenderer),
-                typeof(Image));
+                typeof(Image),
+                typeof(MaintenanceTooltipView));
             try
             {
                 ConfigureTopLeftAnchor(root.GetComponent<RectTransform>(), new Vector2(300f, 190f));
                 root.GetComponent<Image>().color = new Color(theme.Panel.r, theme.Panel.g, theme.Panel.b, 0.98f);
-                CreateTopLeftText("Title", root.transform, 14f, 12f, 272f, 28f, "주 파쇄기 출력 · 2/3", font, 18f, TextAlignmentOptions.Left);
-                CreateTopLeftText("Effect", root.transform, 14f, 48f, 272f, 48f, "직접 피해 ×2.56\n현재값 → 구매 후 값", font, 14f, TextAlignmentOptions.TopLeft);
-                CreateTopLeftText("Cost", root.transform, 14f, 106f, 272f, 26f, "가격 900", font, 15f, TextAlignmentOptions.Left);
-                CreateTopLeftText("Lock", root.transform, 14f, 138f, 272f, 38f, "잠금 조건 없음", font, 13f, TextAlignmentOptions.TopLeft);
+                var title = CreateTopLeftText("Title", root.transform, 14f, 12f, 272f, 28f, "주 파쇄기 출력 · 2/3", font, 18f, TextAlignmentOptions.Left);
+                var effect = CreateTopLeftText("Effect", root.transform, 14f, 48f, 272f, 48f, "직접 피해 ×2.56\n현재값 → 구매 후 값", font, 14f, TextAlignmentOptions.TopLeft);
+                var cost = CreateTopLeftText("Cost", root.transform, 14f, 106f, 272f, 26f, "가격 900", font, 15f, TextAlignmentOptions.Left);
+                var lockText = CreateTopLeftText("Lock", root.transform, 14f, 138f, 272f, 38f, "잠금 조건 없음", font, 13f, TextAlignmentOptions.TopLeft);
+                var serialized = new SerializedObject(root.GetComponent<MaintenanceTooltipView>());
+                SetReference(serialized, "titleText", title);
+                SetReference(serialized, "effectText", effect);
+                SetReference(serialized, "costText", cost);
+                SetReference(serialized, "lockText", lockText);
+                serialized.ApplyModifiedPropertiesWithoutUndo();
                 PrefabUtility.SaveAsPrefabAsset(root, TooltipPrefabPath);
             }
             finally
@@ -310,26 +320,32 @@ namespace Icebreaker.UI.Editor
                 CreateButton("SettingsButton", topBar.transform, 758f, 10f, 82f, 40f, "설정", font, theme.Background);
                 CreateButton("CollapseButton", topBar.transform, 848f, 10f, 96f, 40f, "접기", font, theme.Background);
 
-                var viewport = CreateTopLeftImage("TreeViewport", root.transform, 16f, 60f, 928f, 408f, new Color(0.025f, 0.08f, 0.13f, 1f), false);
+                var viewport = CreateTopLeftImage("TreeViewport", root.transform, 16f, 60f, 928f, 408f, new Color(0.025f, 0.08f, 0.13f, 1f), true);
                 viewport.gameObject.AddComponent<RectMask2D>();
-                var content = CreateTopLeftRect("TreeContent", viewport.transform, 20f, -56f, ContentSize.x, ContentSize.y);
+                var content = CreateTopLeftRect("TreeContent", viewport.transform, 0f, -56f, ContentSize.x, ContentSize.y);
                 content.localScale = Vector3.one * 0.8f;
                 var edgeLayer = CreateStretchRect("EdgeLayer", content);
                 var nodeLayer = CreateStretchRect("NodeLayer", content);
                 CreateStretchRect("SelectionLayer", content);
+                var viewportController = viewport.gameObject.AddComponent<MaintenanceTreeViewport>();
+                var viewportSerialized = new SerializedObject(viewportController);
+                SetReference(viewportSerialized, "content", content);
+                SetReference(viewportSerialized, "canvas", root.GetComponent<Canvas>());
+                viewportSerialized.FindProperty("initialContentPosition").vector2Value = content.anchoredPosition;
+                viewportSerialized.FindProperty("initialZoom").floatValue = 0.8f;
+                viewportSerialized.ApplyModifiedPropertiesWithoutUndo();
 
                 var tooltipOverlay = CreateStretchRect("TooltipOverlay", root.transform);
                 var tooltip = (GameObject)PrefabUtility.InstantiatePrefab(tooltipPrefab, tooltipOverlay);
                 tooltip.name = "Tooltip";
                 var tooltipRect = tooltip.GetComponent<RectTransform>();
-                tooltipRect.anchorMin = new Vector2(1f, 1f);
-                tooltipRect.anchorMax = new Vector2(1f, 1f);
-                tooltipRect.pivot = new Vector2(1f, 1f);
-                tooltipRect.anchoredPosition = new Vector2(-20f, -72f);
+                tooltipRect.anchorMin = tooltipRect.anchorMax = new Vector2(0.5f, 0.5f);
+                tooltipRect.pivot = new Vector2(0f, 1f);
+                tooltipRect.anchoredPosition = Vector2.zero;
                 tooltip.SetActive(false);
 
                 var bottomBar = CreateTopLeftImage("BottomBar", root.transform, 0f, 468f, 960f, 72f, theme.Panel, false);
-                CreateTopLeftText("ControlGuide", bottomBar.transform, 16f, 12f, 360f, 48f, "드래그·WASD 이동  ·  휠 확대/축소", font, 14f, TextAlignmentOptions.Left);
+                CreateTopLeftText("ControlGuide", bottomBar.transform, 16f, 12f, 360f, 48f, "드래그·WASD 이동 · 휠 확대/축소 · R 복귀", font, 14f, TextAlignmentOptions.Left);
                 var fundsText = CreateTopLeftText("FundsText", bottomBar.transform, 388f, 12f, 220f, 48f, "정비 자금 100,000", font, 17f, TextAlignmentOptions.Center);
                 CreateButton("StageStartButton", bottomBar.transform, 620f, 12f, 324f, 48f, "쇄빙 시작", font, theme.ActionAccent);
 
@@ -340,8 +356,11 @@ namespace Icebreaker.UI.Editor
                 SetReference(serialized, "content", content);
                 SetReference(serialized, "edgeLayer", edgeLayer);
                 SetReference(serialized, "nodeLayer", nodeLayer);
+                SetReference(serialized, "viewport", viewportController);
                 SetReference(serialized, "nodePrefab", nodePrefab);
                 SetReference(serialized, "edgePrefab", edgePrefab);
+                SetReference(serialized, "tooltipOverlay", tooltipOverlay);
+                SetReference(serialized, "tooltipView", tooltip.GetComponent<MaintenanceTooltipView>());
                 SetReference(serialized, "fundsText", fundsText);
                 SetReference(serialized, "previewStateText", previewStateText);
                 serialized.ApplyModifiedPropertiesWithoutUndo();
@@ -450,7 +469,8 @@ namespace Icebreaker.UI.Editor
             foreach (var propertyName in new[]
                      {
                          "layout", "sourceBehaviour", "theme", "content", "edgeLayer", "nodeLayer",
-                         "nodePrefab", "edgePrefab", "fundsText", "previewStateText"
+                         "viewport", "nodePrefab", "edgePrefab", "tooltipOverlay", "tooltipView",
+                         "fundsText", "previewStateText"
                      })
             {
                 var property = serialized.FindProperty(propertyName);
@@ -458,6 +478,11 @@ namespace Icebreaker.UI.Editor
                 {
                     errors.Add($"Presenter reference {propertyName} is missing.");
                 }
+            }
+
+            if (tree.GetComponentInChildren<MaintenanceTreeViewport>(true) == null)
+            {
+                errors.Add("Tree prefab is missing its single MaintenanceTreeViewport input owner.");
             }
         }
 

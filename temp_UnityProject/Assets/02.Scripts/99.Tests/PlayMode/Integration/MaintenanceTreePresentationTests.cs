@@ -8,6 +8,7 @@ using NUnit.Framework;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
@@ -97,6 +98,73 @@ namespace Icebreaker.Integration.Tests
             }
         }
 
+        [UnityTest]
+        public IEnumerator ShortClick_RequestsOnceWhileDragDisableAndDuplicateInputDoNotPurchase()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
+            Assert.That(prefab, Is.Not.Null);
+            var instance = UnityEngine.Object.Instantiate(prefab!);
+            var eventSystemObject = new GameObject("MaintenanceTreeTestEventSystem");
+            var eventSystem = eventSystemObject.AddComponent<EventSystem>();
+
+            try
+            {
+                yield return null;
+
+                var presenterType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePresenter");
+                var viewportType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeViewport");
+                var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
+                var previewStateType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePreviewState");
+                var presenter = instance.GetComponent(presenterType)!;
+                var viewport = instance.GetComponentInChildren(viewportType, true)!;
+                var source = instance.GetComponent(sourceType)!;
+                var requests = new System.Collections.Generic.List<string>();
+                Action<string> handler = requests.Add;
+                presenterType.GetEvent("PurchaseRequested")!.AddEventHandler(presenter, handler);
+
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 1, Vector2.zero), "C01-L1");
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 1, new Vector2(4f, 0f)), "C01-L1");
+                Assert.That(requests, Is.EqualTo(new[] { "C01-L1" }));
+
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 2, Vector2.zero), "C01-L1");
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 2, Vector2.zero), "C01-L1");
+                Assert.That(requests, Has.Count.EqualTo(1), "A pending Step must ignore duplicate clicks.");
+
+                var c01Purchased = Enum.Parse(previewStateType, "C01Purchased");
+                sourceType.GetMethod("SetPreviewState")!.Invoke(source, new[] { c01Purchased });
+                yield return null;
+
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 3, Vector2.zero), "C02-L1");
+                var drag = Pointer(eventSystem, 3, new Vector2(20f, 0f));
+                drag.delta = new Vector2(20f, 0f);
+                viewportType.GetMethod("ProcessPointerDrag")!.Invoke(viewport, new object[] { drag });
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", drag, "C02-L1");
+                Assert.That(requests, Has.Count.EqualTo(1), "A 20px drag must not purchase.");
+
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 4, Vector2.zero), "C02-L1");
+                ((Behaviour)viewport).enabled = false;
+                ((Behaviour)viewport).enabled = true;
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 4, Vector2.zero), "C02-L1");
+                Assert.That(requests, Has.Count.EqualTo(1), "Disable must clear stale pointer state.");
+
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 5, Vector2.zero), "C02-L1");
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 5, Vector2.zero), "C02-L1");
+                Assert.That(requests, Is.EqualTo(new[] { "C01-L1", "C02-L1" }));
+
+                viewportType.GetMethod("ApplyZoomAtPointer")!.Invoke(
+                    viewport,
+                    new object[] { 1f, new Vector2(400f, -200f) });
+                var tooltip = instance.transform.Find("TooltipOverlay/Tooltip");
+                Assert.That(tooltip, Is.Not.Null);
+                Assert.That(tooltip!.localScale, Is.EqualTo(Vector3.one));
+            }
+            finally
+            {
+                UnityEngine.Object.Destroy(instance);
+                UnityEngine.Object.Destroy(eventSystemObject);
+            }
+        }
+
         private static int CountActiveChildren(Transform parent)
         {
             var count = 0;
@@ -109,6 +177,28 @@ namespace Icebreaker.Integration.Tests
             }
 
             return count;
+        }
+
+        private static PointerEventData Pointer(
+            EventSystem eventSystem,
+            int pointerId,
+            Vector2 position)
+        {
+            return new PointerEventData(eventSystem)
+            {
+                pointerId = pointerId,
+                position = position
+            };
+        }
+
+        private static void InvokePointer(
+            Type viewportType,
+            Component viewport,
+            string methodName,
+            PointerEventData pointer,
+            string stepId)
+        {
+            viewportType.GetMethod(methodName)!.Invoke(viewport, new object[] { pointer, stepId });
         }
 
         private static void AssertInitialNodesInsideViewport(GameObject instance, Transform nodeLayer)
