@@ -57,7 +57,7 @@ namespace Icebreaker.UI.Feedback
         [SerializeField] private AudioClip? criticalHitClip;
         [SerializeField] private AudioClip? buttonClickClip;
         [SerializeField] private AudioClip? purchaseSuccessClip;
-        [SerializeField] private AudioClip? stageStartClip;
+        [SerializeField] private AudioClip? countdownClip;
         [SerializeField] private AudioClip? settlementCompleteClip;
         [SerializeField] private AudioClip? arrivalHornClip;
         [SerializeField] private AudioClip? ambientLoopClip;
@@ -95,6 +95,8 @@ namespace Icebreaker.UI.Feedback
         public Vector2 LastEffectPosition { get; private set; }
 
         public int SettlementSoundCount { get; private set; }
+
+        public int CountdownSoundCount { get; private set; }
 
         public int PeakDestroyVoices { get; private set; }
 
@@ -160,6 +162,12 @@ namespace Icebreaker.UI.Feedback
         }
 
         public void PlayPurchaseSuccess() => PlayCue(AudioCue.Purchase, ui: true);
+
+        public void PlayCountdown()
+        {
+            CountdownSoundCount++;
+            PlayCue(AudioCue.Countdown, ui: true);
+        }
 
         public void AdvanceForValidation(float unscaledDeltaTime) => Advance(unscaledDeltaTime);
 
@@ -584,7 +592,7 @@ namespace Icebreaker.UI.Feedback
                 AudioCue.Crack => crackClip,
                 AudioCue.Button => buttonClickClip,
                 AudioCue.Purchase => purchaseSuccessClip,
-                AudioCue.StageStart => stageStartClip,
+                AudioCue.Countdown => countdownClip,
                 AudioCue.Settlement => settlementCompleteClip,
                 AudioCue.Arrival => arrivalHornClip,
                 _ => null
@@ -607,6 +615,7 @@ namespace Icebreaker.UI.Feedback
             runtimeClips[AudioCue.ChargeReady] = CreateTone("UI06_ChargeReady", 910f, 0.11f, 0.11f, 0.5f);
             runtimeClips[AudioCue.SupportFire] = CreateTone("UI06_SupportFire", 510f, 0.13f, 0.16f, 0.25f);
             runtimeClips[AudioCue.Button] = CreateTone("UI06_Button", 760f, 0.035f, 0.075f);
+            runtimeClips[AudioCue.Countdown] = CreateTone("UI06_Countdown", 620f, 0.12f, 0.1f, 0.5f);
             runtimeClips[AudioCue.StageStart] = CreateTone("UI06_StageStart", 440f, 0.12f, 0.1f, 0.5f);
             runtimeClips[AudioCue.StageEnd] = CreateTone("UI06_StageEnd", 285f, 0.16f, 0.12f, 0.3f);
             runtimeClips[AudioCue.Settlement] = CreateTone("UI06_Settlement", 880f, 0.15f, 0.1f, 0.5f);
@@ -754,6 +763,7 @@ namespace Icebreaker.UI.Feedback
             ChargeReady,
             SupportFire,
             Button,
+            Countdown,
             StageStart,
             StageEnd,
             Settlement,

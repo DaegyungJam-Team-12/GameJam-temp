@@ -365,6 +365,7 @@ namespace Icebreaker.Integration
             if (coordinator?.CurrentState.CanStartStage == true)
             {
                 coordinator.RequestStageStart();
+                feedbackAudio?.PlayCountdown();
             }
         }
 
@@ -454,6 +455,7 @@ namespace Icebreaker.Integration
 
             stageStartRequestPending = true;
             coordinator.RequestStageStart();
+            feedbackAudio?.PlayCountdown();
         }
 
         private void HandleMaintenancePurchaseRequested(string stepId)

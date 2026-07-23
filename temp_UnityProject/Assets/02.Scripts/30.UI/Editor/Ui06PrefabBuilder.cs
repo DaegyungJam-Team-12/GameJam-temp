@@ -25,7 +25,7 @@ namespace Icebreaker.UI.Editor
         private const string CriticalHitPath = SfxFolder + "/critical_hit.mp3";
         private const string ButtonClickPath = SfxFolder + "/click_sound.mp3";
         private const string PurchaseSuccessPath = SfxFolder + "/purchase_success.mp3";
-        private const string StageStartPath = SfxFolder + "/countdown.mp3";
+        private const string CountdownPath = SfxFolder + "/countdown.mp3";
         private const string SettlementCompletePath = SfxFolder + "/complete.mp3";
         private const string ArrivalHornPath = SfxFolder + "/ship_horn.mp3";
 
@@ -139,7 +139,7 @@ namespace Icebreaker.UI.Editor
                 "muzzleGlow", "supportTrail", "feedbackLayer", "feedbackCueTemplate", "gameplayAudioSource",
                 "uiAudioSource", "ambientAudioSource", "lightBreakClip", "heavyBreakClip", "crackClip",
                 "crystalDestroyClip", "criticalHitClip", "buttonClickClip", "purchaseSuccessClip",
-                "stageStartClip", "settlementCompleteClip", "arrivalHornClip", "ambientLoopClip"
+                "countdownClip", "settlementCompleteClip", "arrivalHornClip", "ambientLoopClip"
             };
             foreach (var propertyName in requiredReferences)
             {
@@ -297,6 +297,18 @@ namespace Icebreaker.UI.Editor
                 if (presenter.LastAudioCue != "Purchase")
                 {
                     errors.Add("Purchase success audio feedback is not connected.");
+                }
+
+                presenter.PlayCountdown();
+                if (presenter.LastAudioCue != "Countdown" || presenter.CountdownSoundCount != 1)
+                {
+                    errors.Add("Countdown audio feedback is not connected.");
+                }
+
+                source.StartStage();
+                if (presenter.LastAudioCue != "StageStart" || presenter.CountdownSoundCount != 1)
+                {
+                    errors.Add("Stage start must not replay the countdown clip.");
                 }
 
                 source.ShowArrival();
@@ -555,7 +567,7 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "criticalHitClip", LoadRequiredAudioClip(CriticalHitPath));
             SetObject(serialized, "buttonClickClip", LoadRequiredAudioClip(ButtonClickPath));
             SetObject(serialized, "purchaseSuccessClip", LoadRequiredAudioClip(PurchaseSuccessPath));
-            SetObject(serialized, "stageStartClip", LoadRequiredAudioClip(StageStartPath));
+            SetObject(serialized, "countdownClip", LoadRequiredAudioClip(CountdownPath));
             SetObject(serialized, "settlementCompleteClip", LoadRequiredAudioClip(SettlementCompletePath));
             SetObject(serialized, "arrivalHornClip", LoadRequiredAudioClip(ArrivalHornPath));
             SetObject(serialized, "ambientLoopClip", LoadRequiredAudioClip(AmbientLoopPath));

@@ -650,7 +650,7 @@ MonoBehaviour:
   criticalHitClip: {fileID: 8300000, guid: eeafc3c2880b15245a7041f57aaba9ac, type: 3}
   buttonClickClip: {fileID: 8300000, guid: 842f1f9381d52864fba7815d040f15ce, type: 3}
   purchaseSuccessClip: {fileID: 8300000, guid: 9b295b83db3285a41b99966bdda5ffd1, type: 3}
-  stageStartClip: {fileID: 8300000, guid: b5e69479e6e067a48a2a9974769b63aa, type: 3}
+  countdownClip: {fileID: 8300000, guid: b5e69479e6e067a48a2a9974769b63aa, type: 3}
   settlementCompleteClip: {fileID: 8300000, guid: 2a363ce6a10ad274a965ca7794db23e1, type: 3}
   arrivalHornClip: {fileID: 8300000, guid: e4df44a71d8a8a34980260d56ab8e453, type: 3}
   ambientLoopClip: {fileID: 8300000, guid: 40a3135d189270d4bb25cb65c91c9f57, type: 3}
