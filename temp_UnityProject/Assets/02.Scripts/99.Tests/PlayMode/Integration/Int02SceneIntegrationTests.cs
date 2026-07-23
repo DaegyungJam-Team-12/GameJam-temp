@@ -23,17 +23,17 @@ namespace Icebreaker.Integration.Tests
     {
         private const string Int02ScenePath = "Assets/01.Scenes/int02_complete_loop.unity";
 
-        private string demoSavePath = null!;
-        private byte[]? originalDemoSave;
+        private string standardSavePath = null!;
+        private byte[]? originalStandardSave;
 
         [UnitySetUp]
         public IEnumerator SetUp()
         {
             yield return DestroyActiveOrchestrators();
 
-            demoSavePath = Path.Combine(Application.persistentDataPath, "save_demo.json");
-            originalDemoSave = File.Exists(demoSavePath)
-                ? File.ReadAllBytes(demoSavePath)
+            standardSavePath = Path.Combine(Application.persistentDataPath, "save_standard.json");
+            originalStandardSave = File.Exists(standardSavePath)
+                ? File.ReadAllBytes(standardSavePath)
                 : null;
         }
 
@@ -42,14 +42,14 @@ namespace Icebreaker.Integration.Tests
         {
             yield return DestroyActiveOrchestrators();
 
-            if (originalDemoSave != null)
+            if (originalStandardSave != null)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(demoSavePath)!);
-                File.WriteAllBytes(demoSavePath, originalDemoSave);
+                Directory.CreateDirectory(Path.GetDirectoryName(standardSavePath)!);
+                File.WriteAllBytes(standardSavePath, originalStandardSave);
             }
-            else if (File.Exists(demoSavePath))
+            else if (File.Exists(standardSavePath))
             {
-                File.Delete(demoSavePath);
+                File.Delete(standardSavePath);
             }
         }
 
@@ -134,9 +134,9 @@ namespace Icebreaker.Integration.Tests
         [UnityTest]
         public IEnumerator CompleteLoopScene_InjectsSavedD04RadiusIntoTheField()
         {
-            File.WriteAllText(demoSavePath, @"{
+            File.WriteAllText(standardSavePath, @"{
   ""saveVersion"": 1,
-  ""profileId"": ""demo"",
+  ""profileId"": ""standard"",
   ""funds"": 0,
   ""maintenanceLevels"": [{ ""id"": ""D04"", ""level"": 3 }],
   ""currentDestinationIndex"": 0,
@@ -147,7 +147,7 @@ namespace Icebreaker.Integration.Tests
   ""nextAvailableAtUtc"": """",
   ""runInProgress"": false,
   ""gameCompleted"": false,
-  ""masterVolume"": 1,
+  ""masterVolume"": 0,
   ""screenShakeEnabled"": true
 }");
 
@@ -204,11 +204,37 @@ namespace Icebreaker.Integration.Tests
         }
 
         [UnityTest]
+        public IEnumerator DefaultProfile_UsesStandardDestinationTarget()
+        {
+            if (File.Exists(standardSavePath))
+            {
+                File.Delete(standardSavePath);
+            }
+
+            EditorSceneManager.LoadSceneInPlayMode(
+                Int02ScenePath,
+                new LoadSceneParameters(LoadSceneMode.Single));
+            yield return WaitForFrames(5);
+
+            var orchestratorType = FindType("Icebreaker.Integration.Int02IntegrationOrchestrator");
+            var orchestrator = FindOrchestrator(orchestratorType);
+            var coordinator = orchestratorType
+                .GetField("coordinator", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(orchestrator)!;
+            var ledger = coordinator.GetType().GetProperty("Ledger")!.GetValue(coordinator)!;
+            var destination = ledger.GetType().GetProperty("CurrentDestination")!.GetValue(ledger)!;
+
+            Assert.That(
+                destination.GetType().GetProperty("TargetProgress")!.GetValue(destination),
+                Is.EqualTo(120));
+        }
+
+        [UnityTest]
         public IEnumerator MaintenanceScreen_PurchasesWithRealFundsAndPersistsAcrossReload()
         {
-            File.WriteAllText(demoSavePath, @"{
+            File.WriteAllText(standardSavePath, @"{
   ""saveVersion"": 1,
-  ""profileId"": ""demo"",
+  ""profileId"": ""standard"",
   ""funds"": 100,
   ""maintenanceLevels"": [],
   ""currentDestinationIndex"": 0,
@@ -219,7 +245,7 @@ namespace Icebreaker.Integration.Tests
   ""nextAvailableAtUtc"": """",
   ""runInProgress"": false,
   ""gameCompleted"": false,
-  ""masterVolume"": 1,
+  ""masterVolume"": 0,
   ""screenShakeEnabled"": true
 }");
 
@@ -318,9 +344,9 @@ namespace Icebreaker.Integration.Tests
         [UnityTest]
         public IEnumerator StartButton_UsesRealCountdownAndCompletesTwoSavedCycles()
         {
-            if (File.Exists(demoSavePath))
+            if (File.Exists(standardSavePath))
             {
-                File.Delete(demoSavePath);
+                File.Delete(standardSavePath);
             }
 
             EditorSceneManager.LoadSceneInPlayMode(
@@ -351,7 +377,7 @@ namespace Icebreaker.Integration.Tests
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("StageEnding"));
             yield return WaitForPhase(orchestrator, orchestratorType, "Settlement", 0.5f);
             yield return WaitForPhase(orchestrator, orchestratorType, "Traveling", 5f);
-            yield return WaitForPhase(orchestrator, orchestratorType, "Ready", 11f);
+            yield return WaitForPhase(orchestrator, orchestratorType, "Ready", 31f);
 
             ClickStartButtonThroughEventSystem();
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("Countdown"));

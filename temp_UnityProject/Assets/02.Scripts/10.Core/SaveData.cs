@@ -22,7 +22,7 @@ namespace Icebreaker.Core
         public string nextAvailableAtUtc = "";
         public bool runInProgress;
         public bool gameCompleted;
-        public float masterVolume = 1f;
+        public float masterVolume = 0f;
         public bool screenShakeEnabled = true;
 
         public static SaveData CreateNew(string profileId)
@@ -46,7 +46,7 @@ namespace Icebreaker.Core
                 nextAvailableAtUtc = "",
                 runInProgress = false,
                 gameCompleted = false,
-                masterVolume = 1f,
+                masterVolume = 0f,
                 screenShakeEnabled = true
             };
         }

@@ -55,7 +55,10 @@ namespace Icebreaker.UI.Hud
         {
             ResolveSerializedSource();
             AddButtonListeners();
-            Subscribe();
+            if (stateSource != null)
+            {
+                Subscribe();
+            }
         }
 
         private void OnDisable()

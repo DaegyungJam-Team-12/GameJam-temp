@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -19,7 +20,18 @@ namespace Icebreaker.Integration.Editor
             Build(BuildTarget.StandaloneWindows64, "Builds/StandaloneWindows64/ICEBREAKER.exe");
         }
 
-        private static void Build(BuildTarget target, string locationPathName)
+        public static void BuildWindowsDemo()
+        {
+            Build(
+                BuildTarget.StandaloneWindows64,
+                "Builds/StandaloneWindows64Demo/ICEBREAKER_DEMO.exe",
+                new[] { "ICEBREAKER_DEMO" });
+        }
+
+        private static void Build(
+            BuildTarget target,
+            string locationPathName,
+            string[]? extraScriptingDefines = null)
         {
             var scenes = EditorBuildSettings.scenes
                 .Where(scene => scene.enabled)
@@ -42,7 +54,8 @@ namespace Icebreaker.Integration.Editor
                 scenes = scenes,
                 locationPathName = locationPathName,
                 target = target,
-                options = BuildOptions.None
+                options = BuildOptions.None,
+                extraScriptingDefines = extraScriptingDefines ?? Array.Empty<string>()
             };
 
             var report = BuildPipeline.BuildPlayer(options);

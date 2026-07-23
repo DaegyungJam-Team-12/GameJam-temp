@@ -46,5 +46,16 @@ namespace Icebreaker.Core.Tests
                 Assert.That(demo[index].TargetProgress, Is.EqualTo(expectedDemoTargets[index]));
             }
         }
+
+        [Test]
+        public void Create_UsesTargetsSuppliedByRuntimeProfile()
+        {
+            var destinations = DestinationCatalog.Create(new[] { 7, 11, 13 });
+
+            Assert.That(destinations, Has.Count.EqualTo(3));
+            Assert.That(destinations[0].TargetProgress, Is.EqualTo(7));
+            Assert.That(destinations[1].TargetProgress, Is.EqualTo(11));
+            Assert.That(destinations[2].TargetProgress, Is.EqualTo(13));
+        }
     }
 }
