@@ -4,6 +4,7 @@ using Icebreaker.Shared.State;
 using Icebreaker.UI.Hud;
 using Icebreaker.Window;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Icebreaker.Integration
 {
@@ -38,6 +39,24 @@ namespace Icebreaker.Integration
                 return;
             }
 
+            SceneManager.sceneLoaded += HandleSceneLoaded;
+            Acquire();
+        }
+
+        private void OnDestroy()
+        {
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+            Unsubscribe();
+        }
+
+        private void HandleSceneLoaded(Scene scene, LoadSceneMode mode) => Acquire();
+
+        // Re-finds the current scene's orchestrator and re-subscribes. Safe to call repeatedly;
+        // required because this driver survives scene reloads (e.g. save reset) while the
+        // orchestrator it listened to is destroyed and replaced.
+        private void Acquire()
+        {
+            Unsubscribe();
             source = FindStateSource();
             managementSource = source as IManagementScreenSource;
             if (source == null || managementSource == null)
@@ -50,7 +69,7 @@ namespace Icebreaker.Integration
             ApplyWindowView();
         }
 
-        private void OnDestroy()
+        private void Unsubscribe()
         {
             if (source != null)
             {
@@ -61,6 +80,9 @@ namespace Icebreaker.Integration
             {
                 managementSource.ManagementScreenChanged -= HandleManagementScreenChanged;
             }
+
+            source = null;
+            managementSource = null;
         }
 
         private void HandleStateChanged(GameState state) => ApplyWindowView();

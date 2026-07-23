@@ -59,6 +59,20 @@ namespace Icebreaker.Core
             }
         }
 
+        public void Delete(string profileId)
+        {
+            if (string.IsNullOrEmpty(profileId))
+            {
+                throw new ArgumentException("Value cannot be null or empty.", nameof(profileId));
+            }
+
+            var path = PathFor(profileId);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+
         public SaveData? TryLoad(string profileId)
         {
             if (string.IsNullOrEmpty(profileId))

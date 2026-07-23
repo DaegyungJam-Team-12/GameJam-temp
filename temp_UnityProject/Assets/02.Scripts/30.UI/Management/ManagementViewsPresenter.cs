@@ -43,6 +43,7 @@ namespace Icebreaker.UI.Management
         public event Action<float> MasterVolumeChanged = delegate { };
         public event Action<bool> ScreenShakeChanged = delegate { };
         public event Action QuitRequested = delegate { };
+        public event Action ResetSaveRequested = delegate { };
         public event Action<string> ArrivalPresentationCompleted = delegate { };
 
         public bool IsRouteVisible => routeStatusView != null && routeStatusView.IsVisible;
@@ -77,6 +78,7 @@ namespace Icebreaker.UI.Management
                 settingsModalView.MasterVolumeChanged -= HandleMasterVolumeChanged;
                 settingsModalView.ScreenShakeChanged -= HandleScreenShakeChanged;
                 settingsModalView.QuitRequested -= HandleQuitRequested;
+                settingsModalView.ResetSaveRequested -= HandleResetSaveRequested;
             }
 
             if (arrivalOverlayView != null)
@@ -103,6 +105,7 @@ namespace Icebreaker.UI.Management
                 settingsModalView.MasterVolumeChanged += HandleMasterVolumeChanged;
                 settingsModalView.ScreenShakeChanged += HandleScreenShakeChanged;
                 settingsModalView.QuitRequested += HandleQuitRequested;
+                settingsModalView.ResetSaveRequested += HandleResetSaveRequested;
             }
 
             if (arrivalOverlayView != null)
@@ -243,6 +246,8 @@ namespace Icebreaker.UI.Management
         private void HandleScreenShakeChanged(bool value) => ScreenShakeChanged(value);
 
         private void HandleQuitRequested() => QuitRequested();
+
+        private void HandleResetSaveRequested() => ResetSaveRequested();
 
         private void HandleArrivalPresentationCompleted(string destinationId) =>
             ArrivalPresentationCompleted(destinationId);
