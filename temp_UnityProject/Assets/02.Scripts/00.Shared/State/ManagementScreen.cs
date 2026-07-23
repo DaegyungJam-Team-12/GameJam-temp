@@ -12,6 +12,20 @@ namespace Icebreaker.Shared.State
         Settings
     }
 
+    public static class ManagementScreenRules
+    {
+        public static bool CanOpen(ManagementScreen screen, GamePhase phase) => screen switch
+        {
+            ManagementScreen.Maintenance or ManagementScreen.Route =>
+                phase == GamePhase.Traveling || phase == GamePhase.Ready,
+            ManagementScreen.Settings =>
+                phase == GamePhase.Traveling || phase == GamePhase.Ready ||
+                phase == GamePhase.Countdown || phase == GamePhase.Playing ||
+                phase == GamePhase.Completed,
+            _ => false
+        };
+    }
+
     public interface IManagementScreenSource
     {
         event Action<ManagementScreen> ManagementScreenChanged;

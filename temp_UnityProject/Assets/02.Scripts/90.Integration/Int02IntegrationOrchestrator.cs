@@ -8,9 +8,12 @@ using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
 using Icebreaker.Shared.Maintenance;
 using Icebreaker.Shared.State;
+using Icebreaker.UI.Feedback;
 using Icebreaker.UI.Hud;
+using Icebreaker.UI.Management;
 using Icebreaker.UI.Maintenance;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Icebreaker.Integration
 {
@@ -34,7 +37,10 @@ namespace Icebreaker.Integration
         private IcebreakingHudPresenter? icebreakingHud;
         private RewardSettlementPresenter? settlementPresenter;
         private MaintenanceTreePresenter? maintenanceTree;
+        private ManagementViewsPresenter? managementViews;
+        private Ui06FeedbackAudioPresenter? feedbackAudio;
         private ManagementScreen currentManagementScreen;
+        private ManagementScreen managementScreenBeforeSettings;
         private bool stageStartRequestPending;
         private bool shutdownFlushed;
 
@@ -86,6 +92,11 @@ namespace Icebreaker.Integration
             var store = new SaveStore(Application.persistentDataPath);
             var loadedData = store.TryLoad(DemoProfileId);
             var saveData = loadedData ?? SaveData.CreateNew(DemoProfileId);
+            if (loadedData == null)
+            {
+                saveData.masterVolume = UiAudioSettings.LoadAndApplyMasterVolume();
+            }
+
             var now = DateTimeOffset.UtcNow;
             var bootState = SaveBootResolver.Resolve(loadedData, now, DemoVoyageSeconds);
             var ledger = CreateLedger(saveData);
@@ -150,6 +161,8 @@ namespace Icebreaker.Integration
             icebreakingHud = FindFirstObjectByType<IcebreakingHudPresenter>();
             settlementPresenter = FindFirstObjectByType<RewardSettlementPresenter>();
             maintenanceTree = FindFirstObjectByType<MaintenanceTreePresenter>(FindObjectsInactive.Include);
+            managementViews = FindFirstObjectByType<ManagementViewsPresenter>(FindObjectsInactive.Include);
+            feedbackAudio = FindFirstObjectByType<Ui06FeedbackAudioPresenter>(FindObjectsInactive.Include);
             if (launcherHud == null || icebreakingHud == null || settlementPresenter == null ||
                 maintenanceTree == null)
             {
@@ -168,12 +181,33 @@ namespace Icebreaker.Integration
             settlementPresenter.Bind(this, this, this);
             settlementPresenter.SetInputTargets(iceFieldView);
             maintenanceTree.Bind(this);
+            managementViews?.EnableFinalGameMode();
+            feedbackAudio?.Bind(this, this);
+            if (feedbackAudio != null)
+            {
+                feedbackAudio.SetMasterVolume(coordinator.MasterVolume);
+                feedbackAudio.SetUiButtons(
+                    FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+            }
+
             launcherHud.StageStartRequested += HandleStageStartRequested;
             launcherHud.MaintenanceRequested += HandleMaintenanceRequested;
+            launcherHud.RouteRequested += HandleRouteRequested;
+            launcherHud.SettingsRequested += HandleSettingsRequested;
+            icebreakingHud.SettingsRequested += HandleSettingsRequested;
             maintenanceTree.PurchaseRequested += HandleMaintenancePurchaseRequested;
             maintenanceTree.CloseRequested += HandleMaintenanceCloseRequested;
             maintenanceTree.StageStartRequested += HandleMaintenanceStageStartRequested;
             settlementPresenter.ContinueRequested += HandleContinueRequested;
+            if (managementViews != null)
+            {
+                managementViews.StageStartRequested += HandleStageStartRequested;
+                managementViews.CollapseRequested += HandleManagementCollapseRequested;
+                managementViews.SettingsVisibilityChanged += HandleSettingsVisibilityChanged;
+                managementViews.MasterVolumeChanged += HandleMasterVolumeChanged;
+                managementViews.ScreenShakeChanged += HandleScreenShakeChanged;
+                managementViews.QuitRequested += HandleQuitRequested;
+            }
 
             ApplyViewState(coordinator.CurrentState);
             coordinator.EnsureInitialized();
@@ -187,18 +221,27 @@ namespace Icebreaker.Integration
 
         private void OnApplicationQuit()
         {
+            managementViews?.CloseSettings();
             CloseManagementScreen();
             FlushForShutdown();
         }
 
         private void OnDestroy()
         {
+            managementViews?.CloseSettings();
             SetManagementScreen(ManagementScreen.None);
 
             if (launcherHud != null)
             {
                 launcherHud.StageStartRequested -= HandleStageStartRequested;
                 launcherHud.MaintenanceRequested -= HandleMaintenanceRequested;
+                launcherHud.RouteRequested -= HandleRouteRequested;
+                launcherHud.SettingsRequested -= HandleSettingsRequested;
+            }
+
+            if (icebreakingHud != null)
+            {
+                icebreakingHud.SettingsRequested -= HandleSettingsRequested;
             }
 
             if (maintenanceTree != null)
@@ -211,6 +254,16 @@ namespace Icebreaker.Integration
             if (settlementPresenter != null)
             {
                 settlementPresenter.ContinueRequested -= HandleContinueRequested;
+            }
+
+            if (managementViews != null)
+            {
+                managementViews.StageStartRequested -= HandleStageStartRequested;
+                managementViews.CollapseRequested -= HandleManagementCollapseRequested;
+                managementViews.SettingsVisibilityChanged -= HandleSettingsVisibilityChanged;
+                managementViews.MasterVolumeChanged -= HandleMasterVolumeChanged;
+                managementViews.ScreenShakeChanged -= HandleScreenShakeChanged;
+                managementViews.QuitRequested -= HandleQuitRequested;
             }
 
             if (combatSource != null)
@@ -245,19 +298,51 @@ namespace Icebreaker.Integration
                 return true;
             }
 
-            if (screen != ManagementScreen.Maintenance || coordinator == null ||
-                !CanOpenManagement(coordinator.CurrentState.Phase))
+            if (screen == ManagementScreen.Settings)
+            {
+                if (coordinator == null || managementViews == null ||
+                    !ManagementScreenRules.CanOpen(screen, coordinator.CurrentState.Phase))
+                {
+                    return false;
+                }
+
+                HandleSettingsRequested();
+                return currentManagementScreen == ManagementScreen.Settings;
+            }
+
+            if (coordinator == null ||
+                !ManagementScreenRules.CanOpen(screen, coordinator.CurrentState.Phase))
             {
                 return false;
             }
 
             SetManagementScreen(screen);
+            if (screen == ManagementScreen.Route)
+            {
+                RenderRouteStatus();
+            }
+
             ApplyViewState(coordinator.CurrentState);
             return true;
         }
 
         public void CloseManagementScreen()
         {
+            if (currentManagementScreen == ManagementScreen.Settings)
+            {
+                if (managementViews?.IsSettingsVisible == true)
+                {
+                    managementViews.CloseSettings();
+                }
+                else
+                {
+                    coordinator?.CloseSettings();
+                    RestoreManagementScreenAfterSettings();
+                }
+
+                return;
+            }
+
             if (currentManagementScreen == ManagementScreen.None)
             {
                 return;
@@ -280,6 +365,65 @@ namespace Icebreaker.Integration
 
         private void HandleMaintenanceRequested() =>
             RequestManagementScreen(ManagementScreen.Maintenance);
+
+        private void HandleRouteRequested() =>
+            RequestManagementScreen(ManagementScreen.Route);
+
+        private void HandleSettingsRequested()
+        {
+            if (coordinator == null || managementViews == null || managementViews.IsSettingsVisible ||
+                !ManagementScreenRules.CanOpen(
+                    ManagementScreen.Settings,
+                    coordinator.CurrentState.Phase))
+            {
+                return;
+            }
+
+            managementViews.SetSettingsValues(
+                coordinator.MasterVolume,
+                coordinator.ScreenShakeEnabled);
+            managementViews.OpenSettings();
+        }
+
+        private void HandleManagementCollapseRequested() => CloseManagementScreen();
+
+        private void HandleSettingsVisibilityChanged(bool visible)
+        {
+            if (visible)
+            {
+                if (coordinator == null || !ManagementScreenRules.CanOpen(
+                        ManagementScreen.Settings,
+                        coordinator.CurrentState.Phase))
+                {
+                    managementViews?.CloseSettings();
+                    return;
+                }
+
+                managementScreenBeforeSettings =
+                    currentManagementScreen == ManagementScreen.Route
+                        ? ManagementScreen.Route
+                        : ManagementScreen.None;
+                SetManagementScreen(ManagementScreen.Settings);
+                coordinator.OpenSettings();
+                ApplyViewState(coordinator.CurrentState);
+            }
+            else
+            {
+                coordinator?.CloseSettings();
+                RestoreManagementScreenAfterSettings();
+            }
+        }
+
+        private void HandleMasterVolumeChanged(float value)
+        {
+            coordinator?.SetMasterVolume(value);
+            feedbackAudio?.SetMasterVolume(value);
+        }
+
+        private void HandleScreenShakeChanged(bool enabled) =>
+            coordinator?.SetScreenShakeEnabled(enabled);
+
+        private static void HandleQuitRequested() => Application.Quit();
 
         private void HandleMaintenanceCloseRequested() => CloseManagementScreen();
 
@@ -396,13 +540,17 @@ namespace Icebreaker.Integration
 
         private void HandleSettlementReady(SettlementReady payload) => SettlementReady(payload);
 
-        private void HandleArrivalPresentationRequested(ArrivalPresentationRequested payload) =>
+        private void HandleArrivalPresentationRequested(ArrivalPresentationRequested payload)
+        {
+            managementViews?.PresentArrival(payload);
             ArrivalPresentationRequested(payload);
+        }
 
         private void HandleCoordinatorStateChanged(GameState state)
         {
-            if (!CanOpenManagement(state.Phase) &&
-                currentManagementScreen != ManagementScreen.None)
+            if ((currentManagementScreen == ManagementScreen.Maintenance ||
+                 currentManagementScreen == ManagementScreen.Route) &&
+                !ManagementScreenRules.CanOpen(currentManagementScreen, state.Phase))
             {
                 SetManagementScreen(ManagementScreen.None);
             }
@@ -413,6 +561,11 @@ namespace Icebreaker.Integration
             }
 
             StateChanged(state);
+            if (currentManagementScreen == ManagementScreen.Route)
+            {
+                RenderRouteStatus();
+            }
+
             ApplyViewState(state);
         }
 
@@ -443,6 +596,9 @@ namespace Icebreaker.Integration
                 }
             }
 
+            managementViews?.SetRouteVisible(
+                currentManagementScreen == ManagementScreen.Route && CanOpenManagement(state.Phase));
+
             if (iceFieldView != null)
             {
                 iceFieldView.enabled = state.Phase == GamePhase.Countdown ||
@@ -459,6 +615,47 @@ namespace Icebreaker.Integration
 
             currentManagementScreen = screen;
             ManagementScreenChanged(screen);
+        }
+
+        private void RenderRouteStatus()
+        {
+            if (coordinator == null || managementViews == null)
+            {
+                return;
+            }
+
+            var state = coordinator.CurrentState;
+            managementViews.Render(
+                Array.Empty<MaintenanceNodeViewData>(),
+                RouteStatusViewDataFactory.Create(
+                    coordinator.Ledger,
+                    DestinationCatalog.CreateDemo()),
+                state.Funds,
+                state.RemainingSeconds,
+                state.CanStartStage);
+        }
+
+        private void RestoreManagementScreenAfterSettings()
+        {
+            var screen = managementScreenBeforeSettings;
+            managementScreenBeforeSettings = ManagementScreen.None;
+            if (coordinator == null ||
+                (screen != ManagementScreen.None &&
+                 !ManagementScreenRules.CanOpen(screen, coordinator.CurrentState.Phase)))
+            {
+                screen = ManagementScreen.None;
+            }
+
+            SetManagementScreen(screen);
+            if (screen == ManagementScreen.Route)
+            {
+                RenderRouteStatus();
+            }
+
+            if (coordinator != null)
+            {
+                ApplyViewState(coordinator.CurrentState);
+            }
         }
 
         private static bool CanOpenManagement(GamePhase phase) =>

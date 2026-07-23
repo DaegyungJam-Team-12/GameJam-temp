@@ -20,6 +20,7 @@ namespace Icebreaker.UI.Management
 
         [Header("Theme")]
         [SerializeField] private UiThemeAsset? theme;
+        [SerializeField] private bool finalGameMode;
 
         [Header("Header")]
         [SerializeField] private Button? maintenanceTabButton;
@@ -102,6 +103,8 @@ namespace Icebreaker.UI.Management
 
         public bool IsArrivalPlaying => arrivalPlaying;
 
+        public bool IsFinalGameMode => finalGameMode;
+
         public int RenderedNodeCount => nodesById.Count;
 
         public string SelectedNodeId => selectedNodeId;
@@ -178,7 +181,23 @@ namespace Icebreaker.UI.Management
             initialized = true;
             SetActive(settingsRoot, false);
             SetActive(arrivalRoot, false);
-            ShowMaintenance();
+            if (finalGameMode)
+            {
+                ApplyFinalGameMode();
+                SetRouteVisible(false);
+            }
+            else
+            {
+                ShowMaintenance();
+            }
+        }
+
+        public void EnableFinalGameMode()
+        {
+            finalGameMode = true;
+            EnsureInitialized();
+            ApplyFinalGameMode();
+            SetRouteVisible(false);
         }
 
         public void Render(
@@ -231,6 +250,12 @@ namespace Icebreaker.UI.Management
 
         public void ShowMaintenance()
         {
+            if (finalGameMode)
+            {
+                ShowRoute();
+                return;
+            }
+
             SetActive(maintenanceRoot, true);
             SetActive(routeRoot, false);
             SetTabVisuals(maintenanceSelected: true);
@@ -238,9 +263,41 @@ namespace Icebreaker.UI.Management
 
         public void ShowRoute()
         {
+            if (finalGameMode)
+            {
+                SetRouteVisible(true);
+                return;
+            }
+
             SetActive(maintenanceRoot, false);
             SetActive(routeRoot, true);
             SetTabVisuals(maintenanceSelected: false);
+        }
+
+        public void SetRouteVisible(bool visible)
+        {
+            if (!finalGameMode)
+            {
+                SetActive(gameObject, visible);
+                return;
+            }
+
+            var header = collapseButton != null ? collapseButton.transform.parent?.gameObject : null;
+            var body = routeRoot != null ? routeRoot.transform.parent?.gameObject : null;
+            var background = body != null ? body.transform.parent?.GetComponent<Image>() : null;
+            SetActive(header, visible);
+            SetActive(body, visible);
+            SetActive(maintenanceRoot, false);
+            SetActive(routeRoot, visible);
+            if (background != null)
+            {
+                background.enabled = visible;
+            }
+
+            if (visible)
+            {
+                SetTabVisuals(maintenanceSelected: false);
+            }
         }
 
         public void SelectNode(string nodeId)
@@ -514,6 +571,12 @@ namespace Icebreaker.UI.Management
         }
 
         private void HandleScreenShakeChanged(bool value) => ScreenShakeChanged(value);
+
+        private void ApplyFinalGameMode()
+        {
+            SetActive(maintenanceTabButton?.gameObject, false);
+            SetActive(maintenanceRoot, false);
+        }
 
         private static void SetText(TMP_Text? target, string value)
         {
