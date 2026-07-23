@@ -35,6 +35,7 @@ namespace Icebreaker.Integration
         private IReadOnlyList<MaintenanceDefinition>? maintenanceDefinitions;
         private ICombatEventSource? combatSource;
         private IceFieldView? iceFieldView;
+        private GameplayBackdropView? gameplayBackdrop;
         private LauncherHudPresenter? launcherHud;
         private IcebreakingHudPresenter? icebreakingHud;
         private RewardSettlementPresenter? settlementPresenter;
@@ -88,6 +89,7 @@ namespace Icebreaker.Integration
         private void Awake()
         {
             iceFieldView = FindFirstObjectByType<IceFieldView>();
+            gameplayBackdrop = FindFirstObjectByType<GameplayBackdropView>();
             if (iceFieldView == null)
             {
                 Debug.LogError("[INT-02] IceFieldView is missing from the integration scene.", this);
@@ -674,6 +676,19 @@ namespace Icebreaker.Integration
                 if (icebreakingHud.gameObject.activeSelf != showIcebreaking)
                 {
                     icebreakingHud.gameObject.SetActive(showIcebreaking);
+                }
+            }
+
+            if (gameplayBackdrop != null)
+            {
+                // The ocean backdrop must not fill the transparent launcher window; show it only
+                // when the expanded gameplay scene is on screen.
+                var showBackdrop = state.Phase != GamePhase.Traveling &&
+                                   state.Phase != GamePhase.Ready &&
+                                   state.Phase != GamePhase.Completed;
+                if (gameplayBackdrop.gameObject.activeSelf != showBackdrop)
+                {
+                    gameplayBackdrop.gameObject.SetActive(showBackdrop);
                 }
             }
 

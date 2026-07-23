@@ -194,8 +194,16 @@ namespace Icebreaker.Window
 
             // Borderless transparent window so the launcher's ship/box/ice float over the desktop.
             // The per-pixel alpha comes from the rendered content, so each phase must supply its
-            // own opaque background where it should not be see-through.
+            // own opaque background where it should not be see-through (e.g. the gameplay ocean
+            // backdrop). The camera therefore clears to fully transparent instead of the opaque
+            // navy fill used in the editor fallback.
             _controller.isTransparent = true;
+            var mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                mainCamera.clearFlags = CameraClearFlags.SolidColor;
+                mainCamera.backgroundColor = new Color(0f, 0f, 0f, 0f);
+            }
 
             var snapshot = ResolveWorkAreaSnapshot();
 
