@@ -520,14 +520,14 @@ namespace Icebreaker.UI.Feedback
             var image = instance.GetComponent<Image>();
             if (image != null)
             {
-                image.color = new Color(color.r, color.g, color.b, 0.82f);
+                image.enabled = false;
             }
 
             var text = instance.GetComponentInChildren<TMP_Text>(true);
             if (text != null)
             {
                 text.text = label;
-                text.color = Color.white;
+                text.color = new Color(color.r, color.g, color.b, 0.82f);
             }
 
             var canvasGroup = instance.GetComponent<CanvasGroup>() ?? instance.AddComponent<CanvasGroup>();
