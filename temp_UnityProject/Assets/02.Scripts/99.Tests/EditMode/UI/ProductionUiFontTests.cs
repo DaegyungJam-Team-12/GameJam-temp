@@ -24,13 +24,12 @@ namespace Icebreaker.UI.Tests
             "Assets/03.Prefabs/30.UI/Hud/UI_LauncherHud.prefab",
             "Assets/03.Prefabs/30.UI/Hud/UI_IcebreakingHud.prefab",
             "Assets/03.Prefabs/30.UI/Hud/UI_RewardSettlement.prefab",
+            "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceNode.prefab",
             "Assets/03.Prefabs/30.UI/Management/UI_ManagementViews.prefab",
         };
 
         private static readonly string[] MaintenancePrefabPaths =
         {
-            "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceTree.prefab",
-            "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceNode.prefab",
             "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceTooltip.prefab",
         };
 
@@ -123,6 +122,16 @@ namespace Icebreaker.UI.Tests
             foreach (var prefabPath in MaintenancePrefabPaths)
             {
                 AssertPrefabUsesFont(prefabPath, maintenance);
+            }
+
+            var maintenanceTree = LoadPrefab("Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceTree.prefab");
+            foreach (var text in maintenanceTree.GetComponentsInChildren<TMP_Text>(true))
+            {
+                var relativePath = GetRelativePath(maintenanceTree.transform, text.transform);
+                var expected = relativePath.StartsWith("Tooltip/", StringComparison.Ordinal)
+                    ? maintenance
+                    : primary;
+                AssertTextUsesFont("UI_MaintenanceTree.prefab", relativePath, text, expected);
             }
 
             var feedbackPrefab = LoadPrefab(FeedbackPrefabPath);

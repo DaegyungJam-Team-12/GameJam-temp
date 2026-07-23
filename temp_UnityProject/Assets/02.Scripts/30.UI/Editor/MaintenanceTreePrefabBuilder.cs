@@ -24,7 +24,7 @@ namespace Icebreaker.UI.Editor
         private const string NodePrefabPath = PrefabFolder + "/UI_MaintenanceNode.prefab";
         private const string TooltipPrefabPath = PrefabFolder + "/UI_MaintenanceTooltip.prefab";
         private const string EdgePrefabPath = PrefabFolder + "/UI_MaintenanceEdge.prefab";
-        private const string BuildStamp = "maintenance-production-font-roles-v2";
+        private const string BuildStamp = "maintenance-production-font-roles-v3";
 
         private static readonly Vector2 ContentSize = new Vector2(1600f, 900f);
 
@@ -52,14 +52,16 @@ namespace Icebreaker.UI.Editor
                 throw new InvalidOperationException($"UI theme was not found at {ThemePath}.");
             }
 
-            var font = theme.MaintenanceFont ??
+            var primaryFont = theme.PrimaryFont ??
+                throw new InvalidOperationException("UI primary font is not assigned.");
+            var maintenanceFont = theme.MaintenanceFont ??
                 throw new InvalidOperationException("UI maintenance font is not assigned.");
 
             var layout = BuildLayout(LoadLogicalIcons());
-            BuildNodePrefab(font);
+            BuildNodePrefab(primaryFont);
             BuildEdgePrefab();
-            BuildTooltipPrefab(theme, font);
-            BuildTreePrefab(layout, theme, font);
+            BuildTooltipPrefab(theme, maintenanceFont);
+            BuildTreePrefab(layout, theme, primaryFont);
             ProductionUiGuard.MarkRebuilt(BuildStamp, TreePrefabPath);
 
             AssetDatabase.SaveAssets();

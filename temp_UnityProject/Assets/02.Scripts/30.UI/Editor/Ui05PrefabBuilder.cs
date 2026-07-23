@@ -17,7 +17,7 @@ namespace Icebreaker.UI.Editor
         private const string ThemePath = "Assets/04.Images/30.UI/Theme/UiTheme.asset";
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Management";
         private const string PrefabPath = PrefabFolder + "/UI_ManagementViews.prefab";
-        private const string BuildStamp = "ui05-production-font-roles-v2";
+        private const string BuildStamp = "ui05-production-font-roles-v3";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-05 Management Views")]
         public static void Build()
@@ -125,8 +125,7 @@ namespace Icebreaker.UI.Editor
 
             var currentPanel = CreateTopLeftImage("CurrentDestinationPanel", parent, 24f, 74f, 548f, 334f, theme.Panel, false);
             CreateTopLeftText("SectionLabel", currentPanel.transform, 24f, 22f, 250f, 26f, "현재 목적지", font, 15f, TextAlignmentOptions.Left).color = theme.Reward;
-            var destination = CreateTopLeftText("DestinationNameText", currentPanel.transform, 24f, 56f, 500f, 56f, "섬마을", font, 36f, TextAlignmentOptions.Left);
-            destination.fontStyle = FontStyles.Bold;
+            var destination = CreateTopLeftText("DestinationNameText", currentPanel.transform, 24f, 52f, 500f, 64f, "섬마을", font, 42f, TextAlignmentOptions.Left);
             var progressText = CreateTopLeftText("DestinationProgressText", currentPanel.transform, 24f, 124f, 500f, 30f, "목적지 진행  37 / 120", font, 18f, TextAlignmentOptions.Left);
             var track = CreateTopLeftImage("ProgressTrack", currentPanel.transform, 24f, 164f, 500f, 22f, new Color32(0x04, 0x12, 0x20, 0xFF), false);
             var fill = CreateStretchImage("ProgressFill", track.transform, theme.Success, false);
@@ -140,9 +139,9 @@ namespace Icebreaker.UI.Editor
             completedBadge.SetActive(false);
 
             var listPanel = CreateTopLeftImage("DestinationListPanel", parent, 592f, 74f, 312f, 334f, theme.Panel, false);
-            var completed = CreateTopLeftText("CompletedDestinationsText", listPanel.transform, 22f, 28f, 268f, 116f, "완료한 목적지\n출항 기지", font, 18f, TextAlignmentOptions.TopLeft);
+            var completed = CreateTopLeftText("CompletedDestinationsText", listPanel.transform, 22f, 24f, 268f, 124f, "완료한 목적지\n출항 기지", font, 22f, TextAlignmentOptions.TopLeft);
             CreateTopLeftImage("Divider", listPanel.transform, 22f, 156f, 268f, 2f, new Color32(0x3D, 0x62, 0x75, 0xFF), false);
-            var upcoming = CreateTopLeftText("UpcomingDestinationsText", listPanel.transform, 22f, 178f, 268f, 116f, "이후 목적지\n등대항 → 북쪽 기지", font, 18f, TextAlignmentOptions.TopLeft);
+            var upcoming = CreateTopLeftText("UpcomingDestinationsText", listPanel.transform, 22f, 174f, 268f, 124f, "이후 목적지\n등대항 → 북쪽 기지", font, 22f, TextAlignmentOptions.TopLeft);
             var serialized = new SerializedObject(view);
             SetObject(serialized, "destinationNameText", destination);
             SetObject(serialized, "destinationProgressText", progressText);
