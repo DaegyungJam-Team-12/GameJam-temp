@@ -96,6 +96,30 @@ namespace Icebreaker.Integration.Tests
             Assert.That(activeClock, Is.Not.Null);
             Assert.That(activeClock!.GetType().FullName, Is.EqualTo("Icebreaker.Core.GameLoopController"));
 
+            var backdrop = UnityEngine.Object.FindFirstObjectByType<GameplayBackdropView>();
+            Assert.That(backdrop, Is.Not.Null);
+            Assert.That(backdrop!.HasAssignedArt, Is.True);
+            Assert.That(backdrop.BackgroundRenderer, Is.Not.Null);
+            Assert.That(backdrop.ShipRenderer, Is.Not.Null);
+            Assert.That(backdrop.BackgroundRenderer!.sprite.name, Is.EqualTo("bg_ocean"));
+            Assert.That(backdrop.ShipRenderer!.sprite.name, Is.EqualTo("Ship"));
+            Assert.That(backdrop.BackgroundRenderer.sortingOrder, Is.LessThan(0));
+            Assert.That(backdrop.ShipRenderer.sortingOrder, Is.LessThan(10));
+
+            var camera = Camera.main;
+            Assert.That(camera, Is.Not.Null);
+            var halfHeight = camera!.orthographicSize;
+            var halfWidth = halfHeight * camera.aspect;
+            var backgroundBounds = backdrop.BackgroundRenderer.bounds;
+            Assert.That(backgroundBounds.min.x,
+                Is.LessThanOrEqualTo(camera.transform.position.x - halfWidth + 0.001f));
+            Assert.That(backgroundBounds.max.x,
+                Is.GreaterThanOrEqualTo(camera.transform.position.x + halfWidth - 0.001f));
+            Assert.That(backgroundBounds.min.y,
+                Is.LessThanOrEqualTo(camera.transform.position.y - halfHeight + 0.001f));
+            Assert.That(backgroundBounds.max.y,
+                Is.GreaterThanOrEqualTo(camera.transform.position.y + halfHeight - 0.001f));
+
             var settlementObject = GameObject.Find("INT02_RewardSettlement");
             Assert.That(settlementObject, Is.Not.Null);
             var settlementType = FindType("Icebreaker.UI.Hud.RewardSettlementPresenter");

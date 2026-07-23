@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e10f68d7a87ec04c93817e1f15cd74d, type: 3}
+  m_Name: IceVisualCatalog
+  m_EditorClassIdentifier: Icebreaker.Gameplay::Icebreaker.Gameplay.IceVisualCatalog
+  t1Variant01: {fileID: 21300000, guid: 7d63916b48566f74896336c8b79a38ad, type: 3}
+  t1Variant02: {fileID: 21300000, guid: f75471a393310f8408273a3b43c306cd, type: 3}
+  t1Variant01Sheet: {fileID: 2800000, guid: 4baf9095ebefb3e459fdc01d519cbce8, type: 3}
+  t1Variant02Sheet: {fileID: 2800000, guid: 837318d037a976f459c515539bac7310, type: 3}
+  t2Variant01: {fileID: 21300000, guid: 254b75e501148364d96ac9ff039ba726, type: 3}
+  t2Variant02: {fileID: 21300000, guid: e20f2f3a14e9f4e49944a0f019d2b477, type: 3}
+  t2Variant01Sheet: {fileID: 2800000, guid: 12ab11167149d3e46b8edfe9cd6013e4, type: 3}
+  t2Variant02Sheet: {fileID: 2800000, guid: 31cd803168c6d9746a743fe132a04371, type: 3}
+  t3Variant01: {fileID: 21300000, guid: 32383254e12f57f4fb324e8679a28b96, type: 3}
+  t3Variant02: {fileID: 21300000, guid: 4177bbeebec301947a1ac3d0c7c82593, type: 3}
+  t3Variant01Sheet: {fileID: 2800000, guid: 27e878fd09bc069428f0ed26a2bd67c6, type: 3}
+  t3Variant02Sheet: {fileID: 2800000, guid: 8d0ebdb3545e68b4cbc6c12872b30bcb, type: 3}
+  crystal: {fileID: 21300000, guid: 86cfc4e1058f7a44791b5f8b2ffab9bb, type: 3}
+  crystalSheet: {fileID: 2800000, guid: 3acb6e05d780cbb499171ba7e1d0370e, type: 3}
+  crack: {fileID: 21300000, guid: 61002fb2a4bf472418136723b10352fa, type: 3}
+  crackSheet: {fileID: 2800000, guid: fadf8dda6975c194f852b0638442ccd0, type: 3}
