@@ -26,7 +26,13 @@ namespace Icebreaker.UI.Editor
         private const string EdgePrefabPath = PrefabFolder + "/UI_MaintenanceEdge.prefab";
         private const string ConsoleButtonArtPath =
             "Assets/04.Images/30.UI/Maintenance/Buttons/MaintenanceConsoleButton.png";
-        private const string BuildStamp = "maintenance-production-font-roles-v4-console-chrome";
+        private const string SettingsButtonArtPath =
+            "Assets/04.Images/30.UI/Maintenance/Buttons/SettingsButton.png";
+        private const string StageStartButtonArtPath =
+            "Assets/04.Images/30.UI/Maintenance/Buttons/StageStartButton.png";
+        private const string CollapseButtonArtPath =
+            "Assets/04.Images/30.UI/Maintenance/Buttons/CollapseButton.png";
+        private const string BuildStamp = "maintenance-production-font-roles-v6-collapse-art";
 
         private static readonly Vector2 ContentSize = new Vector2(1600f, 900f);
 
@@ -367,7 +373,12 @@ namespace Icebreaker.UI.Editor
             var edgePrefab = AssetDatabase.LoadAssetAtPath<MaintenanceTreeEdgeView>(EdgePrefabPath);
             var tooltipPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(TooltipPrefabPath);
             var consoleButtonArt = AssetDatabase.LoadAssetAtPath<Sprite>(ConsoleButtonArtPath);
-            if (nodePrefab == null || edgePrefab == null || tooltipPrefab == null || consoleButtonArt == null)
+            var settingsButtonArt = AssetDatabase.LoadAssetAtPath<Sprite>(SettingsButtonArtPath);
+            var stageStartButtonArt = AssetDatabase.LoadAssetAtPath<Sprite>(StageStartButtonArtPath);
+            var collapseButtonArt = AssetDatabase.LoadAssetAtPath<Sprite>(CollapseButtonArtPath);
+            if (nodePrefab == null || edgePrefab == null || tooltipPrefab == null ||
+                consoleButtonArt == null || settingsButtonArt == null || stageStartButtonArt == null ||
+                collapseButtonArt == null)
             {
                 throw new InvalidOperationException("Maintenance tree art or child prefabs are missing.");
             }
@@ -384,8 +395,8 @@ namespace Icebreaker.UI.Editor
                 CreateTopLeftText("RouteTab", topBar.transform, 144f, 10f, 140f, 40f, "운항 현황", font, 18f, TextAlignmentOptions.Center);
                 CreateTopLeftText("Title", topBar.transform, 310f, 10f, 250f, 40f, "선박 정비·강화", font, 19f, TextAlignmentOptions.Center);
                 var previewStateText = CreateTopLeftText("PreviewStateText", topBar.transform, 570f, 10f, 180f, 40f, "가짜 상태 · 새 저장", font, 12f, TextAlignmentOptions.Center);
-                CreateButton("SettingsButton", topBar.transform, 758f, 10f, 82f, 40f, "설정", font, theme.Background);
-                var closeButton = CreateButton("CollapseButton", topBar.transform, 848f, 10f, 96f, 40f, "접기", font, theme.Background);
+                CreateButton("SettingsButton", topBar.transform, 758f, 10f, 82f, 40f, "설정", font, theme.Background, settingsButtonArt);
+                var closeButton = CreateButton("CollapseButton", topBar.transform, 848f, 10f, 96f, 40f, "접기", font, theme.Background, collapseButtonArt);
 
                 var viewport = CreateTopLeftImage("TreeViewport", root.transform, 16f, 60f, 928f, 408f, new Color(0.025f, 0.08f, 0.13f, 1f), true);
                 viewport.gameObject.AddComponent<RectMask2D>();
@@ -418,7 +429,7 @@ namespace Icebreaker.UI.Editor
                 CreateTopLeftSprite("WheelIcon", bottomBar.transform, 80f, 20f, 28f, 28f, LoadChrome("ControlWheel"));
                 CreateTopLeftText("ControlGuide", bottomBar.transform, 116f, 12f, 260f, 48f, "이동 · 드래그 · 확대/축소 · R 복귀", font, 13f, TextAlignmentOptions.Left);
                 var fundsText = CreateTopLeftText("FundsText", bottomBar.transform, 388f, 12f, 220f, 48f, "정비 자금 100,000", font, 17f, TextAlignmentOptions.Center);
-                var stageStartButton = CreateButton("StageStartButton", bottomBar.transform, 620f, 12f, 324f, 48f, "쇄빙 시작", font, theme.ActionAccent);
+                var stageStartButton = CreateButton("StageStartButton", bottomBar.transform, 620f, 12f, 324f, 48f, "쇄빙 시작", font, theme.ActionAccent, stageStartButtonArt);
 
                 var serialized = new SerializedObject(presenter);
                 SetReference(serialized, "layout", layout);
@@ -731,18 +742,13 @@ namespace Icebreaker.UI.Editor
 
         private static Button CreateButton(
             string name, Transform parent, float x, float y, float width, float height,
-            string label, TMP_FontAsset font, Color color)
+            string label, TMP_FontAsset font, Color color, Sprite art)
         {
-            var art = AssetDatabase.LoadAssetAtPath<Sprite>(ConsoleButtonArtPath);
-            if (art == null)
-            {
-                throw new InvalidOperationException($"Maintenance console art is missing: {ConsoleButtonArtPath}");
-            }
-
             var action = string.Equals(name, "StageStartButton", StringComparison.Ordinal);
-            var image = CreateTopLeftImage(name, parent, x, y, width, height,
-                action ? new Color(1f, 0.72f, 0.42f, 1f) : Color.white, true);
-            ApplyConsoleArt(image, art);
+            var image = CreateTopLeftImage(name, parent, x, y, width, height, Color.white, true);
+            image.sprite = art;
+            image.type = Image.Type.Simple;
+            image.preserveAspect = false;
             var button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
             button.transition = Selectable.Transition.ColorTint;
