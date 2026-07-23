@@ -305,8 +305,8 @@ SettlementReady
 ### 3.5 타이머 0 경계
 
 - 진행 시스템이 구현한 `IStageClock`만 쇄빙 입력 허용 여부를 결정한다.
-- 파쇄 시스템은 피해를 적용하기 직전에 `Phase == Playing`, `IsPaused == false`, `StageElapsedSeconds < DurationSeconds`를 확인한다. P0의 `DurationSeconds`는 60이다.
-- 시계가 60초에 도달하면 상태를 먼저 `StageEnding`으로 변경하고 입력, 예약 피해, 투사체, 연쇄 큐, 재생성을 취소한다.
+- 파쇄 시스템은 피해를 적용하기 직전에 `Phase == Playing`, `IsPaused == false`, `StageElapsedSeconds < DurationSeconds`를 확인한다. P0의 `DurationSeconds`는 30이다.
+- 시계가 30초에 도달하면 상태를 먼저 `StageEnding`으로 변경하고 입력, 예약 피해, 투사체, 연쇄 큐, 재생성을 취소한다.
 - 상태 변경 전에 HP가 0 이하가 되어 발행된 이벤트만 승인한다.
 - `StageEnded`에는 자금이나 파괴 결과를 넣지 않는다.
 - 상태 변경 전에 동기적으로 발행돼 승인 대기 중인 이벤트만 처리한 뒤 누적값을 읽기 전용 `SettlementSummary`로 고정하고 `SettlementReady`를 발생시킨다.
@@ -335,8 +335,7 @@ screenShakeEnabled: bool
 ```
 
 - `SettlementSummary`, S01 충전, 활성 얼음, 남은 HP, 연쇄 큐, 남은 쇄빙 시간은 저장하지 않는다.
-- 표준 빌드는 `profileId = standard`와 `save_standard.json`, 시연 빌드는 `profileId = demo`와 `save_demo.json`을 사용한다.
-- 표준·시연은 같은 코드를 사용하고 빌드별 읽기 전용 `profileId`와 데이터 파일만 다르게 만든다. 공개 설정에서 전환하지 않는다.
+- 모든 빌드는 `profileId = standard`와 `save_standard.json`을 사용한다. 별도 시연 프로필이나 빌드 분기는 두지 않는다.
 
 ### 4.2 저장 시점과 파일 쓰기
 
@@ -352,7 +351,7 @@ screenShakeEnabled: bool
 - 저장 파일이 없는 최초 실행만 즉시 `쇄빙 준비 완료`로 시작한다.
 - 정상 반복에서는 축소 화면으로 돌아가는 시각에 `nextAvailableAtUtc = 현재 UTC + 항해 시간`을 저장한다.
 - 시스템 시각이 앞으로 이동해 목표 시각을 지났으면 즉시 준비 완료다.
-- 시스템 시각이 뒤로 이동하면 남은 시간을 현재 프로필의 전체 항해 시간보다 크게 표시하지 않는다.
+- 시스템 시각이 뒤로 이동하면 남은 시간을 10초보다 크게 표시하지 않는다.
 - 항해 중 설정을 열면 일시정지 시작 시각을 기록하고, 정상적으로 닫을 때 열린 시간만큼 `nextAvailableAtUtc`를 뒤로 이동한 뒤 저장한다.
 - 카운트다운·쇄빙 중에는 작업 시계만 멈춘다. `nextAvailableAtUtc`는 변경하지 않는다.
 - 준비 완료 상태에는 진행 중인 타이머가 없으므로 설정을 닫아도 시각을 변경하지 않는다.
@@ -425,5 +424,5 @@ screenShakeEnabled: bool
 - UI는 피해·보상·정산 수치를 다시 계산하지 않는다.
 - 모든 파괴와 보상 로그에 stageId, iceInstanceId, chainId가 남는다.
 - 진행 중 작업을 저장·복원하는 코드를 만들지 않는다.
-- 표준·시연 저장 파일이 서로 섞이지 않는다.
+- 모든 빌드는 단일 저장 파일을 사용한다.
 - 북쪽 기지 이후 자유 쇄빙을 게임잼 P0에 추가하지 않는다.

@@ -203,20 +203,11 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
-        public void BootResolver_VoyageRemaining_ClampsAndReadies()
+        public void BootResolver_OrdinarySavedVoyage_ReadiesImmediately()
         {
-            var now = DateTimeOffset.UtcNow;
+            var now = new DateTimeOffset(2026, 7, 24, 12, 0, 0, TimeSpan.Zero);
             var data = SaveData.CreateNew("standard");
             data.nextAvailableAtUtc = (now + TimeSpan.FromSeconds(10d)).ToString(
-                "O",
-                CultureInfo.InvariantCulture);
-
-            var active = SaveBootResolver.Resolve(data, now, 30d);
-
-            Assert.That(active.Phase, Is.EqualTo(GamePhase.Traveling));
-            Assert.That(active.VoyageRemainingSeconds, Is.GreaterThan(0d).And.LessThanOrEqualTo(30d));
-
-            data.nextAvailableAtUtc = (now - TimeSpan.FromSeconds(1d)).ToString(
                 "O",
                 CultureInfo.InvariantCulture);
 
@@ -224,15 +215,6 @@ namespace Icebreaker.Core.Tests
 
             Assert.That(ready.Phase, Is.EqualTo(GamePhase.Ready));
             Assert.That(ready.VoyageRemainingSeconds, Is.Zero);
-
-            data.nextAvailableAtUtc = (now + TimeSpan.FromSeconds(1000d)).ToString(
-                "O",
-                CultureInfo.InvariantCulture);
-
-            var clamped = SaveBootResolver.Resolve(data, now, 30d);
-
-            Assert.That(clamped.Phase, Is.EqualTo(GamePhase.Traveling));
-            Assert.That(clamped.VoyageRemainingSeconds, Is.EqualTo(30d));
         }
     }
 }

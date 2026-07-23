@@ -68,7 +68,7 @@ namespace Icebreaker.Core
         public GameState CurrentState => CreateState();
 
         public CombatConfig CurrentCombatConfig => currentStageCombatConfig ??
-            CombatConfigFactory.Build(maintenanceCore.MaintenanceLevels);
+            CombatConfigFactory.Build(maintenanceCore.MaintenanceLevels, currentStageId + 1L);
 
         public float MasterVolume => saveData.masterVolume;
 
@@ -154,7 +154,9 @@ namespace Icebreaker.Core
                 return;
             }
 
-            currentStageCombatConfig = CombatConfigFactory.Build(maintenanceCore.MaintenanceLevels);
+            currentStageCombatConfig = CombatConfigFactory.Build(
+                maintenanceCore.MaintenanceLevels,
+                currentStageId + 1L);
             currentStageMaintenanceEfficiencyLevel = maintenanceCore.MaintenanceEfficiencyLevel;
             StageConfigurationPrepared(currentStageCombatConfig);
             loop.RequestStageStart();

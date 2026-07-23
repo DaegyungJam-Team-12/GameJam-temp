@@ -1,8 +1,0 @@
-{
-  "profileId": "demo",
-  "stageDurationSeconds": 60,
-  "countdownSeconds": 3,
-  "voyageSeconds": 10,
-  "destinationTargets": [40, 120, 300],
-  "maintenanceCatalogId": "demo"
-}
