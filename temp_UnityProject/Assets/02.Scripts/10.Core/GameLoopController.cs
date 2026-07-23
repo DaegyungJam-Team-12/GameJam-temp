@@ -19,9 +19,9 @@ namespace Icebreaker.Core
         private bool settingsPaused;
 
         public GameLoopController(
-            double stageDurationSeconds = 60d,
+            double stageDurationSeconds = 30d,
             double countdownSeconds = 3d,
-            double voyageSeconds = 30d,
+            double voyageSeconds = 10d,
             double stageEndingSeconds = 1.2d)
         {
             if (!(stageDurationSeconds > 0d))

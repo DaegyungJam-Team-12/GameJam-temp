@@ -9,7 +9,7 @@ namespace Icebreaker.Core
 {
     public static class CombatConfigFactory
     {
-        public static CombatConfig Build(IReadOnlyList<MaintenanceLevel> levels)
+        public static CombatConfig Build(IReadOnlyList<MaintenanceLevel> levels, long stageNumber = 1L)
         {
             var levelsById = CreateLevelMap(levels);
             var c03Level = GetLevel(levelsById, MaintenanceCatalog.C03, 1);
@@ -57,7 +57,7 @@ namespace Icebreaker.Core
                     56f + 16f * d04Level,
                     0.05f,
                     3f),
-                iceField: CreateIceField(c03Level, c04Level),
+                iceField: CreateIceField(c03Level, c04Level, stageNumber),
                 supportAttack: new SupportAttackConfig(
                     supportEnabled,
                     12,
@@ -88,7 +88,7 @@ namespace Icebreaker.Core
             return GetLevel(CreateLevelMap(levels), MaintenanceCatalog.C02, 3);
         }
 
-        private static IceFieldConfig CreateIceField(int c03Level, int c04Level)
+        private static IceFieldConfig CreateIceField(int c03Level, int c04Level, long stageNumber)
         {
             IceDefinition[] definitions;
             IceSpawnWeight[] weights;
@@ -126,11 +126,22 @@ namespace Icebreaker.Core
                 weights = new[] { new IceSpawnWeight(IceTier.T1, 100) };
             }
 
+            var extraIceCount = (int)Math.Min(4L, Math.Max(0L, stageNumber - 1L)) * 4;
             return new IceFieldConfig(
-                20,
+                40 + extraIceCount,
                 2,
-                56f,
-                120f,
+                34f,
+                42f,
+                40f,
+                18f,
+                12f,
+                20f,
+                21f,
+                160f,
+                1f,
+                0.12f,
+                0.18f,
+                0.03f,
                 0.25f,
                 definitions,
                 weights,

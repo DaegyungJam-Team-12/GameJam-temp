@@ -90,14 +90,10 @@ namespace Icebreaker.Core
                 return new BootState(GamePhase.Traveling, totalVoyageSeconds);
             }
 
-            var remaining = ComputeRemainingVoyageSeconds(
-                now,
-                data.nextAvailableAtUtc,
-                totalVoyageSeconds);
-
-            return remaining <= 0d
-                ? new BootState(GamePhase.Ready, 0d)
-                : new BootState(GamePhase.Traveling, remaining);
+            // A regular saved voyage only represents the previous app session. Normal app boot
+            // must make the start button available immediately; interrupted work is recovered
+            // above through runInProgress and intentionally restarts the full voyage.
+            return new BootState(GamePhase.Ready, 0d);
         }
     }
 }

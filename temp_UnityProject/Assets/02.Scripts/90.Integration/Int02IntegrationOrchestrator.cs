@@ -776,13 +776,13 @@ namespace Icebreaker.Integration
         private static IReadOnlyList<MaintenanceDefinition> CreateMaintenanceDefinitions(
             string maintenanceCatalogId)
         {
-            return maintenanceCatalogId switch
+            if (maintenanceCatalogId != RuntimeProfile.DefaultProfileId)
             {
-                RuntimeProfile.StandardProfileId => MaintenanceCatalog.CreateStandard(),
-                RuntimeProfile.DemoProfileId => MaintenanceCatalog.CreateDemo(),
-                _ => throw new InvalidOperationException(
-                    $"Unknown maintenance catalog ID '{maintenanceCatalogId}'.")
-            };
+                throw new InvalidOperationException(
+                    $"Unknown maintenance catalog ID '{maintenanceCatalogId}'.");
+            }
+
+            return MaintenanceCatalog.CreateStandard();
         }
 
         private static bool ApplyPendingArrival(ProgressionLedger ledger, SaveData saveData)

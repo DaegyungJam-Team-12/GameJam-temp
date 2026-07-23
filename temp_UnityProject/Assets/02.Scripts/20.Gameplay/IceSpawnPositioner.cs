@@ -6,20 +6,41 @@ using UnityEngine;
 
 namespace Icebreaker.Gameplay
 {
+    public readonly struct SpawnPositionBlocker
+    {
+        public SpawnPositionBlocker(Vector2 referencePosition, float visualRadiusReferencePixels)
+        {
+            ReferencePosition = referencePosition;
+            VisualRadiusReferencePixels = visualRadiusReferencePixels;
+        }
+
+        public Vector2 ReferencePosition { get; }
+
+        public float VisualRadiusReferencePixels { get; }
+    }
+
     /// <summary>
-    /// Picks random spawn positions in a reference-pixel rectangle while keeping a minimum
-    /// distance from existing ice. Falls back to a relaxed distance after repeated failures.
+    /// Picks random spawn positions in a reference-pixel rectangle. The visual-spacing overload
+    /// samples a fixed candidate set and chooses from its highest-clearance positions.
     /// </summary>
     public sealed class IceSpawnPositioner
     {
         private const int MaxAttemptsBeforeRelax = 30;
         private const int MaxRelaxedAttempts = 4096;
-        private const float RelaxedMinDistanceFactor = 104f / 120f;
+        private const float LegacyRelaxedMinDistanceFactor = 104f / 120f;
+        private const int DefaultCandidateCount = 48;
+        private const int DefaultTopCandidateCount = 8;
 
         private readonly Rect spawnBounds;
-        private readonly float minDistance;
-        private readonly float relaxedMinDistance;
+        private readonly float legacyMinDistance;
+        private readonly float legacyRelaxedMinDistance;
+        private readonly float strictExtraVisualGap;
+        private readonly float relaxedExtraVisualGap;
+        private readonly bool usesVisualSpacing;
         private readonly IReadOnlyList<Rect> excludedAreas;
+        private readonly Vector2[] topCandidates;
+        private readonly float[] topCandidateScores;
+        private readonly int candidateCount;
 
         public IceSpawnPositioner(
             Rect spawnBounds,
@@ -28,21 +49,67 @@ namespace Icebreaker.Gameplay
             float excludedAreaPadding = 0f)
         {
             this.spawnBounds = spawnBounds;
-            this.minDistance = minDistance;
-            relaxedMinDistance = minDistance * RelaxedMinDistanceFactor;
+            legacyMinDistance = minDistance;
+            legacyRelaxedMinDistance = minDistance * LegacyRelaxedMinDistanceFactor;
+            strictExtraVisualGap = 0f;
+            relaxedExtraVisualGap = 0f;
+            usesVisualSpacing = false;
             this.excludedAreas = ExpandExcludedAreas(excludedAreas, excludedAreaPadding);
+            topCandidates = new Vector2[DefaultTopCandidateCount];
+            topCandidateScores = new float[DefaultTopCandidateCount];
+            candidateCount = DefaultCandidateCount;
+        }
+
+        public IceSpawnPositioner(
+            Rect spawnBounds,
+            float strictExtraVisualGap,
+            float relaxedExtraVisualGap,
+            IReadOnlyList<Rect>? excludedAreas = null,
+            float excludedAreaPadding = 0f,
+            int candidateCount = DefaultCandidateCount,
+            int topCandidateCount = DefaultTopCandidateCount)
+        {
+            if (strictExtraVisualGap < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(strictExtraVisualGap));
+            }
+
+            if (relaxedExtraVisualGap < 0f || relaxedExtraVisualGap > strictExtraVisualGap)
+            {
+                throw new ArgumentOutOfRangeException(nameof(relaxedExtraVisualGap));
+            }
+
+            if (candidateCount <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(candidateCount));
+            }
+
+            if (topCandidateCount <= 0 || topCandidateCount > candidateCount)
+            {
+                throw new ArgumentOutOfRangeException(nameof(topCandidateCount));
+            }
+
+            this.spawnBounds = spawnBounds;
+            legacyMinDistance = 0f;
+            legacyRelaxedMinDistance = 0f;
+            this.strictExtraVisualGap = strictExtraVisualGap;
+            this.relaxedExtraVisualGap = relaxedExtraVisualGap;
+            usesVisualSpacing = true;
+            this.excludedAreas = ExpandExcludedAreas(excludedAreas, excludedAreaPadding);
+            topCandidates = new Vector2[topCandidateCount];
+            topCandidateScores = new float[topCandidateCount];
+            this.candidateCount = candidateCount;
         }
 
         /// <summary>
-        /// Try to find a position that is at least <paramref name="minDistance"/> from every
-        /// position in <paramref name="existing"/>. Returns true on success.
+        /// Legacy fixed-distance placement retained for focused combat tests and callers that do
+        /// not provide per-ice visual dimensions.
         /// </summary>
         public bool TryGetPosition(IReadOnlyList<Vector2> existing, out Vector2 position)
         {
             var bestCandidate = default(Vector2);
             var bestDistance = float.MinValue;
 
-            // First pass: full min distance.
             for (var attempt = 0; attempt < MaxAttemptsBeforeRelax; attempt++)
             {
                 var candidate = RandomPointInBounds();
@@ -54,13 +121,12 @@ namespace Icebreaker.Gameplay
                 }
             }
 
-            if (bestDistance >= minDistance)
+            if (bestDistance >= legacyMinDistance)
             {
                 position = bestCandidate;
                 return true;
             }
 
-            // Second pass: relaxed distance (104px instead of 120px).
             bestDistance = float.MinValue;
             for (var attempt = 0; attempt < MaxRelaxedAttempts; attempt++)
             {
@@ -74,7 +140,203 @@ namespace Icebreaker.Gameplay
             }
 
             position = bestCandidate;
-            return bestDistance >= relaxedMinDistance;
+            return bestDistance >= legacyRelaxedMinDistance;
+        }
+
+        /// <summary>
+        /// Uses visual radii plus strict then relaxed gaps. Recent destruction locations use a
+        /// separate fixed-distance exclusion so newly spawned ice does not refill in place.
+        /// </summary>
+        public bool TryGetPosition(
+            IReadOnlyList<SpawnPositionBlocker> blockers,
+            float candidateVisualRadiusReferencePixels,
+            IReadOnlyList<Vector2> recentDestructionPositions,
+            float recentDestructionExclusionReferencePixels,
+            out Vector2 position)
+        {
+            if (!usesVisualSpacing)
+            {
+                throw new InvalidOperationException(
+                    "Visual spawn placement requires the visual-spacing IceSpawnPositioner constructor.");
+            }
+
+            if (candidateVisualRadiusReferencePixels <= 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(candidateVisualRadiusReferencePixels));
+            }
+
+            if (recentDestructionExclusionReferencePixels < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(recentDestructionExclusionReferencePixels));
+            }
+
+            return TryGetVisualPosition(
+                       blockers,
+                       candidateVisualRadiusReferencePixels,
+                       recentDestructionPositions,
+                       recentDestructionExclusionReferencePixels,
+                       strictExtraVisualGap,
+                       out position)
+                   || TryGetVisualPosition(
+                       blockers,
+                       candidateVisualRadiusReferencePixels,
+                       recentDestructionPositions,
+                       recentDestructionExclusionReferencePixels,
+                       relaxedExtraVisualGap,
+                       out position);
+        }
+
+        private bool TryGetVisualPosition(
+            IReadOnlyList<SpawnPositionBlocker> blockers,
+            float candidateVisualRadiusReferencePixels,
+            IReadOnlyList<Vector2> recentDestructionPositions,
+            float recentDestructionExclusionReferencePixels,
+            float visualGap,
+            out Vector2 position)
+        {
+            var selectedCount = 0;
+            for (var attempt = 0; attempt < candidateCount; attempt++)
+            {
+                var candidate = RandomPointInBounds();
+                if (!TryGetClearance(
+                        candidate,
+                        blockers,
+                        candidateVisualRadiusReferencePixels,
+                        recentDestructionPositions,
+                        recentDestructionExclusionReferencePixels,
+                        visualGap,
+                        out var clearance))
+                {
+                    continue;
+                }
+
+                InsertTopCandidate(candidate, clearance, ref selectedCount);
+            }
+
+            if (selectedCount == 0)
+            {
+                position = default;
+                return false;
+            }
+
+            var totalWeight = selectedCount * (selectedCount + 1) / 2;
+            var roll = UnityEngine.Random.Range(0, totalWeight);
+            for (var index = 0; index < selectedCount; index++)
+            {
+                var weight = selectedCount - index;
+                if (roll < weight)
+                {
+                    position = topCandidates[index];
+                    return true;
+                }
+
+                roll -= weight;
+            }
+
+            position = topCandidates[selectedCount - 1];
+            return true;
+        }
+
+        private bool TryGetClearance(
+            Vector2 candidate,
+            IReadOnlyList<SpawnPositionBlocker> blockers,
+            float candidateVisualRadiusReferencePixels,
+            IReadOnlyList<Vector2> recentDestructionPositions,
+            float recentDestructionExclusionReferencePixels,
+            float visualGap,
+            out float clearance)
+        {
+            clearance = float.MaxValue;
+            for (var i = 0; i < blockers.Count; i++)
+            {
+                var blocker = blockers[i];
+                var requiredDistance = candidateVisualRadiusReferencePixels +
+                    blocker.VisualRadiusReferencePixels + visualGap;
+                var distance = Vector2.Distance(candidate, blocker.ReferencePosition);
+                if (distance < requiredDistance)
+                {
+                    return false;
+                }
+
+                clearance = Mathf.Min(clearance, distance - requiredDistance);
+            }
+
+            for (var i = 0; i < recentDestructionPositions.Count; i++)
+            {
+                var distance = Vector2.Distance(candidate, recentDestructionPositions[i]);
+                if (distance < recentDestructionExclusionReferencePixels)
+                {
+                    return false;
+                }
+
+                clearance = Mathf.Min(
+                    clearance,
+                    distance - recentDestructionExclusionReferencePixels);
+            }
+
+            if (clearance == float.MaxValue)
+            {
+                clearance = 0f;
+            }
+
+            var candidateZone = GetScreenZone(candidate);
+            var sameZoneBlockerCount = 0;
+            for (var i = 0; i < blockers.Count; i++)
+            {
+                if (GetScreenZone(blockers[i].ReferencePosition) == candidateZone)
+                {
+                    sameZoneBlockerCount++;
+                }
+            }
+
+            // Keep this deliberately small: clearance remains the primary placement criterion.
+            clearance -= sameZoneBlockerCount * 2f;
+
+            return true;
+        }
+
+        private int GetScreenZone(Vector2 position)
+        {
+            var normalizedX = spawnBounds.width > 0f
+                ? (position.x - spawnBounds.xMin) / spawnBounds.width
+                : 0f;
+            var normalizedY = spawnBounds.height > 0f
+                ? (position.y - spawnBounds.yMin) / spawnBounds.height
+                : 0f;
+            var x = Mathf.Clamp((int)(normalizedX * 3f), 0, 2);
+            var y = Mathf.Clamp((int)(normalizedY * 3f), 0, 2);
+            return y * 3 + x;
+        }
+
+        private void InsertTopCandidate(Vector2 candidate, float score, ref int selectedCount)
+        {
+            var insertIndex = selectedCount;
+            if (insertIndex < topCandidates.Length)
+            {
+                selectedCount++;
+            }
+            else if (score <= topCandidateScores[topCandidates.Length - 1])
+            {
+                return;
+            }
+            else
+            {
+                insertIndex = topCandidates.Length - 1;
+            }
+
+            while (insertIndex > 0 && score > topCandidateScores[insertIndex - 1])
+            {
+                if (insertIndex < topCandidates.Length)
+                {
+                    topCandidates[insertIndex] = topCandidates[insertIndex - 1];
+                    topCandidateScores[insertIndex] = topCandidateScores[insertIndex - 1];
+                }
+
+                insertIndex--;
+            }
+
+            topCandidates[insertIndex] = candidate;
+            topCandidateScores[insertIndex] = score;
         }
 
         private static IReadOnlyList<Rect> ExpandExcludedAreas(

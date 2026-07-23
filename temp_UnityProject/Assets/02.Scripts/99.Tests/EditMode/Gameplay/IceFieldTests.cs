@@ -96,6 +96,11 @@ namespace Icebreaker.Gameplay.Tests
                 field.ApplyClickAt(pos, 1f, EffectType.Click, i * 0.1d);
             }
 
+            clock.StageElapsedSeconds = 0.12d;
+            field.UpdateRespawns();
+            clock.StageElapsedSeconds = 0.3d;
+            field.UpdateRespawns();
+
             Assert.That(destroyedCount, Is.EqualTo(1));
             Assert.That(respawnedCount, Is.EqualTo(1));
 
@@ -120,6 +125,11 @@ namespace Icebreaker.Gameplay.Tests
             {
                 field.ApplyClickAt(pos, 1f, EffectType.Click, i * 0.1d);
             }
+
+            clock.StageElapsedSeconds = 0.12d;
+            field.UpdateRespawns();
+            clock.StageElapsedSeconds = 0.3d;
+            field.UpdateRespawns();
 
             // The same IceInstance object is reused but with a new ID.
             Assert.That(target.IceInstanceId, Is.Not.EqualTo(oldId));
@@ -384,6 +394,107 @@ namespace Icebreaker.Gameplay.Tests
         }
 
         [Test]
+        public void IceField_FiftySixIceVisualLayout_StaysClearOfProtectedZonesAndSpacing()
+        {
+            var protectedAreas = new[]
+            {
+                new Rect(0f, 476f, 252f, 64f),
+                new Rect(384f, 476f, 192f, 64f),
+                new Rect(888f, 476f, 72f, 64f),
+                new Rect(280f, 0f, 400f, 135f),
+            };
+            const float protectedAreaPadding = 21f;
+            var paddedProtectedAreas = new[]
+            {
+                new Rect(-21f, 455f, 294f, 106f),
+                new Rect(363f, 455f, 234f, 106f),
+                new Rect(867f, 455f, 114f, 106f),
+                new Rect(259f, -21f, 442f, 177f),
+            };
+            var visualConfig = new IceFieldConfig(
+                maxActiveIceCount: 56,
+                maxSpecialIceCount: 2,
+                visualDiameterMinimumReferencePixels: 34f,
+                visualDiameterMaximumReferencePixels: 42f,
+                iceCollisionRadiusReferencePixels: 40f,
+                strictExtraVisualGapReferencePixels: 18f,
+                relaxedExtraVisualGapReferencePixels: 12f,
+                outerMarginReferencePixels: 20f,
+                protectedAreaPaddingReferencePixels: protectedAreaPadding,
+                recentDestructionExclusionReferencePixels: 160f,
+                recentDestructionExclusionSeconds: 1f,
+                respawnGapSeconds: 0.12f,
+                spawnAnimationSeconds: 0.18f,
+                chainRespawnStaggerSeconds: 0.03f,
+                respawnProtectionSeconds: 0.25f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+            var previousRandomState = UnityEngine.Random.state;
+
+            try
+            {
+                foreach (var seed in new[] { 0, 1, 42, 1234 })
+                {
+                    UnityEngine.Random.InitState(seed);
+                    var spawnMargin = visualConfig.OuterMarginReferencePixels +
+                        visualConfig.VisualDiameterMaximumReferencePixels * 0.5f;
+                    var field = new IceField(
+                        1L,
+                        visualConfig,
+                        new IceIdGenerator(),
+                        new IceSpawnPositioner(
+                            new Rect(
+                                spawnMargin,
+                                spawnMargin,
+                                960f - spawnMargin * 2f,
+                                540f - spawnMargin * 2f),
+                            visualConfig.StrictExtraVisualGapReferencePixels,
+                            visualConfig.RelaxedExtraVisualGapReferencePixels,
+                            protectedAreas,
+                            visualConfig.ProtectedAreaPaddingReferencePixels),
+                        new MockClock());
+
+                    field.Initialize(0d);
+
+                    Assert.That(field.ActiveIce, Has.Count.EqualTo(56), $"seed {seed}");
+                    for (var index = 0; index < field.ActiveIce.Count; index++)
+                    {
+                        var ice = field.ActiveIce[index];
+                        Assert.That(
+                            ice.VisualDiameterReferencePixels,
+                            Is.InRange(34f, 42f),
+                            $"seed {seed}, ice {index}");
+                        foreach (var protectedArea in paddedProtectedAreas)
+                        {
+                            Assert.That(
+                                protectedArea.Contains(ice.ReferencePosition),
+                                Is.False,
+                                $"seed {seed}, ice {index}");
+                        }
+
+                        for (var previousIndex = 0; previousIndex < index; previousIndex++)
+                        {
+                            var otherIce = field.ActiveIce[previousIndex];
+                            var requiredDistance =
+                                (ice.VisualDiameterReferencePixels +
+                                 otherIce.VisualDiameterReferencePixels) * 0.5f +
+                                visualConfig.RelaxedExtraVisualGapReferencePixels;
+                            Assert.That(
+                                Vector2.Distance(ice.ReferencePosition, otherIce.ReferencePosition),
+                                Is.GreaterThanOrEqualTo(requiredDistance),
+                                $"seed {seed}, ice pair {previousIndex}/{index}");
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                UnityEngine.Random.state = previousRandomState;
+            }
+        }
+
+        [Test]
         public void IceFieldView_DefaultConfiguration_UsesOnlyT1Weight()
         {
             var createDefaultConfig = typeof(IceFieldView).GetMethod(
@@ -625,12 +736,92 @@ namespace Icebreaker.Gameplay.Tests
             testField.IceDestroyed += _ => destroyCount++;
 
             testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 0d);
+            mockClock.StageElapsedSeconds = 0.12d;
+            testField.UpdateRespawns();
+            mockClock.StageElapsedSeconds = 0.3d;
+            testField.UpdateRespawns();
 
             Assert.That(damageCount, Is.EqualTo(1));
             Assert.That(destroyCount, Is.EqualTo(1));
             Assert.That(target.IceInstanceId, Is.Not.EqualTo(oldId));
             Assert.That(target.IsDestroyed, Is.False);
             Assert.That(target.RemainingHp, Is.EqualTo(10f));
+        }
+
+        [Test]
+        public void RespawnLifecycle_PausesThenActivatesWithNewIdAndSpawnTime()
+        {
+            var lifecycleConfig = new IceFieldConfig(
+                maxActiveIceCount: 1,
+                maxSpecialIceCount: 0,
+                visualDiameterMinimumReferencePixels: 34f,
+                visualDiameterMaximumReferencePixels: 42f,
+                iceCollisionRadiusReferencePixels: 40f,
+                strictExtraVisualGapReferencePixels: 18f,
+                relaxedExtraVisualGapReferencePixels: 12f,
+                outerMarginReferencePixels: 20f,
+                protectedAreaPaddingReferencePixels: 21f,
+                recentDestructionExclusionReferencePixels: 160f,
+                recentDestructionExclusionSeconds: 1f,
+                respawnGapSeconds: 0.12f,
+                spawnAnimationSeconds: 0.18f,
+                chainRespawnStaggerSeconds: 0.03f,
+                respawnProtectionSeconds: 0.25f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+            var lifecycleClock = new MockClock();
+            var lifecycleField = new IceField(
+                1L,
+                lifecycleConfig,
+                new IceIdGenerator(),
+                new IceSpawnPositioner(new Rect(0f, 0f, 960f, 540f), 18f, 12f),
+                lifecycleClock);
+            lifecycleField.Initialize(0d);
+
+            var target = lifecycleField.ActiveIce[0];
+            var previousId = target.IceInstanceId;
+            lifecycleField.ApplyClickAt(target.ReferencePosition, 10f, EffectType.Click, 0d);
+
+            Assert.That(target.RespawnState, Is.EqualTo(IceRespawnState.RespawnGap));
+            Assert.That(target.IceInstanceId, Is.EqualTo(previousId));
+            Assert.That(lifecycleField.ReservedSpawnCount, Is.Zero);
+
+            lifecycleClock.StageElapsedSeconds = 0.12d;
+            lifecycleClock.IsPaused = true;
+            lifecycleField.UpdateRespawns();
+            Assert.That(target.RespawnState, Is.EqualTo(IceRespawnState.RespawnGap));
+
+            lifecycleClock.IsPaused = false;
+            lifecycleField.UpdateRespawns();
+            Assert.That(target.RespawnState, Is.EqualTo(IceRespawnState.SpawnAnimating));
+            Assert.That(target.IceInstanceId, Is.EqualTo(previousId));
+            Assert.That(target.VisualIceInstanceId, Is.Not.EqualTo(previousId));
+            Assert.That(target.HasPendingSpawn, Is.True);
+            Assert.That(lifecycleField.ReservedSpawnCount, Is.EqualTo(1));
+
+            lifecycleClock.StageElapsedSeconds = 0.3d;
+            lifecycleField.UpdateRespawns();
+            Assert.That(target.RespawnState, Is.EqualTo(IceRespawnState.Active));
+            Assert.That(target.IceInstanceId, Is.Not.EqualTo(previousId));
+            Assert.That(target.SpawnTime, Is.EqualTo(0.3d));
+            Assert.That(lifecycleField.ReservedSpawnCount, Is.Zero);
+            Assert.That(lifecycleField.ApplyClickAt(target.ReferencePosition, 1f, EffectType.Click, 0.3d), Is.True);
+
+            for (var i = 0; i < 9; i++)
+            {
+                lifecycleField.ApplyClickAt(target.ReferencePosition, 1f, EffectType.Click, 0.3d);
+            }
+
+            lifecycleClock.StageElapsedSeconds = 0.42d;
+            lifecycleField.UpdateRespawns();
+            Assert.That(lifecycleField.ReservedSpawnCount, Is.EqualTo(1));
+
+            lifecycleClock.Phase = GamePhase.StageEnding;
+            lifecycleField.UpdateRespawns();
+            Assert.That(lifecycleField.QueuedRespawnCount, Is.Zero);
+            Assert.That(lifecycleField.ReservedSpawnCount, Is.Zero);
+            Assert.That(target.HasPendingSpawn, Is.False);
         }
 
         // ===== GP-06: S01 Support Charge =====

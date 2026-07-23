@@ -8,11 +8,9 @@ namespace Icebreaker.Core
 {
     public sealed class RuntimeProfile
     {
-        public const string StandardProfileId = "standard";
-        public const string DemoProfileId = "demo";
+        public const string DefaultProfileId = "standard";
 
-        private const string StandardResourcePath = "RuntimeProfiles/standard";
-        private const string DemoResourcePath = "RuntimeProfiles/demo";
+        private const string ResourcePath = "RuntimeProfiles/standard";
 
         private RuntimeProfile(
             string profileId,
@@ -42,23 +40,21 @@ namespace Icebreaker.Core
 
         public string MaintenanceCatalogId { get; }
 
-        public static string ActiveProfileId
-        {
-            get
-            {
-#if ICEBREAKER_DEMO
-                return DemoProfileId;
-#else
-                return StandardProfileId;
-#endif
-            }
-        }
+        public static string ActiveProfileId => DefaultProfileId;
 
         public static RuntimeProfile LoadActive() => LoadFromResources(ActiveProfileId);
 
         public static RuntimeProfile LoadFromResources(string profileId)
         {
-            var resourcePath = ResourcePathFor(profileId);
+            if (!string.Equals(profileId, DefaultProfileId, StringComparison.Ordinal))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(profileId),
+                    profileId,
+                    "Runtime profile ID must be 'standard'.");
+            }
+
+            var resourcePath = ResourcePath;
             var asset = Resources.Load<TextAsset>(resourcePath);
             if (asset == null)
             {
@@ -78,15 +74,15 @@ namespace Icebreaker.Core
 
         public static string ResourcePathFor(string profileId)
         {
-            return profileId switch
+            if (!string.Equals(profileId, DefaultProfileId, StringComparison.Ordinal))
             {
-                StandardProfileId => StandardResourcePath,
-                DemoProfileId => DemoResourcePath,
-                _ => throw new ArgumentOutOfRangeException(
+                throw new ArgumentOutOfRangeException(
                     nameof(profileId),
                     profileId,
-                    "Runtime profile ID must be 'standard' or 'demo'.")
-            };
+                    "Runtime profile ID must be 'standard'.");
+            }
+
+            return ResourcePath;
         }
 
         public static RuntimeProfile Parse(string json, string sourceName = "runtime profile JSON")
@@ -113,11 +109,10 @@ namespace Icebreaker.Core
                 throw new InvalidOperationException($"Runtime profile JSON has no data: {sourceName}.");
             }
 
-            if (!string.Equals(data.profileId, StandardProfileId, StringComparison.Ordinal) &&
-                !string.Equals(data.profileId, DemoProfileId, StringComparison.Ordinal))
+            if (!string.Equals(data.profileId, DefaultProfileId, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    $"Runtime profile ID must be 'standard' or 'demo': {sourceName}.");
+                    $"Runtime profile ID must be 'standard': {sourceName}.");
             }
 
             if (data.stageDurationSeconds <= 0d || data.countdownSeconds <= 0d ||
@@ -142,11 +137,10 @@ namespace Icebreaker.Core
                 }
             }
 
-            if (!string.Equals(data.maintenanceCatalogId, StandardProfileId, StringComparison.Ordinal) &&
-                !string.Equals(data.maintenanceCatalogId, DemoProfileId, StringComparison.Ordinal))
+            if (!string.Equals(data.maintenanceCatalogId, DefaultProfileId, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    $"Runtime profile maintenance catalog ID must be 'standard' or 'demo': {sourceName}.");
+                    $"Runtime profile maintenance catalog ID must be 'standard': {sourceName}.");
             }
 
             return new RuntimeProfile(

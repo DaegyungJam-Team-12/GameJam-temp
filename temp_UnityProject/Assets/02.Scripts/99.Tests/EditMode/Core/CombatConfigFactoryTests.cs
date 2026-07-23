@@ -68,6 +68,20 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
+        public void Build_LaterStagesIncreaseActiveIceCountUpToFiftySix()
+        {
+            var stageOne = CombatConfigFactory.Build(Array.Empty<MaintenanceLevel>(), stageNumber: 1L);
+            var stageTwo = CombatConfigFactory.Build(Array.Empty<MaintenanceLevel>(), stageNumber: 2L);
+            var stageFive = CombatConfigFactory.Build(Array.Empty<MaintenanceLevel>(), stageNumber: 5L);
+            var laterStage = CombatConfigFactory.Build(Array.Empty<MaintenanceLevel>(), stageNumber: 99L);
+
+            Assert.That(stageOne.IceField.MaxActiveIceCount, Is.EqualTo(40));
+            Assert.That(stageTwo.IceField.MaxActiveIceCount, Is.EqualTo(44));
+            Assert.That(stageFive.IceField.MaxActiveIceCount, Is.EqualTo(56));
+            Assert.That(laterStage.IceField.MaxActiveIceCount, Is.EqualTo(56));
+        }
+
+        [Test]
         public void Build_FullyUpgradedMatchesSharedContractReference()
         {
             var config = CombatConfigFactory.Build(CreateFullyUpgradedLevels());
@@ -196,10 +210,20 @@ namespace Icebreaker.Core.Tests
 
         private static void AssertIceFieldConstants(IceFieldConfig iceField)
         {
-            Assert.That(iceField.MaxActiveIceCount, Is.EqualTo(20));
+            Assert.That(iceField.MaxActiveIceCount, Is.EqualTo(40));
             Assert.That(iceField.MaxSpecialIceCount, Is.EqualTo(2));
-            Assert.That(iceField.HitRadiusReferencePixels, Is.EqualTo(56f));
-            Assert.That(iceField.MinimumSpawnDistanceReferencePixels, Is.EqualTo(120f));
+            Assert.That(iceField.VisualDiameterMinimumReferencePixels, Is.EqualTo(34f));
+            Assert.That(iceField.VisualDiameterMaximumReferencePixels, Is.EqualTo(42f));
+            Assert.That(iceField.IceCollisionRadiusReferencePixels, Is.EqualTo(40f));
+            Assert.That(iceField.StrictExtraVisualGapReferencePixels, Is.EqualTo(18f));
+            Assert.That(iceField.RelaxedExtraVisualGapReferencePixels, Is.EqualTo(12f));
+            Assert.That(iceField.OuterMarginReferencePixels, Is.EqualTo(20f));
+            Assert.That(iceField.ProtectedAreaPaddingReferencePixels, Is.EqualTo(21f));
+            Assert.That(iceField.RecentDestructionExclusionReferencePixels, Is.EqualTo(160f));
+            Assert.That(iceField.RecentDestructionExclusionSeconds, Is.EqualTo(1f));
+            Assert.That(iceField.RespawnGapSeconds, Is.EqualTo(0.12f));
+            Assert.That(iceField.SpawnAnimationSeconds, Is.EqualTo(0.18f));
+            Assert.That(iceField.ChainRespawnStaggerSeconds, Is.EqualTo(0.03f));
             Assert.That(iceField.RespawnProtectionSeconds, Is.EqualTo(0.25f));
         }
 

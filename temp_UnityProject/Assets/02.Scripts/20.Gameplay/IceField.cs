@@ -43,13 +43,32 @@ namespace Icebreaker.Gameplay
             public int ChainDepth;
         }
 
+        private struct ScheduledRespawn
+        {
+            public IceInstance Target;
+            public double SpawnAnimationStartTime;
+            public double ActivationTime;
+            public bool HasPreview;
+        }
+
+        private struct RecentDestruction
+        {
+            public Vector2 Position;
+            public double Time;
+        }
+
         private readonly Queue<QueuedDamage> effectQueue = new Queue<QueuedDamage>();
         private readonly List<IceInstance> pendingRespawns = new List<IceInstance>(32);
+        private readonly List<ScheduledRespawn> scheduledRespawns = new List<ScheduledRespawn>(32);
+        private readonly List<SpawnPositionBlocker> reservedSpawnPositions = new List<SpawnPositionBlocker>(32);
+        private readonly List<RecentDestruction> recentDestructions = new List<RecentDestruction>(32);
         private int queueProcessingDepth;
         
         // GP-08: Reusable lists to prevent GC allocations
         private readonly List<IceInstance> tempTargets = new List<IceInstance>(32);
         private readonly List<Vector2> tempPositions = new List<Vector2>(32);
+        private readonly List<SpawnPositionBlocker> tempSpawnBlockers = new List<SpawnPositionBlocker>(32);
+        private readonly List<Vector2> tempRecentDestructionPositions = new List<Vector2>(32);
 
         // GP-08: Allocation-free comparers
         private readonly struct DistanceHpIdComparer : IComparer<IceInstance>
@@ -103,7 +122,12 @@ namespace Icebreaker.Gameplay
         /// <summary>Fires after a destroyed ice has been respawned at a new position.</summary>
         public event Action<int>? IceRespawned;
 
+        /// <summary>Fires when an ice enters a visual-only respawn state.</summary>
+        public event Action<int>? IceRespawnStateChanged;
+
         public IReadOnlyList<IceInstance> ActiveIce => activeIce;
+        public int QueuedRespawnCount => scheduledRespawns.Count;
+        public int ReservedSpawnCount => reservedSpawnPositions.Count;
 
         public void Reconfigure(
             IceFieldConfig nextConfig,
@@ -135,6 +159,9 @@ namespace Icebreaker.Gameplay
             supportProcessor.Reset();
             effectQueue.Clear();
             pendingRespawns.Clear();
+            scheduledRespawns.Clear();
+            reservedSpawnPositions.Clear();
+            recentDestructions.Clear();
             queueProcessingDepth = 0;
 
             for (var layoutAttempt = 0; layoutAttempt < MaxInitialLayoutAttempts; layoutAttempt++)
@@ -307,6 +334,11 @@ namespace Icebreaker.Gameplay
                         if (queued.Target.IsDestroyed && damageEvent.RemainingHp <= 0f)
                         {
                             IceDestroyed(destroyEvent);
+                            recentDestructions.Add(new RecentDestruction
+                            {
+                                Position = destroyEvent.ReferencePosition,
+                                Time = clock.StageElapsedSeconds
+                            });
                             if (!CanProcessCombat())
                             {
                                 CancelQueuedCombatWork();
@@ -362,7 +394,7 @@ namespace Icebreaker.Gameplay
                     return;
                 }
 
-                RespawnAt(pendingRespawns[i], stageElapsedSeconds);
+                ScheduleRespawn(pendingRespawns[i], clock.StageElapsedSeconds, i);
             }
 
             pendingRespawns.Clear();
@@ -421,26 +453,105 @@ namespace Icebreaker.Gameplay
             return closest;
         }
 
-        private void RespawnAt(IceInstance destroyed, double stageElapsedSeconds)
+        /// <summary>
+        /// Advances respawn state using the authoritative work-time clock. Pausing leaves the
+        /// scheduled state untouched; leaving Playing discards queued reservations immediately.
+        /// </summary>
+        public void UpdateRespawns()
         {
-            var tier = PickRandomTier();
-            var def = GetDefinition(tier);
-            var positions = CollectAlivePositions(destroyed);
-
-            if (!positioner.TryGetPosition(positions, out var newPosition))
+            if (clock.Phase != GamePhase.Playing || clock.StageElapsedSeconds >= clock.DurationSeconds)
             {
-                throw new InvalidOperationException("No valid position remained for an ice respawn.");
+                CancelScheduledRespawns();
+                return;
             }
-            
-            DetermineSpecialIce(tier, out var specialType, out var hpMultiplier);
 
-            destroyed.Reset(
-                idGenerator.NextId(),
+            if (clock.IsPaused)
+            {
+                return;
+            }
+
+            var stageElapsedSeconds = clock.StageElapsedSeconds;
+            RemoveExpiredRecentDestructions(stageElapsedSeconds);
+            for (var i = 0; i < scheduledRespawns.Count; i++)
+            {
+                var scheduled = scheduledRespawns[i];
+                if (!scheduled.HasPreview &&
+                    stageElapsedSeconds >= scheduled.SpawnAnimationStartTime)
+                {
+                    if (!TryPrepareSpawnAnimation(ref scheduled, stageElapsedSeconds))
+                    {
+                        scheduledRespawns[i] = scheduled;
+                        continue;
+                    }
+
+                    scheduledRespawns[i] = scheduled;
+                }
+
+                if (!scheduled.HasPreview ||
+                    stageElapsedSeconds + 0.000001d < scheduled.ActivationTime)
+                {
+                    continue;
+                }
+
+                ActivateRespawn(scheduled.Target, stageElapsedSeconds);
+                RemoveReservedPosition(scheduled.Target.VisualReferencePosition);
+                scheduledRespawns.RemoveAt(i);
+                i--;
+            }
+        }
+
+        private void ScheduleRespawn(IceInstance destroyed, double stageElapsedSeconds, int chainOrder)
+        {
+            destroyed.BeginRespawnGap(stageElapsedSeconds);
+            var spawnAnimationStartTime = stageElapsedSeconds + config.RespawnGapSeconds +
+                config.ChainRespawnStaggerSeconds * chainOrder;
+            scheduledRespawns.Add(new ScheduledRespawn
+            {
+                Target = destroyed,
+                SpawnAnimationStartTime = spawnAnimationStartTime,
+                ActivationTime = 0d,
+                HasPreview = false
+            });
+            NotifyRespawnStateChanged(destroyed);
+        }
+
+        private bool TryPrepareSpawnAnimation(
+            ref ScheduledRespawn scheduled,
+            double stageElapsedSeconds)
+        {
+            var nextId = idGenerator.PeekNextId();
+            var visualDiameter = ResolveVisualDiameter(nextId);
+            if (!TryFindSpawnPosition(
+                    scheduled.Target,
+                    visualDiameter * 0.5f,
+                    stageElapsedSeconds,
+                    out var position))
+            {
+                return false;
+            }
+
+            nextId = idGenerator.NextId();
+            var tier = PickRandomTier();
+            var definition = GetDefinition(tier);
+            DetermineSpecialIce(tier, out var specialType, out var hpMultiplier);
+            scheduled.Target.BeginSpawnAnimation(
+                nextId,
                 tier,
                 specialType,
-                def.MaxHp * hpMultiplier,
-                newPosition,
+                definition.MaxHp * hpMultiplier,
+                position,
+                visualDiameter,
                 stageElapsedSeconds);
+            reservedSpawnPositions.Add(new SpawnPositionBlocker(position, visualDiameter * 0.5f));
+            scheduled.ActivationTime = stageElapsedSeconds + config.SpawnAnimationSeconds;
+            scheduled.HasPreview = true;
+            NotifyRespawnStateChanged(scheduled.Target);
+            return true;
+        }
+
+        private void ActivateRespawn(IceInstance destroyed, double stageElapsedSeconds)
+        {
+            destroyed.ActivatePendingSpawn(stageElapsedSeconds);
 
             var index = activeIce.IndexOf(destroyed);
             if (index >= 0)
@@ -453,9 +564,9 @@ namespace Icebreaker.Gameplay
         {
             var tier = PickRandomTier();
             var def = GetDefinition(tier);
-            var positions = CollectAlivePositions(null);
-
-            if (!positioner.TryGetPosition(positions, out var position))
+            var nextId = idGenerator.PeekNextId();
+            var visualDiameter = ResolveVisualDiameter(nextId);
+            if (!TryFindSpawnPosition(null, visualDiameter * 0.5f, stageElapsedSeconds, out var position))
             {
                 ice = null;
                 return false;
@@ -470,8 +581,38 @@ namespace Icebreaker.Gameplay
                 specialType,
                 def.MaxHp * hpMultiplier,
                 position,
-                stageElapsedSeconds);
+                stageElapsedSeconds,
+                visualDiameter);
             return true;
+        }
+
+        private bool TryFindSpawnPosition(
+            IceInstance? excluded,
+            float candidateVisualRadius,
+            double stageElapsedSeconds,
+            out Vector2 position)
+        {
+            if (!config.UsesVisualSpawnSpacing)
+            {
+                return positioner.TryGetPosition(CollectAlivePositions(excluded), out position);
+            }
+
+            var blockers = CollectSpawnBlockers(excluded);
+            var recentPositions = CollectRecentDestructionPositions(stageElapsedSeconds);
+            try
+            {
+                return positioner.TryGetPosition(
+                    blockers,
+                    candidateVisualRadius,
+                    recentPositions,
+                    config.RecentDestructionExclusionReferencePixels,
+                    out position);
+            }
+            catch (InvalidOperationException)
+            {
+                position = default;
+                return false;
+            }
         }
 
         private List<Vector2> CollectAlivePositions(IceInstance? exclude)
@@ -489,6 +630,106 @@ namespace Icebreaker.Gameplay
             return tempPositions;
         }
 
+        private List<SpawnPositionBlocker> CollectSpawnBlockers(IceInstance? exclude)
+        {
+            tempSpawnBlockers.Clear();
+            for (var i = 0; i < activeIce.Count; i++)
+            {
+                var ice = activeIce[i];
+                if (ice.IsDestroyed || ice == exclude)
+                {
+                    continue;
+                }
+
+                var radius = ice.VisualDiameterReferencePixels > 0f
+                    ? ice.VisualDiameterReferencePixels * 0.5f
+                    : config.VisualDiameterMaximumReferencePixels * 0.5f;
+                tempSpawnBlockers.Add(new SpawnPositionBlocker(ice.ReferencePosition, radius));
+            }
+
+            for (var i = 0; i < reservedSpawnPositions.Count; i++)
+            {
+                tempSpawnBlockers.Add(reservedSpawnPositions[i]);
+            }
+
+            return tempSpawnBlockers;
+        }
+
+        private List<Vector2> CollectRecentDestructionPositions(double stageElapsedSeconds)
+        {
+            RemoveExpiredRecentDestructions(stageElapsedSeconds);
+            tempRecentDestructionPositions.Clear();
+            for (var i = 0; i < recentDestructions.Count; i++)
+            {
+                tempRecentDestructionPositions.Add(recentDestructions[i].Position);
+            }
+
+            return tempRecentDestructionPositions;
+        }
+
+        private void RemoveExpiredRecentDestructions(double stageElapsedSeconds)
+        {
+            for (var i = recentDestructions.Count - 1; i >= 0; i--)
+            {
+                if (stageElapsedSeconds - recentDestructions[i].Time >= config.RecentDestructionExclusionSeconds)
+                {
+                    recentDestructions.RemoveAt(i);
+                }
+            }
+        }
+
+        private void RemoveReservedPosition(Vector2 position)
+        {
+            for (var i = 0; i < reservedSpawnPositions.Count; i++)
+            {
+                if (reservedSpawnPositions[i].ReferencePosition == position)
+                {
+                    reservedSpawnPositions.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+
+        private void CancelScheduledRespawns()
+        {
+            for (var i = 0; i < scheduledRespawns.Count; i++)
+            {
+                var target = scheduledRespawns[i].Target;
+                target.CancelPendingSpawn();
+                NotifyRespawnStateChanged(target);
+            }
+
+            scheduledRespawns.Clear();
+            reservedSpawnPositions.Clear();
+            recentDestructions.Clear();
+        }
+
+        private void NotifyRespawnStateChanged(IceInstance ice)
+        {
+            var index = activeIce.IndexOf(ice);
+            if (index >= 0)
+            {
+                IceRespawnStateChanged?.Invoke(index);
+            }
+        }
+
+        private float ResolveVisualDiameter(long iceInstanceId)
+        {
+            var minimum = config.VisualDiameterMinimumReferencePixels;
+            var maximum = config.VisualDiameterMaximumReferencePixels;
+            if (maximum <= minimum)
+            {
+                return minimum;
+            }
+
+            unchecked
+            {
+                var hash = (ulong)iceInstanceId * 11400714819323198485UL;
+                var normalized = (hash >> 40) / (float)((1UL << 24) - 1UL);
+                return minimum + (maximum - minimum) * normalized;
+            }
+        }
+
         private void DetermineSpecialIce(IceTier tier, out SpecialIceType specialType, out float hpMultiplier)
         {
             specialType = SpecialIceType.None;
@@ -503,6 +744,15 @@ namespace Icebreaker.Gameplay
             for (var i = 0; i < activeIce.Count; i++)
             {
                 if (!activeIce[i].IsDestroyed && activeIce[i].SpecialType != SpecialIceType.None)
+                {
+                    currentSpecialCount++;
+                }
+            }
+
+            for (var i = 0; i < scheduledRespawns.Count; i++)
+            {
+                if (scheduledRespawns[i].Target.HasPendingSpawn &&
+                    scheduledRespawns[i].Target.PendingSpecialType != SpecialIceType.None)
                 {
                     currentSpecialCount++;
                 }

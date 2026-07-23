@@ -23,7 +23,7 @@ namespace Icebreaker.Core.Tests
             GamePhase? changedPhase = null;
             controller.PhaseChanged += phase => changedPhase = phase;
 
-            controller.Tick(30d);
+            controller.Tick(10d);
 
             Assert.That(controller.Phase, Is.EqualTo(GamePhase.Ready));
             Assert.That(changedPhase, Is.EqualTo(GamePhase.Ready));
@@ -33,7 +33,7 @@ namespace Icebreaker.Core.Tests
         public void RequestStageStart_FromReady_EntersCountdown()
         {
             var controller = new GameLoopController();
-            controller.Tick(30d);
+            controller.Tick(10d);
 
             controller.RequestStageStart();
 
@@ -52,20 +52,15 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
-        public void StageClockAdvances_AndReachesStageEndingAt60()
+        public void StageClockAdvances_AndReachesStageEndingAt30()
         {
             var controller = new GameLoopController();
             DriveToPlaying(controller);
 
             controller.Tick(30d);
 
-            Assert.That(controller.RemainingSeconds, Is.EqualTo(30d));
-            Assert.That(controller.Phase, Is.EqualTo(GamePhase.Playing));
-
-            controller.Tick(30d);
-
             Assert.That(controller.Phase, Is.EqualTo(GamePhase.StageEnding));
-            Assert.That(controller.StageElapsedSeconds, Is.EqualTo(60d));
+            Assert.That(controller.StageElapsedSeconds, Is.EqualTo(30d));
             Assert.That(controller.RemainingSeconds, Is.EqualTo(0d));
         }
 
@@ -74,7 +69,7 @@ namespace Icebreaker.Core.Tests
         {
             var controller = new GameLoopController();
             DriveToPlaying(controller);
-            controller.Tick(60d);
+            controller.Tick(30d);
 
             controller.Tick(1.19d);
 
@@ -124,7 +119,7 @@ namespace Icebreaker.Core.Tests
             controller.CompleteSettlement(false);
 
             Assert.That(controller.Phase, Is.EqualTo(GamePhase.Traveling));
-            Assert.That(controller.VoyageRemainingSeconds, Is.EqualTo(30d));
+            Assert.That(controller.VoyageRemainingSeconds, Is.EqualTo(10d));
         }
 
         [Test]
@@ -161,7 +156,7 @@ namespace Icebreaker.Core.Tests
 
         private static void DriveToPlaying(GameLoopController controller)
         {
-            controller.Tick(30d);
+            controller.Tick(10d);
             controller.RequestStageStart();
             controller.Tick(3d);
         }
@@ -169,7 +164,7 @@ namespace Icebreaker.Core.Tests
         private static void DriveToSettlement(GameLoopController controller)
         {
             DriveToPlaying(controller);
-            controller.Tick(60d);
+            controller.Tick(30d);
             controller.Tick(1.2d);
         }
     }
