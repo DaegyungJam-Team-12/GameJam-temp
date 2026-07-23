@@ -75,7 +75,6 @@ namespace Icebreaker.UI.Editor
         {
             var background = CreateStretchImage("Background", root.transform, theme.Background, false);
             var presenter = root.AddComponent<ManagementViewsPresenter>();
-            var source = root.AddComponent<Ui05ManagementSampleSource>();
 
             var header = CreateTopLeftImage("CommonHeader", background.transform, 16f, 12f, 928f, 48f, theme.Panel, false);
             var headerTitle = CreateTopLeftText("TitleText", header.transform, 20f, 7f, 260f, 34f, "운항 현황", font, 23f, TextAlignmentOptions.Left);
@@ -102,10 +101,6 @@ namespace Icebreaker.UI.Editor
             SetObject(presenterObject, "settingsModalView", settingsTargets.View);
             SetObject(presenterObject, "arrivalOverlayView", arrivalTargets.View);
             presenterObject.ApplyModifiedPropertiesWithoutUndo();
-
-            var sourceObject = new SerializedObject(source);
-            SetObject(sourceObject, "presenter", presenter);
-            sourceObject.ApplyModifiedPropertiesWithoutUndo();
 
             settingsTargets.Root.SetActive(false);
             arrivalTargets.Root.SetActive(false);
@@ -287,6 +282,8 @@ namespace Icebreaker.UI.Editor
                 errors.Add("Management views must not use scrolling, dragging, or zooming.");
             }
 
+            ProductionUiGuard.CollectErrors(prefab, errors);
+
             var route = prefab.transform.Find("Background/Body/RouteRoot");
             if (route == null)
             {
@@ -338,13 +335,16 @@ namespace Icebreaker.UI.Editor
             try
             {
                 var presenter = instance.GetComponent<ManagementViewsPresenter>();
-                var source = instance.GetComponent<Ui05ManagementSampleSource>();
-                if (presenter == null || source == null)
+                if (presenter == null)
                 {
-                    errors.Add("Presenter or sample source is missing.");
+                    errors.Add("Presenter is missing.");
                     return;
                 }
 
+                var source = instance.AddComponent<Ui05ManagementSampleSource>();
+                var sourceSerialized = new SerializedObject(source);
+                SetObject(sourceSerialized, "presenter", presenter);
+                sourceSerialized.ApplyModifiedPropertiesWithoutUndo();
                 source.ResetSample();
                 var routeView = instance.GetComponentInChildren<RouteStatusView>(true);
                 var settingsView = instance.GetComponentInChildren<SettingsModalView>(true);

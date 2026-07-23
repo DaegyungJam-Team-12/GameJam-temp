@@ -38,7 +38,6 @@ namespace Icebreaker.UI.Editor
             var root = CreateCanvasRoot();
             try
             {
-                var source = root.AddComponent<Ui04RewardSettlementSampleSource>();
                 var presenter = root.AddComponent<RewardSettlementPresenter>();
                 var feedbackLayer = CreateStretchRect("FeedbackLayer", root.transform);
                 var popupTemplate = CreateText(
@@ -213,7 +212,7 @@ namespace Icebreaker.UI.Editor
 
                 ConfigurePresenter(
                     presenter,
-                    source,
+                    null,
                     theme,
                     feedbackLayer,
                     popupTemplate,
@@ -231,8 +230,6 @@ namespace Icebreaker.UI.Editor
                     themedTexts,
                     panels,
                     accents);
-                ConfigureSampleSource(source, presenter);
-
                 settlementRoot.SetActive(false);
                 PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
             }
@@ -260,6 +257,7 @@ namespace Icebreaker.UI.Editor
             {
                 ValidateStructure(prefab, errors);
                 ValidateBehavior(prefab, errors);
+                ProductionUiGuard.CollectErrors(prefab, errors);
             }
 
             if (errors.Count > 0)
@@ -288,17 +286,16 @@ namespace Icebreaker.UI.Editor
             ValidateRect(prefab, "SettlementRoot/ContinueButton", 350f, 384f, 260f, 48f, errors);
 
             var presenter = prefab.GetComponent<RewardSettlementPresenter>();
-            var source = prefab.GetComponent<Ui04RewardSettlementSampleSource>();
-            if (presenter == null || source == null)
+            if (presenter == null)
             {
-                errors.Add("UI-04 presenter or sample source is missing.");
+                errors.Add("UI-04 presenter is missing.");
                 return;
             }
 
             var serialized = new SerializedObject(presenter);
             var requiredReferences = new[]
             {
-                "combatSourceBehaviour", "progressionSourceBehaviour", "stateSourceBehaviour", "theme",
+                "theme",
                 "feedbackLayer", "popupTemplate", "settlementRoot", "settlementCanvasGroup",
                 "earnedFundsText", "destroyedCountText", "destinationProgressText", "appliedStatusText",
                 "destinationBadge", "destinationNameText", "autoContinueText", "continueButton",
@@ -313,10 +310,17 @@ namespace Icebreaker.UI.Editor
                 }
             }
 
-            var sampleSerialized = new SerializedObject(source);
-            if (sampleSerialized.FindProperty("previewPresenter")?.objectReferenceValue != presenter)
+            foreach (var propertyName in new[]
+                     {
+                         "combatSourceBehaviour",
+                         "progressionSourceBehaviour",
+                         "stateSourceBehaviour"
+                     })
             {
-                errors.Add("Ui04RewardSettlementSampleSource.previewPresenter is not assigned.");
+                if (serialized.FindProperty(propertyName)?.objectReferenceValue != null)
+                {
+                    errors.Add($"RewardSettlementPresenter.{propertyName} must be runtime-bound.");
+                }
             }
 
             if (prefab.transform.Find("SettlementRoot")?.gameObject.activeSelf != false)
@@ -336,12 +340,12 @@ namespace Icebreaker.UI.Editor
             try
             {
                 var presenter = instance.GetComponent<RewardSettlementPresenter>();
-                var source = instance.GetComponent<Ui04RewardSettlementSampleSource>();
-                if (presenter == null || source == null)
+                if (presenter == null)
                 {
                     return;
                 }
 
+                var source = instance.AddComponent<Ui04RewardSettlementSampleSource>();
                 presenter.Bind(source, source, source);
                 source.ResetSample();
                 source.ShowEdgeReward();
@@ -607,7 +611,7 @@ namespace Icebreaker.UI.Editor
 
         private static void ConfigurePresenter(
             RewardSettlementPresenter presenter,
-            Ui04RewardSettlementSampleSource source,
+            UnityEngine.Object? source,
             UiThemeAsset theme,
             RectTransform feedbackLayer,
             TMP_Text popupTemplate,
@@ -627,9 +631,9 @@ namespace Icebreaker.UI.Editor
             List<Graphic> accents)
         {
             var serialized = new SerializedObject(presenter);
-            SetObject(serialized, "combatSourceBehaviour", source);
-            SetObject(serialized, "progressionSourceBehaviour", source);
-            SetObject(serialized, "stateSourceBehaviour", source);
+            SetOptionalObject(serialized, "combatSourceBehaviour", source);
+            SetOptionalObject(serialized, "progressionSourceBehaviour", source);
+            SetOptionalObject(serialized, "stateSourceBehaviour", source);
             SetObject(serialized, "theme", theme);
             SetObject(serialized, "feedbackLayer", feedbackLayer);
             SetObject(serialized, "popupTemplate", popupTemplate);
@@ -650,16 +654,15 @@ namespace Icebreaker.UI.Editor
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void ConfigureSampleSource(
-            Ui04RewardSettlementSampleSource source,
-            RewardSettlementPresenter presenter)
+        private static void SetObject(SerializedObject serialized, string propertyName, UnityEngine.Object value)
         {
-            var serialized = new SerializedObject(source);
-            SetObject(serialized, "previewPresenter", presenter);
-            serialized.ApplyModifiedPropertiesWithoutUndo();
+            serialized.FindProperty(propertyName).objectReferenceValue = value;
         }
 
-        private static void SetObject(SerializedObject serialized, string propertyName, UnityEngine.Object value)
+        private static void SetOptionalObject(
+            SerializedObject serialized,
+            string propertyName,
+            UnityEngine.Object? value)
         {
             serialized.FindProperty(propertyName).objectReferenceValue = value;
         }
