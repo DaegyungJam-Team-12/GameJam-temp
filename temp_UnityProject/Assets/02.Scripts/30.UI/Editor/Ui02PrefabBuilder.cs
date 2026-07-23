@@ -19,7 +19,7 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
-        private const string BuildStamp = "ui02-launcher-tabbar-art-v4";
+        private const string BuildStamp = "ui02-launcher-tabbar-art-v5";
         private const string TabbarArtFolder = "Assets/04.Images/Tabbar";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
@@ -256,7 +256,7 @@ namespace Icebreaker.UI.Editor
 
                 // Destination name only (no progress number), in the empty panel to the RIGHT of
                 // the pin icon baked into the destination button art.
-                var destinationName = CreateTopLeftText("DestinationNameText", hudRoot.transform, 196f, 92f, 118f, 26f, "섬마을", font, 15f, TextAlignmentOptions.Left);
+                var destinationName = CreateTopLeftText("DestinationNameText", hudRoot.transform, 212f, 102f, 102f, 26f, "섬마을", font, 15f, TextAlignmentOptions.Left);
                 destinationName.overflowMode = TextOverflowModes.Overflow;
                 texts.Add(destinationName);
 
