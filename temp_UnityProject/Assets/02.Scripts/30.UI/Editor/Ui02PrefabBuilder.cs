@@ -91,6 +91,7 @@ namespace Icebreaker.UI.Editor
                 ValidateRect(launcher, "HudRoot/RouteHitArea", 424f, 8f, 96f, 56f, errors);
                 ValidateRect(launcher, "HudRoot/StageStartHitArea", 528f, 8f, 208f, 56f, errors);
                 ValidateRect(launcher, "HudRoot/SettingsHitArea", 744f, 12f, 48f, 48f, errors);
+                ValidateDragSurface(launcher, errors);
                 ValidateButtonSeparation(launcher, new[]
                 {
                     "HudRoot/MaintenanceHitArea",
@@ -198,6 +199,12 @@ namespace Icebreaker.UI.Editor
                 ConfigureSource(source, GamePhase.Traveling, 24d, canStart: false);
                 var presenter = root.AddComponent<LauncherHudPresenter>();
                 var hudRoot = CreateStretchPanel("HudRoot", root.transform, theme.Background, raycastTarget: false);
+
+                // Invisible full-bleed background: dragging it moves the OS window. Added first
+                // (lowest sibling depth) so buttons added afterward sit on top and keep receiving
+                // their own clicks instead of starting a window drag.
+                var dragSurface = CreateStretchPanel("DragSurface", hudRoot.transform, Color.clear, raycastTarget: true);
+                dragSurface.gameObject.AddComponent<Icebreaker.Window.WindowDragSurface>();
 
                 var panels = new List<Graphic>();
                 var accents = new List<Graphic>();
@@ -742,6 +749,32 @@ namespace Icebreaker.UI.Editor
                 transform.pivot != new Vector2(0f, 1f))
             {
                 errors.Add($"{prefab.name}/{path} does not match X {x}, Y {y}, {width}x{height}.");
+            }
+        }
+
+        private static void ValidateDragSurface(GameObject prefab, List<string> errors)
+        {
+            var dragSurface = prefab.transform.Find("HudRoot/DragSurface");
+            if (dragSurface == null)
+            {
+                errors.Add($"{prefab.name}/HudRoot/DragSurface is missing.");
+                return;
+            }
+
+            if (dragSurface.GetComponent<Icebreaker.Window.WindowDragSurface>() == null)
+            {
+                errors.Add($"{prefab.name}/HudRoot/DragSurface is missing WindowDragSurface.");
+            }
+
+            var image = dragSurface.GetComponent<Image>();
+            if (image == null || !image.raycastTarget || image.color.a > 0.001f)
+            {
+                errors.Add($"{prefab.name}/HudRoot/DragSurface must be a transparent raycast target.");
+            }
+
+            if (dragSurface.GetSiblingIndex() != 0)
+            {
+                errors.Add($"{prefab.name}/HudRoot/DragSurface must be the first sibling so button hit areas render above it.");
             }
         }
 

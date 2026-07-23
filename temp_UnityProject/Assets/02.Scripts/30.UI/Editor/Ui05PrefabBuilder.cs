@@ -156,10 +156,10 @@ namespace Icebreaker.UI.Editor
             var root = CreateStretchRect("SettingsRoot", parent).gameObject;
             var view = root.AddComponent<SettingsModalView>();
             CreateStretchImage("Dim", root.transform, new Color(0.01f, 0.03f, 0.05f, 0.72f), true);
-            var modal = CreateTopLeftImage("SettingsModal", root.transform, 320f, 150f, 320f, 300f, theme.Panel, true);
+            var modal = CreateTopLeftImage("SettingsModal", root.transform, 210f, 30f, 540f, 490f, theme.Panel, true);
             var title = CreateTopLeftText("TitleText", modal.transform, 20f, 14f, 200f, 34f, "설정", font, 25f, TextAlignmentOptions.Left);
             title.fontStyle = FontStyles.Bold;
-            var close = CreateButton("CloseButton", modal.transform, 264f, 8f, 48f, 44f, "닫기", font, 12f, theme.Panel);
+            var close = CreateButton("CloseButton", modal.transform, 476f, 8f, 48f, 44f, "닫기", font, 12f, theme.Panel);
 
             CreateTopLeftText("VolumeLabel", modal.transform, 20f, 64f, 110f, 26f, "마스터 볼륨", font, 15f, TextAlignmentOptions.Left);
             var volume = CreateSlider("MasterVolumeSlider", modal.transform, 136f, 64f, 160f, 28f, theme);
@@ -173,6 +173,9 @@ namespace Icebreaker.UI.Editor
 
             var quit = CreateButton("QuitButton", modal.transform, 20f, 168f, 276f, 52f, "게임 종료", font, 18f, new Color32(0x83, 0x3D, 0x45, 0xFF));
             var resetSave = CreateButton("ResetSaveButton", modal.transform, 20f, 228f, 276f, 52f, "저장 초기화", font, 18f, new Color32(0x8A, 0x5A, 0x1E, 0xFF));
+
+            var windowControls = BuildWindowControls(modal.transform, theme, font);
+
             var serialized = new SerializedObject(view);
             SetObject(serialized, "masterVolumeSlider", volume);
             SetObject(serialized, "screenShakeToggle", shake);
@@ -180,8 +183,58 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "quitButton", quit);
             SetObject(serialized, "resetSaveButton", resetSave);
             SetObject(serialized, "resetSaveButtonText", resetSave.GetComponentInChildren<TMP_Text>());
+
+            SetObject(serialized, "positionBottomLeftButton", windowControls.PositionBottomLeft);
+            SetObject(serialized, "positionBottomCenterButton", windowControls.PositionBottomCenter);
+            SetObject(serialized, "positionBottomRightButton", windowControls.PositionBottomRight);
+            SetObject(serialized, "positionResetButton", windowControls.PositionReset);
+            SetObject(serialized, "positionBottomLeftText", windowControls.PositionBottomLeft.GetComponentInChildren<TMP_Text>());
+            SetObject(serialized, "positionBottomCenterText", windowControls.PositionBottomCenter.GetComponentInChildren<TMP_Text>());
+            SetObject(serialized, "positionBottomRightText", windowControls.PositionBottomRight.GetComponentInChildren<TMP_Text>());
+
+            SetObject(serialized, "sizeDefaultButton", windowControls.SizeDefault);
+            SetObject(serialized, "sizeLargeButton", windowControls.SizeLarge);
+            SetObject(serialized, "sizeExtraLargeButton", windowControls.SizeExtraLarge);
+            SetObject(serialized, "sizeResetButton", windowControls.SizeReset);
+            SetObject(serialized, "sizeDefaultText", windowControls.SizeDefault.GetComponentInChildren<TMP_Text>());
+            SetObject(serialized, "sizeLargeText", windowControls.SizeLarge.GetComponentInChildren<TMP_Text>());
+            SetObject(serialized, "sizeExtraLargeText", windowControls.SizeExtraLarge.GetComponentInChildren<TMP_Text>());
+
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return new SettingsTargets(root, view);
+        }
+
+        private static WindowControlTargets BuildWindowControls(Transform modal, UiThemeAsset theme, TMP_FontAsset font)
+        {
+            const float buttonWidth = 118f;
+            const float buttonHeight = 44f;
+            const float gap = 8f;
+            const float column0 = 20f;
+            const float column1 = column0 + buttonWidth + gap;
+            const float column2 = column1 + buttonWidth + gap;
+            const float column3 = column2 + buttonWidth + gap;
+
+            CreateTopLeftText("WindowPositionLabel", modal, 20f, 296f, 300f, 26f, "창 위치", font, 15f, TextAlignmentOptions.Left);
+            var positionBottomLeft = CreateButton("PositionBottomLeftButton", modal, column0, 330f, buttonWidth, buttonHeight, "왼쪽 아래", font, 14f, theme.Panel);
+            var positionBottomCenter = CreateButton("PositionBottomCenterButton", modal, column1, 330f, buttonWidth, buttonHeight, "가운데 아래", font, 14f, theme.Panel);
+            var positionBottomRight = CreateButton("PositionBottomRightButton", modal, column2, 330f, buttonWidth, buttonHeight, "오른쪽 아래", font, 14f, theme.Panel);
+            var positionReset = CreateButton("PositionResetButton", modal, column3, 330f, buttonWidth, buttonHeight, "위치 초기화", font, 14f, new Color32(0x3A, 0x4A, 0x58, 0xFF));
+
+            CreateTopLeftText("WindowSizeLabel", modal, 20f, 392f, 300f, 26f, "창 크기", font, 15f, TextAlignmentOptions.Left);
+            var sizeDefault = CreateButton("SizeDefaultButton", modal, column0, 426f, buttonWidth, buttonHeight, "기본", font, 14f, theme.Panel);
+            var sizeLarge = CreateButton("SizeLargeButton", modal, column1, 426f, buttonWidth, buttonHeight, "크게", font, 14f, theme.Panel);
+            var sizeExtraLarge = CreateButton("SizeExtraLargeButton", modal, column2, 426f, buttonWidth, buttonHeight, "매우 크게", font, 14f, theme.Panel);
+            var sizeReset = CreateButton("SizeResetButton", modal, column3, 426f, buttonWidth, buttonHeight, "크기 초기화", font, 14f, new Color32(0x3A, 0x4A, 0x58, 0xFF));
+
+            return new WindowControlTargets(
+                positionBottomLeft,
+                positionBottomCenter,
+                positionBottomRight,
+                positionReset,
+                sizeDefault,
+                sizeLarge,
+                sizeExtraLarge,
+                sizeReset);
         }
 
         private static ArrivalTargets BuildArrival(Transform parent, UiThemeAsset theme, TMP_FontAsset font)
@@ -250,6 +303,26 @@ namespace Icebreaker.UI.Editor
                 prefab.transform.Find("Background/SettingsRoot/SettingsModal/ResetSaveButton") == null)
             {
                 errors.Add("Settings modal must expose the required volume, shake, quit, and reset-save controls.");
+            }
+
+            var windowControlPaths = new[]
+            {
+                "Background/SettingsRoot/SettingsModal/PositionBottomLeftButton",
+                "Background/SettingsRoot/SettingsModal/PositionBottomCenterButton",
+                "Background/SettingsRoot/SettingsModal/PositionBottomRightButton",
+                "Background/SettingsRoot/SettingsModal/PositionResetButton",
+                "Background/SettingsRoot/SettingsModal/SizeDefaultButton",
+                "Background/SettingsRoot/SettingsModal/SizeLargeButton",
+                "Background/SettingsRoot/SettingsModal/SizeExtraLargeButton",
+                "Background/SettingsRoot/SettingsModal/SizeResetButton"
+            };
+
+            foreach (var path in windowControlPaths)
+            {
+                if (prefab.transform.Find(path) == null)
+                {
+                    errors.Add($"Settings modal must expose window control {path}.");
+                }
             }
         }
 
@@ -585,6 +658,38 @@ namespace Icebreaker.UI.Editor
 
             public GameObject Root { get; }
             public SettingsModalView View { get; }
+        }
+
+        private readonly struct WindowControlTargets
+        {
+            public WindowControlTargets(
+                Button positionBottomLeft,
+                Button positionBottomCenter,
+                Button positionBottomRight,
+                Button positionReset,
+                Button sizeDefault,
+                Button sizeLarge,
+                Button sizeExtraLarge,
+                Button sizeReset)
+            {
+                PositionBottomLeft = positionBottomLeft;
+                PositionBottomCenter = positionBottomCenter;
+                PositionBottomRight = positionBottomRight;
+                PositionReset = positionReset;
+                SizeDefault = sizeDefault;
+                SizeLarge = sizeLarge;
+                SizeExtraLarge = sizeExtraLarge;
+                SizeReset = sizeReset;
+            }
+
+            public Button PositionBottomLeft { get; }
+            public Button PositionBottomCenter { get; }
+            public Button PositionBottomRight { get; }
+            public Button PositionReset { get; }
+            public Button SizeDefault { get; }
+            public Button SizeLarge { get; }
+            public Button SizeExtraLarge { get; }
+            public Button SizeReset { get; }
         }
 
         private readonly struct ArrivalTargets
