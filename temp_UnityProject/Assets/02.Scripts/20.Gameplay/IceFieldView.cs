@@ -20,6 +20,11 @@ namespace Icebreaker.Gameplay
         private const float ReferenceWidth = 960f;
         private const float ReferenceHeight = 540f;
         private const float DestructionVisualDurationSeconds = 0.45f;
+        private const float HitTiltDurationSeconds = 0.14f;
+        private const float HitTiltMaximumDegrees = 8f;
+        private const float HitFlashDurationSeconds = 0.05f;
+        private const float HitSquashScaleX = 1.08f;
+        private const float HitSquashScaleY = 0.90f;
 
         // --- Direct attack defaults (D01 level 0, D02 level 0) ---
         private const float BaseDirectDamage = 1f;
@@ -59,6 +64,7 @@ namespace Icebreaker.Gameplay
         private DirectAttackConfig? directAttackConfig;
         private AttackTickScheduler? attackTickScheduler;
         private readonly List<SpriteRenderer> visuals = new();
+        private readonly List<HitTiltState> hitTilts = new(56);
         private readonly Dictionary<Texture2D, Sprite[]> destructionFrames = new();
         private readonly List<DestructionVisual> destructionVisuals = new();
 #if UNITY_EDITOR
@@ -85,6 +91,16 @@ namespace Icebreaker.Gameplay
             public SpriteRenderer Renderer { get; }
             public Sprite[] Frames { get; }
             public float ElapsedSeconds { get; set; }
+        }
+
+        private struct HitTiltState
+        {
+            public float ElapsedSeconds;
+            public long IceInstanceId;
+            public int Direction;
+            public bool IsActive;
+            public Vector3 BaseScale;
+            public Color BaseColor;
         }
 
         private sealed class DummyClock : IStageClock
@@ -145,7 +161,9 @@ namespace Icebreaker.Gameplay
             }
 
             ApplyCombatConfig();
+            ResetAllHitTilts();
             field!.Initialize(0d);
+            EnsureVisualCapacity();
             RefreshAllVisuals();
             attackTickScheduler?.Reset();
         }
@@ -253,6 +271,7 @@ namespace Icebreaker.Gameplay
                 cursorRingRoot.gameObject.SetActive(false);
             }
 
+            ResetAllHitTilts();
             ClearDestructionVisuals();
         }
 
@@ -283,6 +302,7 @@ namespace Icebreaker.Gameplay
             field?.UpdateRespawns();
             UpdateRespawnAnimationVisuals();
             UpdateDestructionVisuals(Time.deltaTime);
+            UpdateHitTilts(Time.deltaTime);
 
             var mouse = Mouse.current;
             if (field == null || sceneCamera == null || mouse == null ||
@@ -324,16 +344,22 @@ namespace Icebreaker.Gameplay
 
         private void CreateAllVisuals()
         {
+            EnsureVisualCapacity();
+        }
+
+        private void EnsureVisualCapacity()
+        {
             if (field == null)
             {
                 return;
             }
 
-            for (var i = 0; i < field.ActiveIce.Count; i++)
+            for (var i = visuals.Count; i < field.ActiveIce.Count; i++)
             {
                 var ice = field.ActiveIce[i];
                 var renderer = CreateVisual(ice, i);
                 visuals.Add(renderer);
+                hitTilts.Add(default);
             }
         }
 
@@ -576,6 +602,123 @@ namespace Icebreaker.Gameplay
             }
         }
 
+        private void StartHitTilt(int index, long iceInstanceId)
+        {
+            if (index < 0 || index >= visuals.Count || index >= hitTilts.Count)
+            {
+                return;
+            }
+
+            var state = hitTilts[index];
+            if (!state.IsActive)
+            {
+                state.BaseScale = visuals[index].transform.localScale;
+                state.BaseColor = visuals[index].color;
+            }
+
+            state.ElapsedSeconds = 0f;
+            state.IceInstanceId = iceInstanceId;
+            state.Direction = (iceInstanceId & 1L) == 0L ? 1 : -1;
+            state.IsActive = true;
+            hitTilts[index] = state;
+            ApplyHitTilt(index, state.Direction * HitTiltMaximumDegrees);
+            ApplyHitSquash(index, state, 1f);
+            visuals[index].color = new Color(0.55f, 1f, 1f, state.BaseColor.a);
+        }
+
+        private void UpdateHitTilts(float deltaTime)
+        {
+            if (activeClock?.IsPaused == true)
+            {
+                return;
+            }
+
+            for (var i = 0; i < hitTilts.Count && i < visuals.Count; i++)
+            {
+                var state = hitTilts[i];
+                if (!state.IsActive)
+                {
+                    continue;
+                }
+
+                if (field == null || i >= field.ActiveIce.Count ||
+                    field.ActiveIce[i].IceInstanceId != state.IceInstanceId)
+                {
+                    ResetHitTilt(i);
+                    continue;
+                }
+
+                state.ElapsedSeconds += deltaTime;
+                if (state.ElapsedSeconds >= HitTiltDurationSeconds)
+                {
+                    RestoreHitReaction(i, state);
+                    hitTilts[i] = default;
+                    continue;
+                }
+
+                var progress = state.ElapsedSeconds / HitTiltDurationSeconds;
+                var strength = (1f - progress) * (1f - progress);
+                var angle = state.Direction * HitTiltMaximumDegrees *
+                    strength * Mathf.Cos(3f * Mathf.PI * progress);
+                hitTilts[i] = state;
+                ApplyHitTilt(i, angle);
+                ApplyHitSquash(i, state, strength);
+                visuals[i].color = Color.Lerp(
+                    new Color(0.55f, 1f, 1f, state.BaseColor.a),
+                    state.BaseColor,
+                    Mathf.Clamp01(state.ElapsedSeconds / HitFlashDurationSeconds));
+            }
+        }
+
+        private void ResetHitTilt(int index)
+        {
+            if (index < 0 || index >= hitTilts.Count || index >= visuals.Count)
+            {
+                return;
+            }
+
+            var state = hitTilts[index];
+            if (state.IsActive)
+            {
+                RestoreHitReaction(index, state);
+            }
+            else
+            {
+                visuals[index].transform.localRotation = Quaternion.identity;
+            }
+
+            hitTilts[index] = default;
+        }
+
+        private void ResetAllHitTilts()
+        {
+            for (var i = 0; i < hitTilts.Count && i < visuals.Count; i++)
+            {
+                ResetHitTilt(i);
+            }
+        }
+
+        private void ApplyHitTilt(int index, float angle)
+        {
+            visuals[index].transform.localRotation = Quaternion.Euler(0f, 0f, angle);
+        }
+
+        private void ApplyHitSquash(int index, HitTiltState state, float strength)
+        {
+            visuals[index].transform.localScale = new Vector3(
+                state.BaseScale.x * Mathf.Lerp(1f, HitSquashScaleX, strength),
+                state.BaseScale.y * Mathf.Lerp(1f, HitSquashScaleY, strength),
+                state.BaseScale.z);
+        }
+
+        private void RestoreHitReaction(int index, HitTiltState state)
+        {
+            var renderer = visuals[index];
+            renderer.transform.localRotation = Quaternion.identity;
+            renderer.transform.localScale = state.BaseScale;
+            renderer.color = state.BaseColor;
+        }
+
         // --- Event handlers ---
 
         private void HandleDamageApplied(DamageAppliedEvent e)
@@ -591,6 +734,14 @@ namespace Icebreaker.Gameplay
                 if (field.ActiveIce[i].IceInstanceId == e.IceInstanceId)
                 {
                     UpdateVisualAppearance(visuals[i], field.ActiveIce[i]);
+                    if (e.RemainingHp > 0f)
+                    {
+                        StartHitTilt(i, e.IceInstanceId);
+                    }
+                    else
+                    {
+                        ResetHitTilt(i);
+                    }
                     break;
                 }
             }
@@ -664,7 +815,7 @@ namespace Icebreaker.Gameplay
 
         private void HandleIceDestroyed(IceDestroyedEvent e)
         {
-            if (field == null || iceVisualCatalog == null)
+            if (field == null)
             {
                 return;
             }
@@ -675,6 +826,13 @@ namespace Icebreaker.Gameplay
                 if (ice.IceInstanceId != e.IceInstanceId)
                 {
                     continue;
+                }
+
+                ResetHitTilt(i);
+
+                if (iceVisualCatalog == null)
+                {
+                    return;
                 }
 
                 var sheet = iceVisualCatalog.ResolveDestructionSheet(
@@ -706,11 +864,13 @@ namespace Icebreaker.Gameplay
 
         private void HandleIceRespawned(int index)
         {
+            ResetHitTilt(index);
             RefreshVisual(index);
         }
 
         private void HandleIceRespawnStateChanged(int index)
         {
+            ResetHitTilt(index);
             RefreshVisual(index);
         }
 
@@ -827,7 +987,7 @@ namespace Icebreaker.Gameplay
                 maxActiveIceCount: 40,
                 maxSpecialIceCount: 2,
                 visualDiameterMinimumReferencePixels: 34f,
-                visualDiameterMaximumReferencePixels: 42f,
+                visualDiameterMaximumReferencePixels: 48f,
                 iceCollisionRadiusReferencePixels: 40f,
                 strictExtraVisualGapReferencePixels: 18f,
                 relaxedExtraVisualGapReferencePixels: 12f,

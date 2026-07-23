@@ -29,6 +29,30 @@ namespace Icebreaker.Gameplay.Tests
             public bool IsPaused { get; set; } = false;
         }
 
+        private sealed class HitTiltFixture : IDisposable
+        {
+            public HitTiltFixture(IceField field, MockClock clock)
+            {
+                Root = new GameObject("IceFieldViewHitTiltTest");
+                View = Root.AddComponent<IceFieldView>();
+                SetViewField(View, "field", field);
+                SetViewField(View, "activeClock", clock);
+                InvokeViewMethod(View, "CreateAllVisuals");
+                Renderer = Root.GetComponentInChildren<SpriteRenderer>();
+                IceInstanceId = field.ActiveIce[0].IceInstanceId;
+            }
+
+            public GameObject Root { get; }
+            public IceFieldView View { get; }
+            public SpriteRenderer Renderer { get; }
+            public long IceInstanceId { get; }
+
+            public void Dispose()
+            {
+                UnityEngine.Object.DestroyImmediate(Root);
+            }
+        }
+
         private MockClock clock = null!;
 
         [SetUp]
@@ -81,6 +105,45 @@ namespace Icebreaker.Gameplay.Tests
             {
                 Assert.That(ids.Add(ice.IceInstanceId), Is.True,
                     $"Duplicate iceInstanceId {ice.IceInstanceId}");
+            }
+        }
+
+        [Test]
+        public void VisualDiameter_UsesFiveStableStepsPerTierAndHigherTiersAreLarger()
+        {
+            var method = typeof(IceField).GetMethod(
+                "ResolveVisualDiameter",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(method, Is.Not.Null);
+
+            var sizesByTier = new Dictionary<IceTier, HashSet<float>>();
+            foreach (var tier in new[]
+                     {
+                         IceTier.T1,
+                         IceTier.T2,
+                         IceTier.T3,
+                         IceTier.T4,
+                         IceTier.T5
+                     })
+            {
+                var sizes = new HashSet<float>();
+                for (var iceInstanceId = 1L; iceInstanceId <= 100L; iceInstanceId++)
+                {
+                    var size = (float)method!.Invoke(field, new object[] { tier, iceInstanceId });
+                    sizes.Add(Mathf.Round(size * 1000f) / 1000f);
+                }
+
+                Assert.That(sizes, Has.Count.EqualTo(5), tier.ToString());
+                sizesByTier.Add(tier, sizes);
+            }
+
+            for (var tierIndex = 0; tierIndex < 4; tierIndex++)
+            {
+                var lowerTier = (IceTier)tierIndex;
+                var higherTier = (IceTier)(tierIndex + 1);
+                Assert.That(
+                    Mathf.Max(new List<float>(sizesByTier[lowerTier]).ToArray()),
+                    Is.LessThan(Mathf.Min(new List<float>(sizesByTier[higherTier]).ToArray())));
             }
         }
 
@@ -516,6 +579,233 @@ namespace Icebreaker.Gameplay.Tests
             {
                 UnityEngine.Object.DestroyImmediate(gameObject);
             }
+        }
+
+        [Test]
+        public void IceFieldView_NonLethalDirectSupportAndChainDamage_StartsImmediateTiltWithoutMoving()
+        {
+            using var fixture = new HitTiltFixture(field, clock);
+            var initialPosition = fixture.Renderer.transform.localPosition;
+            var initialScale = fixture.Renderer.transform.localScale;
+            var initialColor = fixture.Renderer.color;
+
+            foreach (var effectType in new[]
+                     {
+                         EffectType.CursorAreaPulse,
+                         EffectType.SupportShot,
+                         EffectType.CrystalShard
+                     })
+            {
+                InvokeViewMethod(
+                    fixture.View,
+                    "HandleDamageApplied",
+                    CreateDamageEvent(fixture.IceInstanceId, effectType, remainingHp: 1f));
+
+                Assert.That(
+                    Mathf.Abs(Mathf.DeltaAngle(0f, fixture.Renderer.transform.localEulerAngles.z)),
+                    Is.EqualTo(8f).Within(0.001f),
+                    effectType.ToString());
+                Assert.That(fixture.Renderer.transform.localPosition, Is.EqualTo(initialPosition));
+                Assert.That(
+                    fixture.Renderer.transform.localScale.x,
+                    Is.EqualTo(initialScale.x * 1.08f).Within(0.001f));
+                Assert.That(
+                    fixture.Renderer.transform.localScale.y,
+                    Is.EqualTo(initialScale.y * 0.90f).Within(0.001f));
+                Assert.That(fixture.Renderer.color, Is.Not.EqualTo(initialColor));
+                InvokeViewMethod(fixture.View, "ResetHitTilt", 0);
+                Assert.That(fixture.Renderer.transform.localScale, Is.EqualTo(initialScale));
+                Assert.That(fixture.Renderer.color, Is.EqualTo(initialColor));
+            }
+        }
+
+        [Test]
+        public void IceFieldView_HitTilt_DecaysToIdentityAndRetriggerRestarts()
+        {
+            using var fixture = new HitTiltFixture(field, clock);
+            var initialScale = fixture.Renderer.transform.localScale;
+            var initialColor = fixture.Renderer.color;
+            InvokeViewMethod(
+                fixture.View,
+                "HandleDamageApplied",
+                CreateDamageEvent(fixture.IceInstanceId, EffectType.Click, remainingHp: 1f));
+            InvokeViewMethod(fixture.View, "UpdateHitTilts", 0.04f);
+
+            var decayedAngle = Mathf.Abs(
+                Mathf.DeltaAngle(0f, fixture.Renderer.transform.localEulerAngles.z));
+            Assert.That(decayedAngle, Is.GreaterThan(0f).And.LessThan(8f));
+
+            InvokeViewMethod(
+                fixture.View,
+                "HandleDamageApplied",
+                CreateDamageEvent(fixture.IceInstanceId, EffectType.Click, remainingHp: 1f));
+            Assert.That(
+                Mathf.Abs(Mathf.DeltaAngle(0f, fixture.Renderer.transform.localEulerAngles.z)),
+                Is.EqualTo(8f).Within(0.001f));
+            Assert.That(
+                fixture.Renderer.transform.localScale.x,
+                Is.EqualTo(initialScale.x * 1.08f).Within(0.001f));
+
+            InvokeViewMethod(
+                fixture.View,
+                "UpdateHitTilts",
+                0.10f);
+            Assert.That(fixture.Renderer.transform.localRotation, Is.Not.EqualTo(Quaternion.identity));
+
+            InvokeViewMethod(
+                fixture.View,
+                "UpdateHitTilts",
+                0.04f);
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(Quaternion.identity));
+            Assert.That(fixture.Renderer.transform.localScale, Is.EqualTo(initialScale));
+            Assert.That(fixture.Renderer.color, Is.EqualTo(initialColor));
+        }
+
+        [Test]
+        public void IceFieldView_HitTilt_PauseFreezesElapsedTime()
+        {
+            using var fixture = new HitTiltFixture(field, clock);
+            InvokeViewMethod(
+                fixture.View,
+                "HandleDamageApplied",
+                CreateDamageEvent(fixture.IceInstanceId, EffectType.Click, remainingHp: 1f));
+            InvokeViewMethod(fixture.View, "UpdateHitTilts", 0.03f);
+            var rotationBeforePause = fixture.Renderer.transform.localRotation;
+
+            clock.IsPaused = true;
+            InvokeViewMethod(fixture.View, "UpdateHitTilts", 0.20f);
+
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(rotationBeforePause));
+        }
+
+        [Test]
+        public void IceFieldView_EnsureVisualCapacity_AddsTiltSlotsForLargerLaterStage()
+        {
+            using var fixture = new HitTiltFixture(field, clock);
+            var largeConfig = new IceFieldConfig(
+                maxActiveIceCount: 56,
+                maxSpecialIceCount: 0,
+                hitRadiusReferencePixels: 56f,
+                minimumSpawnDistanceReferencePixels: 1f,
+                respawnProtectionSeconds: 0.25f,
+                iceDefinitions: new[] { new IceDefinition(IceTier.T1, "백빙", 10f, 10L) },
+                spawnWeights: new[] { new IceSpawnWeight(IceTier.T1, 100) },
+                specialDefinitions: Array.Empty<SpecialIceDefinition>());
+            field.Reconfigure(
+                largeConfig,
+                new IceSpawnPositioner(new Rect(0f, 0f, 960f, 540f), 1f),
+                nextCriticalStrike: null,
+                nextSupportConfig: null,
+                nextChainConfig: null);
+            field.Initialize(0d);
+
+            InvokeViewMethod(fixture.View, "EnsureVisualCapacity");
+
+            Assert.That(field.ActiveIce, Has.Count.EqualTo(56));
+            Assert.That(fixture.Root.GetComponentsInChildren<SpriteRenderer>(), Has.Length.EqualTo(56));
+
+            var lastIce = field.ActiveIce[55];
+            InvokeViewMethod(
+                fixture.View,
+                "HandleDamageApplied",
+                CreateDamageEvent(lastIce.IceInstanceId, EffectType.Click, remainingHp: 1f));
+            var lastRenderer = fixture.Root.transform.GetChild(55).GetComponent<SpriteRenderer>();
+            Assert.That(lastRenderer, Is.Not.Null);
+            Assert.That(
+                Mathf.Abs(Mathf.DeltaAngle(0f, lastRenderer!.transform.localEulerAngles.z)),
+                Is.EqualTo(8f).Within(0.001f));
+        }
+
+        [Test]
+        public void IceFieldView_HitTilt_FatalDamageAndLifecycleResetsRestoreIdentity()
+        {
+            using var fixture = new HitTiltFixture(field, clock);
+            StartHitTilt(fixture);
+            InvokeViewMethod(
+                fixture.View,
+                "HandleDamageApplied",
+                CreateDamageEvent(fixture.IceInstanceId, EffectType.Click, remainingHp: 0f));
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(Quaternion.identity));
+
+            StartHitTilt(fixture);
+            InvokeViewMethod(fixture.View, "HandleIceRespawnStateChanged", 0);
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(Quaternion.identity));
+
+            StartHitTilt(fixture);
+            var ice = field.ActiveIce[0];
+            var replacementIceInstanceId = fixture.IceInstanceId + 1000L;
+            ice.Reset(
+                replacementIceInstanceId,
+                ice.Tier,
+                ice.SpecialType,
+                ice.MaxHp,
+                ice.ReferencePosition,
+                spawnTime: 0d,
+                ice.VisualDiameterReferencePixels);
+            InvokeViewMethod(fixture.View, "UpdateHitTilts", 0.01f);
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(Quaternion.identity));
+
+            StartHitTilt(fixture, replacementIceInstanceId);
+            InvokeViewMethod(fixture.View, "HandleIceRespawned", 0);
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(Quaternion.identity));
+
+            StartHitTilt(fixture, replacementIceInstanceId);
+            InvokeViewMethod(fixture.View, "OnDisable");
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(Quaternion.identity));
+
+            StartHitTilt(fixture, replacementIceInstanceId);
+            fixture.View.ResetStage();
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(Quaternion.identity));
+        }
+
+        private static void StartHitTilt(HitTiltFixture fixture)
+        {
+            StartHitTilt(fixture, fixture.IceInstanceId);
+        }
+
+        private static void StartHitTilt(HitTiltFixture fixture, long iceInstanceId)
+        {
+            InvokeViewMethod(
+                fixture.View,
+                "HandleDamageApplied",
+                CreateDamageEvent(iceInstanceId, EffectType.Click, remainingHp: 1f));
+            Assert.That(fixture.Renderer.transform.localRotation, Is.Not.EqualTo(Quaternion.identity));
+        }
+
+        private static DamageAppliedEvent CreateDamageEvent(
+            long iceInstanceId,
+            EffectType effectType,
+            float remainingHp)
+        {
+            return new DamageAppliedEvent(
+                stageId: 1L,
+                iceInstanceId: iceInstanceId,
+                chainId: 0L,
+                chainDepth: 0,
+                effectType: effectType,
+                damage: 1f,
+                remainingHp: remainingHp,
+                wasCritical: false,
+                referencePosition: Vector2.zero,
+                stageElapsedSeconds: 0d);
+        }
+
+        private static void SetViewField(IceFieldView view, string fieldName, object value)
+        {
+            var fieldInfo = typeof(IceFieldView).GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(fieldInfo, Is.Not.Null);
+            fieldInfo!.SetValue(view, value);
+        }
+
+        private static void InvokeViewMethod(IceFieldView view, string methodName, params object[] parameters)
+        {
+            var method = typeof(IceFieldView).GetMethod(
+                methodName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(method, Is.Not.Null);
+            method!.Invoke(view, parameters);
         }
 
         // --- GP-04 Tests ---

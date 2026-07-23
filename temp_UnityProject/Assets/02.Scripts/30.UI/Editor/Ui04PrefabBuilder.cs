@@ -16,7 +16,8 @@ namespace Icebreaker.UI.Editor
         private const string ThemePath = "Assets/04.Images/30.UI/Theme/UiTheme.asset";
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string PrefabPath = PrefabFolder + "/UI_RewardSettlement.prefab";
-        private const string BuildStamp = "ui04-production-font-roles-v2";
+        private const string SettlementArtFolder = "Assets/04.Images/30.UI/Settlement";
+        private const string BuildStamp = "ui04-production-settlement-art-font-roles-v1";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-04 Reward Settlement")]
         public static void Build()
@@ -45,6 +46,11 @@ namespace Icebreaker.UI.Editor
             var root = CreateCanvasRoot();
             try
             {
+                var settlementBase = LoadSprite(SettlementArtFolder + "/SettlementBase.png");
+                var totalReward = LoadSprite(SettlementArtFolder + "/TotalRewardPanel.png");
+                var progressTrack = LoadSprite(SettlementArtFolder + "/VoyageProgressTrack.png");
+                var progressFill = LoadSprite(SettlementArtFolder + "/VoyageProgressFill.png");
+                var continueArtwork = LoadSprite(SettlementArtFolder + "/VoyageContinueButton.png");
                 var presenter = root.AddComponent<RewardSettlementPresenter>();
                 var feedbackLayer = CreateStretchRect("FeedbackLayer", root.transform);
                 var popupTemplate = CreateText(
@@ -79,20 +85,56 @@ namespace Icebreaker.UI.Editor
                 var panel = CreateTopLeftImage(
                     "SettlementPanel",
                     settlementRoot.transform,
-                    160f,
-                    72f,
-                    640f,
-                    396f,
+                    64f,
+                    34f,
+                    832f,
+                    472f,
                     theme.Panel,
                     raycastTarget: false);
-                panels.Add(panel);
+                ApplySprite(panel, settlementBase);
+
+                var totalRewardArtwork = CreateTopLeftImage(
+                    "TotalRewardArtwork",
+                    panel.transform,
+                    74f,
+                    225f,
+                    675f,
+                    76f,
+                    Color.white,
+                    raycastTarget: false);
+                ApplySprite(totalRewardArtwork, totalReward);
+
+                var progressTrackArtwork = CreateTopLeftImage(
+                    "ProgressTrackArtwork",
+                    panel.transform,
+                    72f,
+                    159f,
+                    712f,
+                    45f,
+                    Color.white,
+                    raycastTarget: false);
+                ApplySprite(progressTrackArtwork, progressTrack);
+
+                var progressFillArtwork = CreateTopLeftImage(
+                    "ProgressFillArtwork",
+                    panel.transform,
+                    72f,
+                    164f,
+                    682f,
+                    33f,
+                    Color.white,
+                    raycastTarget: false);
+                ApplySprite(progressFillArtwork, progressFill);
+                progressFillArtwork.type = Image.Type.Filled;
+                progressFillArtwork.fillMethod = Image.FillMethod.Horizontal;
+                progressFillArtwork.fillOrigin = (int)Image.OriginHorizontal.Left;
 
                 var title = CreateText(
                     "TitleText",
                     panel.transform,
-                    24f,
-                    24f,
-                    592f,
+                    80f,
+                    54f,
+                    672f,
                     44f,
                     "쇄빙 작업 정산",
                     font,
@@ -108,7 +150,7 @@ namespace Icebreaker.UI.Editor
                     18f,
                     192f,
                     54f,
-                    theme.Success,
+                    new Color(0.04f, 0.13f, 0.21f, 0.95f),
                     raycastTarget: false);
                 var badgeLabel = CreateText(
                     "BadgeLabel",
@@ -140,10 +182,10 @@ namespace Icebreaker.UI.Editor
                 var earnedFunds = CreateText(
                     "EarnedFundsText",
                     panel.transform,
-                    32f,
-                    82f,
-                    576f,
-                    86f,
+                    94f,
+                    235f,
+                    635f,
+                    56f,
                     "획득 정비 자금 +1,240",
                     font,
                     38f,
@@ -154,9 +196,9 @@ namespace Icebreaker.UI.Editor
                 var destroyedCount = CreateText(
                     "DestroyedCountText",
                     panel.transform,
-                    80f,
-                    188f,
-                    480f,
+                    112f,
+                    305f,
+                    608f,
                     34f,
                     "파괴한 얼음 37개",
                     font,
@@ -167,9 +209,9 @@ namespace Icebreaker.UI.Editor
                 var destinationProgress = CreateText(
                     "DestinationProgressText",
                     panel.transform,
-                    80f,
-                    226f,
-                    480f,
+                    112f,
+                    124f,
+                    608f,
                     34f,
                     "목적지 진행 +37",
                     font,
@@ -180,9 +222,9 @@ namespace Icebreaker.UI.Editor
                 var appliedStatus = CreateText(
                     "AppliedStatusText",
                     panel.transform,
-                    80f,
-                    266f,
-                    480f,
+                    112f,
+                    337f,
+                    608f,
                     28f,
                     "정비 자금 반영 완료",
                     font,
@@ -190,32 +232,48 @@ namespace Icebreaker.UI.Editor
                     TextAlignmentOptions.Center);
                 appliedStatus.color = theme.Success;
 
+                var continueArtworkImage = CreateTopLeftImage(
+                    "ContinueArtwork",
+                    settlementRoot.transform,
+                    243f,
+                    356f,
+                    473f,
+                    93f,
+                    Color.white,
+                    raycastTarget: false);
+                ApplySprite(continueArtworkImage, continueArtwork);
+
                 var continueButton = CreateButton(
                     "ContinueButton",
                     settlementRoot.transform,
-                    350f,
-                    384f,
-                    260f,
-                    48f,
+                    243f,
+                    356f,
+                    473f,
+                    93f,
                     "항해 계속",
                     font,
                     20f,
                     theme.ActionAccent,
                     themedTexts,
                     accents);
+                accents.Remove(continueButton.targetGraphic);
+                continueButton.targetGraphic.color = Color.clear;
 
                 var autoContinue = CreateText(
                     "AutoContinueText",
                     settlementRoot.transform,
-                    350f,
-                    436f,
-                    260f,
-                    28f,
+                    243f,
+                    451f,
+                    473f,
+                    20f,
                     "4초 뒤 자동 항해",
                     font,
                     15f,
                     TextAlignmentOptions.Center);
                 themedTexts.Add(autoContinue);
+                destroyedCount.gameObject.SetActive(false);
+                appliedStatus.gameObject.SetActive(false);
+                autoContinue.gameObject.SetActive(false);
 
                 ConfigurePresenter(
                     presenter,
@@ -226,6 +284,7 @@ namespace Icebreaker.UI.Editor
                     settlementRoot,
                     settlementCanvasGroup,
                     earnedFunds,
+                    progressFillArtwork,
                     destroyedCount,
                     destinationProgress,
                     appliedStatus,
@@ -290,8 +349,8 @@ namespace Icebreaker.UI.Editor
                 errors.Add("UI-04 canvas must use the 960x540 reference resolution.");
             }
 
-            ValidateRect(prefab, "SettlementRoot/SettlementPanel", 160f, 72f, 640f, 396f, errors);
-            ValidateRect(prefab, "SettlementRoot/ContinueButton", 350f, 384f, 260f, 48f, errors);
+            ValidateRect(prefab, "SettlementRoot/SettlementPanel", 64f, 34f, 832f, 472f, errors);
+            ValidateRect(prefab, "SettlementRoot/ContinueButton", 243f, 356f, 473f, 93f, errors);
 
             var presenter = prefab.GetComponent<RewardSettlementPresenter>();
             if (presenter == null)
@@ -305,7 +364,7 @@ namespace Icebreaker.UI.Editor
             {
                 "theme",
                 "feedbackLayer", "popupTemplate", "settlementRoot", "settlementCanvasGroup",
-                "earnedFundsText", "destroyedCountText", "destinationProgressText", "appliedStatusText",
+                "earnedFundsText", "voyageProgressFill", "destroyedCountText", "destinationProgressText", "appliedStatusText",
                 "destinationBadge", "destinationNameText", "autoContinueText", "continueButton",
                 "inputBlockerButton"
             };
@@ -389,9 +448,9 @@ namespace Icebreaker.UI.Editor
                 presenter.ContinueRequested += () => continueCount++;
                 source.ShowSettlement();
                 if (!presenter.IsSettlementVisible || !presenter.IsInputLocked ||
-                    ReadText(instance, "SettlementRoot/SettlementPanel/EarnedFundsText") != "획득 정비 자금 +1,240" ||
+                    ReadText(instance, "SettlementRoot/SettlementPanel/EarnedFundsText") != "총 획득 보상 +1,240" ||
                     ReadText(instance, "SettlementRoot/SettlementPanel/DestroyedCountText") != "파괴한 얼음 37개" ||
-                    ReadText(instance, "SettlementRoot/SettlementPanel/DestinationProgressText") != "목적지 진행 +37")
+                    ReadText(instance, "SettlementRoot/SettlementPanel/DestinationProgressText") != "운항 현황 42 / 120")
                 {
                     errors.Add("SettlementSummary values were not rendered verbatim.");
                 }
@@ -479,6 +538,34 @@ namespace Icebreaker.UI.Editor
             image.color = color;
             image.raycastTarget = raycastTarget;
             return image;
+        }
+
+        private static Sprite LoadSprite(string path)
+        {
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer != null && importer.textureType != TextureImporterType.Sprite)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.mipmapEnabled = false;
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+            }
+
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (sprite == null)
+            {
+                throw new InvalidOperationException($"Settlement UI sprite was not found at {path}.");
+            }
+
+            return sprite;
+        }
+
+        private static void ApplySprite(Image image, Sprite sprite)
+        {
+            image.sprite = sprite;
+            image.color = Color.white;
+            image.type = Image.Type.Simple;
+            image.preserveAspect = false;
         }
 
         private static Image CreateTopLeftImage(
@@ -626,6 +713,7 @@ namespace Icebreaker.UI.Editor
             GameObject settlementRoot,
             CanvasGroup settlementCanvasGroup,
             TMP_Text earnedFunds,
+            Image voyageProgressFill,
             TMP_Text destroyedCount,
             TMP_Text destinationProgress,
             TMP_Text appliedStatus,
@@ -648,6 +736,7 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "settlementRoot", settlementRoot);
             SetObject(serialized, "settlementCanvasGroup", settlementCanvasGroup);
             SetObject(serialized, "earnedFundsText", earnedFunds);
+            SetObject(serialized, "voyageProgressFill", voyageProgressFill);
             SetObject(serialized, "destroyedCountText", destroyedCount);
             SetObject(serialized, "destinationProgressText", destinationProgress);
             SetObject(serialized, "appliedStatusText", appliedStatus);

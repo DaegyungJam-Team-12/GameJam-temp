@@ -19,6 +19,8 @@ namespace Icebreaker.Core.Tests
             Assert.That(rewardTable.ComputeFunds(IceTier.T1, SpecialIceType.None, 0), Is.EqualTo(10));
             Assert.That(rewardTable.ComputeFunds(IceTier.T2, SpecialIceType.None, 0), Is.EqualTo(80));
             Assert.That(rewardTable.ComputeFunds(IceTier.T3, SpecialIceType.None, 0), Is.EqualTo(700));
+            Assert.That(rewardTable.ComputeFunds(IceTier.T4, SpecialIceType.None, 0), Is.EqualTo(6300));
+            Assert.That(rewardTable.ComputeFunds(IceTier.T5, SpecialIceType.None, 0), Is.EqualTo(56700));
         }
 
         [Test]

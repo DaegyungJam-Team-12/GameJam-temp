@@ -31,6 +31,7 @@ namespace Icebreaker.Gameplay.Tests
             "T1_01", "T1_02",
             "T2_01", "T2_02",
             "T3_01", "T3_02",
+            "T4", "T5",
             "Crystal",
             "Crack",
         };
@@ -40,6 +41,7 @@ namespace Icebreaker.Gameplay.Tests
             ("T1_01_spritesheet", 6), ("T1_02_spritesheet", 6),
             ("T2_01_spritesheet", 6), ("T2_02_spritesheet", 6),
             ("T3_01_spritesheet", 6), ("T3_02_spritesheet", 6),
+            ("T4_01_spritesheet", 6), ("T5_01_spritesheet", 6),
             ("Crystal_spritesheet", 5),
             ("Crack_spritesheet", 6),
         };
@@ -80,6 +82,14 @@ namespace Icebreaker.Gameplay.Tests
                 Is.EqualTo("T3_01"));
             Assert.That(catalog.ResolveStaticSprite(IceTier.T3, SpecialIceType.None, 3)!.name,
                 Is.EqualTo("T3_02"));
+            Assert.That(catalog.ResolveStaticSprite(IceTier.T4, SpecialIceType.None, 2)!.name,
+                Is.EqualTo("T4"));
+            Assert.That(catalog.ResolveDestructionSheet(IceTier.T4, SpecialIceType.None, 2)!.name,
+                Is.EqualTo("T4_01_spritesheet"));
+            Assert.That(catalog.ResolveStaticSprite(IceTier.T5, SpecialIceType.None, 2)!.name,
+                Is.EqualTo("T5"));
+            Assert.That(catalog.ResolveDestructionSheet(IceTier.T5, SpecialIceType.None, 2)!.name,
+                Is.EqualTo("T5_01_spritesheet"));
             Assert.That(catalog.ResolveStaticSprite(IceTier.T2, SpecialIceType.Crystal, 2)!.name,
                 Is.EqualTo("Crystal"));
             Assert.That(catalog.ResolveDestructionSheet(IceTier.T2, SpecialIceType.Crystal, 2)!.name,

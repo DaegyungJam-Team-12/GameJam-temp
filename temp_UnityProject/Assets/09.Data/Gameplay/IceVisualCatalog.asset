@@ -24,6 +24,10 @@ MonoBehaviour:
   t3Variant02: {fileID: 21300000, guid: 4177bbeebec301947a1ac3d0c7c82593, type: 3}
   t3Variant01Sheet: {fileID: 2800000, guid: 27e878fd09bc069428f0ed26a2bd67c6, type: 3}
   t3Variant02Sheet: {fileID: 2800000, guid: 8d0ebdb3545e68b4cbc6c12872b30bcb, type: 3}
+  t4: {fileID: 21300000, guid: 73c5f62953b5641f69772a8b56ad18ed, type: 3}
+  t4Sheet: {fileID: 2800000, guid: acad6f4547010450aa8662a78c177389, type: 3}
+  t5: {fileID: 21300000, guid: c096455f2961a4defafdcd72a4dd458e, type: 3}
+  t5Sheet: {fileID: 2800000, guid: 17c26a987b7fe49c5adf38c5aa1e976b, type: 3}
   crystal: {fileID: 21300000, guid: 86cfc4e1058f7a44791b5f8b2ffab9bb, type: 3}
   crystalSheet: {fileID: 2800000, guid: 3acb6e05d780cbb499171ba7e1d0370e, type: 3}
   crack: {fileID: 21300000, guid: 61002fb2a4bf472418136723b10352fa, type: 3}
