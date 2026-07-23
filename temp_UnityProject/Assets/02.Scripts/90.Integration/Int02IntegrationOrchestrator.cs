@@ -7,6 +7,7 @@ using Icebreaker.Gameplay;
 using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
 using Icebreaker.Shared.Maintenance;
+using Icebreaker.Shared.Progression;
 using Icebreaker.Shared.State;
 using Icebreaker.UI.Feedback;
 using Icebreaker.UI.Hud;
@@ -26,12 +27,12 @@ namespace Icebreaker.Integration
         IManagementScreenSource,
         IMaintenanceStepViewDataSource
     {
-        public const string DemoProfileId = "demo";
-        public const double DemoStageSeconds = 60d;
-        public const double DemoCountdownSeconds = 3d;
-        public const double DemoVoyageSeconds = 10d;
+        private const string LegacyMasterVolumePlayerPrefsKey = "icebreaker.master-volume-v1";
 
         private Int02LoopCoordinator? coordinator;
+        private RuntimeProfile? activeProfile;
+        private IReadOnlyList<DestinationDefinition>? destinations;
+        private IReadOnlyList<MaintenanceDefinition>? maintenanceDefinitions;
         private ICombatEventSource? combatSource;
         private IceFieldView? iceFieldView;
         private LauncherHudPresenter? launcherHud;
@@ -94,17 +95,22 @@ namespace Icebreaker.Integration
                 return;
             }
 
+            var profile = RuntimeProfile.LoadActive();
+            activeProfile = profile;
+            destinations = DestinationCatalog.Create(profile.DestinationTargets);
+            maintenanceDefinitions = CreateMaintenanceDefinitions(profile.MaintenanceCatalogId);
+
             var store = new SaveStore(Application.persistentDataPath);
-            var loadedData = store.TryLoad(DemoProfileId);
-            var saveData = loadedData ?? SaveData.CreateNew(DemoProfileId);
+            var loadedData = store.TryLoad(profile.ProfileId);
+            var saveData = loadedData ?? SaveData.CreateNew(profile.ProfileId);
             if (loadedData == null)
             {
-                saveData.masterVolume = UiAudioSettings.LoadAndApplyMasterVolume();
+                MigrateLegacyMasterVolumeIfNeeded(store, saveData);
             }
 
             var now = DateTimeOffset.UtcNow;
-            var bootState = SaveBootResolver.Resolve(loadedData, now, DemoVoyageSeconds);
-            var ledger = CreateLedger(saveData);
+            var bootState = SaveBootResolver.Resolve(loadedData, now, profile.VoyageSeconds);
+            var ledger = CreateLedger(saveData, Destinations);
             var recoveredArrival = ApplyPendingArrival(ledger, saveData);
             var recoveredInterruptedStage = saveData.runInProgress;
 
@@ -114,7 +120,7 @@ namespace Icebreaker.Integration
             }
             else if (recoveredArrival)
             {
-                bootState = new SaveBootResolver.BootState(GamePhase.Traveling, DemoVoyageSeconds);
+                bootState = new SaveBootResolver.BootState(GamePhase.Traveling, profile.VoyageSeconds);
             }
 
             if (recoveredArrival || recoveredInterruptedStage)
@@ -122,7 +128,7 @@ namespace Icebreaker.Integration
                 saveData.runInProgress = false;
                 saveData.nextAvailableAtUtc = ledger.GameCompleted
                     ? ""
-                    : (now + TimeSpan.FromSeconds(DemoVoyageSeconds)).ToString("O");
+                    : (now + TimeSpan.FromSeconds(profile.VoyageSeconds)).ToString("O");
             }
 
             var saveService = new SaveService(store, saveData);
@@ -132,9 +138,9 @@ namespace Icebreaker.Integration
                 saveService.Flush();
             }
 
-            var loop = CreateLoop(bootState);
+            var loop = CreateLoop(bootState, profile);
             var maintenanceCore = new MaintenanceCore(
-                MaintenanceCatalog.CreateDemo(),
+                MaintenanceDefinitions,
                 ledger,
                 saveService);
             coordinator = new Int02LoopCoordinator(
@@ -220,7 +226,9 @@ namespace Icebreaker.Integration
 
             ApplyViewState(coordinator.CurrentState);
             coordinator.EnsureInitialized();
-            Debug.Log("[INT-02] demo loop wired: state -> gameplay -> UI -> settlement -> save.", this);
+            Debug.Log(
+                $"[INT-02] {ActiveProfile.ProfileId} loop wired: state -> gameplay -> UI -> settlement -> save.",
+                this);
         }
 
         private void Update()
@@ -707,7 +715,7 @@ namespace Icebreaker.Integration
                 Array.Empty<MaintenanceNodeViewData>(),
                 RouteStatusViewDataFactory.Create(
                     coordinator.Ledger,
-                    DestinationCatalog.CreateDemo()),
+                    Destinations),
                 state.Funds,
                 state.RemainingSeconds,
                 state.CanStartStage);
@@ -750,10 +758,12 @@ namespace Icebreaker.Integration
             shutdownFlushed = true;
         }
 
-        private static ProgressionLedger CreateLedger(SaveData saveData)
+        private static ProgressionLedger CreateLedger(
+            SaveData saveData,
+            IReadOnlyList<DestinationDefinition> destinations)
         {
             return new ProgressionLedger(
-                DestinationCatalog.CreateDemo(),
+                destinations,
                 RewardTable.CreateDefault(),
                 initialFunds: saveData.funds,
                 initialDestinationIndex: saveData.currentDestinationIndex,
@@ -761,6 +771,18 @@ namespace Icebreaker.Integration
                 initialCompletedDestinationIds: saveData.completedDestinationIds,
                 initialPendingArrivalDestinationId: saveData.pendingArrivalDestinationId,
                 initialGameCompleted: saveData.gameCompleted);
+        }
+
+        private static IReadOnlyList<MaintenanceDefinition> CreateMaintenanceDefinitions(
+            string maintenanceCatalogId)
+        {
+            return maintenanceCatalogId switch
+            {
+                RuntimeProfile.StandardProfileId => MaintenanceCatalog.CreateStandard(),
+                RuntimeProfile.DemoProfileId => MaintenanceCatalog.CreateDemo(),
+                _ => throw new InvalidOperationException(
+                    $"Unknown maintenance catalog ID '{maintenanceCatalogId}'.")
+            };
         }
 
         private static bool ApplyPendingArrival(ProgressionLedger ledger, SaveData saveData)
@@ -784,28 +806,30 @@ namespace Icebreaker.Integration
             return true;
         }
 
-        private static GameLoopController CreateLoop(SaveBootResolver.BootState bootState)
+        private static GameLoopController CreateLoop(
+            SaveBootResolver.BootState bootState,
+            RuntimeProfile profile)
         {
             var loop = new GameLoopController(
-                DemoStageSeconds,
-                DemoCountdownSeconds,
-                DemoVoyageSeconds);
+                profile.StageDurationSeconds,
+                profile.CountdownSeconds,
+                profile.VoyageSeconds);
 
             switch (bootState.Phase)
             {
                 case GamePhase.Traveling:
-                    loop.Tick(Math.Max(0d, DemoVoyageSeconds - bootState.VoyageRemainingSeconds));
+                    loop.Tick(Math.Max(0d, profile.VoyageSeconds - bootState.VoyageRemainingSeconds));
                     break;
 
                 case GamePhase.Ready:
-                    loop.Tick(DemoVoyageSeconds);
+                    loop.Tick(profile.VoyageSeconds);
                     break;
 
                 case GamePhase.Completed:
-                    loop.Tick(DemoVoyageSeconds);
+                    loop.Tick(profile.VoyageSeconds);
                     loop.RequestStageStart();
-                    loop.Tick(DemoCountdownSeconds);
-                    loop.Tick(DemoStageSeconds);
+                    loop.Tick(profile.CountdownSeconds);
+                    loop.Tick(profile.StageDurationSeconds);
                     loop.EnterSettlement();
                     loop.CompleteSettlement(true);
                     loop.CompleteArrival(true);
@@ -816,6 +840,29 @@ namespace Icebreaker.Integration
             }
 
             return loop;
+        }
+
+        private RuntimeProfile ActiveProfile => activeProfile ??
+            throw new InvalidOperationException("Runtime profile is not initialized.");
+
+        private IReadOnlyList<DestinationDefinition> Destinations => destinations ??
+            throw new InvalidOperationException("Destination catalog is not initialized.");
+
+        private IReadOnlyList<MaintenanceDefinition> MaintenanceDefinitions => maintenanceDefinitions ??
+            throw new InvalidOperationException("Maintenance catalog is not initialized.");
+
+        private static void MigrateLegacyMasterVolumeIfNeeded(SaveStore store, SaveData saveData)
+        {
+            if (!PlayerPrefs.HasKey(LegacyMasterVolumePlayerPrefsKey))
+            {
+                return;
+            }
+
+            saveData.masterVolume = Mathf.Clamp01(
+                PlayerPrefs.GetFloat(LegacyMasterVolumePlayerPrefsKey));
+            store.Save(saveData);
+            PlayerPrefs.DeleteKey(LegacyMasterVolumePlayerPrefsKey);
+            PlayerPrefs.Save();
         }
     }
 }

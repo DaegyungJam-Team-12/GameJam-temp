@@ -18,8 +18,8 @@ namespace Icebreaker.Integration.Tests
     public sealed class EscNavigationIntegrationTests : InputTestFixture
     {
         private const string Int02ScenePath = "Assets/01.Scenes/int02_complete_loop.unity";
-        private string demoSavePath = null!;
-        private byte[]? originalDemoSave;
+        private string standardSavePath = null!;
+        private byte[]? originalStandardSave;
         private Keyboard keyboard = null!;
 
         public override void Setup()
@@ -33,9 +33,9 @@ namespace Icebreaker.Integration.Tests
         {
             yield return DestroyActiveOrchestrators();
 
-            demoSavePath = Path.Combine(Application.persistentDataPath, "save_demo.json");
-            originalDemoSave = File.Exists(demoSavePath)
-                ? File.ReadAllBytes(demoSavePath)
+            standardSavePath = Path.Combine(Application.persistentDataPath, "save_standard.json");
+            originalStandardSave = File.Exists(standardSavePath)
+                ? File.ReadAllBytes(standardSavePath)
                 : null;
         }
 
@@ -44,14 +44,14 @@ namespace Icebreaker.Integration.Tests
         {
             yield return DestroyActiveOrchestrators();
 
-            if (originalDemoSave != null)
+            if (originalStandardSave != null)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(demoSavePath)!);
-                File.WriteAllBytes(demoSavePath, originalDemoSave);
+                Directory.CreateDirectory(Path.GetDirectoryName(standardSavePath)!);
+                File.WriteAllBytes(standardSavePath, originalStandardSave);
             }
-            else if (File.Exists(demoSavePath))
+            else if (File.Exists(standardSavePath))
             {
-                File.Delete(demoSavePath);
+                File.Delete(standardSavePath);
             }
         }
 
@@ -81,11 +81,11 @@ namespace Icebreaker.Integration.Tests
             yield return null;
         }
 
-        private static void WriteCleanDemoSave(string path)
+        private static void WriteCleanStandardSave(string path)
         {
             File.WriteAllText(path, @"{
   ""saveVersion"": 1,
-  ""profileId"": ""demo"",
+  ""profileId"": ""standard"",
   ""funds"": 0,
   ""maintenanceLevels"": [],
   ""currentDestinationIndex"": 0,
@@ -96,7 +96,7 @@ namespace Icebreaker.Integration.Tests
   ""nextAvailableAtUtc"": """",
   ""runInProgress"": false,
   ""gameCompleted"": false,
-  ""masterVolume"": 1,
+  ""masterVolume"": 0,
   ""screenShakeEnabled"": true
 }");
         }
@@ -152,7 +152,7 @@ namespace Icebreaker.Integration.Tests
         [UnityTest]
         public IEnumerator Esc_FromLauncher_OpensSettings_And_Esc_ReturnsToLauncher()
         {
-            WriteCleanDemoSave(demoSavePath);
+            WriteCleanStandardSave(standardSavePath);
             EditorSceneManager.LoadSceneInPlayMode(Int02ScenePath, new LoadSceneParameters(LoadSceneMode.Single));
             for (var i = 0; i < 5; i++) yield return null;
 
@@ -187,7 +187,7 @@ namespace Icebreaker.Integration.Tests
         [UnityTest]
         public IEnumerator Esc_FromMaintenance_ReturnsToLauncher()
         {
-            WriteCleanDemoSave(demoSavePath);
+            WriteCleanStandardSave(standardSavePath);
             EditorSceneManager.LoadSceneInPlayMode(Int02ScenePath, new LoadSceneParameters(LoadSceneMode.Single));
             for (var i = 0; i < 5; i++) yield return null;
 
@@ -213,7 +213,7 @@ namespace Icebreaker.Integration.Tests
         [UnityTest]
         public IEnumerator Esc_FromRoute_ReturnsToLauncher()
         {
-            WriteCleanDemoSave(demoSavePath);
+            WriteCleanStandardSave(standardSavePath);
             EditorSceneManager.LoadSceneInPlayMode(Int02ScenePath, new LoadSceneParameters(LoadSceneMode.Single));
             for (var i = 0; i < 5; i++) yield return null;
 
@@ -239,7 +239,7 @@ namespace Icebreaker.Integration.Tests
         [UnityTest]
         public IEnumerator Esc_WhilePlaying_PausesAndOpensSettings_And_Esc_Resumes()
         {
-            WriteCleanDemoSave(demoSavePath);
+            WriteCleanStandardSave(standardSavePath);
             EditorSceneManager.LoadSceneInPlayMode(Int02ScenePath, new LoadSceneParameters(LoadSceneMode.Single));
             for (var i = 0; i < 5; i++) yield return null;
 

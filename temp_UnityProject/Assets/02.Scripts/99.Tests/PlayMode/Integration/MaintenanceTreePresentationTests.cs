@@ -93,18 +93,17 @@ namespace Icebreaker.Integration.Tests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
             Assert.That(prefab, Is.Not.Null);
             var instance = UnityEngine.Object.Instantiate(prefab!);
+            var presenterType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePresenter");
+            var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
+            var presenter = instance.GetComponent(presenterType);
+            var source = BindFakeSource(instance, presenterType, sourceType);
 
             try
             {
                 yield return null;
 
-                var presenterType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePresenter");
-                var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
                 var previewStateType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePreviewState");
-                var presenter = instance.GetComponent(presenterType);
-                var source = instance.GetComponent(sourceType);
                 Assert.That(presenter, Is.Not.Null);
-                Assert.That(source, Is.Not.Null);
 
                 var nodeLayer = instance.transform.Find("TreeViewport/TreeContent/NodeLayer");
                 Assert.That(nodeLayer, Is.Not.Null);
@@ -192,20 +191,19 @@ namespace Icebreaker.Integration.Tests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
             Assert.That(prefab, Is.Not.Null);
             var instance = UnityEngine.Object.Instantiate(prefab!);
-            var eventSystemObject = new GameObject("MaintenanceTreeTestEventSystem");
-            var eventSystem = eventSystemObject.AddComponent<EventSystem>();
+            var presenterType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePresenter");
+            var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
+            var presenter = instance.GetComponent(presenterType)!;
+            var source = BindFakeSource(instance, presenterType, sourceType);
+            var eventSystem = GetOrCreateEventSystem(out var ownedEventSystemObject);
 
             try
             {
                 yield return null;
 
-                var presenterType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePresenter");
                 var viewportType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeViewport");
-                var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
                 var previewStateType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePreviewState");
-                var presenter = instance.GetComponent(presenterType)!;
                 var viewport = instance.GetComponentInChildren(viewportType, true)!;
-                var source = instance.GetComponent(sourceType)!;
                 var requests = new System.Collections.Generic.List<string>();
                 Action<string> handler = requests.Add;
                 presenterType.GetEvent("PurchaseRequested")!.AddEventHandler(presenter, handler);
@@ -299,7 +297,10 @@ namespace Icebreaker.Integration.Tests
             finally
             {
                 UnityEngine.Object.Destroy(instance);
-                UnityEngine.Object.Destroy(eventSystemObject);
+                if (ownedEventSystemObject != null)
+                {
+                    UnityEngine.Object.Destroy(ownedEventSystemObject);
+                }
             }
         }
 
@@ -309,6 +310,9 @@ namespace Icebreaker.Integration.Tests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
             Assert.That(prefab, Is.Not.Null);
             var instance = UnityEngine.Object.Instantiate(prefab!);
+            var presenterType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePresenter");
+            var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
+            BindFakeSource(instance, presenterType, sourceType);
 
             try
             {
@@ -357,16 +361,17 @@ namespace Icebreaker.Integration.Tests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
             Assert.That(prefab, Is.Not.Null);
             var instance = UnityEngine.Object.Instantiate(prefab!);
+            var presenterType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePresenter");
+            var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
+            var source = BindFakeSource(instance, presenterType, sourceType);
 
             try
             {
                 yield return null;
 
                 var viewportType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeViewport");
-                var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
                 var previewStateType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePreviewState");
                 var viewport = instance.GetComponentInChildren(viewportType, true)!;
-                var source = instance.GetComponent(sourceType)!;
                 sourceType.GetMethod("SetPreviewState")!.Invoke(
                     source,
                     new[] { Enum.Parse(previewStateType, "FullyPurchased") });
@@ -445,6 +450,31 @@ namespace Icebreaker.Integration.Tests
             }
 
             return count;
+        }
+
+        private static Component BindFakeSource(
+            GameObject instance,
+            Type presenterType,
+            Type sourceType)
+        {
+            var presenter = instance.GetComponent(presenterType);
+            Assert.That(presenter, Is.Not.Null);
+            var source = instance.AddComponent(sourceType);
+            presenterType.GetMethod("Bind")!.Invoke(presenter, new object[] { source });
+            return source;
+        }
+
+        private static EventSystem GetOrCreateEventSystem(out GameObject? ownedEventSystemObject)
+        {
+            var current = EventSystem.current;
+            if (current != null)
+            {
+                ownedEventSystemObject = null;
+                return current;
+            }
+
+            ownedEventSystemObject = new GameObject("MaintenanceTreeTestEventSystem");
+            return ownedEventSystemObject.AddComponent<EventSystem>();
         }
 
         private static PointerEventData Pointer(

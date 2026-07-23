@@ -60,6 +60,15 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
+        public void CreateNew_UsesMutedVolumeAndEnabledScreenShake()
+        {
+            var data = SaveData.CreateNew("standard");
+
+            Assert.That(data.masterVolume, Is.Zero);
+            Assert.That(data.screenShakeEnabled, Is.True);
+        }
+
+        [Test]
         public void Save_IsAtomic_NoTempLeftBehind()
         {
             var store = new SaveStore(tempDir);

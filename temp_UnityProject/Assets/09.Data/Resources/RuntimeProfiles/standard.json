@@ -1,0 +1,8 @@
+{
+  "profileId": "standard",
+  "stageDurationSeconds": 60,
+  "countdownSeconds": 3,
+  "voyageSeconds": 30,
+  "destinationTargets": [120, 600, 2400],
+  "maintenanceCatalogId": "standard"
+}

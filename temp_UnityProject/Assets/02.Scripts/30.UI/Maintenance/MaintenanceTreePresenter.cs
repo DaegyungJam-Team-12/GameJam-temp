@@ -69,7 +69,10 @@ namespace Icebreaker.UI.Maintenance
             }
 
             AddButtonListeners();
-            Subscribe();
+            if (source != null)
+            {
+                Subscribe();
+            }
         }
 
         private void OnDisable() => Unsubscribe();
@@ -120,12 +123,12 @@ namespace Icebreaker.UI.Maintenance
 
         private void Subscribe()
         {
-            if (subscribed || !ValidateReferences())
+            if (subscribed || source == null || !ValidateReferences())
             {
                 return;
             }
 
-            source!.EnsureInitialized();
+            source.EnsureInitialized();
             source.StepsChanged += Render;
             var inputViewport = viewport!;
             inputViewport.StepDoubleClicked += HandleStepDoubleClicked;

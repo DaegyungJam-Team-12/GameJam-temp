@@ -9,34 +9,51 @@ namespace Icebreaker.Core
     public static class DestinationCatalog
     {
         public static IReadOnlyList<DestinationDefinition> CreateStandard() =>
-            Create(120, 600, 2_400);
+            Create(new[] { 120, 600, 2_400 });
 
         public static IReadOnlyList<DestinationDefinition> CreateDemo() =>
-            Create(40, 120, 300);
+            Create(new[] { 40, 120, 300 });
 
-        private static IReadOnlyList<DestinationDefinition> Create(
-            int islandVillageTarget,
-            int lighthousePortTarget,
-            int northernBaseTarget)
+        public static IReadOnlyList<DestinationDefinition> Create(IReadOnlyList<int> targets)
         {
+            if (targets == null)
+            {
+                throw new ArgumentNullException(nameof(targets));
+            }
+
+            if (targets.Count != 3)
+            {
+                throw new ArgumentException("Exactly three destination targets are required.", nameof(targets));
+            }
+
+            for (var index = 0; index < targets.Count; index++)
+            {
+                if (targets[index] <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        nameof(targets),
+                        "Destination targets must be positive.");
+                }
+            }
+
             return Array.AsReadOnly(new[]
             {
                 new DestinationDefinition(
                     "island-village",
                     "섬마을",
-                    islandVillageTarget,
+                    targets[0],
                     "식료품·우편",
                     0),
                 new DestinationDefinition(
                     "lighthouse-port",
                     "등대항",
-                    lighthousePortTarget,
+                    targets[1],
                     "발전기 연료·의약품",
                     1),
                 new DestinationDefinition(
                     "northern-base",
                     "북쪽 기지",
-                    northernBaseTarget,
+                    targets[2],
                     "기계 부품·우편",
                     2)
             });
