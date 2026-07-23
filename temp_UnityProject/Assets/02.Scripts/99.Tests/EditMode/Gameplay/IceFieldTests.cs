@@ -31,12 +31,22 @@ namespace Icebreaker.Gameplay.Tests
 
         private sealed class HitTiltFixture : IDisposable
         {
-            public HitTiltFixture(IceField field, MockClock clock)
+            public HitTiltFixture(IceField field, MockClock clock, bool withCamera = false)
             {
                 Root = new GameObject("IceFieldViewHitTiltTest");
                 View = Root.AddComponent<IceFieldView>();
                 SetViewField(View, "field", field);
                 SetViewField(View, "activeClock", clock);
+                if (withCamera)
+                {
+                    var cameraRoot = new GameObject("IceFieldViewCamera");
+                    cameraRoot.transform.position = new Vector3(0f, 0f, -10f);
+                    Camera = cameraRoot.AddComponent<Camera>();
+                    Camera.orthographic = true;
+                    Camera.orthographicSize = 5f;
+                    SetViewField(View, "sceneCamera", Camera);
+                }
+
                 InvokeViewMethod(View, "CreateAllVisuals");
                 Renderer = Root.GetComponentInChildren<SpriteRenderer>();
                 IceInstanceId = field.ActiveIce[0].IceInstanceId;
@@ -46,9 +56,15 @@ namespace Icebreaker.Gameplay.Tests
             public IceFieldView View { get; }
             public SpriteRenderer Renderer { get; }
             public long IceInstanceId { get; }
+            public Camera? Camera { get; }
 
             public void Dispose()
             {
+                if (Camera != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(Camera.gameObject);
+                }
+
                 UnityEngine.Object.DestroyImmediate(Root);
             }
         }
@@ -579,6 +595,26 @@ namespace Icebreaker.Gameplay.Tests
             {
                 UnityEngine.Object.DestroyImmediate(gameObject);
             }
+        }
+
+        [Test]
+        public void IceFieldView_IdleMotion_DriftsAndRotates_WhilePauseFreezes()
+        {
+            using var fixture = new HitTiltFixture(field, clock, withCamera: true);
+            var initialPosition = fixture.Renderer.transform.position;
+
+            InvokeViewMethod(fixture.View, "UpdateIdleMotionVisuals", 0.5f);
+            var movedPosition = fixture.Renderer.transform.position;
+            var rotated = fixture.Renderer.transform.localRotation;
+
+            Assert.That(movedPosition, Is.Not.EqualTo(initialPosition));
+            Assert.That(rotated, Is.Not.EqualTo(Quaternion.identity));
+
+            clock.IsPaused = true;
+            InvokeViewMethod(fixture.View, "UpdateIdleMotionVisuals", 0.5f);
+
+            Assert.That(fixture.Renderer.transform.position, Is.EqualTo(movedPosition));
+            Assert.That(fixture.Renderer.transform.localRotation, Is.EqualTo(rotated));
         }
 
         [Test]
