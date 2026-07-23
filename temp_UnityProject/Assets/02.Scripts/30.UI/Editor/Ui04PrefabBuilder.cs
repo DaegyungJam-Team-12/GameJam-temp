@@ -16,13 +16,18 @@ namespace Icebreaker.UI.Editor
         private const string ThemePath = "Assets/04.Images/30.UI/Theme/UiTheme.asset";
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string PrefabPath = PrefabFolder + "/UI_RewardSettlement.prefab";
-        private const string BuildStamp = "ui04-production-preview-v1";
+        private const string BuildStamp = "ui04-production-font-roles-v2";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-04 Reward Settlement")]
         public static void Build()
         {
+            Build(false);
+        }
+
+        internal static void Build(bool force)
+        {
             EnsureAssetFolder(PrefabFolder);
-            if (!ProductionUiGuard.NeedsRebuild(BuildStamp, PrefabPath))
+            if (!force && !ProductionUiGuard.NeedsRebuild(BuildStamp, PrefabPath))
             {
                 Validate();
                 return;
@@ -34,12 +39,8 @@ namespace Icebreaker.UI.Editor
                 throw new InvalidOperationException($"UI theme was not found at {ThemePath}.");
             }
 
-            var settings = TMP_Settings.LoadDefaultSettings();
-            var font = theme.CommonFont ?? (settings != null ? TMP_Settings.defaultFontAsset : null);
-            if (font == null)
-            {
-                throw new InvalidOperationException("TMP default font is missing. Import TMP Essentials first.");
-            }
+            var font = theme.PrimaryFont ??
+                throw new InvalidOperationException("UI primary font is not assigned.");
 
             var root = CreateCanvasRoot();
             try
