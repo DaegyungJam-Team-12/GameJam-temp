@@ -10,6 +10,7 @@ namespace Icebreaker.Shared.Maintenance
         public const float MaximumZoom = 1.25f;
         public const float ZoomStep = 0.1f;
         public const float ClickDragThresholdPixels = 8f;
+        public const float KeyboardVerticalClearance = 72f;
 
         public static float ApplyScroll(float currentZoom, float scrollY)
         {
@@ -61,21 +62,39 @@ namespace Icebreaker.Shared.Maintenance
                 Mathf.Clamp(contentPosition.y, 0f, maximumY));
         }
 
-        public static Vector2 ClampTooltipTopLeft(
-            Vector2 desiredTopLeft,
+        public static Vector2 ClampKeyboardContentPosition(
+            Vector2 contentPosition,
+            Vector2 contentSize,
+            Vector2 viewportSize,
+            float zoom)
+        {
+            var scaledSize = contentSize * zoom;
+            var minimumX = Mathf.Min(0f, viewportSize.x - scaledSize.x);
+            var maximumY = Mathf.Max(0f, scaledSize.y - viewportSize.y) +
+                KeyboardVerticalClearance;
+            return new Vector2(
+                Mathf.Clamp(contentPosition.x, minimumX, 0f),
+                Mathf.Clamp(contentPosition.y, 0f, maximumY));
+        }
+
+        public static Vector2 PositionTooltip(
+            Vector2 anchor,
             Vector2 tooltipSize,
-            Rect overlayRect,
+            Rect bounds,
+            Vector2 offset,
             float padding)
         {
-            return new Vector2(
-                Mathf.Clamp(
-                    desiredTopLeft.x,
-                    overlayRect.xMin + padding,
-                    overlayRect.xMax - tooltipSize.x - padding),
-                Mathf.Clamp(
-                    desiredTopLeft.y,
-                    overlayRect.yMin + tooltipSize.y + padding,
-                    overlayRect.yMax - padding));
+            var topLeft = anchor + offset;
+            if (topLeft.x + tooltipSize.x > bounds.xMax - padding)
+            {
+                topLeft.x = anchor.x - offset.x - tooltipSize.x;
+            }
+
+            topLeft.x = Mathf.Clamp(
+                topLeft.x,
+                bounds.xMin + padding,
+                bounds.xMax - tooltipSize.x - padding);
+            return topLeft;
         }
     }
 }

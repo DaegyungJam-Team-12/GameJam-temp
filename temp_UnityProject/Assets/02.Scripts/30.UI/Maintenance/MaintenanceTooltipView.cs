@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using System.Globalization;
 using Icebreaker.Shared.Maintenance;
 using TMPro;
@@ -15,31 +14,19 @@ namespace Icebreaker.UI.Maintenance
         [SerializeField] private TMP_Text? effectText;
         [SerializeField] private TMP_Text? costText;
         [SerializeField] private TMP_Text? lockText;
-        [SerializeField] private Button? purchaseButton;
-        [SerializeField] private TMP_Text? purchaseButtonText;
 
-        public event Action PurchaseClicked = delegate { };
-
-        private void OnEnable()
+        private void Awake()
         {
-            if (purchaseButton != null)
+            foreach (var graphic in GetComponentsInChildren<Graphic>(true))
             {
-                purchaseButton.onClick.AddListener(HandlePurchaseClicked);
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (purchaseButton != null)
-            {
-                purchaseButton.onClick.RemoveListener(HandlePurchaseClicked);
+                graphic.raycastTarget = false;
             }
         }
 
         public void Show(
             MaintenancePurchaseStepViewData data,
-            Vector2 desiredTopLeft,
-            Rect overlayRect)
+            Vector2 anchor,
+            Rect viewportBounds)
         {
             if (titleText != null)
             {
@@ -62,42 +49,18 @@ namespace Icebreaker.UI.Maintenance
                 lockText.text = ResolveLockText(data);
             }
 
-            ConfigurePurchaseButton(data);
-
             gameObject.SetActive(true);
             var rect = (RectTransform)transform;
-            rect.anchoredPosition = MaintenanceTreeViewportMath.ClampTooltipTopLeft(
-                desiredTopLeft,
+            rect.localScale = Vector3.one;
+            rect.anchoredPosition = MaintenanceTreeViewportMath.PositionTooltip(
+                anchor,
                 rect.rect.size,
-                overlayRect,
+                viewportBounds,
+                new Vector2(54f, 28f),
                 16f);
         }
 
         public void Hide() => gameObject.SetActive(false);
-
-        private void HandlePurchaseClicked() => PurchaseClicked();
-
-        private void ConfigurePurchaseButton(MaintenancePurchaseStepViewData data)
-        {
-            if (purchaseButton != null)
-            {
-                purchaseButton.interactable = data.CanPurchase;
-            }
-
-            if (purchaseButtonText == null)
-            {
-                return;
-            }
-
-            purchaseButtonText.text = data.PurchaseState switch
-            {
-                MaintenanceStepPurchaseState.Purchased => "구매 완료",
-                MaintenanceStepPurchaseState.Available when data.CanPurchase => "구매",
-                MaintenanceStepPurchaseState.Available => "자금 부족",
-                _ when data.Visibility == MaintenanceStepVisibility.Preview => "미리보기",
-                _ => "잠김"
-            };
-        }
 
         private static string ResolveLockText(MaintenancePurchaseStepViewData data)
         {

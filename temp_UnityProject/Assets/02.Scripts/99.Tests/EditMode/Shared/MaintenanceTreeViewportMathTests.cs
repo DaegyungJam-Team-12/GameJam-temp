@@ -77,18 +77,72 @@ namespace Icebreaker.Shared.Tests
         }
 
         [Test]
-        public void ClampTooltipTopLeft_FlipsCardInsideOverlayBounds()
+        public void ClampKeyboardContentPosition_AddsOnlyBottomBarVerticalClearance()
         {
-            var overlay = new Rect(-480f, -270f, 960f, 540f);
+            var contentSize = new Vector2(1600f, 900f);
+            var viewportSize = new Vector2(928f, 408f);
 
-            var clamped = MaintenanceTreeViewportMath.ClampTooltipTopLeft(
-                new Vector2(400f, -250f),
-                new Vector2(300f, 190f),
-                overlay,
+            Assert.That(
+                MaintenanceTreeViewportMath.ClampKeyboardContentPosition(
+                    new Vector2(-1000f, 1000f),
+                    contentSize,
+                    viewportSize,
+                    0.8f),
+                Is.EqualTo(new Vector2(-352f, 384f)));
+            Assert.That(
+                MaintenanceTreeViewportMath.ClampKeyboardContentPosition(
+                    new Vector2(100f, -10f),
+                    contentSize,
+                    viewportSize,
+                    0.8f),
+                Is.EqualTo(Vector2.zero));
+        }
+
+        [Test]
+        public void PositionTooltip_PreservesPreferredVerticalOffsetForUnobstructedAndBottomAnchors()
+        {
+            var viewport = new Rect(-464f, -204f, 928f, 408f);
+            var tooltipSize = new Vector2(300f, 184f);
+            var offset = new Vector2(54f, 28f);
+
+            var unobstructed = MaintenanceTreeViewportMath.PositionTooltip(
+                Vector2.zero,
+                tooltipSize,
+                viewport,
+                offset,
                 16f);
 
-            Assert.That(clamped.x, Is.EqualTo(164f));
-            Assert.That(clamped.y, Is.EqualTo(-64f));
+            var bottomRight = MaintenanceTreeViewportMath.PositionTooltip(
+                new Vector2(430f, -180f),
+                tooltipSize,
+                viewport,
+                offset,
+                16f);
+
+            Assert.That(unobstructed.y, Is.EqualTo(28f));
+            Assert.That(bottomRight, Is.EqualTo(new Vector2(76f, -152f)));
+        }
+
+        [Test]
+        public void PositionTooltip_ClampsToEachHorizontalEdge()
+        {
+            var viewport = new Rect(-464f, -204f, 928f, 408f);
+
+            var left = MaintenanceTreeViewportMath.PositionTooltip(
+                new Vector2(-1000f, 1000f),
+                new Vector2(300f, 184f),
+                viewport,
+                new Vector2(54f, 28f),
+                16f);
+            var right = MaintenanceTreeViewportMath.PositionTooltip(
+                new Vector2(1000f, 1000f),
+                new Vector2(300f, 184f),
+                viewport,
+                new Vector2(54f, 28f),
+                16f);
+
+            Assert.That(left.x, Is.EqualTo(-448f));
+            Assert.That(right.x, Is.EqualTo(148f));
         }
     }
 }
