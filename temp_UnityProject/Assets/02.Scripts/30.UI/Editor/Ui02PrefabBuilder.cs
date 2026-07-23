@@ -19,13 +19,18 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
-        private const string BuildStamp = "ui02-production-preview-v1";
+        private const string BuildStamp = "ui02-production-font-roles-v2";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
         public static void Build()
         {
+            Build(false);
+        }
+
+        internal static void Build(bool force)
+        {
             EnsureAssetFolder(PrefabFolder);
-            if (!ProductionUiGuard.NeedsRebuild(
+            if (!force && !ProductionUiGuard.NeedsRebuild(
                     BuildStamp,
                     LauncherPrefabPath,
                     IcebreakingPrefabPath))
@@ -40,12 +45,8 @@ namespace Icebreaker.UI.Editor
                 throw new InvalidOperationException($"UI-01 theme was not found at {ThemePath}.");
             }
 
-            var tmpSettings = TMP_Settings.LoadDefaultSettings();
-            var font = tmpSettings != null ? TMP_Settings.defaultFontAsset : null;
-            if (font == null)
-            {
-                throw new InvalidOperationException("TMP default font is missing. Import TMP Essentials first.");
-            }
+            var font = theme.PrimaryFont ??
+                throw new InvalidOperationException("UI primary font is not assigned.");
 
             BuildLauncher(theme, font);
             BuildIcebreaking(theme, font);
@@ -75,12 +76,8 @@ namespace Icebreaker.UI.Editor
                 throw new InvalidOperationException($"UI theme was not found at {ThemePath}.");
             }
 
-            var tmpSettings = TMP_Settings.LoadDefaultSettings();
-            var font = tmpSettings != null ? TMP_Settings.defaultFontAsset : null;
-            if (font == null)
-            {
-                throw new InvalidOperationException("TMP default font is missing. Import TMP Essentials first.");
-            }
+            var font = theme.PrimaryFont ??
+                throw new InvalidOperationException("UI primary font is not assigned.");
 
             BuildIcebreaking(theme, font);
             ProductionUiGuard.MarkRebuilt(BuildStamp, IcebreakingPrefabPath);

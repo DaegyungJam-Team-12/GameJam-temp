@@ -39,7 +39,7 @@ namespace Icebreaker.UI.Hud
                 }
             }
 
-            var font = theme.CommonFont;
+            var font = theme.PrimaryFont;
             if (font == null)
             {
                 var settings = TMP_Settings.LoadDefaultSettings();

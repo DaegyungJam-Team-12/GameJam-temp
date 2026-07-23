@@ -2,13 +2,17 @@
 
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Icebreaker.UI.Sandbox
 {
     [CreateAssetMenu(fileName = "UiTheme", menuName = "ICEBREAKER/UI/Theme")]
     public sealed class UiThemeAsset : ScriptableObject
     {
-        [SerializeField] private TMP_FontAsset? commonFont;
+        [FormerlySerializedAs("commonFont")]
+        [SerializeField] private TMP_FontAsset? primaryFont;
+        [SerializeField] private TMP_FontAsset? maintenanceFont;
+        [SerializeField] private TMP_FontAsset? combatFeedbackFont;
         [SerializeField] private Color background = new Color32(0x0B, 0x1F, 0x33, 0xFF);
         [SerializeField] private Color panel = new Color32(0x0D, 0x22, 0x35, 0xFF);
         [SerializeField] private Color primaryText = new Color32(0xDD, 0xF7, 0xFF, 0xFF);
@@ -16,7 +20,11 @@ namespace Icebreaker.UI.Sandbox
         [SerializeField] private Color reward = new Color32(0xFF, 0xE0, 0xA0, 0xFF);
         [SerializeField] private Color success = new Color32(0x66, 0xD3, 0xBA, 0xFF);
 
-        public TMP_FontAsset? CommonFont => commonFont;
+        public TMP_FontAsset? PrimaryFont => primaryFont;
+
+        public TMP_FontAsset? MaintenanceFont => maintenanceFont;
+
+        public TMP_FontAsset? CombatFeedbackFont => combatFeedbackFont;
 
         public Color Background => background;
 
