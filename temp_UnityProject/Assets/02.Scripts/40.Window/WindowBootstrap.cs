@@ -192,6 +192,11 @@ namespace Icebreaker.Window
                 throw new InvalidOperationException("UniWindowController is not attached.");
             }
 
+            // Borderless transparent window so the launcher's ship/box/ice float over the desktop.
+            // The per-pixel alpha comes from the rendered content, so each phase must supply its
+            // own opaque background where it should not be see-through.
+            _controller.isTransparent = true;
+
             var snapshot = ResolveWorkAreaSnapshot();
 
             var sizePreset = WindowLayout.ResolveFittingSizePreset(snapshot.WorkArea, settingsData.SizePreset);

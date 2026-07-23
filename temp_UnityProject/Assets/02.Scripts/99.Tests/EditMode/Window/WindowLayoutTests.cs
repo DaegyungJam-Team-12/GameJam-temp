@@ -20,7 +20,7 @@ namespace Icebreaker.Window.Tests
                 workArea,
                 WindowLayout.ClientSizeForView(WindowView.Expanded));
 
-            AssertRect(collapsed, 560, 960, 800, 72);
+            AssertRect(collapsed, 560, 874, 800, 158);
             AssertRect(expanded, 480, 492, 960, 540);
             Assert.That(collapsed.Bottom, Is.EqualTo(1032));
             Assert.That(expanded.Bottom, Is.EqualTo(collapsed.Bottom));
@@ -41,7 +41,7 @@ namespace Icebreaker.Window.Tests
                 workArea,
                 WindowLayout.ClientSizeForView(WindowView.Expanded));
 
-            AssertRect(collapsed, 368, 744, 800, 72);
+            AssertRect(collapsed, 368, 658, 800, 158);
             AssertRect(expanded, 288, 276, 960, 540);
             Assert.That(collapsed.Bottom, Is.EqualTo(816));
             Assert.That(expanded.Bottom, Is.EqualTo(collapsed.Bottom));
@@ -210,9 +210,9 @@ namespace Icebreaker.Window.Tests
             Assert.That(clamped.Y, Is.EqualTo(0));
         }
 
-        [TestCase(WindowSizePreset.Default, 800, 72, 960, 540)]
-        [TestCase(WindowSizePreset.Large, 1000, 90, 1200, 675)]
-        [TestCase(WindowSizePreset.ExtraLarge, 1200, 108, 1440, 810)]
+        [TestCase(WindowSizePreset.Default, 800, 158, 960, 540)]
+        [TestCase(WindowSizePreset.Large, 1000, 197, 1200, 675)]
+        [TestCase(WindowSizePreset.ExtraLarge, 1200, 236, 1440, 810)]
         public void ClientSizeForPreset_MapsLockedSizeTable(
             WindowSizePreset preset,
             int collapsedWidth,

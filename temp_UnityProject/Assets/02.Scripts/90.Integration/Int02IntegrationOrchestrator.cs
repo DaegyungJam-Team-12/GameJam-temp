@@ -663,6 +663,20 @@ namespace Icebreaker.Integration
                 }
             }
 
+            if (icebreakingHud != null)
+            {
+                // Hide the combat HUD outside active icebreaking so it never bleeds through the
+                // transparent launcher window during travel/ready/completed.
+                var showIcebreaking = state.Phase == GamePhase.Countdown ||
+                                      state.Phase == GamePhase.Playing ||
+                                      state.Phase == GamePhase.StageEnding;
+                showIcebreaking &= currentManagementScreen == ManagementScreen.None;
+                if (icebreakingHud.gameObject.activeSelf != showIcebreaking)
+                {
+                    icebreakingHud.gameObject.SetActive(showIcebreaking);
+                }
+            }
+
             if (maintenanceTree != null)
             {
                 maintenanceTree.SetStageStartAvailable(state.CanStartStage);
