@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Icebreaker.Integration.Editor;
 using Icebreaker.Shared.State;
 using Icebreaker.UI.Hud;
 using Icebreaker.UI.Sandbox;
@@ -20,11 +19,20 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
+        private const string BuildStamp = "ui02-production-preview-v1";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
         public static void Build()
         {
             EnsureAssetFolder(PrefabFolder);
+            if (!ProductionUiGuard.NeedsRebuild(
+                    BuildStamp,
+                    LauncherPrefabPath,
+                    IcebreakingPrefabPath))
+            {
+                Validate();
+                return;
+            }
 
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
             if (theme == null)
@@ -40,9 +48,11 @@ namespace Icebreaker.UI.Editor
             }
 
             BuildLauncher(theme, font);
-            DavinP0IceArtImporter.ApplyLauncherPrefabOnly();
             BuildIcebreaking(theme, font);
-            DavinP0IceArtImporter.ApplyIcebreakingHudPrefabOnly();
+            ProductionUiGuard.MarkRebuilt(
+                BuildStamp,
+                LauncherPrefabPath,
+                IcebreakingPrefabPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Validate();
@@ -53,6 +63,11 @@ namespace Icebreaker.UI.Editor
         public static void BuildCombatHud()
         {
             EnsureAssetFolder(PrefabFolder);
+            if (!ProductionUiGuard.NeedsRebuild(BuildStamp, IcebreakingPrefabPath))
+            {
+                ValidateCombatHud();
+                return;
+            }
 
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
             if (theme == null)
@@ -68,7 +83,7 @@ namespace Icebreaker.UI.Editor
             }
 
             BuildIcebreaking(theme, font);
-            DavinP0IceArtImporter.ApplyIcebreakingHudPrefabOnly();
+            ProductionUiGuard.MarkRebuilt(BuildStamp, IcebreakingPrefabPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             ValidateCombatHud();
@@ -105,7 +120,6 @@ namespace Icebreaker.UI.Editor
                 }, errors);
                 ValidatePresenterReferences<LauncherHudPresenter>(launcher, new[]
                 {
-                    "stateSourceBehaviour",
                     "theme",
                     "fundsText",
                     "destinationNameText",
@@ -117,6 +131,7 @@ namespace Icebreaker.UI.Editor
                     "startButton",
                     "settingsButton"
                 }, errors);
+                ProductionUiGuard.CollectErrors(launcher, errors);
             }
 
             if (icebreaking == null)
@@ -133,13 +148,13 @@ namespace Icebreaker.UI.Editor
                 ValidateButtonSeparation(icebreaking, new[] { "HudRoot/SettingsHitArea" }, errors);
                 ValidatePresenterReferences<IcebreakingHudPresenter>(icebreaking, new[]
                 {
-                    "stateSourceBehaviour",
                     "theme",
                     "fundsText",
                     "timerText",
                     "countdownText",
                     "settingsButton"
                 }, errors);
+                ProductionUiGuard.CollectErrors(icebreaking, errors);
             }
 
             ValidateFormatting(errors);
@@ -172,7 +187,6 @@ namespace Icebreaker.UI.Editor
                 ValidateButtonSeparation(icebreaking, new[] { "HudRoot/SettingsHitArea" }, errors);
                 ValidatePresenterReferences<IcebreakingHudPresenter>(icebreaking, new[]
                 {
-                    "stateSourceBehaviour",
                     "theme",
                     "fundsText",
                     "timerText",
@@ -181,6 +195,7 @@ namespace Icebreaker.UI.Editor
                 }, errors);
                 ValidateCombatHudScope(icebreaking, errors);
                 ValidateCombatHudBehavior(icebreaking, errors);
+                ProductionUiGuard.CollectErrors(icebreaking, errors);
             }
 
             ValidateFormatting(errors);
@@ -199,8 +214,6 @@ namespace Icebreaker.UI.Editor
 
             try
             {
-                var source = root.AddComponent<Ui02HudSampleSource>();
-                ConfigureSource(source, GamePhase.Traveling, 24d, canStart: false);
                 var presenter = root.AddComponent<LauncherHudPresenter>();
                 var hudRoot = CreateStretchPanel("HudRoot", root.transform, theme.Background, raycastTarget: false);
 
@@ -244,7 +257,7 @@ namespace Icebreaker.UI.Editor
 
                 ConfigurePresenter(
                     presenter,
-                    source,
+                    null,
                     theme,
                     fundsText,
                     destinationName,
@@ -273,8 +286,6 @@ namespace Icebreaker.UI.Editor
 
             try
             {
-                var source = root.AddComponent<Ui02HudSampleSource>();
-                ConfigureSource(source, GamePhase.Playing, 42d, canStart: false);
                 var presenter = root.AddComponent<IcebreakingHudPresenter>();
                 var hudRoot = CreateStretchRect("HudRoot", root.transform);
 
@@ -311,7 +322,7 @@ namespace Icebreaker.UI.Editor
                 countdownText.gameObject.SetActive(false);
                 texts.Add(countdownText);
 
-                ConfigurePresenter(presenter, source, theme, fundsText, timerText, countdownText, settings, texts, panels);
+                ConfigurePresenter(presenter, null, theme, fundsText, timerText, countdownText, settings, texts, panels);
 
                 PrefabUtility.SaveAsPrefabAsset(root, IcebreakingPrefabPath);
             }
@@ -472,22 +483,9 @@ namespace Icebreaker.UI.Editor
             return text;
         }
 
-        private static void ConfigureSource(Ui02HudSampleSource source, GamePhase phase, double remainingSeconds, bool canStart)
-        {
-            var serialized = new SerializedObject(source);
-            serialized.FindProperty("initialPhase").enumValueIndex = (int)phase;
-            serialized.FindProperty("initialRemainingSeconds").doubleValue = remainingSeconds;
-            serialized.FindProperty("initialFunds").longValue = 12_400L;
-            serialized.FindProperty("destinationId").stringValue = "island-village";
-            serialized.FindProperty("destinationProgress").intValue = 37;
-            serialized.FindProperty("destinationTarget").intValue = 120;
-            serialized.FindProperty("canStartStage").boolValue = canStart;
-            serialized.ApplyModifiedPropertiesWithoutUndo();
-        }
-
         private static void ConfigurePresenter(
             LauncherHudPresenter presenter,
-            Ui02HudSampleSource source,
+            UnityEngine.Object? source,
             UiThemeAsset theme,
             TMP_Text fundsText,
             TMP_Text destinationName,
@@ -503,7 +501,7 @@ namespace Icebreaker.UI.Editor
             List<Graphic> accents)
         {
             var serialized = new SerializedObject(presenter);
-            SetObject(serialized, "stateSourceBehaviour", source);
+            SetOptionalObject(serialized, "stateSourceBehaviour", source);
             SetObject(serialized, "theme", theme);
             serialized.FindProperty("destinationDisplayName").stringValue = "섬마을";
             SetObject(serialized, "fundsText", fundsText);
@@ -523,7 +521,7 @@ namespace Icebreaker.UI.Editor
 
         private static void ConfigurePresenter(
             IcebreakingHudPresenter presenter,
-            Ui02HudSampleSource source,
+            UnityEngine.Object? source,
             UiThemeAsset theme,
             TMP_Text fundsText,
             TMP_Text timerText,
@@ -533,7 +531,7 @@ namespace Icebreaker.UI.Editor
             List<Graphic> panels)
         {
             var serialized = new SerializedObject(presenter);
-            SetObject(serialized, "stateSourceBehaviour", source);
+            SetOptionalObject(serialized, "stateSourceBehaviour", source);
             SetObject(serialized, "theme", theme);
             SetObject(serialized, "fundsText", fundsText);
             SetObject(serialized, "timerText", timerText);
@@ -545,6 +543,14 @@ namespace Icebreaker.UI.Editor
         }
 
         private static void SetObject(SerializedObject serialized, string propertyName, UnityEngine.Object value)
+        {
+            serialized.FindProperty(propertyName).objectReferenceValue = value;
+        }
+
+        private static void SetOptionalObject(
+            SerializedObject serialized,
+            string propertyName,
+            UnityEngine.Object? value)
         {
             serialized.FindProperty(propertyName).objectReferenceValue = value;
         }
@@ -596,10 +602,10 @@ namespace Icebreaker.UI.Editor
                 }
             }
 
-            var stateSource = serialized.FindProperty("stateSourceBehaviour")?.objectReferenceValue as MonoBehaviour;
-            if (stateSource is not IGameStateSource)
+            var stateSource = serialized.FindProperty("stateSourceBehaviour")?.objectReferenceValue;
+            if (stateSource != null)
             {
-                errors.Add($"{prefab.name} state source does not implement IGameStateSource.");
+                errors.Add($"{prefab.name} must not serialize a preview state source.");
             }
         }
 
@@ -646,7 +652,6 @@ namespace Icebreaker.UI.Editor
             try
             {
                 var presenter = instance.GetComponent<IcebreakingHudPresenter>();
-                var source = instance.GetComponent<Ui02HudSampleSource>();
                 var render = typeof(IcebreakingHudPresenter).GetMethod(
                     "Render",
                     BindingFlags.Instance | BindingFlags.NonPublic);
@@ -654,12 +659,19 @@ namespace Icebreaker.UI.Editor
                     "Awake",
                     BindingFlags.Instance | BindingFlags.NonPublic);
 
-                if (presenter == null || source == null || render == null || awake == null)
+                if (presenter == null || render == null || awake == null)
                 {
-                    errors.Add("UI-03 behavior validation could not resolve the presenter, sample source, or render methods.");
+                    errors.Add("UI-03 behavior validation could not resolve the presenter or render methods.");
                     return;
                 }
 
+                var source = instance.AddComponent<Ui02HudSampleSource>();
+                ConfigurePreviewSource(
+                    source,
+                    GamePhase.Playing,
+                    remainingSeconds: 42d,
+                    canStart: false);
+                presenter.Bind(source);
                 awake.Invoke(presenter, null);
                 source.EnsureInitialized();
                 RenderAndValidateCombatState(instance, presenter, source.CurrentState, "00:42", errors);
@@ -688,6 +700,23 @@ namespace Icebreaker.UI.Editor
             {
                 UnityEngine.Object.DestroyImmediate(instance);
             }
+        }
+
+        private static void ConfigurePreviewSource(
+            Ui02HudSampleSource source,
+            GamePhase phase,
+            double remainingSeconds,
+            bool canStart)
+        {
+            var serialized = new SerializedObject(source);
+            serialized.FindProperty("initialPhase").enumValueIndex = (int)phase;
+            serialized.FindProperty("initialRemainingSeconds").doubleValue = remainingSeconds;
+            serialized.FindProperty("initialFunds").longValue = 12_400L;
+            serialized.FindProperty("destinationId").stringValue = "island-village";
+            serialized.FindProperty("destinationProgress").intValue = 37;
+            serialized.FindProperty("destinationTarget").intValue = 120;
+            serialized.FindProperty("canStartStage").boolValue = canStart;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static void ValidateCountdownState(

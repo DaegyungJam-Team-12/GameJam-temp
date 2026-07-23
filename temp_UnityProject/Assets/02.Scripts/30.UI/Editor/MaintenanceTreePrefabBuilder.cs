@@ -24,6 +24,7 @@ namespace Icebreaker.UI.Editor
         private const string NodePrefabPath = PrefabFolder + "/UI_MaintenanceNode.prefab";
         private const string TooltipPrefabPath = PrefabFolder + "/UI_MaintenanceTooltip.prefab";
         private const string EdgePrefabPath = PrefabFolder + "/UI_MaintenanceEdge.prefab";
+        private const string BuildStamp = "maintenance-production-preview-v1";
 
         private static readonly Vector2 ContentSize = new Vector2(1600f, 900f);
 
@@ -32,6 +33,12 @@ namespace Icebreaker.UI.Editor
         {
             EnsureAssetFolder(DataFolder);
             EnsureAssetFolder(PrefabFolder);
+            if (!ProductionUiGuard.NeedsRebuild(BuildStamp, TreePrefabPath))
+            {
+                Validate();
+                return;
+            }
+
             MaintenanceTreeArtBuilder.Build();
 
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
@@ -53,6 +60,7 @@ namespace Icebreaker.UI.Editor
             BuildEdgePrefab();
             BuildTooltipPrefab(theme, font);
             BuildTreePrefab(layout, theme, font);
+            ProductionUiGuard.MarkRebuilt(BuildStamp, TreePrefabPath);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -114,6 +122,7 @@ namespace Icebreaker.UI.Editor
             {
                 ValidateTreeHierarchy(tree, errors);
                 ValidatePresenterReferences(tree, errors);
+                ProductionUiGuard.CollectErrors(tree, errors);
             }
 
             if (node != null)
@@ -361,7 +370,6 @@ namespace Icebreaker.UI.Editor
             var root = CreateCanvasRoot("UI_MaintenanceTree", new Vector2(960f, 540f));
             try
             {
-                var source = root.AddComponent<MaintenanceTreeFakeDataSource>();
                 var presenter = root.AddComponent<MaintenanceTreePresenter>();
                 CreateStretchImage("Background", root.transform, theme.Background, false);
 
@@ -409,7 +417,7 @@ namespace Icebreaker.UI.Editor
 
                 var serialized = new SerializedObject(presenter);
                 SetReference(serialized, "layout", layout);
-                SetReference(serialized, "sourceBehaviour", source);
+                SetReference(serialized, "sourceBehaviour", null);
                 SetReference(serialized, "theme", theme);
                 SetReference(serialized, "content", content);
                 SetReference(serialized, "edgeLayer", edgeLayer);
@@ -562,7 +570,7 @@ namespace Icebreaker.UI.Editor
             var serialized = new SerializedObject(presenter);
             foreach (var propertyName in new[]
                      {
-                         "layout", "sourceBehaviour", "theme", "content", "edgeLayer", "nodeLayer",
+                         "layout", "theme", "content", "edgeLayer", "nodeLayer",
                          "viewport", "nodePrefab", "edgePrefab", "tooltipOverlay", "treeViewport", "tooltipView",
                          "fundsText", "previewStateText", "closeButton", "stageStartButton"
                      })
@@ -572,6 +580,12 @@ namespace Icebreaker.UI.Editor
                 {
                     errors.Add($"Presenter reference {propertyName} is missing.");
                 }
+            }
+
+            var sourceProperty = serialized.FindProperty("sourceBehaviour");
+            if (sourceProperty == null || sourceProperty.objectReferenceValue != null)
+            {
+                errors.Add("Production Maintenance Tree must leave sourceBehaviour empty for runtime binding.");
             }
 
             if (tree.GetComponentInChildren<MaintenanceTreeViewport>(true) == null)
@@ -740,7 +754,10 @@ namespace Icebreaker.UI.Editor
             rect.sizeDelta = size;
         }
 
-        private static void SetReference(SerializedObject serialized, string name, UnityEngine.Object value)
+        private static void SetReference(
+            SerializedObject serialized,
+            string name,
+            UnityEngine.Object? value)
         {
             var property = serialized.FindProperty(name) ??
                            throw new InvalidOperationException($"Serialized field {name} was not found.");

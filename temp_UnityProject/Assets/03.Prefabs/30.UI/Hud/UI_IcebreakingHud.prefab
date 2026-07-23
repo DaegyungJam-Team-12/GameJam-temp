@@ -575,7 +575,6 @@ GameObject:
   - component: {fileID: 2868096658213932310}
   - component: {fileID: 1163336838080930383}
   - component: {fileID: 55017025182528386}
-  - component: {fileID: 6522021368185154596}
   - component: {fileID: 1106616593513454055}
   m_Layer: 0
   m_Name: UI_IcebreakingHud
@@ -667,25 +666,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &6522021368185154596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7547639823952236673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9cdacee373a33b4787b129c19a80121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Icebreaker.UI.Hud.Ui02HudSampleSource
-  initialPhase: 3
-  initialRemainingSeconds: 42
-  initialFunds: 12400
-  destinationId: island-village
-  destinationProgress: 37
-  destinationTarget: 120
-  canStartStage: 0
 --- !u!114 &1106616593513454055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -698,7 +678,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff684b65268167459a7d29a1c60baec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Icebreaker.UI.Hud.IcebreakingHudPresenter
-  stateSourceBehaviour: {fileID: 6522021368185154596}
+  stateSourceBehaviour: {fileID: 0}
   theme: {fileID: 11400000, guid: 350ecd46038fae440a1d8214e710397f, type: 2}
   fundsText: {fileID: 2221634290316747128}
   timerText: {fileID: 4103234317938246378}

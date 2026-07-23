@@ -84,6 +84,15 @@ namespace Icebreaker.Gameplay.Tests
                 Is.EqualTo("Crack"));
             Assert.That(catalog.ResolveDestructionSheet(IceTier.T1, SpecialIceType.Crack, 2)!.name,
                 Is.EqualTo("Crack_spritesheet"));
+            Assert.That(catalog.ResolveSpecialOverlaySprite(SpecialIceType.Crystal)!.name,
+                Is.EqualTo("Crystal"));
+            Assert.That(catalog.ResolveSpecialOverlaySheet(SpecialIceType.Crystal)!.name,
+                Is.EqualTo("Crystal_spritesheet"));
+            Assert.That(catalog.ResolveSpecialOverlaySprite(SpecialIceType.Crack)!.name,
+                Is.EqualTo("Crack"));
+            Assert.That(catalog.ResolveSpecialOverlaySheet(SpecialIceType.Crack)!.name,
+                Is.EqualTo("Crack_spritesheet"));
+            Assert.That(catalog.ResolveSpecialOverlaySprite(SpecialIceType.None), Is.Null);
         }
 
         [Test]

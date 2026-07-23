@@ -1,141 +1,204 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using Icebreaker.Gameplay;
 using Icebreaker.UI.Hud;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Icebreaker.Integration.Editor
 {
+    /// <summary>
+    /// Compatibility entry point for the P0 art pipeline. The class name is kept so
+    /// its script GUID and existing editor references remain stable.
+    ///
+    /// Import/Validate changes texture importer metadata only. Bind changes catalog
+    /// and prefab references only. Rebuild is an explicit, independent operation.
+    /// This class never opens or saves a scene.
+    /// </summary>
     public static class DavinP0IceArtImporter
     {
-        private const string ArtFolder = "Assets/04.Images/20.Gameplay/Ice";
-        private const string OceanPath = "Assets/04.Images/10.Environment/bg_ocean.png";
-        private const string ShipPath = "Assets/04.Images/20.Gameplay/Ship.png";
-        private const string LauncherArtFolder = "Assets/04.Images/30.UI/Launcher";
-        private const string IcebreakingHudArtFolder = "Assets/04.Images/30.UI/Icebreaking";
+        private const string IceFolder = "Assets/04.Images/20.Gameplay/Ice";
+        private const string LauncherFolder = "Assets/04.Images/30.UI/Launcher";
+        private const string IcebreakingFolder = "Assets/04.Images/30.UI/Icebreaking";
         private const string LauncherPrefabPath =
             "Assets/03.Prefabs/30.UI/Hud/UI_LauncherHud.prefab";
-        private const string IcebreakingHudPrefabPath =
+        private const string IcebreakingPrefabPath =
             "Assets/03.Prefabs/30.UI/Hud/UI_IcebreakingHud.prefab";
-        private const string DataFolder = "Assets/09.Data/Gameplay";
-        private const string CatalogPath = DataFolder + "/IceVisualCatalog.asset";
-        private const int CellSize = 256;
-        private const float FullScreenPixelsPerUnit = 100f;
+        private const string CatalogPath = "Assets/09.Data/Gameplay/IceVisualCatalog.asset";
+        private const int IceFrameSize = 256;
+        private const float UiPixelsPerUnit = 100f;
 
-        private static readonly string[] StaticNames =
+        private enum ArtRole
         {
-            "T1_01", "T1_02",
-            "T2_01", "T2_02",
-            "T3_01", "T3_02",
-            "Crystal",
-            "Crack",
-        };
+            BaseIce,
+            BaseIceAnimation,
+            SpecialIceOverlay,
+            SpecialIceOverlayAnimation,
+            Environment,
+            LauncherBackground,
+            LauncherPanel,
+            LauncherButton,
+            IcebreakingPanel,
+            IcebreakingButton,
+        }
 
-        private static readonly (string Name, int FrameCount)[] Sheets =
+        private readonly struct ArtBinding
         {
-            ("T1_01_spritesheet", 6), ("T1_02_spritesheet", 6),
-            ("T2_01_spritesheet", 6), ("T2_02_spritesheet", 6),
-            ("T3_01_spritesheet", 6), ("T3_02_spritesheet", 6),
-            ("Crystal_spritesheet", 5),
-            ("Crack_spritesheet", 6),
-        };
-
-        private static readonly string[] ScenePaths =
-        {
-            "Assets/01.Scenes/minjun.unity",
-            "Assets/01.Scenes/int02_complete_loop.unity",
-            "Assets/01.Scenes/siyeon.unity",
-        };
-
-        // Source-space rectangles use Unity's bottom-left texture origin.
-        private static readonly (string Name, Rect Rect)[] LauncherWidgetSprites =
-        {
-            ("lc_ui_money", new Rect(35f, 21f, 349f, 110f)),
-            ("lc_ui_destination", new Rect(426f, 21f, 421f, 110f)),
-            ("lc_ui_ship_maintenance", new Rect(1141f, 32f, 224f, 45f)),
-            ("lc_ui_operational_status", new Rect(901f, 32f, 224f, 45f)),
-            ("lc_ui_stage", new Rect(888f, 22f, 487f, 109f)),
-            ("lc_ui_setting", new Rect(1411f, 22f, 154f, 109f)),
-        };
-
-        private static readonly (string Name, Rect Rect)[] IcebreakingWidgetSprites =
-        {
-            ("ui_money", new Rect(16f, 972f, 353f, 96f)),
-            ("ui_time", new Rect(1351f, 972f, 262f, 96f)),
-            ("ui_setting", new Rect(1624f, 972f, 279f, 96f)),
-        };
-
-        [MenuItem("Tools/Icebreaker/Art/Apply Davin P0 Art")]
-        public static void Apply()
-        {
-            foreach (var name in StaticNames)
+            public ArtBinding(
+                ArtRole role,
+                string path,
+                string spriteName,
+                int frameCount = 1,
+                Rect? sourceRect = null,
+                Vector4? border = null,
+                float pixelsPerUnit = UiPixelsPerUnit)
             {
-                ConfigureStaticSprite($"{ArtFolder}/{name}.png", CellSize);
+                Role = role;
+                Path = path;
+                SpriteName = spriteName;
+                FrameCount = frameCount;
+                SourceRect = sourceRect;
+                Border = border ?? Vector4.zero;
+                PixelsPerUnit = pixelsPerUnit;
             }
 
-            foreach (var sheet in Sheets)
+            public ArtRole Role { get; }
+            public string Path { get; }
+            public string SpriteName { get; }
+            public int FrameCount { get; }
+            public Rect? SourceRect { get; }
+            public Vector4 Border { get; }
+            public float PixelsPerUnit { get; }
+            public bool IsSheet => FrameCount > 1;
+        }
+
+        private static readonly ArtBinding[] Bindings =
+        {
+            IceStatic("T1_01"), IceStatic("T1_02"),
+            IceStatic("T2_01"), IceStatic("T2_02"),
+            IceStatic("T3_01"), IceStatic("T3_02"),
+            IceSheet("T1_01", 6), IceSheet("T1_02", 6),
+            IceSheet("T2_01", 6), IceSheet("T2_02", 6),
+            IceSheet("T3_01", 6), IceSheet("T3_02", 6),
+            OverlayStatic("Crystal"), OverlayStatic("Crack"),
+            OverlaySheet("Crystal", 5), OverlaySheet("Crack", 6),
+            new(
+                ArtRole.Environment,
+                "Assets/04.Images/10.Environment/bg_ocean.png",
+                "bg_ocean"),
+            new(
+                ArtRole.Environment,
+                "Assets/04.Images/20.Gameplay/Ship.png",
+                "Ship"),
+            new(
+                ArtRole.LauncherBackground,
+                $"{LauncherFolder}/bg_launcher.png",
+                "bg_launcher"),
+            Cropped(
+                ArtRole.LauncherPanel,
+                LauncherFolder,
+                "lc_ui_money",
+                new Rect(35f, 21f, 349f, 110f)),
+            Cropped(
+                ArtRole.LauncherPanel,
+                LauncherFolder,
+                "lc_ui_destination",
+                new Rect(426f, 21f, 421f, 110f)),
+            Cropped(
+                ArtRole.LauncherButton,
+                LauncherFolder,
+                "lc_ui_ship_maintenance",
+                new Rect(1141f, 32f, 224f, 45f)),
+            Cropped(
+                ArtRole.LauncherButton,
+                LauncherFolder,
+                "lc_ui_operational_status",
+                new Rect(901f, 32f, 224f, 45f)),
+            Cropped(
+                ArtRole.LauncherButton,
+                LauncherFolder,
+                "lc_ui_stage",
+                new Rect(888f, 22f, 487f, 109f)),
+            Cropped(
+                ArtRole.LauncherButton,
+                LauncherFolder,
+                "lc_ui_setting",
+                new Rect(1411f, 22f, 154f, 109f)),
+            Cropped(
+                ArtRole.IcebreakingPanel,
+                IcebreakingFolder,
+                "ui_money",
+                new Rect(16f, 972f, 353f, 96f)),
+            Cropped(
+                ArtRole.IcebreakingPanel,
+                IcebreakingFolder,
+                "ui_time",
+                new Rect(1351f, 972f, 262f, 96f)),
+            Cropped(
+                ArtRole.IcebreakingButton,
+                IcebreakingFolder,
+                "ui_setting",
+                new Rect(1624f, 972f, 279f, 96f)),
+        };
+
+        [MenuItem("Tools/Icebreaker/Art/1. Import and Validate")]
+        public static void ImportAndValidate()
+        {
+            foreach (var binding in Bindings)
             {
-                ConfigureSpriteSheet(
-                    $"{ArtFolder}/{sheet.Name}.png",
-                    sheet.FrameCount);
+                ConfigureImporter(binding);
             }
 
-            ConfigureStaticSprite(OceanPath, FullScreenPixelsPerUnit);
-            ConfigureStaticSprite(ShipPath, FullScreenPixelsPerUnit);
-            ConfigureStaticSprite(
-                $"{LauncherArtFolder}/bg_launcher.png",
-                FullScreenPixelsPerUnit);
-            foreach (var widget in LauncherWidgetSprites)
-            {
-                ConfigureCroppedUiSprite(
-                    $"{LauncherArtFolder}/{widget.Name}.png",
-                    widget.Name,
-                    widget.Rect);
-            }
-            foreach (var widget in IcebreakingWidgetSprites)
-            {
-                ConfigureCroppedUiSprite(
-                    $"{IcebreakingHudArtFolder}/{widget.Name}.png",
-                    widget.Name,
-                    widget.Rect);
-            }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            ValidateImportedAssets();
+            Debug.Log("[ART-P0] Import/Validate completed without opening or saving scenes.");
+        }
 
-            EnsureFolder("Assets/09.Data", "Gameplay");
+        [MenuItem("Tools/Icebreaker/Art/2. Bind Catalog and Prefabs")]
+        public static void Bind()
+        {
             var catalog = AssetDatabase.LoadAssetAtPath<IceVisualCatalog>(CatalogPath);
             if (catalog == null)
             {
-                catalog = ScriptableObject.CreateInstance<IceVisualCatalog>();
-                AssetDatabase.CreateAsset(catalog, CatalogPath);
+                throw new InvalidOperationException(
+                    $"Run the project data setup before binding; missing '{CatalogPath}'.");
             }
 
             PopulateCatalog(catalog);
-            AssetDatabase.SaveAssets();
             ApplyLauncherPrefabOnly();
             ApplyIcebreakingHudPrefabOnly();
-            AssignCatalogToScenes();
-            AssetDatabase.Refresh();
-
-            if (!catalog.IsComplete)
-            {
-                throw new InvalidOperationException("IceVisualCatalog remained incomplete after import.");
-            }
-
+            AssetDatabase.SaveAssets();
+            ValidateBoundAssets(catalog);
             Debug.Log(
-                "[ART-P0] Davin ocean, ship, launcher/combat HUD, T1/T2/T3, crystal-ice, and crack-ice art imported and assigned.");
+                "[ART-P0] Catalog/prefab binding completed. Scene binding is intentionally " +
+                "owned by the Runtime stream and was not changed.");
         }
 
-        [MenuItem("Tools/Icebreaker/Art/Rebuild Encapsulated HUD Prefabs")]
-        public static void RebuildEncapsulatedHudPrefabs()
+        [MenuItem("Tools/Icebreaker/Art/3. Explicit Rebuild UI-02 Prefabs")]
+        public static void Rebuild()
         {
             Icebreaker.UI.Editor.Ui02PrefabBuilder.Build();
-            Apply();
-            Icebreaker.UI.Editor.Ui02PrefabBuilder.Build();
             Debug.Log(
-                "[ART-P0] Launcher and icebreaking HUDs rebuilt with art-backed parent panels.");
+                "[ART-P0] UI-02 prefabs rebuilt once. Run Bind explicitly afterward when art " +
+                "references need to be applied.");
+        }
+
+        [MenuItem("Tools/Icebreaker/Art/Validate Current Binding")]
+        public static void ValidateCurrentBinding()
+        {
+            ValidateImportedAssets();
+            var catalog = AssetDatabase.LoadAssetAtPath<IceVisualCatalog>(CatalogPath);
+            if (catalog == null)
+            {
+                throw new InvalidOperationException($"Missing catalog '{CatalogPath}'.");
+            }
+
+            ValidateBoundAssets(catalog);
+            Debug.Log("[ART-P0] Import metadata and asset bindings are valid.");
         }
 
         public static void ApplyLauncherPrefabOnly()
@@ -143,49 +206,40 @@ namespace Icebreaker.Integration.Editor
             var prefabRoot = PrefabUtility.LoadPrefabContents(LauncherPrefabPath);
             try
             {
-                var hudRoot = prefabRoot.transform.Find("HudRoot");
-                if (hudRoot == null)
-                {
-                    throw new InvalidOperationException(
-                        $"HudRoot was not found in '{LauncherPrefabPath}'.");
-                }
-
+                var hudRoot = RequireChild(prefabRoot.transform, "HudRoot");
                 RemoveLegacyArtLayers(hudRoot);
-                ConfigurePanelArt(
+                ConfigureImage(
                     hudRoot.GetComponent<Image>(),
-                    LoadUiSprite(LauncherArtFolder, "bg_launcher"));
-                ConfigurePanelArt(
+                    LoadUiSprite(LauncherFolder, "bg_launcher"),
+                    false);
+                ConfigureImage(
                     RequireChild(hudRoot, "FundsArea").GetComponent<Image>(),
-                    LoadUiSprite(LauncherArtFolder, "lc_ui_money"));
-                ConfigurePanelArt(
+                    LoadUiSprite(LauncherFolder, "lc_ui_money"),
+                    false);
+                ConfigureImage(
                     RequireChild(hudRoot, "DestinationArea").GetComponent<Image>(),
-                    LoadUiSprite(LauncherArtFolder, "lc_ui_destination"));
-                ConfigureArtBackedButton(
+                    LoadUiSprite(LauncherFolder, "lc_ui_destination"),
+                    false);
+                ConfigureButton(
                     RequireChild(hudRoot, "MaintenanceHitArea"),
-                    LoadUiSprite(LauncherArtFolder, "lc_ui_ship_maintenance"));
-                ConfigureArtBackedButton(
+                    LoadUiSprite(LauncherFolder, "lc_ui_ship_maintenance"));
+                ConfigureButton(
                     RequireChild(hudRoot, "RouteHitArea"),
-                    LoadUiSprite(LauncherArtFolder, "lc_ui_operational_status"));
-                ConfigureArtBackedButton(
+                    LoadUiSprite(LauncherFolder, "lc_ui_operational_status"));
+                ConfigureButton(
                     RequireChild(hudRoot, "StageStartHitArea"),
-                    LoadUiSprite(LauncherArtFolder, "lc_ui_stage"));
-                ConfigureArtBackedButton(
+                    LoadUiSprite(LauncherFolder, "lc_ui_stage"));
+                ConfigureButton(
                     RequireChild(hudRoot, "SettingsHitArea"),
-                    LoadUiSprite(LauncherArtFolder, "lc_ui_setting"));
+                    LoadUiSprite(LauncherFolder, "lc_ui_setting"));
 
-                var presenter = prefabRoot.GetComponent<LauncherHudPresenter>();
-                if (presenter == null)
-                {
-                    throw new InvalidOperationException(
-                        $"LauncherHudPresenter was not found in '{LauncherPrefabPath}'.");
-                }
-
+                var presenter = prefabRoot.GetComponent<LauncherHudPresenter>() ??
+                                throw new InvalidOperationException(
+                                    $"LauncherHudPresenter is missing in '{LauncherPrefabPath}'.");
                 var serialized = new SerializedObject(presenter);
                 ClearArray(serialized, "panelGraphics");
                 ClearArray(serialized, "accentGraphics");
                 serialized.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(presenter);
-
                 PrefabUtility.SaveAsPrefabAsset(prefabRoot, LauncherPrefabPath);
             }
             finally
@@ -196,40 +250,30 @@ namespace Icebreaker.Integration.Editor
 
         public static void ApplyIcebreakingHudPrefabOnly()
         {
-            var prefabRoot = PrefabUtility.LoadPrefabContents(IcebreakingHudPrefabPath);
+            var prefabRoot = PrefabUtility.LoadPrefabContents(IcebreakingPrefabPath);
             try
             {
-                var hudRoot = prefabRoot.transform.Find("HudRoot");
-                if (hudRoot == null)
-                {
-                    throw new InvalidOperationException(
-                        $"HudRoot was not found in '{IcebreakingHudPrefabPath}'.");
-                }
-
+                var hudRoot = RequireChild(prefabRoot.transform, "HudRoot");
                 RemoveLegacyArtLayers(hudRoot);
-                ConfigurePanelArt(
+                ConfigureImage(
                     RequireChild(hudRoot, "FundsArea").GetComponent<Image>(),
-                    LoadUiSprite(IcebreakingHudArtFolder, "ui_money"));
-                ConfigurePanelArt(
+                    LoadUiSprite(IcebreakingFolder, "ui_money"),
+                    false);
+                ConfigureImage(
                     RequireChild(hudRoot, "TimerArea").GetComponent<Image>(),
-                    LoadUiSprite(IcebreakingHudArtFolder, "ui_time"));
-                ConfigureArtBackedButton(
+                    LoadUiSprite(IcebreakingFolder, "ui_time"),
+                    false);
+                ConfigureButton(
                     RequireChild(hudRoot, "SettingsHitArea"),
-                    LoadUiSprite(IcebreakingHudArtFolder, "ui_setting"));
+                    LoadUiSprite(IcebreakingFolder, "ui_setting"));
 
-                var presenter = prefabRoot.GetComponent<IcebreakingHudPresenter>();
-                if (presenter == null)
-                {
-                    throw new InvalidOperationException(
-                        $"IcebreakingHudPresenter was not found in '{IcebreakingHudPrefabPath}'.");
-                }
-
+                var presenter = prefabRoot.GetComponent<IcebreakingHudPresenter>() ??
+                                throw new InvalidOperationException(
+                                    $"IcebreakingHudPresenter is missing in '{IcebreakingPrefabPath}'.");
                 var serialized = new SerializedObject(presenter);
                 ClearArray(serialized, "panelGraphics");
                 serialized.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(presenter);
-
-                PrefabUtility.SaveAsPrefabAsset(prefabRoot, IcebreakingHudPrefabPath);
+                PrefabUtility.SaveAsPrefabAsset(prefabRoot, IcebreakingPrefabPath);
             }
             finally
             {
@@ -237,72 +281,114 @@ namespace Icebreaker.Integration.Editor
             }
         }
 
-        private static void ConfigureStaticSprite(string path, float pixelsPerUnit)
+        private static ArtBinding IceStatic(string name)
         {
-            var importer = RequireImporter(path);
-            ConfigureCommon(importer, pixelsPerUnit);
-            importer.spriteImportMode = SpriteImportMode.Single;
-            importer.spritePivot = new Vector2(0.5f, 0.5f);
-            importer.SaveAndReimport();
+            return new ArtBinding(
+                ArtRole.BaseIce,
+                $"{IceFolder}/{name}.png",
+                name,
+                pixelsPerUnit: IceFrameSize);
         }
 
-        private static void ConfigureCroppedUiSprite(
-            string path,
-            string spriteName,
+        private static ArtBinding IceSheet(string name, int frameCount)
+        {
+            return new ArtBinding(
+                ArtRole.BaseIceAnimation,
+                $"{IceFolder}/{name}_spritesheet.png",
+                $"{name}_spritesheet",
+                frameCount,
+                pixelsPerUnit: IceFrameSize);
+        }
+
+        private static ArtBinding OverlayStatic(string name)
+        {
+            return new ArtBinding(
+                ArtRole.SpecialIceOverlay,
+                $"{IceFolder}/{name}.png",
+                name,
+                pixelsPerUnit: IceFrameSize);
+        }
+
+        private static ArtBinding OverlaySheet(string name, int frameCount)
+        {
+            return new ArtBinding(
+                ArtRole.SpecialIceOverlayAnimation,
+                $"{IceFolder}/{name}_spritesheet.png",
+                $"{name}_spritesheet",
+                frameCount,
+                pixelsPerUnit: IceFrameSize);
+        }
+
+        private static ArtBinding Cropped(
+            ArtRole role,
+            string folder,
+            string name,
             Rect sourceRect)
         {
-            var importer = RequireImporter(path);
-            ConfigureCommon(importer, FullScreenPixelsPerUnit);
-            importer.spriteImportMode = SpriteImportMode.Multiple;
-#pragma warning disable CS0618
-            importer.spritesheet = new[]
+            return new ArtBinding(
+                role,
+                $"{folder}/{name}.png",
+                name,
+                sourceRect: sourceRect);
+        }
+
+        private static void ConfigureImporter(ArtBinding binding)
+        {
+            var importer = RequireImporter(binding.Path);
+            ConfigureCommon(importer, binding.PixelsPerUnit);
+
+            if (binding.IsSheet)
             {
-                new SpriteMetaData
+                importer.spriteImportMode = SpriteImportMode.Multiple;
+                var sprites = new SpriteMetaData[binding.FrameCount];
+                for (var index = 0; index < binding.FrameCount; index++)
                 {
-                    name = spriteName,
-                    rect = sourceRect,
-                    alignment = (int)SpriteAlignment.Center,
-                    pivot = new Vector2(0.5f, 0.5f),
-                    border = Vector4.zero,
-                },
-            };
+                    sprites[index] = CreateMeta(
+                        $"{binding.SpriteName}_{index}",
+                        new Rect(index * IceFrameSize, 0f, IceFrameSize, IceFrameSize),
+                        binding.Border);
+                }
+
+#pragma warning disable CS0618
+                importer.spritesheet = sprites;
 #pragma warning restore CS0618
+            }
+            else if (binding.SourceRect.HasValue)
+            {
+                importer.spriteImportMode = SpriteImportMode.Multiple;
+#pragma warning disable CS0618
+                importer.spritesheet = new[]
+                {
+                    CreateMeta(binding.SpriteName, binding.SourceRect.Value, binding.Border),
+                };
+#pragma warning restore CS0618
+            }
+            else
+            {
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.spritePivot = new Vector2(0.5f, 0.5f);
+                importer.spriteBorder = binding.Border;
+            }
+
             importer.SaveAndReimport();
         }
 
-        private static void ConfigureSpriteSheet(string path, int frameCount)
+        private static SpriteMetaData CreateMeta(string name, Rect rect, Vector4 border)
         {
-            var importer = RequireImporter(path);
-            ConfigureCommon(importer, CellSize);
-            importer.spriteImportMode = SpriteImportMode.Multiple;
-
-            var sprites = new SpriteMetaData[frameCount];
-            for (var i = 0; i < sprites.Length; i++)
+            return new SpriteMetaData
             {
-                sprites[i] = new SpriteMetaData
-                {
-                    name = $"{System.IO.Path.GetFileNameWithoutExtension(path)}_{i}",
-                    rect = new Rect(i * CellSize, 0f, CellSize, CellSize),
-                    alignment = (int)SpriteAlignment.Center,
-                    pivot = new Vector2(0.5f, 0.5f),
-                    border = Vector4.zero,
-                };
-            }
-
-#pragma warning disable CS0618
-            importer.spritesheet = sprites;
-#pragma warning restore CS0618
-            importer.SaveAndReimport();
+                name = name,
+                rect = rect,
+                alignment = (int)SpriteAlignment.Center,
+                pivot = new Vector2(0.5f, 0.5f),
+                border = border,
+            };
         }
 
         private static TextureImporter RequireImporter(string path)
         {
-            if (AssetImporter.GetAtPath(path) is not TextureImporter importer)
-            {
-                throw new InvalidOperationException($"Texture importer is missing for '{path}'.");
-            }
-
-            return importer;
+            return AssetImporter.GetAtPath(path) as TextureImporter ??
+                   throw new InvalidOperationException($"Texture importer is missing for '{path}'.");
         }
 
         private static void ConfigureCommon(TextureImporter importer, float pixelsPerUnit)
@@ -320,43 +406,139 @@ namespace Icebreaker.Integration.Editor
             importer.maxTextureSize = 2048;
         }
 
+        private static void ValidateImportedAssets()
+        {
+            var errors = new List<string>();
+            foreach (var binding in Bindings)
+            {
+                var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(binding.Path);
+                if (texture == null)
+                {
+                    errors.Add($"Missing texture for role {binding.Role}: {binding.Path}");
+                    continue;
+                }
+
+                if (binding.SourceRect is { } rect &&
+                    (rect.xMin < 0f || rect.yMin < 0f ||
+                     rect.xMax > texture.width || rect.yMax > texture.height))
+                {
+                    errors.Add(
+                        $"{binding.Role} crop '{binding.SpriteName}' exceeds {texture.width}x{texture.height}.");
+                }
+
+                var sprites = AssetDatabase.LoadAllAssetsAtPath(binding.Path);
+                var spriteCount = 0;
+                foreach (var asset in sprites)
+                {
+                    if (asset is not Sprite sprite)
+                    {
+                        continue;
+                    }
+
+                    spriteCount++;
+                    var normalizedPivot = new Vector2(
+                        sprite.pivot.x / sprite.rect.width,
+                        sprite.pivot.y / sprite.rect.height);
+                    if (Vector2.Distance(normalizedPivot, new Vector2(0.5f, 0.5f)) > 0.001f)
+                    {
+                        errors.Add($"{binding.SpriteName} must use a centered pivot.");
+                    }
+
+                    if (sprite.border != binding.Border)
+                    {
+                        errors.Add($"{binding.SpriteName} has an unexpected 9-slice border.");
+                    }
+                }
+
+                var expectedCount = binding.IsSheet || binding.SourceRect.HasValue
+                    ? binding.FrameCount
+                    : 1;
+                if (spriteCount != expectedCount)
+                {
+                    errors.Add(
+                        $"{binding.SpriteName} expected {expectedCount} sprite frame(s), found {spriteCount}.");
+                }
+            }
+
+            ThrowIfErrors("Import/Validate", errors);
+        }
+
         private static void PopulateCatalog(IceVisualCatalog catalog)
         {
             var serialized = new SerializedObject(catalog);
-
-            Set(serialized, "t1Variant01", Load<Sprite>("T1_01"));
-            Set(serialized, "t1Variant02", Load<Sprite>("T1_02"));
-            Set(serialized, "t1Variant01Sheet", Load<Texture2D>("T1_01_spritesheet"));
-            Set(serialized, "t1Variant02Sheet", Load<Texture2D>("T1_02_spritesheet"));
-
-            Set(serialized, "t2Variant01", Load<Sprite>("T2_01"));
-            Set(serialized, "t2Variant02", Load<Sprite>("T2_02"));
-            Set(serialized, "t2Variant01Sheet", Load<Texture2D>("T2_01_spritesheet"));
-            Set(serialized, "t2Variant02Sheet", Load<Texture2D>("T2_02_spritesheet"));
-
-            Set(serialized, "t3Variant01", Load<Sprite>("T3_01"));
-            Set(serialized, "t3Variant02", Load<Sprite>("T3_02"));
-            Set(serialized, "t3Variant01Sheet", Load<Texture2D>("T3_01_spritesheet"));
-            Set(serialized, "t3Variant02Sheet", Load<Texture2D>("T3_02_spritesheet"));
-
-            Set(serialized, "crystal", Load<Sprite>("Crystal"));
-            Set(serialized, "crystalSheet", Load<Texture2D>("Crystal_spritesheet"));
-            Set(serialized, "crack", Load<Sprite>("Crack"));
-            Set(serialized, "crackSheet", Load<Texture2D>("Crack_spritesheet"));
-
+            Set(serialized, "t1Variant01", LoadIce<Sprite>("T1_01"));
+            Set(serialized, "t1Variant02", LoadIce<Sprite>("T1_02"));
+            Set(serialized, "t1Variant01Sheet", LoadIce<Texture2D>("T1_01_spritesheet"));
+            Set(serialized, "t1Variant02Sheet", LoadIce<Texture2D>("T1_02_spritesheet"));
+            Set(serialized, "t2Variant01", LoadIce<Sprite>("T2_01"));
+            Set(serialized, "t2Variant02", LoadIce<Sprite>("T2_02"));
+            Set(serialized, "t2Variant01Sheet", LoadIce<Texture2D>("T2_01_spritesheet"));
+            Set(serialized, "t2Variant02Sheet", LoadIce<Texture2D>("T2_02_spritesheet"));
+            Set(serialized, "t3Variant01", LoadIce<Sprite>("T3_01"));
+            Set(serialized, "t3Variant02", LoadIce<Sprite>("T3_02"));
+            Set(serialized, "t3Variant01Sheet", LoadIce<Texture2D>("T3_01_spritesheet"));
+            Set(serialized, "t3Variant02Sheet", LoadIce<Texture2D>("T3_02_spritesheet"));
+            Set(serialized, "crystal", LoadIce<Sprite>("Crystal"));
+            Set(serialized, "crystalSheet", LoadIce<Texture2D>("Crystal_spritesheet"));
+            Set(serialized, "crack", LoadIce<Sprite>("Crack"));
+            Set(serialized, "crackSheet", LoadIce<Texture2D>("Crack_spritesheet"));
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(catalog);
         }
 
-        private static T Load<T>(string name) where T : UnityEngine.Object
+        private static T LoadIce<T>(string name) where T : UnityEngine.Object
         {
-            var asset = AssetDatabase.LoadAssetAtPath<T>($"{ArtFolder}/{name}.png");
-            if (asset == null)
+            return AssetDatabase.LoadAssetAtPath<T>($"{IceFolder}/{name}.png") ??
+                   throw new InvalidOperationException($"Missing ice role asset '{name}'.");
+        }
+
+        private static void ValidateBoundAssets(IceVisualCatalog catalog)
+        {
+            var errors = new List<string>();
+            if (!catalog.IsComplete)
             {
-                throw new InvalidOperationException($"Required ice asset '{name}' could not be loaded.");
+                errors.Add("IceVisualCatalog is incomplete.");
             }
 
-            return asset;
+            ValidateImageUsage(LauncherPrefabPath, errors);
+            ValidateImageUsage(IcebreakingPrefabPath, errors);
+            Icebreaker.UI.Editor.ProductionUiGuard.CollectErrors(
+                AssetDatabase.LoadAssetAtPath<GameObject>(LauncherPrefabPath),
+                errors);
+            Icebreaker.UI.Editor.ProductionUiGuard.CollectErrors(
+                AssetDatabase.LoadAssetAtPath<GameObject>(IcebreakingPrefabPath),
+                errors);
+            ThrowIfErrors("Bind", errors);
+        }
+
+        private static void ValidateImageUsage(string prefabPath, ICollection<string> errors)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (prefab == null)
+            {
+                errors.Add($"Missing prefab: {prefabPath}");
+                return;
+            }
+
+            foreach (var image in prefab.GetComponentsInChildren<Image>(true))
+            {
+                if (image.sprite == null)
+                {
+                    continue;
+                }
+
+                var hasBorder = image.sprite.border.sqrMagnitude > 0f;
+                if (image.type == Image.Type.Sliced && !hasBorder)
+                {
+                    errors.Add(
+                        $"{prefab.name}/{image.name} uses Sliced without a sprite border.");
+                }
+                else if (hasBorder && image.type == Image.Type.Simple)
+                {
+                    errors.Add(
+                        $"{prefab.name}/{image.name} has a 9-slice border but uses Simple.");
+                }
+            }
         }
 
         private static void Set(
@@ -364,96 +546,10 @@ namespace Icebreaker.Integration.Editor
             string propertyName,
             UnityEngine.Object asset)
         {
-            var property = serialized.FindProperty(propertyName);
-            if (property == null)
-            {
-                throw new InvalidOperationException(
-                    $"IceVisualCatalog property '{propertyName}' was not found.");
-            }
-
+            var property = serialized.FindProperty(propertyName) ??
+                           throw new InvalidOperationException(
+                               $"IceVisualCatalog property '{propertyName}' is missing.");
             property.objectReferenceValue = asset;
-        }
-
-        private static void AssignCatalogToScenes()
-        {
-            foreach (var scenePath in ScenePaths)
-            {
-                var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-
-                // Opening a scene can unload an otherwise unused asset, so load the catalog only
-                // after the scene transition that precedes its assignment.
-                var catalog = AssetDatabase.LoadAssetAtPath<IceVisualCatalog>(CatalogPath);
-                if (catalog == null)
-                {
-                    throw new InvalidOperationException(
-                        $"IceVisualCatalog could not be reloaded before editing '{scenePath}'.");
-                }
-
-                var views = UnityEngine.Object.FindObjectsByType<IceFieldView>(
-                    FindObjectsInactive.Include,
-                    FindObjectsSortMode.None);
-                if (views.Length == 0)
-                {
-                    throw new InvalidOperationException(
-                        $"No IceFieldView was found in '{scenePath}'.");
-                }
-
-                foreach (var view in views)
-                {
-                    var viewSerialized = new SerializedObject(view);
-                    var catalogProperty = viewSerialized.FindProperty("iceVisualCatalog");
-                    if (catalogProperty == null)
-                    {
-                        throw new InvalidOperationException(
-                            $"IceFieldView catalog property was not found in '{scenePath}'.");
-                    }
-
-                    catalogProperty.objectReferenceValue = catalog;
-                    viewSerialized.ApplyModifiedPropertiesWithoutUndo();
-                    EditorUtility.SetDirty(view);
-
-                    var sceneCamera = viewSerialized.FindProperty("sceneCamera")?.objectReferenceValue
-                        as Camera;
-                    if (sceneCamera == null)
-                    {
-                        throw new InvalidOperationException(
-                            $"IceFieldView camera reference was not found in '{scenePath}'.");
-                    }
-
-                    var backdrop = view.GetComponent<GameplayBackdropView>();
-                    if (backdrop == null)
-                    {
-                        backdrop = view.gameObject.AddComponent<GameplayBackdropView>();
-                    }
-
-                    var ocean = AssetDatabase.LoadAssetAtPath<Sprite>(OceanPath);
-                    var ship = AssetDatabase.LoadAssetAtPath<Sprite>(ShipPath);
-                    if (ocean == null || ship == null)
-                    {
-                        throw new InvalidOperationException(
-                            $"Ocean or ship art could not be loaded for '{scenePath}'.");
-                    }
-
-                    var backdropSerialized = new SerializedObject(backdrop);
-                    Set(backdropSerialized, "sceneCamera", sceneCamera);
-                    Set(backdropSerialized, "oceanBackground", ocean);
-                    Set(backdropSerialized, "ship", ship);
-                    backdropSerialized.ApplyModifiedPropertiesWithoutUndo();
-                    EditorUtility.SetDirty(backdrop);
-                }
-
-                EditorSceneManager.MarkSceneDirty(scene);
-                EditorSceneManager.SaveScene(scene);
-            }
-        }
-
-        private static void EnsureFolder(string parent, string child)
-        {
-            var path = $"{parent}/{child}";
-            if (!AssetDatabase.IsValidFolder(path))
-            {
-                AssetDatabase.CreateFolder(parent, child);
-            }
         }
 
         private static void RemoveLegacyArtLayers(Transform hudRoot)
@@ -465,35 +561,51 @@ namespace Icebreaker.Integration.Editor
             }
         }
 
-        private static void ConfigurePanelArt(Image? panel, Sprite sprite)
+        private static void ConfigureImage(Image? image, Sprite sprite, bool raycastTarget)
         {
-            if (panel == null)
+            if (image == null)
             {
                 throw new InvalidOperationException(
-                    $"A parent UI panel is missing for sprite '{sprite.name}'.");
+                    $"A UI Image is missing for role sprite '{sprite.name}'.");
             }
 
-            panel.sprite = sprite;
-            panel.type = Image.Type.Simple;
-            panel.preserveAspect = false;
-            panel.color = Color.white;
-            panel.raycastTarget = false;
-            EditorUtility.SetDirty(panel);
+            image.sprite = sprite;
+            image.type = sprite.border.sqrMagnitude > 0f
+                ? Image.Type.Sliced
+                : Image.Type.Simple;
+            image.preserveAspect = false;
+            image.color = Color.white;
+            image.raycastTarget = raycastTarget;
+            EditorUtility.SetDirty(image);
         }
 
-        private static Sprite LoadUiSprite(string artFolder, string layerName)
+        private static void ConfigureButton(Transform hitArea, Sprite sprite)
         {
-            var path = $"{artFolder}/{layerName}.png";
+            var button = hitArea.GetComponent<Button>() ??
+                         throw new InvalidOperationException(
+                             $"HUD button '{hitArea.name}' is missing Button.");
+            var image = hitArea.GetComponent<Image>() ??
+                        throw new InvalidOperationException(
+                            $"HUD button '{hitArea.name}' is missing Image.");
+            ConfigureImage(image, sprite, true);
+            button.transition = Selectable.Transition.ColorTint;
+            button.targetGraphic = image;
+            EditorUtility.SetDirty(button);
+        }
+
+        private static Sprite LoadUiSprite(string folder, string spriteName)
+        {
+            var path = $"{folder}/{spriteName}.png";
             foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(path))
             {
-                if (asset is Sprite sprite && sprite.name == layerName)
+                if (asset is Sprite sprite && sprite.name == spriteName)
                 {
                     return sprite;
                 }
             }
 
             throw new InvalidOperationException(
-                $"Required UI sprite '{layerName}' could not be loaded from '{path}'.");
+                $"Missing role sprite '{spriteName}' in '{path}'.");
         }
 
         private static Transform RequireChild(Transform parent, string childName)
@@ -503,37 +615,27 @@ namespace Icebreaker.Integration.Editor
                        $"Required UI object '{parent.name}/{childName}' is missing.");
         }
 
-        private static void ConfigureArtBackedButton(Transform hitArea, Sprite sprite)
-        {
-            var button = hitArea.GetComponent<Button>();
-            var hitImage = hitArea.GetComponent<Image>();
-            if (button == null || hitImage == null)
-            {
-                throw new InvalidOperationException(
-                    $"HUD button '{hitArea.name}' is missing its Button or parent Image.");
-            }
-
-            hitImage.sprite = sprite;
-            hitImage.type = Image.Type.Simple;
-            hitImage.preserveAspect = false;
-            hitImage.color = Color.white;
-            hitImage.raycastTarget = true;
-            button.transition = Selectable.Transition.ColorTint;
-            button.targetGraphic = hitImage;
-            EditorUtility.SetDirty(hitImage);
-            EditorUtility.SetDirty(button);
-        }
-
         private static void ClearArray(SerializedObject serialized, string propertyName)
         {
             var property = serialized.FindProperty(propertyName);
             if (property == null || !property.isArray)
             {
                 throw new InvalidOperationException(
-                    $"LauncherHudPresenter array '{propertyName}' was not found.");
+                    $"Presenter array '{propertyName}' was not found.");
             }
 
             property.arraySize = 0;
+        }
+
+        private static void ThrowIfErrors(string stage, ICollection<string> errors)
+        {
+            if (errors.Count == 0)
+            {
+                return;
+            }
+
+            throw new InvalidOperationException(
+                $"[ART-P0] {stage} validation failed:\n- {string.Join("\n- ", errors)}");
         }
     }
 }

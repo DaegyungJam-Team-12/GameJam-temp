@@ -30,12 +30,12 @@ namespace Icebreaker.Gameplay
         [SerializeField] private Texture2D? t3Variant01Sheet;
         [SerializeField] private Texture2D? t3Variant02Sheet;
 
-        [Header("Special Ice")]
-        [Tooltip("Artist mapping: Ice_B/B_spritesheet is the crystal-ice visual.")]
+        [Header("Special Ice Overlays")]
+        [Tooltip("Overlay drawn above the tier-specific base ice for crystal ice.")]
         [SerializeField] private Sprite? crystal;
         [SerializeField] private Texture2D? crystalSheet;
 
-        [Tooltip("Artist mapping: Special_* is the crack-ice visual.")]
+        [Tooltip("Overlay drawn above the tier-specific base ice for cracked ice.")]
         [SerializeField] private Sprite? crack;
         [SerializeField] private Texture2D? crackSheet;
 
@@ -51,6 +51,8 @@ namespace Icebreaker.Gameplay
 
         public Sprite? ResolveStaticSprite(IceTier tier, SpecialIceType specialType, long iceInstanceId)
         {
+            // Compatibility path for IceFieldView. Runtime ownership must migrate to
+            // ResolveSpecialOverlaySprite before this fallback can be removed.
             if (specialType == SpecialIceType.Crystal && crystal != null)
             {
                 return crystal;
@@ -75,6 +77,7 @@ namespace Icebreaker.Gameplay
             SpecialIceType specialType,
             long iceInstanceId)
         {
+            // Compatibility path for IceFieldView; see ResolveStaticSprite.
             if (specialType == SpecialIceType.Crystal && crystalSheet != null)
             {
                 return crystalSheet;
@@ -91,6 +94,26 @@ namespace Icebreaker.Gameplay
                 IceTier.T2 => useSecondVariant ? t2Variant02Sheet : t2Variant01Sheet,
                 IceTier.T3 => useSecondVariant ? t3Variant02Sheet : t3Variant01Sheet,
                 _ => useSecondVariant ? t1Variant02Sheet : t1Variant01Sheet,
+            };
+        }
+
+        public Sprite? ResolveSpecialOverlaySprite(SpecialIceType specialType)
+        {
+            return specialType switch
+            {
+                SpecialIceType.Crystal => crystal,
+                SpecialIceType.Crack => crack,
+                _ => null,
+            };
+        }
+
+        public Texture2D? ResolveSpecialOverlaySheet(SpecialIceType specialType)
+        {
+            return specialType switch
+            {
+                SpecialIceType.Crystal => crystalSheet,
+                SpecialIceType.Crack => crackSheet,
+                _ => null,
             };
         }
     }
