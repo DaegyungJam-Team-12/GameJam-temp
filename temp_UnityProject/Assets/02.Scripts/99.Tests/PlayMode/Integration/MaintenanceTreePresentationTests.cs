@@ -55,6 +55,10 @@ namespace Icebreaker.Integration.Tests
             }
 
             var nodeView = node!.GetComponent(FindType("Icebreaker.UI.Maintenance.MaintenanceNodeView"));
+            Assert.That(
+                nodeView,
+                Is.InstanceOf<IPointerClickHandler>(),
+                "InputSystemUIInputModule only advances clickCount for pointer-click handlers.");
             AssertSpriteReferences(
                 nodeView,
                 "rootFrameSprite", "normalFrameSprite", "purchasedFrameSprite",
