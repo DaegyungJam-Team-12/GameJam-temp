@@ -208,6 +208,7 @@ namespace Icebreaker.Integration
             launcherHud.MaintenanceRequested += HandleMaintenanceRequested;
             launcherHud.RouteRequested += HandleRouteRequested;
             launcherHud.SettingsRequested += HandleSettingsRequested;
+            launcherHud.QuitRequested += HandleQuitRequested;
             icebreakingHud.SettingsRequested += HandleSettingsRequested;
             maintenanceTree.PurchaseRequested += HandleMaintenancePurchaseRequested;
             maintenanceTree.CloseRequested += HandleMaintenanceCloseRequested;
@@ -286,6 +287,7 @@ namespace Icebreaker.Integration
                 launcherHud.MaintenanceRequested -= HandleMaintenanceRequested;
                 launcherHud.RouteRequested -= HandleRouteRequested;
                 launcherHud.SettingsRequested -= HandleSettingsRequested;
+                launcherHud.QuitRequested -= HandleQuitRequested;
             }
 
             if (icebreakingHud != null)

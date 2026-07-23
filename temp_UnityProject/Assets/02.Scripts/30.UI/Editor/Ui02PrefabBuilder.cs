@@ -19,7 +19,8 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
-        private const string BuildStamp = "ui02-production-font-roles-v2";
+        private const string BuildStamp = "ui02-launcher-tabbar-art-v1";
+        private const string TabbarArtFolder = "Assets/04.Images/Tabbar";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
         public static void Build()
@@ -100,21 +101,31 @@ namespace Icebreaker.UI.Editor
             }
             else
             {
-                ValidateCanvas(launcher, new Vector2(800f, 72f), errors);
-                ValidateRect(launcher, "HudRoot/FundsArea", 8f, 8f, 112f, 56f, errors);
-                ValidateRect(launcher, "HudRoot/DestinationArea", 128f, 8f, 200f, 56f, errors);
-                ValidateRect(launcher, "HudRoot/MaintenanceHitArea", 336f, 8f, 80f, 56f, errors);
-                ValidateRect(launcher, "HudRoot/RouteHitArea", 424f, 8f, 96f, 56f, errors);
-                ValidateRect(launcher, "HudRoot/StageStartHitArea", 528f, 8f, 208f, 56f, errors);
-                ValidateRect(launcher, "HudRoot/SettingsHitArea", 744f, 12f, 48f, 48f, errors);
-                ValidateDragSurface(launcher, errors);
-                ValidateButtonSeparation(launcher, new[]
+                ValidateCanvas(launcher, new Vector2(800f, 158f), errors);
+                foreach (var layer in new[]
                 {
-                    "HudRoot/MaintenanceHitArea",
-                    "HudRoot/RouteHitArea",
-                    "HudRoot/StageStartHitArea",
-                    "HudRoot/SettingsHitArea"
-                }, errors);
+                    "HudRoot/ArtBase", "HudRoot/ArtIce", "HudRoot/ArtShip", "HudRoot/ArtBox",
+                    "HudRoot/ArtFunds", "HudRoot/ArtDestination", "HudRoot/ArtMaintenance",
+                    "HudRoot/ArtRoute", "HudRoot/ArtStage", "HudRoot/ArtSettings"
+                })
+                {
+                    if (launcher.transform.Find(layer) == null)
+                    {
+                        errors.Add($"Launcher art layer {layer} is missing.");
+                    }
+                }
+                foreach (var hit in new[]
+                {
+                    "HudRoot/MaintenanceHitArea", "HudRoot/RouteHitArea", "HudRoot/StageStartHitArea",
+                    "HudRoot/SettingsHitArea", "HudRoot/BoxQuitHitArea"
+                })
+                {
+                    if (launcher.transform.Find(hit) == null)
+                    {
+                        errors.Add($"Launcher hit area {hit} is missing.");
+                    }
+                }
+                ValidateDragSurface(launcher, errors);
                 ValidatePresenterReferences<LauncherHudPresenter>(launcher, new[]
                 {
                     "theme",
@@ -208,38 +219,51 @@ namespace Icebreaker.UI.Editor
 
         private static void BuildLauncher(UiThemeAsset theme, TMP_FontAsset font)
         {
-            var root = CreateCanvasRoot("UI_LauncherHud", new Vector2(800f, 72f));
+            // Launcher window/canvas matches the tab-bar art aspect (1600x315 -> 800x158) so the
+            // ship/box/ice decorations sit above the button row without distortion.
+            var root = CreateCanvasRoot("UI_LauncherHud", new Vector2(800f, 158f));
 
             try
             {
                 var presenter = root.AddComponent<LauncherHudPresenter>();
-                var hudRoot = CreateStretchPanel("HudRoot", root.transform, theme.Background, raycastTarget: false);
+                var hudRoot = CreateStretchPanel("HudRoot", root.transform, Color.clear, raycastTarget: false);
 
-                // Invisible full-bleed background: dragging it moves the OS window. Added first
-                // (lowest sibling depth) so buttons added afterward sit on top and keep receiving
-                // their own clicks instead of starting a window drag.
+                // Invisible full-bleed background: dragging empty ice/water moves the OS window.
+                // First child (lowest sibling depth) so the button hit areas above keep their own
+                // clicks instead of starting a window drag.
                 var dragSurface = CreateStretchPanel("DragSurface", hudRoot.transform, Color.clear, raycastTarget: true);
                 dragSurface.gameObject.AddComponent<Icebreaker.Window.WindowDragSurface>();
+
+                // Pre-positioned full-canvas art layers (each 1600x315), stacked back-to-front.
+                // Every element is baked in place, so no per-element positioning is needed.
+                CreateArtLayer("ArtBase", hudRoot.transform, LoadTabbarSprite("Launcher_base"));
+                CreateArtLayer("ArtIce", hudRoot.transform, LoadTabbarSprite("Launcher+ice"));
+                CreateArtLayer("ArtShip", hudRoot.transform, LoadTabbarSprite("Launcher+ship"));
+                CreateArtLayer("ArtBox", hudRoot.transform, LoadTabbarSprite("Launcher+box"));
+                CreateArtLayer("ArtFunds", hudRoot.transform, LoadTabbarSprite("정비자금"));
+                CreateArtLayer("ArtDestination", hudRoot.transform, LoadTabbarSprite("목적지"));
+                CreateArtLayer("ArtMaintenance", hudRoot.transform, LoadTabbarSprite("정비"));
+                CreateArtLayer("ArtRoute", hudRoot.transform, LoadTabbarSprite("운항현황"));
+                CreateArtLayer("ArtStage", hudRoot.transform, LoadTabbarSprite("쇄빙시작"));
+                CreateArtLayer("ArtSettings", hudRoot.transform, LoadTabbarSprite("설정"));
 
                 var panels = new List<Graphic>();
                 var accents = new List<Graphic>();
                 var texts = new List<TMP_Text>();
 
-                var fundsArea = CreateTopLeftPanel("FundsArea", hudRoot.transform, 8f, 8f, 112f, 56f, theme.Panel);
-                panels.Add(fundsArea);
-                var fundsText = CreateInsetText("FundsText", fundsArea.transform, "정비 자금\n12.4K", font, 15f, TextAlignmentOptions.Center);
+                // Funds value text, over the coin panel art (rect derived from the art slice).
+                var fundsText = CreateTopLeftText("FundsText", hudRoot.transform, 40f, 96f, 104f, 52f, "정비 자금\n12.4K", font, 13f, TextAlignmentOptions.Center);
                 texts.Add(fundsText);
 
-                var destinationArea = CreateTopLeftPanel("DestinationArea", hudRoot.transform, 128f, 8f, 200f, 56f, theme.Panel);
-                panels.Add(destinationArea);
-                var destinationName = CreateTopLeftText("DestinationNameText", destinationArea.transform, 8f, 3f, 108f, 24f, "섬마을", font, 15f, TextAlignmentOptions.Left);
+                // Destination name/progress, over the destination panel art.
+                var destinationName = CreateTopLeftText("DestinationNameText", hudRoot.transform, 162f, 92f, 104f, 24f, "섬마을", font, 15f, TextAlignmentOptions.Left);
                 destinationName.overflowMode = TextOverflowModes.Overflow;
-                var destinationProgress = CreateTopLeftText("DestinationProgressText", destinationArea.transform, 112f, 3f, 80f, 24f, "37/120", font, 14f, TextAlignmentOptions.Right);
+                var destinationProgress = CreateTopLeftText("DestinationProgressText", hudRoot.transform, 246f, 92f, 70f, 24f, "37/120", font, 14f, TextAlignmentOptions.Right);
                 destinationProgress.overflowMode = TextOverflowModes.Overflow;
                 texts.Add(destinationName);
                 texts.Add(destinationProgress);
 
-                var progressTrack = CreateTopLeftPanel("ProgressTrack", destinationArea.transform, 8f, 34f, 184f, 12f, new Color(0.02f, 0.07f, 0.12f, 1f));
+                var progressTrack = CreateTopLeftPanel("ProgressTrack", hudRoot.transform, 162f, 130f, 156f, 10f, new Color(0.02f, 0.07f, 0.12f, 1f));
                 progressTrack.raycastTarget = false;
                 var progressFill = CreateStretchPanel("ProgressFill", progressTrack.transform, theme.Success, raycastTarget: false);
                 progressFill.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd") ??
@@ -249,11 +273,20 @@ namespace Icebreaker.UI.Editor
                 progressFill.fillOrigin = 0;
                 progressFill.fillAmount = 37f / 120f;
 
-                var maintenance = CreateButton("MaintenanceHitArea", hudRoot.transform, 336f, 8f, 80f, 56f, "정비", font, 17f, theme.Panel, texts, panels);
-                var route = CreateButton("RouteHitArea", hudRoot.transform, 424f, 8f, 96f, 56f, "운항 현황", font, 16f, theme.Panel, texts, panels);
-                var start = CreateButton("StageStartHitArea", hudRoot.transform, 528f, 8f, 208f, 56f, "쇄빙 시작", font, 17f, theme.ActionAccent, texts, accents);
+                // Invisible click areas aligned to each art button (rects mapped from the art's own
+                // auto-sliced sub-sprite bounds in the 1600x315 texture).
+                var maintenance = CreateHitArea("MaintenanceHitArea", hudRoot.transform, 320f, 87f, 135f, 67f);
+                var route = CreateHitArea("RouteHitArea", hudRoot.transform, 453f, 87f, 135f, 67f);
+                var start = CreateHitArea("StageStartHitArea", hudRoot.transform, 589f, 94f, 165f, 56f);
                 start.interactable = false;
-                var settings = CreateButton("SettingsHitArea", hudRoot.transform, 744f, 12f, 48f, 48f, "설정", font, 14f, theme.Panel, texts, panels);
+                var settings = CreateHitArea("SettingsHitArea", hudRoot.transform, 760f, 107f, 32f, 32f);
+
+                // The brown crate (top-right) replaces the OS close button.
+                var quit = CreateHitArea("BoxQuitHitArea", hudRoot.transform, 698f, 10f, 63f, 60f);
+
+                // Countdown / start label, over the highlighted stage button art.
+                var startText = CreateInsetText("StageStartText", start.transform, "쇄빙 시작", font, 14f, TextAlignmentOptions.Center);
+                texts.Add(startText);
 
                 ConfigurePresenter(
                     presenter,
@@ -263,11 +296,12 @@ namespace Icebreaker.UI.Editor
                     destinationName,
                     destinationProgress,
                     progressFill,
-                    start.GetComponentInChildren<TMP_Text>(),
+                    startText,
                     maintenance,
                     route,
                     start,
                     settings,
+                    quit,
                     texts,
                     panels,
                     accents);
@@ -278,6 +312,39 @@ namespace Icebreaker.UI.Editor
             {
                 UnityEngine.Object.DestroyImmediate(root);
             }
+        }
+
+        private static Sprite LoadTabbarSprite(string spriteName)
+        {
+            var path = $"{TabbarArtFolder}/{spriteName}.png";
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path) ??
+                   throw new InvalidOperationException($"Missing Tabbar sprite at '{path}'.");
+        }
+
+        private static Image CreateArtLayer(string name, Transform parent, Sprite sprite)
+        {
+            var image = CreateStretchPanel(name, parent, Color.white, raycastTarget: false);
+            image.sprite = sprite;
+            image.type = Image.Type.Simple;
+            image.preserveAspect = false;
+            return image;
+        }
+
+        private static Button CreateHitArea(string name, Transform parent, float x, float y, float width, float height)
+        {
+            var hitArea = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            var rect = hitArea.GetComponent<RectTransform>();
+            rect.SetParent(parent, false);
+            SetTopLeft(rect, x, y, width, height);
+
+            var image = hitArea.GetComponent<Image>();
+            image.color = Color.clear;
+            image.raycastTarget = true;
+
+            var button = hitArea.GetComponent<Button>();
+            button.targetGraphic = image;
+            button.transition = Selectable.Transition.None;
+            return button;
         }
 
         private static void BuildIcebreaking(UiThemeAsset theme, TMP_FontAsset font)
@@ -496,6 +563,7 @@ namespace Icebreaker.UI.Editor
             Button route,
             Button start,
             Button settings,
+            Button quit,
             List<TMP_Text> texts,
             List<Graphic> panels,
             List<Graphic> accents)
@@ -513,6 +581,7 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "routeButton", route);
             SetObject(serialized, "startButton", start);
             SetObject(serialized, "settingsButton", settings);
+            SetObject(serialized, "quitButton", quit);
             SetArray(serialized, "themedTexts", texts);
             SetArray(serialized, "panelGraphics", panels);
             SetArray(serialized, "accentGraphics", accents);
@@ -612,7 +681,7 @@ namespace Icebreaker.UI.Editor
         private static void ValidateLauncherProgressFill(GameObject prefab, List<string> errors)
         {
             var fill = prefab.transform
-                .Find("HudRoot/DestinationArea/ProgressTrack/ProgressFill")
+                .Find("HudRoot/ProgressTrack/ProgressFill")
                 ?.GetComponent<Image>();
             if (fill == null ||
                 fill.sprite == null ||

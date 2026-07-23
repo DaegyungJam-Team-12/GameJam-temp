@@ -28,6 +28,7 @@ namespace Icebreaker.UI.Hud
         [SerializeField] private Button? routeButton;
         [SerializeField] private Button? startButton;
         [SerializeField] private Button? settingsButton;
+        [SerializeField] private Button? quitButton;
 
         [Header("Theme Targets")]
         [SerializeField] private TMP_Text[] themedTexts = Array.Empty<TMP_Text>();
@@ -43,6 +44,7 @@ namespace Icebreaker.UI.Hud
         public event Action RouteRequested = delegate { };
         public event Action StageStartRequested = delegate { };
         public event Action SettingsRequested = delegate { };
+        public event Action QuitRequested = delegate { };
 
         private void Awake()
         {
@@ -151,6 +153,7 @@ namespace Icebreaker.UI.Hud
             routeButton.onClick.AddListener(HandleRouteClicked);
             startButton.onClick.AddListener(HandleStartClicked);
             settingsButton.onClick.AddListener(HandleSettingsClicked);
+            quitButton?.onClick.AddListener(HandleQuitClicked);
             listenersAdded = true;
         }
 
@@ -165,6 +168,7 @@ namespace Icebreaker.UI.Hud
             routeButton?.onClick.RemoveListener(HandleRouteClicked);
             startButton?.onClick.RemoveListener(HandleStartClicked);
             settingsButton?.onClick.RemoveListener(HandleSettingsClicked);
+            quitButton?.onClick.RemoveListener(HandleQuitClicked);
             listenersAdded = false;
         }
 
@@ -222,6 +226,8 @@ namespace Icebreaker.UI.Hud
         private void HandleRouteClicked() => RouteRequested();
 
         private void HandleSettingsClicked() => SettingsRequested();
+
+        private void HandleQuitClicked() => QuitRequested();
 
         private void HandleStartClicked()
         {
