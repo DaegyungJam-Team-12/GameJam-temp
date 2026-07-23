@@ -19,7 +19,7 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
-        private const string BuildStamp = "ui02-launcher-tabbar-art-v2";
+        private const string BuildStamp = "ui02-launcher-tabbar-art-v3";
         private const string TabbarArtFolder = "Assets/04.Images/Tabbar";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
@@ -255,15 +255,16 @@ namespace Icebreaker.UI.Editor
                 var fundsText = CreateTopLeftText("FundsText", hudRoot.transform, 48f, 97f, 96f, 50f, "정비 자금\n12.4K", font, 13f, TextAlignmentOptions.Center);
                 texts.Add(fundsText);
 
-                // Destination name/progress, over the destination panel art.
-                var destinationName = CreateTopLeftText("DestinationNameText", hudRoot.transform, 162f, 92f, 104f, 24f, "섬마을", font, 15f, TextAlignmentOptions.Left);
+                // Destination name/progress, in the empty panel to the RIGHT of the pin icon
+                // baked into the destination button art (so they do not overlap the pin).
+                var destinationName = CreateTopLeftText("DestinationNameText", hudRoot.transform, 196f, 92f, 54f, 24f, "섬마을", font, 15f, TextAlignmentOptions.Left);
                 destinationName.overflowMode = TextOverflowModes.Overflow;
-                var destinationProgress = CreateTopLeftText("DestinationProgressText", hudRoot.transform, 246f, 92f, 70f, 24f, "37/120", font, 14f, TextAlignmentOptions.Right);
+                var destinationProgress = CreateTopLeftText("DestinationProgressText", hudRoot.transform, 250f, 92f, 66f, 24f, "37/120", font, 13f, TextAlignmentOptions.Right);
                 destinationProgress.overflowMode = TextOverflowModes.Overflow;
                 texts.Add(destinationName);
                 texts.Add(destinationProgress);
 
-                var progressTrack = CreateTopLeftPanel("ProgressTrack", hudRoot.transform, 162f, 130f, 156f, 10f, new Color(0.02f, 0.07f, 0.12f, 1f));
+                var progressTrack = CreateTopLeftPanel("ProgressTrack", hudRoot.transform, 196f, 129f, 120f, 9f, new Color(0.02f, 0.07f, 0.12f, 1f));
                 progressTrack.raycastTarget = false;
                 var progressFill = CreateStretchPanel("ProgressFill", progressTrack.transform, theme.Success, raycastTarget: false);
                 progressFill.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd") ??
