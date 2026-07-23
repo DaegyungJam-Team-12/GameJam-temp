@@ -60,7 +60,12 @@ namespace Icebreaker.Gameplay
                     if (overkillDamage > 0f)
                     {
                         var transferDamage = overkillDamage * config.OverkillTransferMultiplier;
-                        var closest = FindClosestAliveExclude(destroyedTarget.ReferencePosition, destroyedTarget, activeIce);
+                        var closest = FindClosestAliveExclude(
+                            destroyedTarget.ReferencePosition,
+                            destroyedTarget,
+                            stageElapsedSeconds,
+                            activeIce,
+                            respawnProtectionSeconds);
                         if (closest != null)
                         {
                             onEnqueueDamage(closest, transferDamage, EffectType.Overkill, DestroyCategory.Chain, false, chainDepth + 1);
@@ -138,10 +143,10 @@ namespace Icebreaker.Gameplay
         private void TriggerCrackEffect(IceInstance source, int nextDepth, double stageElapsedSeconds, float lastClickDamage, IReadOnlyList<IceInstance> activeIce, float respawnProtectionSeconds)
         {
             var crackRadius = config != null ? config.CrackRadiusReferencePixels : 120f;
-            var crackMultiplier = config != null ? config.CrackDamageMultiplier : 1.0f;
+            var crackMultiplier = config != null ? config.CrackDamageMultiplier : 3.0f;
             
             var targets = FindCrackTargets(source, crackRadius, stageElapsedSeconds, activeIce, respawnProtectionSeconds);
-            var damageAmount = lastClickDamage * 3f * crackMultiplier;
+            var damageAmount = lastClickDamage * crackMultiplier;
 
             foreach (var target in targets)
             {
@@ -230,7 +235,12 @@ namespace Icebreaker.Gameplay
             return tempTargets;
         }
 
-        private IceInstance? FindClosestAliveExclude(Vector2 referencePosition, IceInstance exclude, IReadOnlyList<IceInstance> activeIce)
+        private IceInstance? FindClosestAliveExclude(
+            Vector2 referencePosition,
+            IceInstance exclude,
+            double stageElapsedSeconds,
+            IReadOnlyList<IceInstance> activeIce,
+            float respawnProtectionSeconds)
         {
             IceInstance? closest = null;
             var closestDist = float.MaxValue;
@@ -239,6 +249,11 @@ namespace Icebreaker.Gameplay
             {
                 var ice = activeIce[i];
                 if (ice.IsDestroyed || ice == exclude)
+                {
+                    continue;
+                }
+
+                if (stageElapsedSeconds - ice.SpawnTime < respawnProtectionSeconds)
                 {
                     continue;
                 }

@@ -44,6 +44,8 @@ namespace Icebreaker.Gameplay
         }
 
         private readonly Queue<QueuedDamage> effectQueue = new Queue<QueuedDamage>();
+        private readonly List<IceInstance> pendingRespawns = new List<IceInstance>(32);
+        private int queueProcessingDepth;
         
         // GP-08: Reusable lists to prevent GC allocations
         private readonly List<IceInstance> tempTargets = new List<IceInstance>(32);
@@ -131,6 +133,9 @@ namespace Icebreaker.Gameplay
         public void Initialize(double stageElapsedSeconds)
         {
             supportProcessor.Reset();
+            effectQueue.Clear();
+            pendingRespawns.Clear();
+            queueProcessingDepth = 0;
 
             for (var layoutAttempt = 0; layoutAttempt < MaxInitialLayoutAttempts; layoutAttempt++)
             {
@@ -265,56 +270,102 @@ namespace Icebreaker.Gameplay
 
         private void ProcessQueue(double stageElapsedSeconds)
         {
-            if (!CanProcessCombat())
+            queueProcessingDepth++;
+            try
             {
-                effectQueue.Clear();
-                return;
-            }
-
-            while (effectQueue.Count > 0)
-            {
-                var queued = effectQueue.Dequeue();
-                
-                // "같은 얼음에 여러 피해가 예약돼도 순서대로 처리하고, 처음 HP가 0 이하가 된 순간 한 번만 파괴한다. 이후 예약 피해는 취소한다."
-                if (queued.Target.IsDestroyed)
+                while (effectQueue.Count > 0)
                 {
-                    continue;
-                }
-
-                var hpBeforeDamage = queued.Target.RemainingHp;
-
-                if (queued.Target.TryApplyDamage(
-                        queued.Damage,
-                        queued.EffectType,
-                        queued.Category,
-                        queued.WasCritical,
-                        currentChainId,
-                        queued.ChainDepth,
-                        stageElapsedSeconds,
-                        out var damageEvent,
-                        out var destroyEvent))
-                {
-                    DamageApplied(damageEvent);
-
-                    if (queued.Target.IsDestroyed && damageEvent.RemainingHp <= 0f)
+                    if (!CanProcessCombat())
                     {
-                        IceDestroyed(destroyEvent);
-                        
-                        chainProcessor.ProcessIceDestroyed(
-                            queued.Target,
-                            queued.ChainDepth,
-                            queued.Category,
-                            hpBeforeDamage,
-                            queued.Damage,
-                            lastClickDamage,
-                            stageElapsedSeconds,
-                            activeIce,
-                            config.RespawnProtectionSeconds);
+                        CancelQueuedCombatWork();
+                        return;
+                    }
 
-                        RespawnAt(queued.Target, stageElapsedSeconds);
+                    var queued = effectQueue.Dequeue();
+
+                    // "같은 얼음에 여러 피해가 예약돼도 순서대로 처리하고, 처음 HP가 0 이하가 된 순간 한 번만 파괴한다. 이후 예약 피해는 취소한다."
+                    if (queued.Target.IsDestroyed)
+                    {
+                        continue;
+                    }
+
+                    var hpBeforeDamage = queued.Target.RemainingHp;
+
+                    if (queued.Target.TryApplyDamage(
+                            queued.Damage,
+                            queued.EffectType,
+                            queued.Category,
+                            queued.WasCritical,
+                            currentChainId,
+                            queued.ChainDepth,
+                            stageElapsedSeconds,
+                            out var damageEvent,
+                            out var destroyEvent))
+                    {
+                        DamageApplied(damageEvent);
+
+                        if (queued.Target.IsDestroyed && damageEvent.RemainingHp <= 0f)
+                        {
+                            IceDestroyed(destroyEvent);
+                            if (!CanProcessCombat())
+                            {
+                                CancelQueuedCombatWork();
+                                return;
+                            }
+
+                            chainProcessor.ProcessIceDestroyed(
+                                queued.Target,
+                                queued.ChainDepth,
+                                queued.Category,
+                                hpBeforeDamage,
+                                queued.Damage,
+                                lastClickDamage,
+                                stageElapsedSeconds,
+                                activeIce,
+                                config.RespawnProtectionSeconds);
+
+                            pendingRespawns.Add(queued.Target);
+                        }
                     }
                 }
             }
+            finally
+            {
+                queueProcessingDepth--;
+                if (queueProcessingDepth == 0)
+                {
+                    if (CanProcessCombat())
+                    {
+                        FlushPendingRespawns(stageElapsedSeconds);
+                    }
+                    else
+                    {
+                        CancelQueuedCombatWork();
+                    }
+                }
+            }
+        }
+
+        private void CancelQueuedCombatWork()
+        {
+            effectQueue.Clear();
+            pendingRespawns.Clear();
+        }
+
+        private void FlushPendingRespawns(double stageElapsedSeconds)
+        {
+            for (var i = 0; i < pendingRespawns.Count; i++)
+            {
+                if (!CanProcessCombat())
+                {
+                    CancelQueuedCombatWork();
+                    return;
+                }
+
+                RespawnAt(pendingRespawns[i], stageElapsedSeconds);
+            }
+
+            pendingRespawns.Clear();
         }
 
 
