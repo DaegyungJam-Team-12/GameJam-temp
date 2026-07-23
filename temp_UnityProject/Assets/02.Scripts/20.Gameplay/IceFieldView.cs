@@ -39,33 +39,8 @@ namespace Icebreaker.Gameplay
             new Rect(280f, 0f, 400f, 135f),
         };
 
-        [Serializable]
-        public struct SandboxSettings
-        {
-            [Header("Spawn Weights (0~100)")]
-            [Range(0, 100)] public int weightT1;
-            [Range(0, 100)] public int weightT2;
-            [Range(0, 100)] public int weightT3;
-
-            [Header("Special Ice (GP-04)")]
-            [Range(0f, 1f)] public float crystalSpawnProb;
-            [Range(0f, 1f)] public float crackSpawnProb;
-            [Range(0, 20)] public int maxSpecialIce;
-
-            [Header("Support Attack (GP-06)")]
-            public bool enableSupportAttack;
-            [Range(1, 20)] public int requiredHits;
-            [Range(0, 5)] public int additionalTargets;
-            public bool prioritizeSpecialIce;
-
-            [Header("Chain Destruction (GP-07)")]
-            public bool enableOverkill;
-            public bool enableHullFragment;
-            public bool enableIceCollapse;
-
-            [Header("Debug")]
-            public bool enableDebugText;
-        }
+#if UNITY_EDITOR
+        public bool EnableDebugText { get; set; }
 
         private struct FloatingText
         {
@@ -74,33 +49,19 @@ namespace Icebreaker.Gameplay
             public Color Color;
             public double ExpiryTime;
         }
+#endif
 
         [SerializeField] private Camera? sceneCamera;
         [SerializeField] private long stageId = 1L;
-        [SerializeField] private SandboxSettings sandboxSettings = new SandboxSettings
-        {
-            weightT1 = 100,
-            weightT2 = 0,
-            weightT3 = 0,
-            crystalSpawnProb = 0.2f, // 20% for easier testing
-            crackSpawnProb = 0.2f,   // 20% for easier testing
-            maxSpecialIce = 5,       // Max 5 special ice blocks at a time
-            enableSupportAttack = true,
-            requiredHits = 12,
-            additionalTargets = 2,
-            prioritizeSpecialIce = true,
-            enableOverkill = true,
-            enableHullFragment = true,
-            enableIceCollapse = true,
-            enableDebugText = true
-        };
 
         private IceField? field;
         private IceFieldConfig? config;
         private DirectAttackConfig? directAttackConfig;
         private AttackTickScheduler? attackTickScheduler;
         private readonly List<SpriteRenderer> visuals = new();
+#if UNITY_EDITOR
         private readonly List<FloatingText> floatingTexts = new();
+#endif
         private Sprite? iceSprite;
         private Sprite? cursorRingSprite;
         private Transform? cursorRingRoot;
@@ -173,32 +134,6 @@ namespace Icebreaker.Gameplay
             attackTickScheduler?.Reset();
         }
 
-        [ContextMenu("Reset to Spec Defaults")]
-        public void ResetToSpecDefaults()
-        {
-            sandboxSettings = new SandboxSettings
-            {
-                weightT1 = 100,
-                weightT2 = 0,
-                weightT3 = 0,
-                crystalSpawnProb = 0.025f,
-                crackSpawnProb = 0.020f,
-                maxSpecialIce = 2,
-                enableSupportAttack = true,
-                requiredHits = 12,
-                additionalTargets = 2,
-                prioritizeSpecialIce = true,
-                enableOverkill = true,
-                enableHullFragment = true,
-                enableIceCollapse = true,
-                enableDebugText = true
-            };
-            
-            #if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(this);
-            #endif
-        }
-
         private void Awake()
         {
             stageStartedAt = Time.timeAsDouble;
@@ -235,22 +170,22 @@ namespace Icebreaker.Gameplay
                 directAttackConfig.CriticalChance,
                 directAttackConfig.CriticalDamageMultiplier);
             var supportConfig = injectedCombatConfig?.SupportAttack ?? new SupportAttackConfig(
-                enabled: sandboxSettings.enableSupportAttack,
-                requiredDirectHitCount: sandboxSettings.requiredHits,
+                enabled: false,
+                requiredDirectHitCount: 12,
                 primaryDamageMultiplier: 1.0f,
-                additionalTargetCount: sandboxSettings.additionalTargets,
+                additionalTargetCount: 2,
                 additionalDamageMultiplier: 0.7f,
-                prioritizeSpecialIce: sandboxSettings.prioritizeSpecialIce,
+                prioritizeSpecialIce: true,
                 specialIceDamageMultiplier: 2.0f);
             var chainConfig = injectedCombatConfig?.ChainEffect ?? new ChainEffectConfig(
-                overkillEnabled: sandboxSettings.enableOverkill,
+                overkillEnabled: true,
                 overkillTransferMultiplier: 0.5f,
-                hullFragmentDamageMultiplier: sandboxSettings.enableHullFragment ? 0.25f : 0f,
+                hullFragmentDamageMultiplier: 0f,
                 hullFragmentRadiusReferencePixels: 90f,
                 crystalShardCount: 5,
                 crackDamageMultiplier: 1.0f,
                 crackRadiusReferencePixels: 120f,
-                iceCollapseEnabled: sandboxSettings.enableIceCollapse,
+                iceCollapseEnabled: false,
                 iceCollapseRequiredDestroyCount: 5,
                 iceCollapseDamageMultiplier: 1.5f,
                 iceCollapseRadiusReferencePixels: 140f,
@@ -563,7 +498,8 @@ namespace Icebreaker.Gameplay
                 }
             }
 
-            if (sandboxSettings.enableDebugText)
+#if UNITY_EDITOR
+            if (EnableDebugText)
             {
                 var color = Color.white;
                 if (e.WasCritical) color = Color.yellow;
@@ -589,18 +525,19 @@ namespace Icebreaker.Gameplay
                     ExpiryTime = Time.timeAsDouble + 1.0 // 1 second duration
                 });
             }
+#endif
         }
 
+#if UNITY_EDITOR
         private void OnGUI()
         {
-            if (!sandboxSettings.enableDebugText || sceneCamera == null) return;
+            if (!EnableDebugText || sceneCamera == null) return;
 
             var currentTime = Time.timeAsDouble;
             var style = new GUIStyle(GUI.skin.label)
             {
-                fontSize = 16,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
+                fontSize = 14,
+                fontStyle = FontStyle.Bold
             };
 
             for (var i = floatingTexts.Count - 1; i >= 0; i--)
@@ -613,17 +550,20 @@ namespace Icebreaker.Gameplay
                     continue;
                 }
 
-                // Move up over time
                 var floatOffset = new Vector2(0, (float)(1.0 - lifeRemaining) * 50f);
-                var screenPos = sceneCamera.WorldToScreenPoint(ReferenceToWorld(ft.Position));
-                
-                // Unity GUI y is inverted
-                var guiPos = new Vector2(screenPos.x, Screen.height - screenPos.y) - floatOffset;
-                
-                style.normal.textColor = ft.Color;
-                GUI.Label(new Rect(guiPos.x - 100, guiPos.y - 20, 200, 40), ft.Text, style);
+                var worldPos = ReferenceToWorld(ft.Position);
+                var screenPos = sceneCamera.WorldToScreenPoint(worldPos);
+
+                if (screenPos.z > 0)
+                {
+                    var guiPos = new Vector2(screenPos.x, Screen.height - screenPos.y) - floatOffset;
+                    var rect = new Rect(guiPos.x - 100, guiPos.y - 20, 200f, 40f);
+                    style.normal.textColor = ft.Color;
+                    GUI.Label(rect, ft.Text, style);
+                }
             }
         }
+#endif
 
         private void HandleIceDestroyed(IceDestroyedEvent e)
         {
@@ -646,26 +586,20 @@ namespace Icebreaker.Gameplay
                 new IceDefinition(IceTier.T3, "심빙", 360f, 700L),
             };
 
-            // Inspector에서 설정한 가중치를 사용합니다 (0인 것은 제외)
-            var weightList = new List<IceSpawnWeight>();
-            if (sandboxSettings.weightT1 > 0) weightList.Add(new IceSpawnWeight(IceTier.T1, sandboxSettings.weightT1));
-            if (sandboxSettings.weightT2 > 0) weightList.Add(new IceSpawnWeight(IceTier.T2, sandboxSettings.weightT2));
-            if (sandboxSettings.weightT3 > 0) weightList.Add(new IceSpawnWeight(IceTier.T3, sandboxSettings.weightT3));
-
-            if (weightList.Count == 0)
+            var weightList = new List<IceSpawnWeight>
             {
-                weightList.Add(new IceSpawnWeight(IceTier.T1, 100));
-            }
+                new IceSpawnWeight(IceTier.T1, 100)
+            };
 
             var specialDefinitions = new[]
             {
-                new SpecialIceDefinition(SpecialIceType.Crystal, sandboxSettings.crystalSpawnProb, IceTier.T2, 1.0f, 4.0f),
-                new SpecialIceDefinition(SpecialIceType.Crack, sandboxSettings.crackSpawnProb, IceTier.T1, 0.6f, 1.0f),
+                new SpecialIceDefinition(SpecialIceType.Crystal, 0.025f, IceTier.T2, 1.0f, 4.0f),
+                new SpecialIceDefinition(SpecialIceType.Crack, 0.02f, IceTier.T1, 0.6f, 1.0f),
             };
 
             return new IceFieldConfig(
                 maxActiveIceCount: 20,
-                maxSpecialIceCount: sandboxSettings.maxSpecialIce,
+                maxSpecialIceCount: 2,
                 hitRadiusReferencePixels: 56f,
                 minimumSpawnDistanceReferencePixels: 120f,
                 respawnProtectionSeconds: 0.25f,
@@ -762,32 +696,4 @@ namespace Icebreaker.Gameplay
     }
 }
 
-#if UNITY_EDITOR
-namespace Icebreaker.Gameplay.Editor
-{
-    using UnityEditor;
 
-    [CustomEditor(typeof(IceFieldView))]
-    public sealed class IceFieldViewEditor : UnityEditor.Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            DrawDefaultInspector();
-
-            EditorGUILayout.Space();
-            if (GUILayout.Button("기획 수치로 원상 복구 (Reset to Spec)", GUILayout.Height(30)))
-            {
-                var view = (IceFieldView)target;
-                Undo.RecordObject(view, "Reset Sandbox Settings to Spec");
-                view.ResetToSpecDefaults();
-                
-                // If in play mode, we might want to restart the stage to apply the new settings immediately
-                if (Application.isPlaying)
-                {
-                    // No debug log in production code
-                }
-            }
-        }
-    }
-}
-#endif
