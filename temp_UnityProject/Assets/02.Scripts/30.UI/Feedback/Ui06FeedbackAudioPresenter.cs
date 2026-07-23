@@ -423,14 +423,12 @@ namespace Icebreaker.UI.Feedback
             MaximumCharge = ChargeSegmentCount;
             RenderSupportState(SupportFeedbackState.Idle);
             audioController?.ResetStage();
-            audioController?.PlayCue(Ui06AudioCue.StageStart, ui: true);
         }
 
         private void HandleStageEnded(StageEnded payload)
         {
             CurrentCharge = 0;
             RenderSupportState(SupportFeedbackState.Idle);
-            audioController?.PlayCue(Ui06AudioCue.StageEnd, ui: true);
         }
 
         private void HandleSettlementReady(SettlementReady payload) =>

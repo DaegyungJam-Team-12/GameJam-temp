@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7ee8a30bd0e4ccda3cf5e537a3e5cc7, type: 3}
   m_Name: AudioCueCatalog
   m_EditorClassIdentifier: Assembly-CSharp::Icebreaker.UI.Feedback.AudioCueCatalog
-  stageMusicLoop: {fileID: 8300000, guid: 40a3135d189270d4bb25cb65c91c9f57, type: 3}
+  stageMusicLoop: {fileID: 8300000, guid: 4da55a620fd142978affef982b5545a9, type: 3}
   stageAmbienceLoop: {fileID: 0}
   hit: {fileID: 8300000, guid: f4221821318ed004a9cd8e940e082f1f, type: 3}
   tier1Destroy: {fileID: 8300000, guid: f4221821318ed004a9cd8e940e082f1f, type: 3}

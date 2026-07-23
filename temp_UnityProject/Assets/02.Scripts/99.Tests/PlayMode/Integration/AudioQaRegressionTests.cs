@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Icebreaker.Shared.Events;
+using Icebreaker.Shared.Progression;
 using Icebreaker.Shared.State;
 using NUnit.Framework;
 using UnityEditor;
@@ -22,6 +24,8 @@ namespace Icebreaker.Integration.Tests
         private const string PreviewPrefabPath =
             "Assets/03.Prefabs/30.UI/Feedback/Preview/UI_FeedbackAudio_Preview.prefab";
         private const string FinalScenePath = "Assets/01.Scenes/minjun.unity";
+        private const string IcebreakingMusicPath =
+            "Assets/06.Sounds/BGM/nojisuma-on_the_way_home-468318.mp3";
         private const string PresenterTypeName =
             "Icebreaker.UI.Feedback.Ui06FeedbackAudioPresenter";
         private const string SampleSourceTypeName =
@@ -96,6 +100,22 @@ namespace Icebreaker.Integration.Tests
             var catalog = serialized.FindProperty("audioCueCatalog")?.objectReferenceValue;
             Assert.That(catalog, Is.Not.Null);
             var catalogSerialized = new SerializedObject(catalog);
+            var stageMusic = catalogSerialized.FindProperty("stageMusicLoop")?.objectReferenceValue as AudioClip;
+            Assert.That(stageMusic, Is.Not.Null);
+            Assert.That(AssetDatabase.GetAssetPath(stageMusic), Is.EqualTo(IcebreakingMusicPath));
+
+            var musicImporter = AssetImporter.GetAtPath(IcebreakingMusicPath) as AudioImporter;
+            Assert.That(musicImporter, Is.Not.Null);
+            Assert.That(musicImporter!.defaultSampleSettings.compressionFormat, Is.EqualTo(AudioCompressionFormat.Vorbis));
+            Assert.That(musicImporter.defaultSampleSettings.loadType, Is.EqualTo(AudioClipLoadType.Streaming));
+            Assert.That(musicImporter.loadInBackground, Is.True);
+
+            var musicSource = serialized.FindProperty("musicAudioSource")?.objectReferenceValue as AudioSource;
+            Assert.That(musicSource, Is.Not.Null);
+            Assert.That(musicSource!.loop, Is.True);
+            Assert.That(musicSource.spatialBlend, Is.Zero);
+            Assert.That(musicSource.volume, Is.EqualTo(0.316f).Within(0.001f));
+
             foreach (var cueField in new[]
                      {
                          "stageMusicLoop",
@@ -206,6 +226,53 @@ namespace Icebreaker.Integration.Tests
             Invoke(sample, "ShowTwentyDestroyBurst");
             Assert.That(ReadInt(presenter, "PeakDestroyVoices"), Is.EqualTo(8));
             Assert.That(ReadInt(presenter, "ChainRushSoundCount"), Is.EqualTo(1));
+        }
+
+        [UnityTest]
+        public IEnumerator StageStart_DoesNotReplayTheCountdownCue()
+        {
+            var instance = InstantiatePreview();
+            yield return null;
+
+            AudioListener.volume = 1f;
+            var presenter = RequireComponent(instance, PresenterTypeName);
+            Invoke(presenter, "PlayCountdown");
+            Assert.That(ReadInt(presenter, "CountdownSoundCount"), Is.EqualTo(1));
+
+            InvokeNonPublic(
+                presenter,
+                "HandleStageStarted",
+                new StageStarted(1, "2026-07-24T00:00:00.0000000+00:00", 60f));
+
+            Assert.That(ReadInt(presenter, "CountdownSoundCount"), Is.EqualTo(1));
+            Assert.That(ReadString(presenter, "LastAudioCue"), Is.EqualTo("Countdown"));
+        }
+
+        [UnityTest]
+        public IEnumerator StageEnd_DoesNotReplayTheSettlementCue()
+        {
+            var instance = InstantiatePreview();
+            yield return null;
+
+            AudioListener.volume = 1f;
+            var presenter = RequireComponent(instance, PresenterTypeName);
+            Invoke(presenter, "PlayCountdown");
+            InvokeNonPublic(
+                presenter,
+                "HandleStageEnded",
+                new StageEnded(1, "2026-07-24T00:01:00.0000000+00:00"));
+
+            Assert.That(ReadString(presenter, "LastAudioCue"), Is.EqualTo("Countdown"));
+
+            InvokeNonPublic(
+                presenter,
+                "HandleSettlementReady",
+                new SettlementReady(
+                    1,
+                    new SettlementSummary(100, 1, 1, false, null)));
+
+            Assert.That(ReadInt(presenter, "SettlementSoundCount"), Is.EqualTo(1));
+            Assert.That(ReadString(presenter, "LastAudioCue"), Is.EqualTo("Settlement"));
         }
 
         [Test]
@@ -334,6 +401,24 @@ namespace Icebreaker.Integration.Tests
                 BindingFlags.Instance | BindingFlags.Public);
             Assert.That(property, Is.Not.Null, $"Property '{propertyName}' was not found.");
             return (int)property!.GetValue(component)!;
+        }
+
+        private static string ReadString(Component component, string propertyName)
+        {
+            var property = component.GetType().GetProperty(
+                propertyName,
+                BindingFlags.Instance | BindingFlags.Public);
+            Assert.That(property, Is.Not.Null, $"Property '{propertyName}' was not found.");
+            return (string)property!.GetValue(component)!;
+        }
+
+        private static object? InvokeNonPublic(Component component, string methodName, params object[] arguments)
+        {
+            var method = component.GetType().GetMethod(
+                methodName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(method, Is.Not.Null, $"Method '{methodName}' was not found.");
+            return method!.Invoke(component, arguments);
         }
 
         private static bool IsPreviewOrTestType(string typeName) =>
