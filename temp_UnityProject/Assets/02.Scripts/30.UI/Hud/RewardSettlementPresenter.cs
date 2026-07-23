@@ -41,6 +41,7 @@ namespace Icebreaker.UI.Hud
         [SerializeField] private GameObject? settlementRoot;
         [SerializeField] private CanvasGroup? settlementCanvasGroup;
         [SerializeField] private TMP_Text? earnedFundsText;
+        [SerializeField] private Image? voyageProgressFill;
         [SerializeField] private TMP_Text? destroyedCountText;
         [SerializeField] private TMP_Text? destinationProgressText;
         [SerializeField] private TMP_Text? appliedStatusText;
@@ -430,7 +431,7 @@ namespace Icebreaker.UI.Hud
         {
             if (earnedFundsText != null)
             {
-                earnedFundsText.text = $"획득 정비 자금 +{summary.EarnedFunds.ToString("N0", CultureInfo.InvariantCulture)}";
+                earnedFundsText.text = $"총 획득 보상 +{summary.EarnedFunds.ToString("N0", CultureInfo.InvariantCulture)}";
             }
 
             if (destroyedCountText != null)
@@ -440,7 +441,16 @@ namespace Icebreaker.UI.Hud
 
             if (destinationProgressText != null)
             {
-                destinationProgressText.text = $"목적지 진행 +{summary.DestinationProgressGain.ToString("N0", CultureInfo.InvariantCulture)}";
+                var state = stateSource?.CurrentState;
+                var progress = state?.DestinationProgress ?? 0;
+                var target = state?.DestinationTarget ?? 0;
+                destinationProgressText.text = $"운항 현황 {progress.ToString("N0", CultureInfo.InvariantCulture)} / {target.ToString("N0", CultureInfo.InvariantCulture)}";
+                if (voyageProgressFill != null)
+                {
+                    voyageProgressFill.fillAmount = target > 0
+                        ? Mathf.Clamp01((float)progress / target)
+                        : 0f;
+                }
             }
 
             if (appliedStatusText != null)
