@@ -46,6 +46,9 @@ namespace Icebreaker.Integration
         private bool shutdownFlushed;
         private Int02InputController? inputController;
 
+        [Header("Support Equipment")]
+        [SerializeField] private GameObject? supportFeedbackCanvas;
+
         public event Action<DamageAppliedEvent> DamageApplied = delegate { };
 
         public event Action<SupportChargeChangedEvent> SupportChargeChanged = delegate { };
@@ -668,6 +671,16 @@ namespace Icebreaker.Integration
             {
                 iceFieldView.enabled = state.Phase == GamePhase.Countdown ||
                                        state.Phase == GamePhase.Playing;
+            }
+
+            if (supportFeedbackCanvas != null)
+            {
+                var showSupportFeedback = state.Phase == GamePhase.Countdown ||
+                                          state.Phase == GamePhase.Playing;
+                if (supportFeedbackCanvas.activeSelf != showSupportFeedback)
+                {
+                    supportFeedbackCanvas.SetActive(showSupportFeedback);
+                }
             }
         }
 
