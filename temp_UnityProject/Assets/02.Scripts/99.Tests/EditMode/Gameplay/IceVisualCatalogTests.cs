@@ -1,7 +1,11 @@
 #nullable enable
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Icebreaker.Shared.Combat;
+using Icebreaker.Shared.State;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -194,7 +198,7 @@ namespace Icebreaker.Gameplay.Tests
                 Assert.That(button, Is.Not.Null, mapping.Item1);
                 Assert.That(button!.targetGraphic, Is.SameAs(hitImage), mapping.Item1);
                 AssertTextChild(hitArea!, "Label");
-                Assert.That(hitArea.Find("Visual"), Is.Null, mapping.Item1);
+                Assert.That(hitArea!.Find("Visual"), Is.Null, mapping.Item1);
             }
 
             var settings = hudRoot.Find("SettingsHitArea");
@@ -204,7 +208,7 @@ namespace Icebreaker.Gameplay.Tests
             Assert.That(settingsButton, Is.Not.Null);
             Assert.That(settingsButton!.targetGraphic, Is.SameAs(settingsImage));
             AssertTextChild(settings!, "Label");
-            Assert.That(settings.Find("Visual"), Is.Null);
+            Assert.That(settings!.Find("Visual"), Is.Null);
 
             var progressTrack = hudRoot.Find("DestinationArea/ProgressTrack")?.GetComponent<Image>();
             var progressFill =
@@ -213,6 +217,12 @@ namespace Icebreaker.Gameplay.Tests
             Assert.That(progressTrack!.color.a, Is.GreaterThan(0f));
             Assert.That(progressFill, Is.Not.Null);
             Assert.That(progressFill!.color.a, Is.GreaterThan(0f));
+            Assert.That(progressFill.type, Is.EqualTo(Image.Type.Filled));
+            Assert.That(progressFill.fillMethod, Is.EqualTo(Image.FillMethod.Horizontal));
+            Assert.That(
+                progressFill.sprite,
+                Is.Not.Null,
+                "A Filled Image without a sprite renders at full width regardless of fillAmount.");
 
             var presenter = prefab
                 .GetComponents<MonoBehaviour>()
@@ -223,6 +233,108 @@ namespace Icebreaker.Gameplay.Tests
             Assert.That(serialized.FindProperty("panelGraphics")!.arraySize, Is.EqualTo(0));
             Assert.That(serialized.FindProperty("accentGraphics")!.arraySize, Is.EqualTo(0));
             Assert.That(serialized.FindProperty("themedTexts")!.arraySize, Is.GreaterThan(0));
+        }
+
+        [TestCase(0, 120, 0f, "0/120")]
+        [TestCase(37, 120, 37f / 120f, "37/120")]
+        [TestCase(120, 120, 1f, "120/120")]
+        [TestCase(0, 40, 0f, "0/40")]
+        [TestCase(10, 40, 0.25f, "10/40")]
+        [TestCase(40, 40, 1f, "40/40")]
+        public void LauncherPresenter_RendersTextAndFillFromSameProgressState(
+            int progress,
+            int target,
+            float expectedFill,
+            string expectedText)
+        {
+            var root = new GameObject("LauncherPresenterTest");
+            root.SetActive(false);
+            try
+            {
+                var presenterType = FindType("Icebreaker.UI.Hud.LauncherHudPresenter");
+                var presenter = root.AddComponent(presenterType);
+
+                var fillObject = new GameObject(
+                    "ProgressFill",
+                    typeof(RectTransform),
+                    typeof(CanvasRenderer),
+                    typeof(Image));
+                fillObject.transform.SetParent(root.transform, false);
+                var fill = fillObject.GetComponent<Image>();
+
+                var textType = FindType("TMPro.TextMeshProUGUI");
+                var textObject = new GameObject(
+                    "ProgressText",
+                    typeof(RectTransform),
+                    typeof(CanvasRenderer));
+                textObject.transform.SetParent(root.transform, false);
+                var text = textObject.AddComponent(textType);
+
+                presenterType
+                    .GetField("destinationProgressFill", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .SetValue(presenter, fill);
+                presenterType
+                    .GetField("destinationProgressText", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .SetValue(presenter, text);
+
+                var state = new GameState(
+                    GamePhase.Traveling,
+                    remainingSeconds: 0d,
+                    isPaused: false,
+                    funds: 0L,
+                    currentDestinationId: "destination-test",
+                    destinationProgress: progress,
+                    destinationTarget: target,
+                    maintenanceLevels: Array.Empty<MaintenanceLevel>(),
+                    firstDestroyShown: true,
+                    canStartStage: false);
+
+                presenterType
+                    .GetMethod("Render", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .Invoke(presenter, new object[] { state });
+
+                Assert.That(fill.fillAmount, Is.EqualTo(expectedFill).Within(0.0001f));
+                Assert.That(textType.GetProperty("text")!.GetValue(text), Is.EqualTo(expectedText));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(root);
+            }
+        }
+
+        [TestCase(0f)]
+        [TestCase(37f / 120f)]
+        [TestCase(1f)]
+        public void LauncherProgressFill_GeneratesExpectedMeshWidth(float fillAmount)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(LauncherPrefabPath);
+            var source = prefab!.transform
+                .Find("HudRoot/DestinationArea/ProgressTrack/ProgressFill")
+                .GetComponent<Image>();
+            var fillObject = new GameObject(
+                "ProgressFillMeshTest",
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(Image));
+            try
+            {
+                var rect = fillObject.GetComponent<RectTransform>();
+                rect.sizeDelta = new Vector2(184f, 12f);
+                var fill = fillObject.GetComponent<Image>();
+                fill.sprite = source.sprite;
+                fill.type = source.type;
+                fill.fillMethod = source.fillMethod;
+                fill.fillOrigin = source.fillOrigin;
+
+                var fullWidth = GetRenderedWidth(fill, 1f);
+                var renderedWidth = GetRenderedWidth(fill, fillAmount);
+                Assert.That(fullWidth, Is.GreaterThan(183f));
+                Assert.That(renderedWidth, Is.EqualTo(fullWidth * fillAmount).Within(0.01f));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(fillObject);
+            }
         }
 
         [Test]
@@ -293,6 +405,37 @@ namespace Icebreaker.Gameplay.Tests
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             Assert.That(importer, Is.Not.Null, path);
             return importer!;
+        }
+
+        private static Type FindType(string fullName)
+        {
+            return AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Select(assembly => assembly.GetType(fullName, throwOnError: false))
+                .First(type => type != null)!;
+        }
+
+        private static float GetRenderedWidth(Image fill, float fillAmount)
+        {
+            fill.fillAmount = fillAmount;
+            using var vertices = new VertexHelper();
+            typeof(Image)
+                .GetMethod(
+                    "OnPopulateMesh",
+                    BindingFlags.Instance | BindingFlags.NonPublic,
+                    binder: null,
+                    types: new[] { typeof(VertexHelper) },
+                    modifiers: null)!
+                .Invoke(fill, new object[] { vertices });
+            if (vertices.currentVertCount == 0)
+            {
+                return 0f;
+            }
+
+            var stream = new List<UIVertex>();
+            vertices.GetUIVertexStream(stream);
+            return stream.Max(vertex => vertex.position.x) -
+                   stream.Min(vertex => vertex.position.x);
         }
 
         private static void AssertFullScreenUiImporter(string path)
