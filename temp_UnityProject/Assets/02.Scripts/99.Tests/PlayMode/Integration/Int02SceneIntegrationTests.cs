@@ -227,6 +227,7 @@ namespace Icebreaker.Integration.Tests
             Assert.That(
                 destination.GetType().GetProperty("TargetProgress")!.GetValue(destination),
                 Is.EqualTo(120));
+            AssertLauncherProgress(orchestrator, orchestratorType, expectedProgress: 0, expectedTarget: 120);
         }
 
         [UnityTest]
@@ -378,6 +379,7 @@ namespace Icebreaker.Integration.Tests
             yield return WaitForPhase(orchestrator, orchestratorType, "Settlement", 0.5f);
             yield return WaitForPhase(orchestrator, orchestratorType, "Traveling", 5f);
             yield return WaitForPhase(orchestrator, orchestratorType, "Ready", 31f);
+            AssertLauncherProgress(orchestrator, orchestratorType, expectedProgress: 1, expectedTarget: 120);
 
             ClickStartButtonThroughEventSystem();
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("Countdown"));
@@ -393,6 +395,7 @@ namespace Icebreaker.Integration.Tests
             yield return WaitForPhase(orchestrator, orchestratorType, "StageEnding", 1f);
             yield return WaitForPhase(orchestrator, orchestratorType, "Settlement", 1.5f);
             yield return WaitForPhase(orchestrator, orchestratorType, "Traveling", 5f);
+            AssertLauncherProgress(orchestrator, orchestratorType, expectedProgress: 2, expectedTarget: 120);
 
             EditorSceneManager.LoadSceneInPlayMode(
                 Int02ScenePath,
@@ -402,6 +405,7 @@ namespace Icebreaker.Integration.Tests
             orchestrator = FindOrchestrator(orchestratorType);
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("Traveling"));
             AssertState(orchestrator, orchestratorType, expectedFunds: 20, expectedProgress: 2);
+            AssertLauncherProgress(orchestrator, orchestratorType, expectedProgress: 2, expectedTarget: 120);
 
             var settlementObject = GameObject.Find("INT02_RewardSettlement");
             var settlementType = FindType("Icebreaker.UI.Hud.RewardSettlementPresenter");
@@ -459,6 +463,38 @@ namespace Icebreaker.Integration.Tests
         {
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.EqualTo(expectedFunds));
             Assert.That(GetStateValue(orchestrator, orchestratorType, "DestinationProgress"), Is.EqualTo(expectedProgress));
+        }
+
+        private static void AssertLauncherProgress(
+            Component orchestrator,
+            Type orchestratorType,
+            int expectedProgress,
+            int expectedTarget)
+        {
+            Assert.That(
+                GetStateValue(orchestrator, orchestratorType, "DestinationProgress"),
+                Is.EqualTo(expectedProgress));
+            Assert.That(
+                GetStateValue(orchestrator, orchestratorType, "DestinationTarget"),
+                Is.EqualTo(expectedTarget));
+
+            var launcherObject = GameObject.Find("INT02_LauncherHud");
+            Assert.That(launcherObject, Is.Not.Null);
+            var launcherType = FindType("Icebreaker.UI.Hud.LauncherHudPresenter");
+            var launcher = launcherObject!.GetComponent(launcherType);
+            var fill = (Image)launcherType
+                .GetField("destinationProgressFill", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(launcher)!;
+            var text = (TMPro.TMP_Text)launcherType
+                .GetField("destinationProgressText", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(launcher)!;
+
+            Assert.That(fill.sprite, Is.Not.Null);
+            Assert.That(fill.type, Is.EqualTo(Image.Type.Filled));
+            Assert.That(
+                fill.fillAmount,
+                Is.EqualTo((float)expectedProgress / expectedTarget).Within(0.0001f));
+            Assert.That(text.text, Is.EqualTo($"{expectedProgress}/{expectedTarget}"));
         }
 
         private static void ClickStartButtonThroughEventSystem()

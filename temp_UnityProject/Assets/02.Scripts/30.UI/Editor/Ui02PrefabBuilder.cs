@@ -131,6 +131,7 @@ namespace Icebreaker.UI.Editor
                     "startButton",
                     "settingsButton"
                 }, errors);
+                ValidateLauncherProgressFill(launcher, errors);
                 ProductionUiGuard.CollectErrors(launcher, errors);
             }
 
@@ -244,6 +245,8 @@ namespace Icebreaker.UI.Editor
                 var progressTrack = CreateTopLeftPanel("ProgressTrack", destinationArea.transform, 8f, 34f, 184f, 12f, new Color(0.02f, 0.07f, 0.12f, 1f));
                 progressTrack.raycastTarget = false;
                 var progressFill = CreateStretchPanel("ProgressFill", progressTrack.transform, theme.Success, raycastTarget: false);
+                progressFill.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd") ??
+                                      throw new InvalidOperationException("Unity UI fill sprite is missing.");
                 progressFill.type = Image.Type.Filled;
                 progressFill.fillMethod = Image.FillMethod.Horizontal;
                 progressFill.fillOrigin = 0;
@@ -606,6 +609,21 @@ namespace Icebreaker.UI.Editor
             if (stateSource != null)
             {
                 errors.Add($"{prefab.name} must not serialize a preview state source.");
+            }
+        }
+
+        private static void ValidateLauncherProgressFill(GameObject prefab, List<string> errors)
+        {
+            var fill = prefab.transform
+                .Find("HudRoot/DestinationArea/ProgressTrack/ProgressFill")
+                ?.GetComponent<Image>();
+            if (fill == null ||
+                fill.sprite == null ||
+                fill.type != Image.Type.Filled ||
+                fill.fillMethod != Image.FillMethod.Horizontal)
+            {
+                errors.Add(
+                    $"{prefab.name} destination progress fill must use a sprite-backed horizontal Filled Image.");
             }
         }
 
