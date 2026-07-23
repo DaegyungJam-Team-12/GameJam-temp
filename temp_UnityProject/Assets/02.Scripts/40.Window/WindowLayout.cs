@@ -69,11 +69,13 @@ namespace Icebreaker.Window
         private const float EdgeProximityRatio = 0.2f;
 
         // Index 0 = Default, 1 = Large, 2 = ExtraLarge (WindowSizePreset order).
+        // Heights match the launcher tab-bar art aspect (1600x315 -> width x 0.196875) so the
+        // ship/box/ice decorations above the button row are shown without vertical distortion.
         private static readonly PixelSize[] CollapsedSizesByPreset =
         {
-            new(800, 72),
-            new(1000, 90),
-            new(1200, 108)
+            new(800, 158),
+            new(1000, 197),
+            new(1200, 236)
         };
 
         private static readonly PixelSize[] ExpandedSizesByPreset =

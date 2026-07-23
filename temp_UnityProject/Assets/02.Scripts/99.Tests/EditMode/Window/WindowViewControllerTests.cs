@@ -39,9 +39,9 @@ namespace Icebreaker.Window.Tests
                 new PixelRect(0, 0, 1536, 824));
 
             Assert.That(nativeWindow.ClientSize.Width, Is.EqualTo(800));
-            Assert.That(nativeWindow.ClientSize.Height, Is.EqualTo(72));
+            Assert.That(nativeWindow.ClientSize.Height, Is.EqualTo(158));
             Assert.That(nativeWindow.Position.X, Is.EqualTo(368));
-            Assert.That(nativeWindow.Position.Y, Is.EqualTo(744));
+            Assert.That(nativeWindow.Position.Y, Is.EqualTo(658));
             Assert.That(nativeWindow.IsTopmost, Is.True);
             Assert.That(nativeWindow.ClientSizeSetCount, Is.EqualTo(1));
             Assert.That(nativeWindow.PositionSetCount, Is.EqualTo(1));
