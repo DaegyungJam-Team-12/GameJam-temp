@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7ee8a30bd0e4ccda3cf5e537a3e5cc7, type: 3}
+  m_Name: AudioCueCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::Icebreaker.UI.Feedback.AudioCueCatalog
+  stageMusicLoop: {fileID: 8300000, guid: 40a3135d189270d4bb25cb65c91c9f57, type: 3}
+  stageAmbienceLoop: {fileID: 0}
+  hit: {fileID: 8300000, guid: f4221821318ed004a9cd8e940e082f1f, type: 3}
+  tier1Destroy: {fileID: 8300000, guid: f4221821318ed004a9cd8e940e082f1f, type: 3}
+  tier2Destroy: {fileID: 8300000, guid: d58da0cd12cbc244b969024babe084e8, type: 3}
+  tier3Destroy: {fileID: 8300000, guid: d58da0cd12cbc244b969024babe084e8, type: 3}
+  critical: {fileID: 8300000, guid: eeafc3c2880b15245a7041f57aaba9ac, type: 3}
+  crystal: {fileID: 8300000, guid: 506de8e13cf13db459ec171092dd06b3, type: 3}
+  crack: {fileID: 8300000, guid: 3f570bb9bbbfcda4d8eeffdc24c2148f, type: 3}
+  chain: {fileID: 8300000, guid: 3f570bb9bbbfcda4d8eeffdc24c2148f, type: 3}
+  chainRush: {fileID: 8300000, guid: 506de8e13cf13db459ec171092dd06b3, type: 3}
+  chargeReady: {fileID: 8300000, guid: b5e69479e6e067a48a2a9974769b63aa, type: 3}
+  supportFire: {fileID: 8300000, guid: d58da0cd12cbc244b969024babe084e8, type: 3}
+  button: {fileID: 8300000, guid: 842f1f9381d52864fba7815d040f15ce, type: 3}
+  countdown: {fileID: 8300000, guid: b5e69479e6e067a48a2a9974769b63aa, type: 3}
+  stageStart: {fileID: 8300000, guid: b5e69479e6e067a48a2a9974769b63aa, type: 3}
+  stageEnd: {fileID: 8300000, guid: 2a363ce6a10ad274a965ca7794db23e1, type: 3}
+  settlement: {fileID: 8300000, guid: 2a363ce6a10ad274a965ca7794db23e1, type: 3}
+  purchase: {fileID: 8300000, guid: 9b295b83db3285a41b99966bdda5ffd1, type: 3}
+  arrival: {fileID: 8300000, guid: e4df44a71d8a8a34980260d56ab8e453, type: 3}

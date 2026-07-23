@@ -16,8 +16,11 @@ namespace Icebreaker.UI.Editor
         private const string ThemePath = "Assets/04.Images/30.UI/Theme/UiTheme.asset";
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Feedback";
         private const string PrefabPath = PrefabFolder + "/UI_FeedbackAudio.prefab";
+        private const string PreviewFolder = PrefabFolder + "/Preview";
+        private const string PreviewPrefabPath = PreviewFolder + "/UI_FeedbackAudio_Preview.prefab";
+        private const string AudioCueCatalogPath = "Assets/06.Sounds/AudioCueCatalog.asset";
         private const string SfxFolder = "Assets/06.Sounds/SFX";
-        private const string AmbientLoopPath = "Assets/06.Sounds/BGM/wind_sea_loop.mp3";
+        private const string StageMusicLoopPath = "Assets/06.Sounds/BGM/wind_sea_loop.mp3";
         private const string LightBreakPath = SfxFolder + "/light_break.mp3";
         private const string HeavyBreakPath = SfxFolder + "/heavy_break.mp3";
         private const string CrackPath = SfxFolder + "/ice_cracking.mp3";
@@ -33,11 +36,13 @@ namespace Icebreaker.UI.Editor
         public static void Build()
         {
             EnsureAssetFolder(PrefabFolder);
+            EnsureAssetFolder(PreviewFolder);
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath) ??
                 throw new InvalidOperationException($"UI theme was not found at {ThemePath}.");
             var settings = TMP_Settings.LoadDefaultSettings();
             var font = theme.CommonFont ?? (settings != null ? TMP_Settings.defaultFontAsset : null) ??
                 throw new InvalidOperationException("TMP default font is missing. Import TMP Essentials first.");
+            var catalog = BuildAudioCueCatalog();
 
             var root = CreateCanvasRoot();
             try
@@ -48,32 +53,42 @@ namespace Icebreaker.UI.Editor
                 var uiAudio = root.AddComponent<AudioSource>();
                 ConfigureAudioSource(gameplayAudio, 0.86f);
                 ConfigureAudioSource(uiAudio, 0.68f);
+                var musicRoot = new GameObject("MusicAudio", typeof(AudioSource));
+                musicRoot.transform.SetParent(root.transform, false);
+                var musicAudio = musicRoot.GetComponent<AudioSource>();
+                ConfigureLoopAudioSource(musicAudio, 0.32f);
                 var ambientRoot = new GameObject("AmbientAudio", typeof(AudioSource));
                 ambientRoot.transform.SetParent(root.transform, false);
                 var ambientAudio = ambientRoot.GetComponent<AudioSource>();
-                ConfigureAmbientAudioSource(
-                    ambientAudio,
-                    LoadRequiredAudioClip(AmbientLoopPath),
-                    0.34f);
+                ConfigureLoopAudioSource(ambientAudio, 0.22f);
 
                 var feedbackLayer = CreateStretchRect("FeedbackLayer", root.transform);
                 var cueTemplate = CreateCueTemplate(feedbackLayer, font, theme);
                 var support = CreateSupportDevice(root.transform, font, theme);
                 var sampleControls = CreateSampleControls(root.transform, font, theme, out var sampleButton);
-                sampleControls.SetActive(false);
 
                 ConfigurePresenter(
                     presenter,
                     source,
+                    catalog,
                     theme,
                     support,
                     feedbackLayer,
                     cueTemplate,
                     gameplayAudio,
                     uiAudio,
+                    musicAudio,
                     ambientAudio,
-                    sampleButton);
+                    sampleButton,
+                    allowProceduralFallback: true);
 
+                root.name = "UI_FeedbackAudio_Preview";
+                PrefabUtility.SaveAsPrefabAsset(root, PreviewPrefabPath);
+
+                ConfigureProductionPresenter(presenter);
+                UnityEngine.Object.DestroyImmediate(sampleControls);
+                UnityEngine.Object.DestroyImmediate(source);
+                root.name = "UI_FeedbackAudio";
                 PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
             }
             finally
@@ -84,7 +99,7 @@ namespace Icebreaker.UI.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Validate();
-            Debug.Log("[UI-06] Feedback and audio prefab was rebuilt and validated.");
+            Debug.Log("[UI-06] Production feedback/audio prefab, preview prefab, and cue catalog were rebuilt and validated.");
         }
 
         [MenuItem("ICEBREAKER/UI/Validate UI-06 Feedback Audio")]
@@ -99,7 +114,17 @@ namespace Icebreaker.UI.Editor
             else
             {
                 ValidateStructure(prefab, errors);
-                ValidateBehavior(prefab, errors);
+            }
+
+            var previewPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PreviewPrefabPath);
+            if (previewPrefab == null)
+            {
+                errors.Add($"Missing preview prefab: {PreviewPrefabPath}");
+            }
+            else
+            {
+                ValidatePreviewStructure(previewPrefab, errors);
+                ValidateBehavior(previewPrefab, errors);
             }
 
             if (errors.Count > 0)
@@ -107,7 +132,7 @@ namespace Icebreaker.UI.Editor
                 throw new InvalidOperationException("[UI-06] Validation failed:\n- " + string.Join("\n- ", errors));
             }
 
-            Debug.Log("[UI-06] Validation passed: manual charge, distinct feedback, muted first run, voice cap, and one-shot settlement audio.");
+            Debug.Log("[UI-06] Validation passed: production isolation, phase audio, manual charge, muted first run, voice cap, and deduplicated progression audio.");
         }
 
         private static void ValidateStructure(GameObject prefab, List<string> errors)
@@ -126,18 +151,23 @@ namespace Icebreaker.UI.Editor
 
             var presenter = prefab.GetComponent<Ui06FeedbackAudioPresenter>();
             var source = prefab.GetComponent<Ui06FeedbackSampleSource>();
-            if (presenter == null || source == null)
+            if (presenter == null)
             {
-                errors.Add("UI-06 presenter or sample source is missing.");
+                errors.Add("UI-06 presenter is missing.");
                 return;
+            }
+
+            if (source != null || prefab.GetComponentInChildren<Ui06FeedbackSampleSource>(true) != null)
+            {
+                errors.Add("Production UI_FeedbackAudio must not contain a sample source.");
             }
 
             var serialized = new SerializedObject(presenter);
             var requiredReferences = new[]
             {
-                "combatSourceBehaviour", "progressionSourceBehaviour", "theme", "supportCore", "supportStateText",
+                "audioCueCatalog", "theme", "supportCore", "supportStateText",
                 "muzzleGlow", "supportTrail", "feedbackLayer", "feedbackCueTemplate", "gameplayAudioSource",
-                "uiAudioSource", "ambientAudioSource", "lightBreakClip", "heavyBreakClip", "crackClip",
+                "uiAudioSource", "musicAudioSource", "ambientAudioSource", "lightBreakClip", "heavyBreakClip", "crackClip",
                 "crystalDestroyClip", "criticalHitClip", "buttonClickClip", "purchaseSuccessClip",
                 "countdownClip", "settlementCompleteClip", "arrivalHornClip", "ambientLoopClip"
             };
@@ -161,19 +191,25 @@ namespace Icebreaker.UI.Editor
                 errors.Add("FeedbackCueTemplate must be hidden and cloned for live events.");
             }
 
-            if (prefab.transform.Find("SampleControls")?.gameObject.activeSelf != false)
+            if (prefab.transform.Find("SampleControls") != null)
             {
-                errors.Add("SampleControls must remain hidden in the shipping prefab.");
+                errors.Add("Production UI_FeedbackAudio must not contain preview controls.");
             }
 
-            var audioSources = prefab.GetComponents<AudioSource>();
-            if (audioSources.Length != 2)
+            var audioSources = prefab.GetComponentsInChildren<AudioSource>(true);
+            if (audioSources.Length != 4)
+            {
+                errors.Add("UI-06 requires gameplay, UI, music, and ambience AudioSources.");
+            }
+
+            var oneShotSources = prefab.GetComponents<AudioSource>();
+            if (oneShotSources.Length != 2)
             {
                 errors.Add("UI-06 requires separate gameplay and UI AudioSources.");
             }
             else
             {
-                foreach (var audioSource in audioSources)
+                foreach (var audioSource in oneShotSources)
                 {
                     if (audioSource.playOnAwake || audioSource.loop || !Mathf.Approximately(audioSource.spatialBlend, 0f))
                     {
@@ -182,11 +218,17 @@ namespace Icebreaker.UI.Editor
                 }
             }
 
+            var musicAudio = prefab.transform.Find("MusicAudio")?.GetComponent<AudioSource>();
             var ambientAudio = prefab.transform.Find("AmbientAudio")?.GetComponent<AudioSource>();
-            if (ambientAudio == null || ambientAudio.playOnAwake || !ambientAudio.loop ||
-                !Mathf.Approximately(ambientAudio.spatialBlend, 0f) || ambientAudio.clip == null)
+            if (!IsSilentLoopSource(musicAudio) || !IsSilentLoopSource(ambientAudio))
             {
-                errors.Add("UI-06 ambient audio must be an assigned 2D loop disabled on awake.");
+                errors.Add("UI-06 music and ambience sources must be unassigned 2D loops disabled on awake.");
+            }
+
+            var fallbackProperty = serialized.FindProperty("allowProceduralFallback");
+            if (fallbackProperty == null || fallbackProperty.boolValue)
+            {
+                errors.Add("Production UI_FeedbackAudio must disable procedural fallback tones.");
             }
 
             if (!Mathf.Approximately(UiAudioSettings.DefaultMasterVolume, 0f))
@@ -194,6 +236,26 @@ namespace Icebreaker.UI.Editor
                 errors.Add("The first-run master volume must default to muted.");
             }
         }
+
+        private static void ValidatePreviewStructure(GameObject prefab, List<string> errors)
+        {
+            if (prefab.GetComponent<Ui06FeedbackSampleSource>() == null)
+            {
+                errors.Add("The UI-06 preview prefab must contain its sample source.");
+            }
+
+            if (prefab.transform.Find("SampleControls") == null)
+            {
+                errors.Add("The UI-06 preview prefab must contain sample controls.");
+            }
+        }
+
+        private static bool IsSilentLoopSource(AudioSource? source) =>
+            source != null &&
+            !source.playOnAwake &&
+            source.loop &&
+            Mathf.Approximately(source.spatialBlend, 0f) &&
+            source.clip == null;
 
         private static void ValidateBehavior(GameObject prefab, List<string> errors)
         {
@@ -537,18 +599,22 @@ namespace Icebreaker.UI.Editor
         private static void ConfigurePresenter(
             Ui06FeedbackAudioPresenter presenter,
             Ui06FeedbackSampleSource source,
+            AudioCueCatalog catalog,
             UiThemeAsset theme,
             SupportTargets support,
             RectTransform feedbackLayer,
             GameObject cueTemplate,
             AudioSource gameplayAudio,
             AudioSource uiAudio,
+            AudioSource musicAudio,
             AudioSource ambientAudio,
-            Button sampleButton)
+            Button sampleButton,
+            bool allowProceduralFallback)
         {
             var serialized = new SerializedObject(presenter);
             SetObject(serialized, "combatSourceBehaviour", source);
             SetObject(serialized, "progressionSourceBehaviour", source);
+            SetObject(serialized, "audioCueCatalog", catalog);
             SetObject(serialized, "theme", theme);
             SetObjectArray(serialized, "chargeSegments", support.Segments);
             SetObject(serialized, "supportCore", support.Core);
@@ -559,6 +625,7 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "feedbackCueTemplate", cueTemplate);
             SetObject(serialized, "gameplayAudioSource", gameplayAudio);
             SetObject(serialized, "uiAudioSource", uiAudio);
+            SetObject(serialized, "musicAudioSource", musicAudio);
             SetObject(serialized, "ambientAudioSource", ambientAudio);
             SetObject(serialized, "lightBreakClip", LoadRequiredAudioClip(LightBreakPath));
             SetObject(serialized, "heavyBreakClip", LoadRequiredAudioClip(HeavyBreakPath));
@@ -570,8 +637,19 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "countdownClip", LoadRequiredAudioClip(CountdownPath));
             SetObject(serialized, "settlementCompleteClip", LoadRequiredAudioClip(SettlementCompletePath));
             SetObject(serialized, "arrivalHornClip", LoadRequiredAudioClip(ArrivalHornPath));
-            SetObject(serialized, "ambientLoopClip", LoadRequiredAudioClip(AmbientLoopPath));
+            SetObject(serialized, "ambientLoopClip", LoadRequiredAudioClip(StageMusicLoopPath));
             SetObjectArray(serialized, "uiButtons", new[] { sampleButton });
+            SetBool(serialized, "allowProceduralFallback", allowProceduralFallback);
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void ConfigureProductionPresenter(Ui06FeedbackAudioPresenter presenter)
+        {
+            var serialized = new SerializedObject(presenter);
+            SetObject(serialized, "combatSourceBehaviour", null);
+            SetObject(serialized, "progressionSourceBehaviour", null);
+            SetObjectArray<Button>(serialized, "uiButtons", Array.Empty<Button>());
+            SetBool(serialized, "allowProceduralFallback", false);
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -583,13 +661,48 @@ namespace Icebreaker.UI.Editor
             audioSource.volume = volume;
         }
 
-        private static void ConfigureAmbientAudioSource(AudioSource audioSource, AudioClip clip, float volume)
+        private static void ConfigureLoopAudioSource(AudioSource audioSource, float volume)
         {
-            audioSource.clip = clip;
+            audioSource.clip = null;
             audioSource.playOnAwake = false;
             audioSource.loop = true;
             audioSource.spatialBlend = 0f;
             audioSource.volume = volume;
+        }
+
+        private static AudioCueCatalog BuildAudioCueCatalog()
+        {
+            var catalog = AssetDatabase.LoadAssetAtPath<AudioCueCatalog>(AudioCueCatalogPath);
+            if (catalog == null)
+            {
+                catalog = ScriptableObject.CreateInstance<AudioCueCatalog>();
+                AssetDatabase.CreateAsset(catalog, AudioCueCatalogPath);
+            }
+
+            var serialized = new SerializedObject(catalog);
+            SetObject(serialized, "stageMusicLoop", LoadRequiredAudioClip(StageMusicLoopPath));
+            SetObject(serialized, "stageAmbienceLoop", null);
+            SetObject(serialized, "hit", LoadRequiredAudioClip(LightBreakPath));
+            SetObject(serialized, "tier1Destroy", LoadRequiredAudioClip(LightBreakPath));
+            SetObject(serialized, "tier2Destroy", LoadRequiredAudioClip(HeavyBreakPath));
+            SetObject(serialized, "tier3Destroy", LoadRequiredAudioClip(HeavyBreakPath));
+            SetObject(serialized, "critical", LoadRequiredAudioClip(CriticalHitPath));
+            SetObject(serialized, "crystal", LoadRequiredAudioClip(CrystalDestroyPath));
+            SetObject(serialized, "crack", LoadRequiredAudioClip(CrackPath));
+            SetObject(serialized, "chain", LoadRequiredAudioClip(CrackPath));
+            SetObject(serialized, "chainRush", LoadRequiredAudioClip(CrystalDestroyPath));
+            SetObject(serialized, "chargeReady", LoadRequiredAudioClip(CountdownPath));
+            SetObject(serialized, "supportFire", LoadRequiredAudioClip(HeavyBreakPath));
+            SetObject(serialized, "button", LoadRequiredAudioClip(ButtonClickPath));
+            SetObject(serialized, "countdown", LoadRequiredAudioClip(CountdownPath));
+            SetObject(serialized, "stageStart", LoadRequiredAudioClip(CountdownPath));
+            SetObject(serialized, "stageEnd", LoadRequiredAudioClip(SettlementCompletePath));
+            SetObject(serialized, "settlement", LoadRequiredAudioClip(SettlementCompletePath));
+            SetObject(serialized, "purchase", LoadRequiredAudioClip(PurchaseSuccessPath));
+            SetObject(serialized, "arrival", LoadRequiredAudioClip(ArrivalHornPath));
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(catalog);
+            return catalog;
         }
 
         private static AudioClip LoadRequiredAudioClip(string path) =>
@@ -686,11 +799,21 @@ namespace Icebreaker.UI.Editor
             rect.sizeDelta = Vector2.zero;
         }
 
-        private static void SetObject(SerializedObject serialized, string propertyName, UnityEngine.Object value)
+        private static void SetObject(
+            SerializedObject serialized,
+            string propertyName,
+            UnityEngine.Object? value)
         {
             var property = serialized.FindProperty(propertyName) ??
                 throw new InvalidOperationException($"Serialized property '{propertyName}' was not found.");
             property.objectReferenceValue = value;
+        }
+
+        private static void SetBool(SerializedObject serialized, string propertyName, bool value)
+        {
+            var property = serialized.FindProperty(propertyName) ??
+                throw new InvalidOperationException($"Serialized property '{propertyName}' was not found.");
+            property.boolValue = value;
         }
 
         private static void SetObjectArray<T>(SerializedObject serialized, string propertyName, IReadOnlyList<T> values)

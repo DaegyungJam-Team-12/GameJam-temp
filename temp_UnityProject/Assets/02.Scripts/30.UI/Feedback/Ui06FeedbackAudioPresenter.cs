@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using Icebreaker.Shared.Combat;
 using Icebreaker.Shared.Events;
+using Icebreaker.Shared.State;
+using Icebreaker.UI.Hud;
 using Icebreaker.UI.Sandbox;
 using TMPro;
 using UnityEngine;
@@ -44,9 +46,12 @@ namespace Icebreaker.UI.Feedback
         [SerializeField] private GameObject? feedbackCueTemplate;
 
         [Header("Audio")]
+        [SerializeField] private AudioCueCatalog? audioCueCatalog;
         [SerializeField] private AudioSource? gameplayAudioSource;
         [SerializeField] private AudioSource? uiAudioSource;
+        [SerializeField] private AudioSource? musicAudioSource;
         [SerializeField] private AudioSource? ambientAudioSource;
+        [SerializeField] private bool allowProceduralFallback = true;
         [SerializeField] private Button[] uiButtons = Array.Empty<Button>();
 
         [Header("Imported Audio Clips")]
@@ -64,19 +69,17 @@ namespace Icebreaker.UI.Feedback
 
         private readonly Dictionary<(long StageId, long ChainId), int> chainDestroyCounts = new();
         private readonly List<ActiveFeedback> activeFeedback = new();
-        private readonly Dictionary<AudioCue, AudioClip> runtimeClips = new();
 
         private ICombatEventSource? combatSource;
         private IProgressionEventSource? progressionSource;
+        private IGameStateSource? stateSource;
+        private IManagementScreenSource? managementScreenSource;
+        private Ui06AudioController? audioController;
         private bool initialized;
         private bool subscribed;
         private bool buttonListenersAdded;
         private float supportStateElapsed;
         private float supportFireRemaining;
-        private float destroyVoiceWindowAge = float.PositiveInfinity;
-        private int destroyVoicesInWindow;
-        private bool chainRushPlayedInWindow;
-        private long lastSettlementAudioStageId = long.MinValue;
 
         public int CurrentCharge { get; private set; }
 
@@ -88,53 +91,57 @@ namespace Icebreaker.UI.Feedback
 
         public string LastVisualCue { get; private set; } = string.Empty;
 
-        public string LastAudioCue { get; private set; } = string.Empty;
+        public string LastAudioCue => audioController?.LastAudioCue ?? string.Empty;
 
         public Color LastVisualColor { get; private set; }
 
         public Vector2 LastEffectPosition { get; private set; }
 
-        public int SettlementSoundCount { get; private set; }
+        public int SettlementSoundCount => audioController?.SettlementSoundCount ?? 0;
 
-        public int CountdownSoundCount { get; private set; }
+        public int ArrivalSoundCount => audioController?.ArrivalSoundCount ?? 0;
 
-        public int PeakDestroyVoices { get; private set; }
+        public int CountdownSoundCount => audioController?.CountdownSoundCount ?? 0;
+
+        public int ChainRushSoundCount => audioController?.ChainRushSoundCount ?? 0;
+
+        public int PeakDestroyVoices => audioController?.PeakDestroyVoices ?? 0;
 
         public bool IsEventSubscriptionActive => subscribed;
 
-        public float CurrentMasterVolume { get; private set; }
+        public float CurrentMasterVolume => audioController?.CurrentMasterVolume ?? AudioListener.volume;
+
+        public bool ArePhaseLoopsPlaying => audioController?.ArePhaseLoopsPlaying ?? false;
 
         private void Awake() => EnsureInitialized();
 
         private void OnEnable()
         {
             EnsureInitialized();
-            StartAmbientLoop();
+            audioController?.Resume();
             Subscribe();
         }
 
         private void OnDisable()
         {
             Unsubscribe();
-            ambientAudioSource?.Stop();
+            audioController?.Suspend();
             ClearFeedback();
         }
 
         private void OnDestroy()
         {
             RemoveButtonListeners();
-            foreach (var clip in runtimeClips.Values)
-            {
-                if (clip != null)
-                {
-                    Destroy(clip);
-                }
-            }
-
-            runtimeClips.Clear();
+            audioController?.Dispose();
+            audioController = null;
         }
 
-        private void Update() => Advance(Time.unscaledDeltaTime);
+        private void Update()
+        {
+            var delta = Time.unscaledDeltaTime;
+            Advance(delta);
+            audioController?.Tick(delta);
+        }
 
         public void Bind(ICombatEventSource combat, IProgressionEventSource progression)
         {
@@ -142,6 +149,9 @@ namespace Icebreaker.UI.Feedback
             Unsubscribe();
             combatSource = combat ?? throw new ArgumentNullException(nameof(combat));
             progressionSource = progression ?? throw new ArgumentNullException(nameof(progression));
+            stateSource = progression as IGameStateSource ?? combat as IGameStateSource;
+            managementScreenSource =
+                progression as IManagementScreenSource ?? combat as IManagementScreenSource;
             if (isActiveAndEnabled)
             {
                 Subscribe();
@@ -150,8 +160,8 @@ namespace Icebreaker.UI.Feedback
 
         public void SetMasterVolume(float value)
         {
-            UiAudioSettings.SetMasterVolume(value);
-            CurrentMasterVolume = AudioListener.volume;
+            EnsureInitialized();
+            audioController?.SetMasterVolume(value);
         }
 
         public void SetUiButtons(params Button[] buttons)
@@ -161,15 +171,22 @@ namespace Icebreaker.UI.Feedback
             AddButtonListeners();
         }
 
-        public void PlayPurchaseSuccess() => PlayCue(AudioCue.Purchase, ui: true);
+        public void PlayPurchaseSuccess() =>
+            audioController?.PlayCue(Ui06AudioCue.Purchase, ui: true);
 
-        public void PlayCountdown()
+        public void PlayCountdown() => audioController?.PlayCountdown();
+
+        public void AdvanceForValidation(float unscaledDeltaTime)
         {
-            CountdownSoundCount++;
-            PlayCue(AudioCue.Countdown, ui: true);
+            Advance(unscaledDeltaTime);
+            audioController?.Tick(unscaledDeltaTime);
         }
 
-        public void AdvanceForValidation(float unscaledDeltaTime) => Advance(unscaledDeltaTime);
+        public void ApplyAudioPhaseForValidation(GamePhase phase) =>
+            audioController?.ApplyPhase(phase);
+
+        public void ApplyManagementScreenForValidation(ManagementScreen screen) =>
+            audioController?.ApplyManagementScreen(screen);
 
         public void EnsureInitialized()
         {
@@ -179,10 +196,28 @@ namespace Icebreaker.UI.Feedback
             }
 
             ResolveSerializedSources();
-            CurrentMasterVolume = UiAudioSettings.LoadAndApplyMasterVolume();
-            ConfigureAudioSource(gameplayAudioSource);
-            ConfigureAudioSource(uiAudioSource);
-            ConfigureAmbientAudioSource();
+            UiAudioSettings.LoadAndApplyMasterVolume();
+            audioController = new Ui06AudioController(
+                gameplayAudioSource,
+                uiAudioSource,
+                musicAudioSource,
+                ambientAudioSource,
+                new Ui06AudioClipLibrary(
+                    audioCueCatalog,
+                    lightBreakClip,
+                    heavyBreakClip,
+                    crackClip,
+                    crystalDestroyClip,
+                    criticalHitClip,
+                    buttonClickClip,
+                    purchaseSuccessClip,
+                    countdownClip,
+                    settlementCompleteClip,
+                    arrivalHornClip,
+                    ambientLoopClip),
+                allowProceduralFallback,
+                MaximumDestroyVoices,
+                DestroyVoiceWindowSeconds);
             AddButtonListeners();
             RenderSupportState(SupportFeedbackState.Idle);
             if (feedbackCueTemplate != null)
@@ -197,6 +232,8 @@ namespace Icebreaker.UI.Feedback
         {
             combatSource ??= combatSourceBehaviour as ICombatEventSource;
             progressionSource ??= progressionSourceBehaviour as IProgressionEventSource;
+            stateSource ??= progressionSourceBehaviour as IGameStateSource;
+            managementScreenSource ??= progressionSourceBehaviour as IManagementScreenSource;
         }
 
         private void Subscribe()
@@ -208,13 +245,13 @@ namespace Icebreaker.UI.Feedback
 
             if (combatSource == null || progressionSource == null)
             {
-                Debug.LogError("[UI-06] Combat and progression event sources are required.", this);
                 return;
             }
 
             if (chargeSegments.Length != ChargeSegmentCount || supportCore == null || supportStateText == null ||
                 muzzleGlow == null || supportTrail == null || feedbackLayer == null || feedbackCueTemplate == null ||
-                gameplayAudioSource == null || uiAudioSource == null || ambientAudioSource == null)
+                gameplayAudioSource == null || uiAudioSource == null || ambientAudioSource == null ||
+                audioController == null)
             {
                 Debug.LogError("[UI-06] Feedback, support-device, or audio references are missing.", this);
                 return;
@@ -227,6 +264,19 @@ namespace Icebreaker.UI.Feedback
             progressionSource.StageEnded += HandleStageEnded;
             progressionSource.SettlementReady += HandleSettlementReady;
             progressionSource.ArrivalPresentationRequested += HandleArrivalPresentationRequested;
+            if (stateSource != null)
+            {
+                stateSource.StateChanged += HandleGameStateChanged;
+                audioController.ApplyPhase(stateSource.CurrentState.Phase);
+            }
+
+            if (managementScreenSource != null)
+            {
+                managementScreenSource.ManagementScreenChanged += HandleManagementScreenChanged;
+                audioController.ApplyManagementScreen(
+                    managementScreenSource.CurrentManagementScreen);
+            }
+
             subscribed = true;
         }
 
@@ -244,6 +294,16 @@ namespace Icebreaker.UI.Feedback
             progressionSource.StageEnded -= HandleStageEnded;
             progressionSource.SettlementReady -= HandleSettlementReady;
             progressionSource.ArrivalPresentationRequested -= HandleArrivalPresentationRequested;
+            if (stateSource != null)
+            {
+                stateSource.StateChanged -= HandleGameStateChanged;
+            }
+
+            if (managementScreenSource != null)
+            {
+                managementScreenSource.ManagementScreenChanged -= HandleManagementScreenChanged;
+            }
+
             subscribed = false;
         }
 
@@ -290,8 +350,8 @@ namespace Icebreaker.UI.Feedback
             RenderSupportState(nextState);
             if (becameReady)
             {
-                SpawnFeedback("충전 완료", new Vector2(148f, 340f), CueColor(AudioCue.ChargeReady));
-                PlayCue(AudioCue.ChargeReady, ui: false);
+                SpawnFeedback("충전 완료", new Vector2(148f, 340f), CueColor(Ui06AudioCue.ChargeReady));
+                audioController?.PlayCue(Ui06AudioCue.ChargeReady, ui: false);
             }
         }
 
@@ -301,29 +361,28 @@ namespace Icebreaker.UI.Feedback
             {
                 supportFireRemaining = SupportFireSeconds;
                 RenderSupportState(SupportFeedbackState.Firing);
-                SpawnFeedback("보조탄 발사", payload.ReferencePosition, CueColor(AudioCue.SupportFire));
-                PlayCue(AudioCue.SupportFire, ui: false);
+                SpawnFeedback("보조탄 발사", payload.ReferencePosition, CueColor(Ui06AudioCue.SupportFire));
+                audioController?.PlayCue(Ui06AudioCue.SupportFire, ui: false);
                 return;
             }
 
             if (payload.WasCritical)
             {
-                SpawnFeedback("치명타!", payload.ReferencePosition, CueColor(AudioCue.Critical));
-                PlayCue(AudioCue.Critical, ui: false);
+                SpawnFeedback("치명타!", payload.ReferencePosition, CueColor(Ui06AudioCue.Critical));
+                audioController?.PlayCue(Ui06AudioCue.Critical, ui: false);
             }
             else if (payload.EffectType is EffectType.Click or EffectType.Hold)
             {
-                PlayCue(AudioCue.Hit, ui: false);
+                audioController?.PlayCue(Ui06AudioCue.Hit, ui: false);
             }
             else if (payload.ChainDepth > 0 && payload.RemainingHp > 0f)
             {
-                SpawnFeedback("연쇄 타격", payload.ReferencePosition, CueColor(AudioCue.Chain));
+                SpawnFeedback("연쇄 타격", payload.ReferencePosition, CueColor(Ui06AudioCue.Chain));
             }
         }
 
         private void HandleIceDestroyed(IceDestroyedEvent payload)
         {
-            TrackDestroyVoiceWindow();
             var useImportedClip = payload.DestroyCategory == DestroyCategory.Direct;
             var key = (payload.StageId, payload.ChainId);
             chainDestroyCounts.TryGetValue(key, out var chainCount);
@@ -332,27 +391,27 @@ namespace Icebreaker.UI.Feedback
 
             if (payload.SpecialType == SpecialIceType.Crystal)
             {
-                SpawnFeedback("결정빙 파쇄", payload.ReferencePosition, CueColor(AudioCue.Crystal));
-                PlayDestroyCue(AudioCue.Crystal, payload.Tier, useImportedClip);
+                SpawnFeedback("결정빙 파쇄", payload.ReferencePosition, CueColor(Ui06AudioCue.Crystal));
+                audioController?.PlayDestroyCue(Ui06AudioCue.Crystal, payload.Tier, useImportedClip);
             }
             else if (payload.SpecialType == SpecialIceType.Crack)
             {
-                SpawnFeedback("균열빙 폭발", payload.ReferencePosition, CueColor(AudioCue.Crack));
-                PlayDestroyCue(AudioCue.Crack, payload.Tier, useImportedClip);
+                SpawnFeedback("균열빙 폭발", payload.ReferencePosition, CueColor(Ui06AudioCue.Crack));
+                audioController?.PlayDestroyCue(Ui06AudioCue.Crack, payload.Tier, useImportedClip);
             }
             else
             {
-                PlayDestroyCue(AudioCue.Destroy, payload.Tier, useImportedClip);
+                audioController?.PlayDestroyCue(Ui06AudioCue.Destroy, payload.Tier, useImportedClip);
             }
 
             if (payload.ChainDepth > 0 || payload.DestroyCategory == DestroyCategory.Chain)
             {
                 var visibleCount = Mathf.Max(2, chainCount);
                 SpawnFeedback($"연쇄 x{visibleCount}", payload.ReferencePosition + Vector2.up * 52f,
-                    CueColor(AudioCue.Chain));
+                    CueColor(Ui06AudioCue.Chain));
                 if (visibleCount >= 3)
                 {
-                    PlayCue(AudioCue.Chain, ui: false);
+                    audioController?.PlayCue(Ui06AudioCue.Chain, ui: false);
                 }
             }
         }
@@ -363,32 +422,31 @@ namespace Icebreaker.UI.Feedback
             CurrentCharge = 0;
             MaximumCharge = ChargeSegmentCount;
             RenderSupportState(SupportFeedbackState.Idle);
-            PlayCue(AudioCue.StageStart, ui: true);
+            audioController?.ResetStage();
+            audioController?.PlayCue(Ui06AudioCue.StageStart, ui: true);
         }
 
         private void HandleStageEnded(StageEnded payload)
         {
             CurrentCharge = 0;
             RenderSupportState(SupportFeedbackState.Idle);
-            PlayCue(AudioCue.StageEnd, ui: true);
+            audioController?.PlayCue(Ui06AudioCue.StageEnd, ui: true);
         }
 
-        private void HandleSettlementReady(SettlementReady payload)
-        {
-            if (payload.StageId == lastSettlementAudioStageId)
-            {
-                return;
-            }
-
-            lastSettlementAudioStageId = payload.StageId;
-            SettlementSoundCount++;
-            PlayCue(AudioCue.Settlement, ui: true);
-        }
+        private void HandleSettlementReady(SettlementReady payload) =>
+            audioController?.PlaySettlement(payload.StageId);
 
         private void HandleArrivalPresentationRequested(ArrivalPresentationRequested payload) =>
-            PlayCue(AudioCue.Arrival, ui: true);
+            audioController?.PlayArrival(payload.DestinationId);
 
-        private void HandleUiButtonClicked() => PlayCue(AudioCue.Button, ui: true);
+        private void HandleGameStateChanged(GameState state) =>
+            audioController?.ApplyPhase(state.Phase);
+
+        private void HandleManagementScreenChanged(ManagementScreen screen) =>
+            audioController?.ApplyManagementScreen(screen);
+
+        private void HandleUiButtonClicked() =>
+            audioController?.PlayCue(Ui06AudioCue.Button, ui: true);
 
         private void RenderSupportState(SupportFeedbackState state)
         {
@@ -480,12 +538,6 @@ namespace Icebreaker.UI.Feedback
         {
             var delta = Mathf.Max(0f, unscaledDeltaTime);
             supportStateElapsed += delta;
-            destroyVoiceWindowAge += delta;
-            if (destroyVoiceWindowAge > DestroyVoiceWindowSeconds)
-            {
-                destroyVoicesInWindow = 0;
-                chainRushPlayedInWindow = false;
-            }
 
             if (supportFireRemaining > 0f)
             {
@@ -529,172 +581,16 @@ namespace Icebreaker.UI.Feedback
             }
         }
 
-        private void TrackDestroyVoiceWindow()
-        {
-            if (destroyVoiceWindowAge > DestroyVoiceWindowSeconds)
-            {
-                destroyVoiceWindowAge = 0f;
-                destroyVoicesInWindow = 0;
-                chainRushPlayedInWindow = false;
-            }
-        }
-
-        private void PlayDestroyCue(AudioCue cue, IceTier tier, bool useImportedClip)
-        {
-            if (destroyVoicesInWindow < MaximumDestroyVoices)
-            {
-                destroyVoicesInWindow++;
-                PeakDestroyVoices = Mathf.Max(PeakDestroyVoices, destroyVoicesInWindow);
-                PlayCue(cue, ui: false, tier, useImportedClip);
-            }
-            else if (!chainRushPlayedInWindow)
-            {
-                chainRushPlayedInWindow = true;
-                PlayCue(AudioCue.ChainRush, ui: false);
-            }
-        }
-
-        private void PlayCue(
-            AudioCue cue,
-            bool ui,
-            IceTier? tier = null,
-            bool useImportedClip = true)
-        {
-            LastAudioCue = cue.ToString();
-            CurrentMasterVolume = AudioListener.volume;
-            if (!Application.isPlaying || CurrentMasterVolume <= 0f)
-            {
-                return;
-            }
-
-            EnsureRuntimeClips();
-            var source = ui ? uiAudioSource : gameplayAudioSource;
-            var clip = useImportedClip ? ResolveImportedClip(cue, tier) : null;
-            if (clip == null)
-            {
-                runtimeClips.TryGetValue(cue, out clip);
-            }
-
-            if (source != null && clip != null)
-            {
-                source.PlayOneShot(clip);
-            }
-        }
-
-        private AudioClip? ResolveImportedClip(AudioCue cue, IceTier? tier) =>
-            cue switch
-            {
-                AudioCue.Destroy => tier == IceTier.T1
-                    ? lightBreakClip ?? heavyBreakClip
-                    : heavyBreakClip ?? lightBreakClip,
-                AudioCue.Critical => criticalHitClip,
-                AudioCue.Crystal => crystalDestroyClip,
-                AudioCue.Crack => crackClip,
-                AudioCue.Button => buttonClickClip,
-                AudioCue.Purchase => purchaseSuccessClip,
-                AudioCue.Countdown => countdownClip,
-                AudioCue.Settlement => settlementCompleteClip,
-                AudioCue.Arrival => arrivalHornClip,
-                _ => null
-            };
-
-        private void EnsureRuntimeClips()
-        {
-            if (runtimeClips.Count > 0)
-            {
-                return;
-            }
-
-            runtimeClips[AudioCue.Hit] = CreateTone("UI06_Hit", 720f, 0.045f, 0.11f);
-            runtimeClips[AudioCue.Destroy] = CreateTone("UI06_Destroy", 330f, 0.09f, 0.15f, 0.25f);
-            runtimeClips[AudioCue.Critical] = CreateTone("UI06_Critical", 1320f, 0.08f, 0.12f);
-            runtimeClips[AudioCue.Crystal] = CreateTone("UI06_Crystal", 1040f, 0.14f, 0.13f, 0.5f);
-            runtimeClips[AudioCue.Crack] = CreateTone("UI06_Crack", 235f, 0.16f, 0.17f, 0.35f);
-            runtimeClips[AudioCue.Chain] = CreateTone("UI06_Chain", 620f, 0.12f, 0.13f, 0.4f);
-            runtimeClips[AudioCue.ChainRush] = CreateTone("UI06_ChainRush", 460f, 0.18f, 0.12f, 0.7f);
-            runtimeClips[AudioCue.ChargeReady] = CreateTone("UI06_ChargeReady", 910f, 0.11f, 0.11f, 0.5f);
-            runtimeClips[AudioCue.SupportFire] = CreateTone("UI06_SupportFire", 510f, 0.13f, 0.16f, 0.25f);
-            runtimeClips[AudioCue.Button] = CreateTone("UI06_Button", 760f, 0.035f, 0.075f);
-            runtimeClips[AudioCue.Countdown] = CreateTone("UI06_Countdown", 620f, 0.12f, 0.1f, 0.5f);
-            runtimeClips[AudioCue.StageStart] = CreateTone("UI06_StageStart", 440f, 0.12f, 0.1f, 0.5f);
-            runtimeClips[AudioCue.StageEnd] = CreateTone("UI06_StageEnd", 285f, 0.16f, 0.12f, 0.3f);
-            runtimeClips[AudioCue.Settlement] = CreateTone("UI06_Settlement", 880f, 0.15f, 0.1f, 0.5f);
-            runtimeClips[AudioCue.Purchase] = CreateTone("UI06_Purchase", 980f, 0.12f, 0.1f, 0.5f);
-            runtimeClips[AudioCue.Arrival] = CreateTone("UI06_Arrival", 390f, 0.22f, 0.12f, 0.3f);
-        }
-
-        private static AudioClip CreateTone(
-            string name,
-            float frequency,
-            float duration,
-            float amplitude,
-            float harmonic = 0f)
-        {
-            const int sampleRate = 44_100;
-            var sampleCount = Mathf.Max(1, Mathf.CeilToInt(duration * sampleRate));
-            var samples = new float[sampleCount];
-            for (var index = 0; index < sampleCount; index++)
-            {
-                var time = (float)index / sampleRate;
-                var progress = (float)index / sampleCount;
-                var envelope = Mathf.Sin(Mathf.PI * Mathf.Clamp01(progress)) * (1f - progress * 0.35f);
-                var fundamental = Mathf.Sin(2f * Mathf.PI * frequency * time);
-                var overtone = Mathf.Sin(2f * Mathf.PI * frequency * 2.01f * time) * harmonic;
-                samples[index] = (fundamental + overtone) * envelope * amplitude;
-            }
-
-            var clip = AudioClip.Create(name, sampleCount, 1, sampleRate, false);
-            clip.hideFlags = HideFlags.HideAndDontSave;
-            clip.SetData(samples, 0);
-            return clip;
-        }
-
-        private static void ConfigureAudioSource(AudioSource? source)
-        {
-            if (source == null)
-            {
-                return;
-            }
-
-            source.playOnAwake = false;
-            source.loop = false;
-            source.spatialBlend = 0f;
-        }
-
-        private void ConfigureAmbientAudioSource()
-        {
-            if (ambientAudioSource == null)
-            {
-                return;
-            }
-
-            ambientAudioSource.playOnAwake = false;
-            ambientAudioSource.loop = true;
-            ambientAudioSource.spatialBlend = 0f;
-            ambientAudioSource.clip = ambientLoopClip;
-        }
-
-        private void StartAmbientLoop()
-        {
-            if (ambientAudioSource == null || ambientLoopClip == null || ambientAudioSource.isPlaying)
-            {
-                return;
-            }
-
-            ambientAudioSource.clip = ambientLoopClip;
-            ambientAudioSource.Play();
-        }
-
-        private Color CueColor(AudioCue cue)
+        private Color CueColor(Ui06AudioCue cue)
         {
             return cue switch
             {
-                AudioCue.Critical => theme?.ActionAccent ?? new Color32(0xF3, 0x9A, 0x3D, 0xFF),
-                AudioCue.Crystal => theme?.Reward ?? new Color32(0xFF, 0xE0, 0xA0, 0xFF),
-                AudioCue.Crack => new Color32(0xE8, 0x6A, 0x62, 0xFF),
-                AudioCue.Chain => new Color32(0x5A, 0xB7, 0xE8, 0xFF),
-                AudioCue.SupportFire => theme?.Success ?? new Color32(0x66, 0xD3, 0xBA, 0xFF),
-                AudioCue.ChargeReady => theme?.Reward ?? new Color32(0xFF, 0xE0, 0xA0, 0xFF),
+                Ui06AudioCue.Critical => theme?.ActionAccent ?? new Color32(0xF3, 0x9A, 0x3D, 0xFF),
+                Ui06AudioCue.Crystal => theme?.Reward ?? new Color32(0xFF, 0xE0, 0xA0, 0xFF),
+                Ui06AudioCue.Crack => new Color32(0xE8, 0x6A, 0x62, 0xFF),
+                Ui06AudioCue.Chain => new Color32(0x5A, 0xB7, 0xE8, 0xFF),
+                Ui06AudioCue.SupportFire => theme?.Success ?? new Color32(0x66, 0xD3, 0xBA, 0xFF),
+                Ui06AudioCue.ChargeReady => theme?.Reward ?? new Color32(0xFF, 0xE0, 0xA0, 0xFF),
                 _ => theme?.PrimaryText ?? Color.white
             };
         }
@@ -751,24 +647,5 @@ namespace Icebreaker.UI.Feedback
             public float Age { get; set; }
         }
 
-        private enum AudioCue
-        {
-            Hit,
-            Destroy,
-            Critical,
-            Crystal,
-            Crack,
-            Chain,
-            ChainRush,
-            ChargeReady,
-            SupportFire,
-            Button,
-            Countdown,
-            StageStart,
-            StageEnd,
-            Settlement,
-            Purchase,
-            Arrival
-        }
     }
 }
