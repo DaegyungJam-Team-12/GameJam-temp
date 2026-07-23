@@ -17,7 +17,18 @@ namespace Icebreaker.UI.Editor
         private const string ThemePath = "Assets/04.Images/30.UI/Theme/UiTheme.asset";
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Management";
         private const string PrefabPath = PrefabFolder + "/UI_ManagementViews.prefab";
-        private const string BuildStamp = "ui05-production-font-roles-v3";
+        private const string ArtFolder = "Assets/04.Images/30.UI/Maintenance";
+        private const string HeaderArtPath = ArtFolder + "/운항 현황 UI 스프라이트 시안.png";
+        private const string DestinationArtPath = ArtFolder + "/수정된 북쪽 기지 스프라이트.png";
+        private const string RouteArtPath = ArtFolder + "/경로 현황 UI 스프라이트.png";
+        private const string ProgressFrameArtPath = ArtFolder + "/수정된 북쪽 기지 진행도 UI.png";
+        private const string ProgressFillArtPath = ArtFolder + "/최대 길이 파란 진행도 Fill.png";
+        private const string SelectedCargoCardArtPath = ArtFolder + "/선택 상태 아이템 카드.png";
+        private const string CargoCardArtPath = ArtFolder + "/Icons/운송 화물 빈 패널.png";
+        private const string StartButtonArtPath = ArtFolder + "/주황색 쇄빙 시작 버튼.png";
+        private const string SettingsButtonArtPath = ArtFolder + "/투명 설정 버튼.png";
+        private const string CollapseButtonArtPath = ArtFolder + "/접기 버튼 투명 스프라이트.png";
+        private const string BuildStamp = "ui05-route-art-v5";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-05 Management Views")]
         public static void Build()
@@ -85,18 +96,23 @@ namespace Icebreaker.UI.Editor
             var background = CreateStretchImage("Background", root.transform, theme.Background, false);
             var presenter = root.AddComponent<ManagementViewsPresenter>();
 
-            var header = CreateTopLeftImage("CommonHeader", background.transform, 16f, 12f, 928f, 48f, theme.Panel, false);
-            var headerTitle = CreateTopLeftText("TitleText", header.transform, 20f, 7f, 260f, 34f, "운항 현황", font, 23f, TextAlignmentOptions.Left);
+            var header = CreateTopLeftImage("CommonHeader", background.transform, 16f, 10f, 928f, 58f, theme.Panel, false);
+            var headerArt = CreateTopLeftImage("HeaderArt", header.transform, 0f, 0f, 360f, 58f, Color.white, false);
+            ApplySprite(headerArt, HeaderArtPath, true);
+            var headerTitle = CreateTopLeftText("TitleText", header.transform, 100f, 10f, 250f, 38f, "운항 현황", font, 29f, TextAlignmentOptions.Left);
             headerTitle.fontStyle = FontStyles.Bold;
-            var fundsArea = CreateTopLeftImage("FundsArea", header.transform, 484f, 4f, 152f, 40f, new Color32(0x12, 0x31, 0x49, 0xFF), false);
-            var fundsText = CreateInsetText("FundsText", fundsArea.transform, "보유 자금 12.4K", font, 15f, TextAlignmentOptions.Center);
-            var startButton = CreateButton("StageStartButton", header.transform, 636f, 0f, 148f, 48f, "다음 쇄빙 00:24", font, 14f, theme.ActionAccent);
-            var settingsButton = CreateButton("SettingsButton", header.transform, 784f, 0f, 64f, 48f, "설정", font, 14f, theme.Panel);
-            var collapseButton = CreateButton("CollapseButton", header.transform, 848f, 0f, 80f, 48f, "접기", font, 14f, theme.Panel);
+            var fundsArea = CreateTopLeftImage("FundsArea", header.transform, 568f, 6f, 156f, 46f, new Color32(0x12, 0x31, 0x49, 0xFF), false);
+            var fundsText = CreateInsetText("FundsText", fundsArea.transform, "보유 자금 12.4K", font, 16f, TextAlignmentOptions.Center);
+            var settingsButton = CreateButton("SettingsButton", header.transform, 734f, 4f, 82f, 50f, "설정", font, 15f, theme.Panel);
+            ApplySprite(settingsButton.GetComponent<Image>(), SettingsButtonArtPath, true);
+            var collapseButton = CreateButton("CollapseButton", header.transform, 822f, 4f, 100f, 50f, "접기", font, 15f, theme.Panel);
+            ApplySprite(collapseButton.GetComponent<Image>(), CollapseButtonArtPath, true);
 
-            var body = CreateTopLeftImage("Body", background.transform, 16f, 72f, 928f, 452f, new Color32(0x08, 0x19, 0x2A, 0xFF), false);
+            var body = CreateTopLeftImage("Body", background.transform, 16f, 76f, 928f, 448f, new Color32(0x08, 0x19, 0x2A, 0xFF), false);
             var routeRoot = CreateStretchRect("RouteRoot", body.transform).gameObject;
             var routeTargets = BuildRoute(routeRoot.transform, theme, font);
+            var startButton = CreateButton("StageStartButton", body.transform, 588f, 362f, 316f, 70f, "쇄빙 시작", font, 27f, theme.ActionAccent);
+            ApplySprite(startButton.GetComponent<Image>(), StartButtonArtPath, true);
             var settingsTargets = BuildSettings(background.transform, theme, font);
             var arrivalTargets = BuildArrival(background.transform, theme, font);
 
@@ -118,30 +134,37 @@ namespace Icebreaker.UI.Editor
         private static RouteTargets BuildRoute(Transform parent, UiThemeAsset theme, TMP_FontAsset font)
         {
             var view = parent.gameObject.AddComponent<RouteStatusView>();
-            var title = CreateTopLeftText("TitleText", parent, 24f, 18f, 420f, 38f, "운항 현황", font, 28f, TextAlignmentOptions.Left);
-            title.fontStyle = FontStyles.Bold;
-            var info = CreateTopLeftText("ReadOnlyNotice", parent, 590f, 24f, 310f, 28f, "정보 확인 전용 · 경로 선택 없음", font, 14f, TextAlignmentOptions.Right);
+            var info = CreateTopLeftText("ReadOnlyNotice", parent, 588f, 10f, 316f, 28f, "정보 확인 전용 · 경로 선택 없음", font, 14f, TextAlignmentOptions.Center);
             info.color = theme.Reward;
 
-            var currentPanel = CreateTopLeftImage("CurrentDestinationPanel", parent, 24f, 74f, 548f, 334f, theme.Panel, false);
-            CreateTopLeftText("SectionLabel", currentPanel.transform, 24f, 22f, 250f, 26f, "현재 목적지", font, 15f, TextAlignmentOptions.Left).color = theme.Reward;
-            var destination = CreateTopLeftText("DestinationNameText", currentPanel.transform, 24f, 52f, 500f, 64f, "섬마을", font, 42f, TextAlignmentOptions.Left);
-            var progressText = CreateTopLeftText("DestinationProgressText", currentPanel.transform, 24f, 124f, 500f, 30f, "목적지 진행  37 / 120", font, 18f, TextAlignmentOptions.Left);
-            var track = CreateTopLeftImage("ProgressTrack", currentPanel.transform, 24f, 164f, 500f, 22f, new Color32(0x04, 0x12, 0x20, 0xFF), false);
-            var fill = CreateStretchImage("ProgressFill", track.transform, theme.Success, false);
+            var currentPanel = CreateTopLeftImage("CurrentDestinationPanel", parent, 18f, 42f, 548f, 270f, Color.white, false);
+            ApplySprite(currentPanel, DestinationArtPath, false);
+            CreateTopLeftText("SectionLabel", currentPanel.transform, 28f, 20f, 250f, 26f, "현재 목적지", font, 16f, TextAlignmentOptions.Left).color = theme.Reward;
+            var destination = CreateTopLeftText("DestinationNameText", currentPanel.transform, 28f, 52f, 500f, 58f, "STAGE 3. 북쪽 기지", font, 35f, TextAlignmentOptions.Left);
+            var progressText = CreateTopLeftText("DestinationProgressText", currentPanel.transform, 254f, 226f, 258f, 28f, "목적지 진행  37 / 120", font, 16f, TextAlignmentOptions.Right);
+            var track = CreateTopLeftImage("ProgressTrack", currentPanel.transform, 28f, 212f, 500f, 42f, Color.white, false);
+            ApplySprite(track, ProgressFrameArtPath, false);
+            var fill = CreateTopLeftImage("ProgressFill", track.transform, 92f, 13f, 332f, 16f, Color.white, false);
+            ApplySprite(fill, ProgressFillArtPath, false);
             fill.type = Image.Type.Filled;
             fill.fillMethod = Image.FillMethod.Horizontal;
             fill.fillOrigin = 0;
             fill.fillAmount = 37f / 120f;
-            var cargo = CreateTopLeftText("CargoText", currentPanel.transform, 24f, 212f, 500f, 74f, "운송 화물\n식료품 · 우편", font, 20f, TextAlignmentOptions.TopLeft);
-            var completedBadge = CreateTopLeftImage("CompletedBadge", currentPanel.transform, 340f, 22f, 184f, 38f, theme.Success, false).gameObject;
+            CreateTopLeftText("CargoSectionLabel", parent, 22f, 318f, 200f, 24f, "운송 화물", font, 17f, TextAlignmentOptions.Left);
+            var selectedCargo = CreateTopLeftImage("SelectedCargoCard", parent, 18f, 342f, 266f, 88f, Color.white, false);
+            ApplySprite(selectedCargo, SelectedCargoCardArtPath, false);
+            var cargo = CreateTopLeftText("CargoText", selectedCargo.transform, 18f, 15f, 230f, 56f, "정밀 기계 부품 상자\n기계 부품", font, 17f, TextAlignmentOptions.TopLeft);
+            var secondaryCargo = CreateTopLeftImage("SecondaryCargoCard", parent, 298f, 342f, 266f, 88f, Color.white, false);
+            ApplySprite(secondaryCargo, CargoCardArtPath, false);
+            CreateTopLeftText("SecondaryCargoText", secondaryCargo.transform, 18f, 15f, 230f, 56f, "보온재를 두른 우편함\n동파 방지용 우편함", font, 16f, TextAlignmentOptions.TopLeft);
+            var completedBadge = CreateTopLeftImage("CompletedBadge", currentPanel.transform, 332f, 18f, 184f, 38f, theme.Success, false).gameObject;
             CreateInsetText("Label", completedBadge.transform, "운항 완료", font, 17f, TextAlignmentOptions.Center).fontStyle = FontStyles.Bold;
             completedBadge.SetActive(false);
 
-            var listPanel = CreateTopLeftImage("DestinationListPanel", parent, 592f, 74f, 312f, 334f, theme.Panel, false);
-            var completed = CreateTopLeftText("CompletedDestinationsText", listPanel.transform, 22f, 24f, 268f, 124f, "완료한 목적지\n출항 기지", font, 22f, TextAlignmentOptions.TopLeft);
-            CreateTopLeftImage("Divider", listPanel.transform, 22f, 156f, 268f, 2f, new Color32(0x3D, 0x62, 0x75, 0xFF), false);
-            var upcoming = CreateTopLeftText("UpcomingDestinationsText", listPanel.transform, 22f, 174f, 268f, 124f, "이후 목적지\n등대항 → 북쪽 기지", font, 22f, TextAlignmentOptions.TopLeft);
+            var listPanel = CreateTopLeftImage("DestinationListPanel", parent, 588f, 42f, 316f, 304f, Color.white, false);
+            ApplySprite(listPanel, RouteArtPath, false);
+            var completed = CreateTopLeftText("CompletedDestinationsText", listPanel.transform, 116f, 48f, 178f, 84f, "완료한 목적지\n선마을 → 등대항", font, 19f, TextAlignmentOptions.TopLeft);
+            var upcoming = CreateTopLeftText("UpcomingDestinationsText", listPanel.transform, 116f, 168f, 178f, 84f, "이후 목적지\n북쪽 기지", font, 21f, TextAlignmentOptions.TopLeft);
             var serialized = new SerializedObject(view);
             SetObject(serialized, "destinationNameText", destination);
             SetObject(serialized, "destinationProgressText", progressText);
@@ -391,7 +414,7 @@ namespace Icebreaker.UI.Editor
                 }
 
                 source.ShowCompletedState();
-                var startButton = instance.transform.Find("Background/CommonHeader/StageStartButton")?.GetComponent<Button>();
+                var startButton = instance.transform.Find("Background/Body/StageStartButton")?.GetComponent<Button>();
                 var startText = startButton?.GetComponentInChildren<TMP_Text>()?.text;
                 if (startButton == null || startButton.interactable || startText != "운항 완료")
                 {
@@ -539,6 +562,15 @@ namespace Icebreaker.UI.Editor
             image.color = color;
             image.raycastTarget = raycast;
             return image;
+        }
+
+        private static void ApplySprite(Image image, string path, bool preserveAspect)
+        {
+            image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path) ??
+                throw new InvalidOperationException($"Route UI sprite was not found at {path}.");
+            image.type = Image.Type.Simple;
+            image.preserveAspect = preserveAspect;
+            image.color = Color.white;
         }
 
         private static TextMeshProUGUI CreateTopLeftText(
