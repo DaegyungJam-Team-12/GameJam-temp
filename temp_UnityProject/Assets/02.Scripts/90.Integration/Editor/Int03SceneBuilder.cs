@@ -276,7 +276,10 @@ namespace Icebreaker.Integration.Editor
             ValidateReferences(serialized, new[]
             {
                 "theme", "supportCore", "supportStateText", "muzzleGlow", "supportTrail",
-                "feedbackLayer", "feedbackCueTemplate", "gameplayAudioSource", "uiAudioSource"
+                "feedbackLayer", "feedbackCueTemplate", "gameplayAudioSource", "uiAudioSource",
+                "ambientAudioSource", "lightBreakClip", "heavyBreakClip", "crackClip",
+                "crystalDestroyClip", "criticalHitClip", "buttonClickClip", "purchaseSuccessClip",
+                "stageStartClip", "settlementCompleteClip", "arrivalHornClip", "ambientLoopClip"
             }, errors);
             var segments = serialized.FindProperty("chargeSegments");
             if (segments == null || segments.arraySize != Ui06FeedbackAudioPresenter.ChargeSegmentCount)
