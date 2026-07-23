@@ -196,14 +196,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.050980393, g: 0.13333334, b: 0.20784314, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -5663793927466998616, guid: b335242ea8d1a114ba56d4c5e9517ee3, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -272,14 +272,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.050980393, g: 0.13333334, b: 0.20784314, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -342075159302335848, guid: 2998485cf1f09a440ba1a56871685c40, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -575,7 +575,6 @@ GameObject:
   - component: {fileID: 2868096658213932310}
   - component: {fileID: 1163336838080930383}
   - component: {fileID: 55017025182528386}
-  - component: {fileID: 6522021368185154596}
   - component: {fileID: 1106616593513454055}
   m_Layer: 0
   m_Name: UI_IcebreakingHud
@@ -667,25 +666,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &6522021368185154596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7547639823952236673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9cdacee373a33b4787b129c19a80121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Icebreaker.UI.Hud.Ui02HudSampleSource
-  initialPhase: 3
-  initialRemainingSeconds: 42
-  initialFunds: 12400
-  destinationId: island-village
-  destinationProgress: 37
-  destinationTarget: 120
-  canStartStage: 0
 --- !u!114 &1106616593513454055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -698,7 +678,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff684b65268167459a7d29a1c60baec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Icebreaker.UI.Hud.IcebreakingHudPresenter
-  stateSourceBehaviour: {fileID: 6522021368185154596}
+  stateSourceBehaviour: {fileID: 0}
   theme: {fileID: 11400000, guid: 350ecd46038fae440a1d8214e710397f, type: 2}
   fundsText: {fileID: 2221634290316747128}
   timerText: {fileID: 4103234317938246378}
@@ -709,7 +689,10 @@ MonoBehaviour:
   - {fileID: 4103234317938246378}
   - {fileID: 8531638009465423763}
   - {fileID: 7736478482879558628}
-  panelGraphics: []
+  panelGraphics:
+  - {fileID: 5628112203787040475}
+  - {fileID: 5253695485586156511}
+  - {fileID: 3099106711118554482}
 --- !u!1 &7976186247079077298
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,14 +890,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.050980393, g: 0.13333334, b: 0.20784314, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1082416976045545112, guid: d645a664c203e9643ab982f0c37fda9c, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
