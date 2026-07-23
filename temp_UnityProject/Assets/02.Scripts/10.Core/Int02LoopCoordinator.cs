@@ -70,14 +70,69 @@ namespace Icebreaker.Core
         public CombatConfig CurrentCombatConfig => currentStageCombatConfig ??
             CombatConfigFactory.Build(maintenanceCore.MaintenanceLevels);
 
+        public float MasterVolume => saveData.masterVolume;
+
+        public bool ScreenShakeEnabled => saveData.screenShakeEnabled;
+
         public void EnsureInitialized() => PublishState();
 
         public void Tick(double unscaledDeltaSeconds)
         {
             ThrowIfDisposed();
             loop.Tick(unscaledDeltaSeconds);
-            saveService.Tick(unscaledDeltaSeconds);
+            if (!loop.IsPaused)
+            {
+                saveService.Tick(unscaledDeltaSeconds);
+            }
+
             PublishState();
+        }
+
+        public void OpenSettings()
+        {
+            ThrowIfDisposed();
+            if (loop.IsPaused)
+            {
+                return;
+            }
+
+            loop.SetSettingsPaused(true);
+            PublishState();
+        }
+
+        public void CloseSettings()
+        {
+            ThrowIfDisposed();
+            if (!loop.IsPaused)
+            {
+                return;
+            }
+
+            loop.SetSettingsPaused(false);
+            if (loop.Phase == GamePhase.Traveling)
+            {
+                saveData.nextAvailableAtUtc = FormatUtc(
+                    utcNow() + TimeSpan.FromSeconds(loop.VoyageRemainingSeconds));
+            }
+
+            CopyProgressionToSave();
+            saveService.MarkDirty();
+            saveService.Flush();
+            PublishState();
+        }
+
+        public void SetMasterVolume(float value)
+        {
+            ThrowIfDisposed();
+            saveData.masterVolume = Math.Max(0f, Math.Min(1f, value));
+            saveService.MarkDirty();
+        }
+
+        public void SetScreenShakeEnabled(bool enabled)
+        {
+            ThrowIfDisposed();
+            saveData.screenShakeEnabled = enabled;
+            saveService.MarkDirty();
         }
 
         public void RequestStageStart()

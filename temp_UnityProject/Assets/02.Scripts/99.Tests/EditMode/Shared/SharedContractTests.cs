@@ -29,6 +29,44 @@ namespace Icebreaker.Shared.Tests
         }
 
         [Test]
+        public void ManagementScreenRules_AllowRouteOutsideCombatOnly()
+        {
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Route, GamePhase.Traveling),
+                Is.True);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Route, GamePhase.Ready),
+                Is.True);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Route, GamePhase.Playing),
+                Is.False);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Settings, GamePhase.Traveling),
+                Is.True);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Settings, GamePhase.Ready),
+                Is.True);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Settings, GamePhase.Countdown),
+                Is.True);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Settings, GamePhase.Playing),
+                Is.True);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Settings, GamePhase.StageEnding),
+                Is.False);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Settings, GamePhase.Settlement),
+                Is.False);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Settings, GamePhase.Arrival),
+                Is.False);
+            Assert.That(
+                ManagementScreenRules.CanOpen(ManagementScreen.Settings, GamePhase.Completed),
+                Is.True);
+        }
+
+        [Test]
         public void EventPayloads_PreserveLongDoubleAndReferencePositionValues()
         {
             const long stageId = 4_500_000_001L;

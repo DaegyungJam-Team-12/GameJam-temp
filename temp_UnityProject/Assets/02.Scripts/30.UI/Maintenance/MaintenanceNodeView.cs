@@ -10,6 +10,7 @@ using UnityEngine.UI;
 namespace Icebreaker.UI.Maintenance
 {
     public sealed class MaintenanceNodeView : MonoBehaviour,
+        IPointerEnterHandler,
         IPointerDownHandler,
         IPointerUpHandler,
         IBeginDragHandler,
@@ -160,6 +161,9 @@ namespace Icebreaker.UI.Maintenance
                 selectionFrame.gameObject.SetActive(selected && gameObject.activeSelf);
             }
         }
+
+        public void OnPointerEnter(PointerEventData eventData) =>
+            viewport?.ProcessPointerEnter(StepId);
 
         public void OnPointerDown(PointerEventData eventData) =>
             viewport?.ProcessPointerDown(eventData, StepId);

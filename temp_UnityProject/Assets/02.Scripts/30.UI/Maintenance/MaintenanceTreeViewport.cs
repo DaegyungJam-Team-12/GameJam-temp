@@ -28,6 +28,8 @@ namespace Icebreaker.UI.Maintenance
         private string? pointerDownStepId;
 
         public event Action<string> StepClicked = delegate { };
+        public event Action<string> StepDoubleClicked = delegate { };
+        public event Action<string> StepHovered = delegate { };
         public event Action BackgroundClicked = delegate { };
 
         public float CurrentZoom => content != null
@@ -125,6 +127,18 @@ namespace Icebreaker.UI.Maintenance
             ApplyZoomAtPointer(eventData.scrollDelta.y, pointerInViewport);
         }
 
+        public void ProcessPointerEnter(string? stepId)
+        {
+            // Hover shows the tooltip immediately, but ignore hovers while the pointer is held
+            // (dragging/panning) so panning across nodes doesn't hijack the selection.
+            if (pointerActive || string.IsNullOrEmpty(stepId))
+            {
+                return;
+            }
+
+            StepHovered(stepId);
+        }
+
         public void ProcessPointerDown(PointerEventData eventData, string? stepId)
         {
             pointerActive = true;
@@ -154,6 +168,7 @@ namespace Icebreaker.UI.Maintenance
 
             var movedPixels = Vector2.Distance(pointerDownScreenPosition, eventData.position);
             var clickedStepId = pointerDownStepId;
+            var isDoubleClick = eventData.clickCount >= 2;
             var isShortClick = movedPixels < MaintenanceTreeViewportMath.ClickDragThresholdPixels;
             var isStepClick = isShortClick &&
                           !string.IsNullOrEmpty(clickedStepId) &&
@@ -165,6 +180,10 @@ namespace Icebreaker.UI.Maintenance
             if (isStepClick)
             {
                 StepClicked(clickedStepId!);
+                if (isDoubleClick)
+                {
+                    StepDoubleClicked(clickedStepId!);
+                }
             }
             else if (isBackgroundClick)
             {

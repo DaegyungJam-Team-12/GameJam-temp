@@ -276,6 +276,114 @@ namespace Icebreaker.Core.Tests
             Assert.That(rewards[1].FundsGranted, Is.EqualTo(11));
         }
 
+        [Test]
+        public void SettingsPause_FreezesTravelAndCompensatesSavedAvailabilityOnClose()
+        {
+            var now = new DateTimeOffset(2026, 7, 22, 12, 0, 0, TimeSpan.Zero);
+            var saveData = SaveData.CreateNew("demo");
+            var loop = new GameLoopController(60d, 3d, 10d);
+            var ledger = new ProgressionLedger(
+                CreateSmallDestinations(),
+                RewardTable.CreateDefault());
+            var saveService = new SaveService(new SaveStore(tempDirectory), saveData);
+            var maintenanceCore = new MaintenanceCore(
+                MaintenanceCatalog.CreateDemo(),
+                ledger,
+                saveService);
+            using var coordinator = new Int02LoopCoordinator(
+                loop,
+                ledger,
+                maintenanceCore,
+                saveService,
+                () => now);
+            coordinator.Tick(2d);
+
+            coordinator.OpenSettings();
+            coordinator.OpenSettings();
+            coordinator.SetMasterVolume(0.4f);
+            coordinator.Tick(100d);
+            Assert.That(saveService.HasPendingWrite, Is.True);
+            Assert.That(saveService.FlushCount, Is.Zero);
+            now = now.AddSeconds(30d);
+            coordinator.CloseSettings();
+            coordinator.CloseSettings();
+
+            Assert.That(loop.IsPaused, Is.False);
+            Assert.That(loop.VoyageRemainingSeconds, Is.EqualTo(8d));
+            Assert.That(
+                DateTimeOffset.Parse(saveData.nextAvailableAtUtc),
+                Is.EqualTo(now.AddSeconds(8d)));
+            Assert.That(saveService.FlushCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void SettingsValues_PersistTogetherWhenModalCloses()
+        {
+            var saveData = SaveData.CreateNew("demo");
+            using var coordinator = CreateCoordinator(
+                CreateSmallDestinations(),
+                out _,
+                saveData);
+
+            coordinator.OpenSettings();
+            coordinator.SetMasterVolume(0.35f);
+            coordinator.SetScreenShakeEnabled(false);
+            coordinator.CloseSettings();
+
+            var restored = new SaveStore(tempDirectory).TryLoad("demo");
+            Assert.That(restored, Is.Not.Null);
+            Assert.That(restored!.masterVolume, Is.EqualTo(0.35f));
+            Assert.That(restored.screenShakeEnabled, Is.False);
+            Assert.That(coordinator.MasterVolume, Is.EqualTo(0.35f));
+            Assert.That(coordinator.ScreenShakeEnabled, Is.False);
+        }
+
+        [Test]
+        public void RouteStatusFactory_UsesLedgerForCompletedAndUpcomingDestinations()
+        {
+            var destinations = CreateDestinations(2, 3, 4);
+            var ledger = new ProgressionLedger(
+                destinations,
+                RewardTable.CreateDefault(),
+                initialDestinationIndex: 1,
+                initialDestinationProgress: 2,
+                initialCompletedDestinationIds: new[] { "island-village" });
+
+            var route = CreateRouteStatus(ledger, destinations);
+
+            Assert.That(GetRouteValue(route, "CurrentDestinationName"), Is.EqualTo("등대항"));
+            Assert.That(GetRouteValue(route, "Progress"), Is.EqualTo(2));
+            Assert.That(GetRouteValue(route, "Target"), Is.EqualTo(3));
+            Assert.That(GetRouteValue(route, "CargoText"), Is.EqualTo("발전기 연료·의약품"));
+            Assert.That(GetRouteValue(route, "CompletedDestinationsText"), Is.EqualTo("섬마을"));
+            Assert.That(GetRouteValue(route, "UpcomingDestinationsText"), Is.EqualTo("북쪽 기지"));
+            Assert.That(GetRouteValue(route, "GameCompleted"), Is.False);
+        }
+
+        [Test]
+        public void RouteStatusFactory_ShowsCompletedVoyageWithoutUpcomingDestination()
+        {
+            var destinations = CreateDestinations(1, 1, 1);
+            var ledger = new ProgressionLedger(
+                destinations,
+                RewardTable.CreateDefault(),
+                initialDestinationIndex: 2,
+                initialDestinationProgress: 1,
+                initialCompletedDestinationIds: new[]
+                {
+                    "island-village", "lighthouse-port", "northern-base"
+                },
+                initialGameCompleted: true);
+
+            var route = CreateRouteStatus(ledger, destinations);
+
+            Assert.That(GetRouteValue(route, "CurrentDestinationName"), Is.EqualTo("북쪽 기지"));
+            Assert.That(GetRouteValue(route, "CompletedDestinationsText"),
+                Is.EqualTo("섬마을 → 등대항 → 북쪽 기지"));
+            Assert.That(GetRouteValue(route, "UpcomingDestinationsText"), Is.EqualTo("없음"));
+            Assert.That(GetRouteValue(route, "GameCompleted"), Is.True);
+        }
+
         private Int02LoopCoordinator CreateCoordinator(
             DestinationDefinition[] destinations,
             out ProgressionLedger ledger,
@@ -368,5 +476,30 @@ namespace Icebreaker.Core.Tests
                 referencePosition: new Vector2(480f, 270f),
                 stageElapsedSeconds: 0d);
         }
+
+        private static object CreateRouteStatus(
+            ProgressionLedger ledger,
+            DestinationDefinition[] destinations)
+        {
+            Type? factoryType = null;
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                factoryType = assembly.GetType(
+                    "Icebreaker.UI.Management.RouteStatusViewDataFactory",
+                    throwOnError: false);
+                if (factoryType != null)
+                {
+                    break;
+                }
+            }
+
+            Assert.That(factoryType, Is.Not.Null, "Route status factory assembly was not loaded.");
+            return factoryType!.GetMethod("Create")!.Invoke(
+                null,
+                new object[] { ledger, destinations })!;
+        }
+
+        private static object? GetRouteValue(object route, string propertyName) =>
+            route.GetType().GetProperty(propertyName)!.GetValue(route);
     }
 }

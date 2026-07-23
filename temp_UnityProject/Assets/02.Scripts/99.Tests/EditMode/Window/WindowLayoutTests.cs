@@ -94,9 +94,14 @@ namespace Icebreaker.Window.Tests
 
         [TestCase(GamePhase.Traveling, ManagementScreen.None, WindowView.Collapsed)]
         [TestCase(GamePhase.Traveling, ManagementScreen.Maintenance, WindowView.Expanded)]
+        [TestCase(GamePhase.Traveling, ManagementScreen.Route, WindowView.Expanded)]
+        [TestCase(GamePhase.Traveling, ManagementScreen.Settings, WindowView.Expanded)]
         [TestCase(GamePhase.Ready, ManagementScreen.Maintenance, WindowView.Expanded)]
+        [TestCase(GamePhase.Ready, ManagementScreen.Route, WindowView.Expanded)]
+        [TestCase(GamePhase.Ready, ManagementScreen.Settings, WindowView.Expanded)]
         [TestCase(GamePhase.Ready, ManagementScreen.None, WindowView.Collapsed)]
         [TestCase(GamePhase.Playing, ManagementScreen.None, WindowView.Expanded)]
+        [TestCase(GamePhase.Completed, ManagementScreen.Settings, WindowView.Expanded)]
         public void ViewForState_ManagementScreenOverridesPhase(
             GamePhase phase,
             ManagementScreen managementScreen,
