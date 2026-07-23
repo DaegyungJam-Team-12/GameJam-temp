@@ -21,7 +21,16 @@ namespace Icebreaker.Window
         {
             var clientSize = WindowLayout.ClientSizeForView(view);
             var targetRect = WindowLayout.Calculate(workArea, clientSize);
+            return ApplyRect(clientSize, targetRect);
+        }
 
+        /// <summary>
+        /// Applies an already-resolved client size and target rect (e.g. from a position/size
+        /// preset or an expand/collapse anchor calculation) directly, bypassing the default
+        /// bottom-center placement.
+        /// </summary>
+        public PixelRect ApplyRect(PixelSize clientSize, PixelRect targetRect)
+        {
             nativeWindow.ClientSize = clientSize;
             nativeWindow.Position = new PixelPoint(targetRect.X, targetRect.Y);
             nativeWindow.IsTopmost = true;

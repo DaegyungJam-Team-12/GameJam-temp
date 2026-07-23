@@ -18,7 +18,7 @@ namespace Icebreaker.Window.Tests
 
             Assert.That(nativeWindow.ClientSize.Width, Is.EqualTo(960));
             Assert.That(nativeWindow.ClientSize.Height, Is.EqualTo(540));
-            Assert.That(nativeWindow.Position.X, Is.EqualTo(952));
+            Assert.That(nativeWindow.Position.X, Is.EqualTo(480));
             Assert.That(nativeWindow.Position.Y, Is.EqualTo(492));
             Assert.That(nativeWindow.IsTopmost, Is.True);
             Assert.That(nativeWindow.ClientSizeSetCount, Is.EqualTo(1));
@@ -40,7 +40,7 @@ namespace Icebreaker.Window.Tests
 
             Assert.That(nativeWindow.ClientSize.Width, Is.EqualTo(800));
             Assert.That(nativeWindow.ClientSize.Height, Is.EqualTo(72));
-            Assert.That(nativeWindow.Position.X, Is.EqualTo(728));
+            Assert.That(nativeWindow.Position.X, Is.EqualTo(368));
             Assert.That(nativeWindow.Position.Y, Is.EqualTo(744));
             Assert.That(nativeWindow.IsTopmost, Is.True);
             Assert.That(nativeWindow.ClientSizeSetCount, Is.EqualTo(1));
@@ -48,6 +48,23 @@ namespace Icebreaker.Window.Tests
             Assert.That(nativeWindow.TopmostSetCount, Is.EqualTo(1));
             Assert.That(nativeWindow.FocusCallCount, Is.Zero);
             Assert.That(result.Bottom, Is.EqualTo(816));
+        }
+
+        [Test]
+        public void ApplyRect_AppliesExplicitSizeAndRectDirectly()
+        {
+            var nativeWindow = new FakeNativeWindow();
+            var controller = new WindowViewController(nativeWindow);
+
+            var result = controller.ApplyRect(new PixelSize(1000, 90), new PixelRect(12, 34, 1000, 90));
+
+            Assert.That(nativeWindow.ClientSize.Width, Is.EqualTo(1000));
+            Assert.That(nativeWindow.ClientSize.Height, Is.EqualTo(90));
+            Assert.That(nativeWindow.Position.X, Is.EqualTo(12));
+            Assert.That(nativeWindow.Position.Y, Is.EqualTo(34));
+            Assert.That(nativeWindow.IsTopmost, Is.True);
+            Assert.That(result.Width, Is.EqualTo(1000));
+            Assert.That(result.Height, Is.EqualTo(90));
         }
 
         private sealed class FakeNativeWindow : INativeWindow

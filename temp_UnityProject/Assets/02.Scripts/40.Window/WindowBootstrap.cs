@@ -18,6 +18,13 @@ namespace Icebreaker.Window
         private bool _hasRequestedView;
         private WindowView _requestedView = WindowView.Collapsed;
 
+        private readonly WindowLocalSettings localSettings = WindowLocalSettings.CreateDefault();
+        private WindowSettingsData settingsData;
+        private int coordinateSpaceBottom;
+        private PixelRect collapsedReferenceRect;
+        private bool dragActive;
+        private WindowWorkAreaSnapshot dragSnapshot;
+
         public static WindowBootstrap? Instance { get; private set; }
 
         /// <summary>
@@ -25,9 +32,16 @@ namespace Icebreaker.Window
         /// </summary>
         public WindowStartupResult? LastResult { get; private set; }
 
+        public WindowPositionMode CurrentPositionMode => settingsData.PositionMode;
+
+        public WindowPositionPreset CurrentPositionPreset => settingsData.PositionPreset;
+
+        public WindowSizePreset CurrentSizePreset => settingsData.SizePreset;
+
         private void Awake()
         {
             Instance = this;
+            settingsData = localSettings.Load();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -178,10 +192,173 @@ namespace Icebreaker.Window
                 throw new InvalidOperationException("UniWindowController is not attached.");
             }
 
-            var workArea = WindowWorkAreaProvider.GetPrimary();
-            var nativeWindow = new UniWindowAdapter(_controller, workArea.CoordinateSpaceBottom);
+            var snapshot = ResolveWorkAreaSnapshot();
+
+            var sizePreset = WindowLayout.ResolveFittingSizePreset(snapshot.WorkArea, settingsData.SizePreset);
+            if (sizePreset != settingsData.SizePreset)
+            {
+                settingsData = settingsData.WithSizePreset(sizePreset);
+                localSettings.SaveSizePreset(sizePreset);
+            }
+
+            var collapsedSize = WindowLayout.ClientSizeForPreset(WindowView.Collapsed, sizePreset);
+            collapsedReferenceRect = ResolveCollapsedRect(snapshot.WorkArea, collapsedSize);
+
+            PixelSize targetSize;
+            PixelRect targetRect;
+            if (view == WindowView.Collapsed)
+            {
+                targetSize = collapsedSize;
+                targetRect = collapsedReferenceRect;
+            }
+            else
+            {
+                targetSize = WindowLayout.ClientSizeForPreset(WindowView.Expanded, sizePreset);
+                var anchor = WindowLayout.DetermineEdgeAnchor(collapsedReferenceRect, snapshot.WorkArea);
+                targetRect = WindowLayout.CalculateExpandedRectFromAnchor(
+                    collapsedReferenceRect,
+                    targetSize,
+                    anchor,
+                    snapshot.WorkArea);
+            }
+
+            var nativeWindow = new UniWindowAdapter(_controller, snapshot.CoordinateSpaceBottom);
             var viewController = new WindowViewController(nativeWindow);
-            viewController.ApplyView(view, workArea.WorkArea);
+            viewController.ApplyRect(targetSize, targetRect);
+        }
+
+        private PixelRect ResolveCollapsedRect(PixelRect workArea, PixelSize collapsedSize) =>
+            settingsData.PositionMode == WindowPositionMode.Preset
+                ? WindowLayout.ResolvePresetRect(workArea, collapsedSize, settingsData.PositionPreset)
+                : WindowLayout.ResolveNormalizedRect(
+                    workArea,
+                    collapsedSize,
+                    settingsData.NormalizedX,
+                    settingsData.NormalizedY);
+
+        // Re-resolves the current monitor's work area from the native window's live position,
+        // so DPI/resolution/monitor changes are honored on every call rather than sticking to
+        // whatever monitor the window started on.
+        private WindowWorkAreaSnapshot ResolveWorkAreaSnapshot()
+        {
+            if (_controller == null || coordinateSpaceBottom <= 0)
+            {
+                var primary = WindowWorkAreaProvider.GetPrimary();
+                coordinateSpaceBottom = primary.CoordinateSpaceBottom;
+                return primary;
+            }
+
+            var probe = new UniWindowAdapter(_controller, coordinateSpaceBottom);
+            var currentRect = new PixelRect(
+                probe.Position.X,
+                probe.Position.Y,
+                probe.ClientSize.Width,
+                probe.ClientSize.Height);
+
+            var snapshot = WindowWorkAreaProvider.GetForWindow(currentRect);
+            coordinateSpaceBottom = snapshot.CoordinateSpaceBottom;
+            return snapshot;
+        }
+
+        public bool IsSizePresetAvailable(WindowSizePreset preset) =>
+            WindowLayout.SizePresetFits(ResolveWorkAreaSnapshot().WorkArea, preset);
+
+        public void ApplyPositionPreset(WindowPositionPreset preset)
+        {
+            settingsData = settingsData.WithPositionPreset(preset);
+            localSettings.SavePositionPreset(preset);
+            ReapplyCurrentView();
+        }
+
+        public void ResetPosition() => ApplyPositionPreset(WindowLocalSettings.DefaultPositionPreset);
+
+        public void ApplySizePreset(WindowSizePreset preset)
+        {
+            settingsData = settingsData.WithSizePreset(preset);
+            localSettings.SaveSizePreset(preset);
+            ReapplyCurrentView();
+        }
+
+        public void ResetSize() => ApplySizePreset(WindowLocalSettings.DefaultSizePreset);
+
+        /// <summary>Starts a manual drag of the collapsed bar. No-op outside the native plugin path.</summary>
+        public void BeginDrag()
+        {
+            if (LastResult?.Mode != WindowStartupMode.PluginWindow || _controller == null)
+            {
+                return;
+            }
+
+            dragSnapshot = ResolveWorkAreaSnapshot();
+            dragActive = true;
+        }
+
+        /// <summary>Moves the window by a pixel delta during an active drag. Never persists.</summary>
+        public void DragBy(int deltaX, int deltaY)
+        {
+            if (!dragActive || _controller == null)
+            {
+                return;
+            }
+
+            var adapter = new UniWindowAdapter(_controller, coordinateSpaceBottom);
+            var current = adapter.Position;
+            var size = adapter.ClientSize;
+            var moved = new PixelRect(current.X + deltaX, current.Y + deltaY, size.Width, size.Height);
+            var clamped = WindowLayout.ClampToWorkArea(moved, dragSnapshot.WorkArea);
+            adapter.Position = new PixelPoint(clamped.X, clamped.Y);
+        }
+
+        /// <summary>Ends a manual drag and persists the resulting Custom position exactly once.</summary>
+        public void EndDrag()
+        {
+            if (!dragActive)
+            {
+                return;
+            }
+
+            dragActive = false;
+
+            if (_controller == null)
+            {
+                return;
+            }
+
+            var adapter = new UniWindowAdapter(_controller, coordinateSpaceBottom);
+            var finalPosition = adapter.Position;
+            var finalSize = adapter.ClientSize;
+            var normalized = WindowLayout.PositionToNormalized(dragSnapshot.WorkArea, finalSize, finalPosition);
+
+            settingsData = settingsData.WithCustomPosition(
+                dragSnapshot.MonitorId,
+                normalized.NormalizedX,
+                normalized.NormalizedY);
+            localSettings.SaveCustomPosition(dragSnapshot.MonitorId, normalized.NormalizedX, normalized.NormalizedY);
+            collapsedReferenceRect = new PixelRect(
+                finalPosition.X,
+                finalPosition.Y,
+                finalSize.Width,
+                finalSize.Height);
+        }
+
+        private void ReapplyCurrentView()
+        {
+            if (!_finalized || LastResult?.Mode != WindowStartupMode.PluginWindow || _controller == null)
+            {
+                return;
+            }
+
+            try
+            {
+                ApplyPluginView(_requestedView);
+            }
+            catch (Exception exception)
+            {
+                Destroy(_controller);
+                _controller = null;
+                UseNormalWindowFallback(
+                    $"Native window apply threw {exception.GetType().Name}: {exception.Message}");
+            }
         }
 
         private void UseNormalWindowFallback(string reason)

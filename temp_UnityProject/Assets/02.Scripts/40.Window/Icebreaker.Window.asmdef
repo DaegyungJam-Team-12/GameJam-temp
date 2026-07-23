@@ -3,7 +3,8 @@
   "rootNamespace": "Icebreaker.Window",
   "references": [
     "Icebreaker.Shared",
-    "Kirurobo.UniWindowController"
+    "Kirurobo.UniWindowController",
+    "UnityEngine.UI"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
