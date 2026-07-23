@@ -26,6 +26,30 @@ namespace Icebreaker.Core
             var h03Level = GetLevel(levelsById, MaintenanceCatalog.H03, 1);
             var specialEffectScale = 1d + 0.3d * h02Level;
 
+            // 보조 파쇄(Support Attack) 단일 장착 로직: 가장 높은 티어 1개만 활성화
+            bool supportEnabled = false;
+            int additionalTargets = 0;
+            bool prioritizeSpecialIce = false;
+
+            if (s03Level >= 1)
+            {
+                supportEnabled = true;
+                additionalTargets = 2; // S03은 다중 타격(S02)의 2단계 성능 내장
+                prioritizeSpecialIce = true;
+            }
+            else if (s02Level >= 1)
+            {
+                supportEnabled = true;
+                additionalTargets = s02Level; // S02의 레벨(1~2)에 따라 추가 대상 1~2개
+                prioritizeSpecialIce = false;
+            }
+            else if (s01Level >= 1)
+            {
+                supportEnabled = true;
+                additionalTargets = 0; // S01은 추가 대상 없음 (단일 타격)
+                prioritizeSpecialIce = false;
+            }
+
             return new CombatConfig(
                 directAttack: new DirectAttackConfig(
                     d01Level == 0 ? 1f : 1f + 2f * d01Level,
@@ -35,12 +59,12 @@ namespace Icebreaker.Core
                     3f),
                 iceField: CreateIceField(c03Level, c04Level),
                 supportAttack: new SupportAttackConfig(
-                    s01Level >= 1,
+                    supportEnabled,
                     12,
                     1f,
-                    s02Level,
+                    additionalTargets,
                     0.7f,
-                    s03Level >= 1,
+                    prioritizeSpecialIce,
                     2f),
                 chainEffect: new ChainEffectConfig(
                     overkillEnabled: d03Level >= 1,

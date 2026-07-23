@@ -14,6 +14,7 @@ namespace Icebreaker.UI.Maintenance
         IPointerExitHandler,
         IPointerDownHandler,
         IPointerUpHandler,
+        IPointerClickHandler,
         IBeginDragHandler,
         IDragHandler,
         IEndDragHandler
@@ -174,6 +175,13 @@ namespace Icebreaker.UI.Maintenance
 
         public void OnPointerUp(PointerEventData eventData) =>
             viewport?.ProcessPointerUp(eventData, StepId);
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            // InputSystemUIInputModule only advances PointerEventData.clickCount for
+            // objects that expose an IPointerClickHandler. The purchase decision stays
+            // in ProcessPointerUp, which receives the updated click count first.
+        }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
