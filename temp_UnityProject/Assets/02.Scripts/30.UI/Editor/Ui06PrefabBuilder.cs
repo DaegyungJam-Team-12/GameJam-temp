@@ -20,7 +20,8 @@ namespace Icebreaker.UI.Editor
         private const string PreviewPrefabPath = PreviewFolder + "/UI_FeedbackAudio_Preview.prefab";
         private const string AudioCueCatalogPath = "Assets/06.Sounds/AudioCueCatalog.asset";
         private const string SfxFolder = "Assets/06.Sounds/SFX";
-        private const string StageMusicLoopPath = "Assets/06.Sounds/BGM/wind_sea_loop.mp3";
+        private const string StageMusicLoopPath = "Assets/06.Sounds/BGM/nojisuma-on_the_way_home-468318.mp3";
+        private const string StageAmbienceLoopPath = "Assets/06.Sounds/BGM/wind_sea_loop.mp3";
         private const string LightBreakPath = SfxFolder + "/light_break.mp3";
         private const string HeavyBreakPath = SfxFolder + "/heavy_break.mp3";
         private const string CrackPath = SfxFolder + "/ice_cracking.mp3";
@@ -56,7 +57,7 @@ namespace Icebreaker.UI.Editor
                 var musicRoot = new GameObject("MusicAudio", typeof(AudioSource));
                 musicRoot.transform.SetParent(root.transform, false);
                 var musicAudio = musicRoot.GetComponent<AudioSource>();
-                ConfigureLoopAudioSource(musicAudio, 0.32f);
+                ConfigureLoopAudioSource(musicAudio, 0.316f);
                 var ambientRoot = new GameObject("AmbientAudio", typeof(AudioSource));
                 ambientRoot.transform.SetParent(root.transform, false);
                 var ambientAudio = ambientRoot.GetComponent<AudioSource>();
@@ -368,9 +369,16 @@ namespace Icebreaker.UI.Editor
                 }
 
                 source.StartStage();
-                if (presenter.LastAudioCue != "StageStart" || presenter.CountdownSoundCount != 1)
+                if (presenter.LastAudioCue != "Countdown" || presenter.CountdownSoundCount != 1)
                 {
                     errors.Add("Stage start must not replay the countdown clip.");
+                }
+
+                source.EndStage();
+                source.ShowSettlementTwice();
+                if (presenter.LastAudioCue != "Settlement" || presenter.SettlementSoundCount != 1)
+                {
+                    errors.Add("Stage end and settlement must play one completion cue.");
                 }
 
                 source.ShowArrival();
@@ -637,7 +645,7 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "countdownClip", LoadRequiredAudioClip(CountdownPath));
             SetObject(serialized, "settlementCompleteClip", LoadRequiredAudioClip(SettlementCompletePath));
             SetObject(serialized, "arrivalHornClip", LoadRequiredAudioClip(ArrivalHornPath));
-            SetObject(serialized, "ambientLoopClip", LoadRequiredAudioClip(StageMusicLoopPath));
+            SetObject(serialized, "ambientLoopClip", LoadRequiredAudioClip(StageAmbienceLoopPath));
             SetObjectArray(serialized, "uiButtons", new[] { sampleButton });
             SetBool(serialized, "allowProceduralFallback", allowProceduralFallback);
             serialized.ApplyModifiedPropertiesWithoutUndo();
