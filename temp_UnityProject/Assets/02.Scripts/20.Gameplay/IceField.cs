@@ -24,14 +24,13 @@ namespace Icebreaker.Gameplay
         private CriticalStrike? criticalStrike;
         private readonly List<IceInstance> activeIce;
         private readonly IStageClock clock;
-        private SupportAttackConfig? supportConfig;
+        private readonly SupportAttackProcessor supportProcessor;
         private ChainEffectConfig? chainConfig;
         
         private float lastClickDamage;
         
         private long nextChainId = 1L;
         private long currentChainId;
-        private int supportChargeCount;
         private int destroyedCountInCurrentChain;
         private bool hasTriggeredIceCollapseInCurrentChain;
 
@@ -88,28 +87,7 @@ namespace Icebreaker.Gameplay
             }
         }
 
-        private readonly struct SupportTargetComparer : IComparer<IceInstance>
-        {
-            private readonly Vector2 origin;
-            public SupportTargetComparer(Vector2 origin) => this.origin = origin;
-            public int Compare(IceInstance a, IceInstance b)
-            {
-                var specialA = a.SpecialType != SpecialIceType.None ? 1 : 0;
-                var specialB = b.SpecialType != SpecialIceType.None ? 1 : 0;
-                var specialCmp = specialB.CompareTo(specialA);
-                if (specialCmp != 0) return specialCmp;
 
-                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
-                if (hpCmp != 0) return hpCmp;
-
-                var distA = Vector2.SqrMagnitude(a.ReferencePosition - origin);
-                var distB = Vector2.SqrMagnitude(b.ReferencePosition - origin);
-                var distCmp = distA.CompareTo(distB);
-                if (distCmp != 0) return distCmp;
-
-                return a.IceInstanceId.CompareTo(b.IceInstanceId);
-            }
-        }
 
         public IceField(long stageId, IceFieldConfig config, IceIdGenerator idGenerator, IceSpawnPositioner positioner,
             IStageClock clock, CriticalStrike? criticalStrike = null, SupportAttackConfig? supportConfig = null,
@@ -121,9 +99,15 @@ namespace Icebreaker.Gameplay
             this.positioner = positioner;
             this.clock = clock;
             this.criticalStrike = criticalStrike;
-            this.supportConfig = supportConfig;
             this.chainConfig = chainConfig;
             activeIce = new List<IceInstance>(config.MaxActiveIceCount);
+
+            supportProcessor = new SupportAttackProcessor(
+                stageId,
+                supportConfig,
+                e => SupportChargeChanged(e),
+                EnqueueDamage,
+                ProcessQueue);
         }
 
         public event Action<DamageAppliedEvent> DamageApplied = delegate { };
@@ -145,7 +129,7 @@ namespace Icebreaker.Gameplay
             config = nextConfig ?? throw new ArgumentNullException(nameof(nextConfig));
             positioner = nextPositioner ?? throw new ArgumentNullException(nameof(nextPositioner));
             criticalStrike = nextCriticalStrike;
-            supportConfig = nextSupportConfig;
+            supportProcessor.Reconfigure(nextSupportConfig);
             chainConfig = nextChainConfig;
         }
 
@@ -162,7 +146,7 @@ namespace Icebreaker.Gameplay
         /// </summary>
         public void Initialize(double stageElapsedSeconds)
         {
-            supportChargeCount = 0;
+            supportProcessor.Reset();
 
             for (var layoutAttempt = 0; layoutAttempt < MaxInitialLayoutAttempts; layoutAttempt++)
             {
@@ -225,7 +209,7 @@ namespace Icebreaker.Gameplay
             EnqueueDamage(target, finalDamage, effectType, DestroyCategory.Direct, wasCritical, chainDepth: 0);
             ProcessQueue(stageElapsedSeconds);
 
-            ChargeSupportForDirectTick(referencePosition, stageElapsedSeconds);
+            supportProcessor.ChargeForDirectTick(referencePosition, stageElapsedSeconds, lastClickDamage, activeIce, config.RespawnProtectionSeconds);
 
             return true;
         }
@@ -278,119 +262,11 @@ namespace Icebreaker.Gameplay
             }
 
             ProcessQueue(stageElapsedSeconds);
-            ChargeSupportForDirectTick(referencePosition, stageElapsedSeconds);
+            supportProcessor.ChargeForDirectTick(referencePosition, stageElapsedSeconds, lastClickDamage, activeIce, config.RespawnProtectionSeconds);
             return targets.Count;
         }
 
-        private void ChargeSupportForDirectTick(Vector2 firePosition, double stageElapsedSeconds)
-        {
-            if (supportConfig == null || !supportConfig.Enabled)
-            {
-                return;
-            }
 
-            supportChargeCount++;
-            if (supportChargeCount >= supportConfig.RequiredDirectHitCount)
-            {
-                supportChargeCount = 0;
-                SupportChargeChanged(new SupportChargeChangedEvent(
-                    stageId, supportChargeCount, supportConfig.RequiredDirectHitCount));
-                FireSupport(firePosition, stageElapsedSeconds);
-                return;
-            }
-
-            SupportChargeChanged(new SupportChargeChangedEvent(
-                stageId, supportChargeCount, supportConfig.RequiredDirectHitCount));
-        }
-
-        private void FireSupport(Vector2 firePosition, double stageElapsedSeconds)
-        {
-            if (supportConfig == null || !supportConfig.Enabled)
-            {
-                return;
-            }
-
-            var targets = SelectSupportTargets(firePosition, stageElapsedSeconds);
-            if (targets.Count == 0)
-            {
-                return;
-            }
-
-            // Primary target: full damage
-            var primaryDamage = lastClickDamage * supportConfig.PrimaryDamageMultiplier;
-            if (supportConfig.PrioritizeSpecialIce &&
-                targets[0].SpecialType != SpecialIceType.None)
-            {
-                primaryDamage *= supportConfig.SpecialIceDamageMultiplier;
-            }
-
-            EnqueueDamage(targets[0], primaryDamage, EffectType.SupportShot, DestroyCategory.Support, false, 0);
-
-            // Additional targets (S02): reduced damage
-            var additionalDamage = lastClickDamage * supportConfig.AdditionalDamageMultiplier;
-            for (var i = 1; i < targets.Count; i++)
-            {
-                var damage = additionalDamage;
-                if (supportConfig.PrioritizeSpecialIce &&
-                    targets[i].SpecialType != SpecialIceType.None)
-                {
-                    damage *= supportConfig.SpecialIceDamageMultiplier;
-                }
-
-                EnqueueDamage(targets[i], damage, EffectType.SupportShot, DestroyCategory.Support, false, 0);
-            }
-
-            ProcessQueue(stageElapsedSeconds);
-        }
-
-        /// <summary>
-        /// Select support targets: 1 primary + AdditionalTargetCount additional.
-        /// S03: prioritize special ice, then highest HP.
-        /// Default: closest to fire position.
-        /// Tie-break: HP desc → distance asc → iceInstanceId asc.
-        /// </summary>
-        private List<IceInstance> SelectSupportTargets(Vector2 firePosition, double stageElapsedSeconds)
-        {
-            tempTargets.Clear();
-            for (var i = 0; i < activeIce.Count; i++)
-            {
-                var ice = activeIce[i];
-                if (ice.IsDestroyed) continue;
-
-                // Respawn protection: non-direct damage excluded
-                if (stageElapsedSeconds - ice.SpawnTime < config.RespawnProtectionSeconds)
-                {
-                    continue;
-                }
-
-                tempTargets.Add(ice);
-            }
-
-            if (tempTargets.Count == 0)
-            {
-                return tempTargets;
-            }
-
-            var totalTargets = 1 + (supportConfig?.AdditionalTargetCount ?? 0);
-
-            if (supportConfig != null && supportConfig.PrioritizeSpecialIce)
-            {
-                // S03: special ice first → HP desc → distance asc → ID asc
-                tempTargets.Sort(new SupportTargetComparer(firePosition));
-            }
-            else
-            {
-                // Default (no S03): closest first → HP desc → ID asc
-                tempTargets.Sort(new DistanceHpIdComparer(firePosition));
-            }
-
-            if (tempTargets.Count > totalTargets)
-            {
-                tempTargets.RemoveRange(totalTargets, tempTargets.Count - totalTargets);
-            }
-
-            return tempTargets;
-        }
 
         private void EnqueueDamage(IceInstance target, float damage, EffectType effectType, DestroyCategory category, bool wasCritical, int chainDepth)
         {
