@@ -40,9 +40,10 @@ namespace Icebreaker.UI.Editor
             EnsureAssetFolder(PreviewFolder);
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath) ??
                 throw new InvalidOperationException($"UI theme was not found at {ThemePath}.");
-            var settings = TMP_Settings.LoadDefaultSettings();
-            var font = theme.CommonFont ?? (settings != null ? TMP_Settings.defaultFontAsset : null) ??
-                throw new InvalidOperationException("TMP default font is missing. Import TMP Essentials first.");
+            var primaryFont = theme.PrimaryFont ??
+                throw new InvalidOperationException("UI primary font is not assigned.");
+            var feedbackFont = theme.CombatFeedbackFont ??
+                throw new InvalidOperationException("UI combat feedback font is not assigned.");
             var catalog = BuildAudioCueCatalog();
 
             var root = CreateCanvasRoot();
@@ -64,9 +65,13 @@ namespace Icebreaker.UI.Editor
                 ConfigureLoopAudioSource(ambientAudio, 0.22f);
 
                 var feedbackLayer = CreateStretchRect("FeedbackLayer", root.transform);
-                var cueTemplate = CreateCueTemplate(feedbackLayer, font, theme);
-                var support = CreateSupportDevice(root.transform, font, theme);
-                var sampleControls = CreateSampleControls(root.transform, font, theme, out var sampleButton);
+                var cueTemplate = CreateCueTemplate(feedbackLayer, feedbackFont, theme);
+                var support = CreateSupportDevice(root.transform, primaryFont, theme);
+                var sampleControls = CreateSampleControls(
+                    root.transform,
+                    primaryFont,
+                    theme,
+                    out var sampleButton);
 
                 ConfigurePresenter(
                     presenter,
@@ -368,6 +373,7 @@ namespace Icebreaker.UI.Editor
                     errors.Add("Countdown audio feedback is not connected.");
                 }
 
+                var settlementCountBeforeNextStage = presenter.SettlementSoundCount;
                 source.StartStage();
                 if (presenter.LastAudioCue != "Countdown" || presenter.CountdownSoundCount != 1)
                 {
@@ -376,7 +382,8 @@ namespace Icebreaker.UI.Editor
 
                 source.EndStage();
                 source.ShowSettlementTwice();
-                if (presenter.LastAudioCue != "Settlement" || presenter.SettlementSoundCount != 1)
+                if (presenter.LastAudioCue != "Settlement" ||
+                    presenter.SettlementSoundCount != settlementCountBeforeNextStage + 1)
                 {
                     errors.Add("Stage end and settlement must play one completion cue.");
                 }

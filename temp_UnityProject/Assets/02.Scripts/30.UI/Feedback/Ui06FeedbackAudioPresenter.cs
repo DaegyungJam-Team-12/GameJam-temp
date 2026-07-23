@@ -357,27 +357,29 @@ namespace Icebreaker.UI.Feedback
 
         private void HandleDamageApplied(DamageAppliedEvent payload)
         {
+            var damageText = Mathf.CeilToInt(payload.Damage).ToString();
             if (payload.EffectType == EffectType.SupportShot)
             {
                 supportFireRemaining = SupportFireSeconds;
                 RenderSupportState(SupportFeedbackState.Firing);
-                SpawnFeedback("보조탄 발사", payload.ReferencePosition, CueColor(Ui06AudioCue.SupportFire));
+                SpawnFeedback(damageText, payload.ReferencePosition, CueColor(Ui06AudioCue.SupportFire));
                 audioController?.PlayCue(Ui06AudioCue.SupportFire, ui: false);
                 return;
             }
 
             if (payload.WasCritical)
             {
-                SpawnFeedback("치명타!", payload.ReferencePosition, CueColor(Ui06AudioCue.Critical));
+                SpawnFeedback(damageText, payload.ReferencePosition, CueColor(Ui06AudioCue.Critical));
                 audioController?.PlayCue(Ui06AudioCue.Critical, ui: false);
             }
             else if (payload.EffectType is EffectType.Click or EffectType.Hold)
             {
+                SpawnFeedback(damageText, payload.ReferencePosition, Color.white);
                 audioController?.PlayCue(Ui06AudioCue.Hit, ui: false);
             }
             else if (payload.ChainDepth > 0 && payload.RemainingHp > 0f)
             {
-                SpawnFeedback("연쇄 타격", payload.ReferencePosition, CueColor(Ui06AudioCue.Chain));
+                SpawnFeedback(damageText, payload.ReferencePosition, CueColor(Ui06AudioCue.Chain));
             }
         }
 
@@ -518,14 +520,14 @@ namespace Icebreaker.UI.Feedback
             var image = instance.GetComponent<Image>();
             if (image != null)
             {
-                image.color = new Color(color.r, color.g, color.b, 0.82f);
+                image.enabled = false;
             }
 
             var text = instance.GetComponentInChildren<TMP_Text>(true);
             if (text != null)
             {
                 text.text = label;
-                text.color = Color.white;
+                text.color = new Color(color.r, color.g, color.b, 0.82f);
             }
 
             var canvasGroup = instance.GetComponent<CanvasGroup>() ?? instance.AddComponent<CanvasGroup>();

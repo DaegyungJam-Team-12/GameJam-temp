@@ -188,7 +188,7 @@ namespace Icebreaker.UI.Sandbox
                 }
             }
 
-            if (theme.CommonFont == null && !missingFontWarningShown)
+            if (theme.PrimaryFont == null && !missingFontWarningShown)
             {
                 missingFontWarningShown = true;
                 Debug.LogWarning(
@@ -201,7 +201,7 @@ namespace Icebreaker.UI.Sandbox
         {
             var tmpSettings = TMP_Settings.LoadDefaultSettings();
             var defaultFont = tmpSettings != null ? TMP_Settings.defaultFontAsset : null;
-            return theme?.CommonFont
+            return theme?.PrimaryFont
                 ?? defaultFont
                 ?? GetOrCreateRuntimeFallbackFont();
         }

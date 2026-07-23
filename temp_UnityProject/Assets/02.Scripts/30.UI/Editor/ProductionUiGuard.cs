@@ -20,6 +20,7 @@ namespace Icebreaker.UI.Editor
             "Assets/03.Prefabs/30.UI/Hud/UI_RewardSettlement.prefab",
             "Assets/03.Prefabs/30.UI/Maintenance/UI_MaintenanceTree.prefab",
             "Assets/03.Prefabs/30.UI/Management/UI_ManagementViews.prefab",
+            "Assets/03.Prefabs/30.UI/Feedback/UI_FeedbackAudio.prefab",
         };
 
         public static bool IsPreviewOnly(Type type)
@@ -95,16 +96,17 @@ namespace Icebreaker.UI.Editor
                     string.Join("\n- ", errors));
             }
 
-            Debug.Log("[UI-PRODUCTION] Five production UI prefabs contain no Sample/Fake/Sandbox components.");
+            Debug.Log("[UI-PRODUCTION] Six production UI prefabs contain no Sample/Fake/Sandbox components.");
         }
 
         [MenuItem("ICEBREAKER/UI/Rebuild Owned Production Prefabs")]
         public static void RebuildOwnedProductionPrefabs()
         {
-            Ui02PrefabBuilder.Build();
-            Ui04PrefabBuilder.Build();
-            MaintenanceTreePrefabBuilder.Build();
-            Ui05PrefabBuilder.Build();
+            Ui02PrefabBuilder.Build(true);
+            Ui04PrefabBuilder.Build(true);
+            MaintenanceTreePrefabBuilder.Build(true);
+            Ui05PrefabBuilder.Build(true);
+            Ui06PrefabBuilder.Build();
             ValidateAll();
         }
     }
