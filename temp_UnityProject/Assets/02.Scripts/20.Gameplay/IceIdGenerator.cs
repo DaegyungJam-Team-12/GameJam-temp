@@ -18,5 +18,10 @@ namespace Icebreaker.Gameplay
         {
             return nextId++;
         }
+
+        public long PeekNextId()
+        {
+            return nextId;
+        }
     }
 }

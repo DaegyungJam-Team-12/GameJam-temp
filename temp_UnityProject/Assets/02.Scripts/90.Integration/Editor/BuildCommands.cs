@@ -20,14 +20,6 @@ namespace Icebreaker.Integration.Editor
             Build(BuildTarget.StandaloneWindows64, "Builds/StandaloneWindows64/ICEBREAKER.exe");
         }
 
-        public static void BuildWindowsDemo()
-        {
-            Build(
-                BuildTarget.StandaloneWindows64,
-                "Builds/StandaloneWindows64Demo/ICEBREAKER_DEMO.exe",
-                new[] { "ICEBREAKER_DEMO" });
-        }
-
         private static void Build(
             BuildTarget target,
             string locationPathName,

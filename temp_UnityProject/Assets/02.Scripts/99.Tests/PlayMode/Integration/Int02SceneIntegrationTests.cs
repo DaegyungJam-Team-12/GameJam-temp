@@ -371,14 +371,14 @@ namespace Icebreaker.Integration.Tests
             DestroyOneNormalT1((IceField)view!.Source);
             AssertState(orchestrator, orchestratorType, expectedFunds: 10, expectedProgress: 1);
 
-            yield return new WaitForSecondsRealtime(59.5f);
+            yield return new WaitForSecondsRealtime(29.5f);
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("Playing"));
             yield return WaitForPhase(orchestrator, orchestratorType, "StageEnding", 1f);
             yield return new WaitForSecondsRealtime(1f);
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("StageEnding"));
             yield return WaitForPhase(orchestrator, orchestratorType, "Settlement", 0.5f);
             yield return WaitForPhase(orchestrator, orchestratorType, "Traveling", 5f);
-            yield return WaitForPhase(orchestrator, orchestratorType, "Ready", 31f);
+            yield return WaitForPhase(orchestrator, orchestratorType, "Ready", 11f);
             AssertLauncherProgress(orchestrator, orchestratorType, expectedProgress: 1, expectedTarget: 120);
 
             ClickStartButtonThroughEventSystem();
@@ -390,7 +390,7 @@ namespace Icebreaker.Integration.Tests
             DestroyOneNormalT1((IceField)view.Source);
             AssertState(orchestrator, orchestratorType, expectedFunds: 20, expectedProgress: 2);
 
-            yield return new WaitForSecondsRealtime(59.5f);
+            yield return new WaitForSecondsRealtime(29.5f);
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Phase").ToString(), Is.EqualTo("Playing"));
             yield return WaitForPhase(orchestrator, orchestratorType, "StageEnding", 1f);
             yield return WaitForPhase(orchestrator, orchestratorType, "Settlement", 1.5f);

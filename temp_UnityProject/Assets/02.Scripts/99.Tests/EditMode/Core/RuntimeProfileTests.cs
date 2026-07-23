@@ -12,16 +12,16 @@ namespace Icebreaker.Core.Tests
         {
             var profile = RuntimeProfile.Parse(CreateJson(
                 "standard",
-                60d,
-                3d,
                 30d,
+                3d,
+                10d,
                 "120,600,2400",
                 "standard"));
 
-            Assert.That(profile.ProfileId, Is.EqualTo(RuntimeProfile.StandardProfileId));
-            Assert.That(profile.StageDurationSeconds, Is.EqualTo(60d));
+            Assert.That(profile.ProfileId, Is.EqualTo(RuntimeProfile.DefaultProfileId));
+            Assert.That(profile.StageDurationSeconds, Is.EqualTo(30d));
             Assert.That(profile.CountdownSeconds, Is.EqualTo(3d));
-            Assert.That(profile.VoyageSeconds, Is.EqualTo(30d));
+            Assert.That(profile.VoyageSeconds, Is.EqualTo(10d));
             Assert.That(profile.DestinationTargets, Is.EqualTo(new[] { 120, 600, 2_400 }));
             Assert.That(profile.MaintenanceCatalogId, Is.EqualTo("standard"));
         }
@@ -32,16 +32,16 @@ namespace Icebreaker.Core.Tests
         {
             Assert.Throws<InvalidOperationException>(() => RuntimeProfile.Parse(CreateJson(
                 profileId,
-                60d,
-                3d,
                 30d,
+                3d,
+                10d,
                 "120,600,2400",
                 "standard")));
         }
 
-        [TestCase(0d, 3d, 30d)]
-        [TestCase(60d, 0d, 30d)]
-        [TestCase(60d, 3d, 0d)]
+        [TestCase(0d, 3d, 10d)]
+        [TestCase(30d, 0d, 10d)]
+        [TestCase(30d, 3d, 0d)]
         public void Parse_RejectsNonPositiveTimes(
             double stageDurationSeconds,
             double countdownSeconds,
@@ -63,9 +63,9 @@ namespace Icebreaker.Core.Tests
         {
             Assert.Throws<InvalidOperationException>(() => RuntimeProfile.Parse(CreateJson(
                 "standard",
-                60d,
-                3d,
                 30d,
+                3d,
+                10d,
                 targets,
                 "standard")));
         }
@@ -76,9 +76,9 @@ namespace Icebreaker.Core.Tests
         {
             Assert.Throws<InvalidOperationException>(() => RuntimeProfile.Parse(CreateJson(
                 "standard",
-                60d,
-                3d,
                 30d,
+                3d,
+                10d,
                 "120,600,2400",
                 maintenanceCatalogId)));
         }
@@ -90,45 +90,23 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
-        public void ResourcePaths_AreDistinctForStandardAndDemo()
+        public void ResourcePath_IsTheSingleStandardProfile()
         {
             Assert.That(
-                RuntimeProfile.ResourcePathFor(RuntimeProfile.StandardProfileId),
+                RuntimeProfile.ResourcePathFor(RuntimeProfile.DefaultProfileId),
                 Is.EqualTo("RuntimeProfiles/standard"));
-            Assert.That(
-                RuntimeProfile.ResourcePathFor(RuntimeProfile.DemoProfileId),
-                Is.EqualTo("RuntimeProfiles/demo"));
         }
 
         [Test]
-        public void LoadActive_UsesCurrentBuildProfile()
+        public void LoadActive_UsesSingleProfileValues()
         {
             var profile = RuntimeProfile.LoadActive();
 
-#if ICEBREAKER_DEMO
-            Assert.That(profile.ProfileId, Is.EqualTo(RuntimeProfile.DemoProfileId));
+            Assert.That(profile.ProfileId, Is.EqualTo(RuntimeProfile.DefaultProfileId));
+            Assert.That(profile.StageDurationSeconds, Is.EqualTo(30d));
             Assert.That(profile.VoyageSeconds, Is.EqualTo(10d));
-            Assert.That(profile.DestinationTargets, Is.EqualTo(new[] { 40, 120, 300 }));
-            Assert.That(profile.MaintenanceCatalogId, Is.EqualTo(RuntimeProfile.DemoProfileId));
-#else
-            Assert.That(profile.ProfileId, Is.EqualTo(RuntimeProfile.StandardProfileId));
-            Assert.That(profile.VoyageSeconds, Is.EqualTo(30d));
             Assert.That(profile.DestinationTargets, Is.EqualTo(new[] { 120, 600, 2_400 }));
-            Assert.That(profile.MaintenanceCatalogId, Is.EqualTo(RuntimeProfile.StandardProfileId));
-#endif
-        }
-
-        [Test]
-        public void LoadFromResources_LoadsDemoProfileValues()
-        {
-            var profile = RuntimeProfile.LoadFromResources(RuntimeProfile.DemoProfileId);
-
-            Assert.That(profile.ProfileId, Is.EqualTo(RuntimeProfile.DemoProfileId));
-            Assert.That(profile.StageDurationSeconds, Is.EqualTo(60d));
-            Assert.That(profile.CountdownSeconds, Is.EqualTo(3d));
-            Assert.That(profile.VoyageSeconds, Is.EqualTo(10d));
-            Assert.That(profile.DestinationTargets, Is.EqualTo(new[] { 40, 120, 300 }));
-            Assert.That(profile.MaintenanceCatalogId, Is.EqualTo(RuntimeProfile.DemoProfileId));
+            Assert.That(profile.MaintenanceCatalogId, Is.EqualTo(RuntimeProfile.DefaultProfileId));
         }
 
         private static string CreateJson(

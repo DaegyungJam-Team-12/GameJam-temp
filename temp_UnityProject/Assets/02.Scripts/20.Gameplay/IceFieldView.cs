@@ -11,7 +11,7 @@ using UnityEngine.InputSystem;
 namespace Icebreaker.Gameplay
 {
     /// <summary>
-    /// MonoBehaviour that creates an <see cref="IceField"/> with 20 ice blocks (T1~T3),
+    /// MonoBehaviour that creates an <see cref="IceField"/> with up to 40 ice blocks (T1~T3),
     /// applies automatic cursor-area attacks and renders ice plus the cursor range indicator.
     /// Attach to a GameObject in siyeon.unity.
     /// </summary>
@@ -19,7 +19,6 @@ namespace Icebreaker.Gameplay
     {
         private const float ReferenceWidth = 960f;
         private const float ReferenceHeight = 540f;
-        private const float SpawnMargin = 56f;
         private const float DestructionVisualDurationSeconds = 0.45f;
 
         // --- Direct attack defaults (D01 level 0, D02 level 0) ---
@@ -161,6 +160,7 @@ namespace Icebreaker.Gameplay
             activeField.DamageApplied += HandleDamageApplied;
             activeField.IceDestroyed += HandleIceDestroyed;
             activeField.IceRespawned += HandleIceRespawned;
+            activeField.IceRespawnStateChanged += HandleIceRespawnStateChanged;
 
             if (iceVisualCatalog == null || !iceVisualCatalog.IsComplete)
             {
@@ -181,16 +181,19 @@ namespace Icebreaker.Gameplay
                 BaseCursorRadiusReferencePixels,
                 CriticalChance,
                 CriticalMultiplier);
+            var spawnMargin = config.OuterMarginReferencePixels +
+                config.VisualDiameterMaximumReferencePixels * 0.5f;
             var spawnBounds = new Rect(
-                SpawnMargin,
-                SpawnMargin,
-                ReferenceWidth - SpawnMargin * 2f,
-                ReferenceHeight - SpawnMargin * 2f);
+                spawnMargin,
+                spawnMargin,
+                ReferenceWidth - spawnMargin * 2f,
+                ReferenceHeight - spawnMargin * 2f);
             var positioner = new IceSpawnPositioner(
                 spawnBounds,
-                config.MinimumSpawnDistanceReferencePixels,
+                config.StrictExtraVisualGapReferencePixels,
+                config.RelaxedExtraVisualGapReferencePixels,
                 ProtectedSpawnAreas,
-                config.IceCollisionRadiusReferencePixels);
+                config.ProtectedAreaPaddingReferencePixels);
             var criticalStrike = new CriticalStrike(
                 directAttackConfig.CriticalChance,
                 directAttackConfig.CriticalDamageMultiplier);
@@ -263,6 +266,7 @@ namespace Icebreaker.Gameplay
             field.DamageApplied -= HandleDamageApplied;
             field.IceDestroyed -= HandleIceDestroyed;
             field.IceRespawned -= HandleIceRespawned;
+            field.IceRespawnStateChanged -= HandleIceRespawnStateChanged;
 
             ClearDestructionVisuals();
             DestroySlicedDestructionSprites();
@@ -276,6 +280,8 @@ namespace Icebreaker.Gameplay
 
         private void Update()
         {
+            field?.UpdateRespawns();
+            UpdateRespawnAnimationVisuals();
             UpdateDestructionVisuals(Time.deltaTime);
 
             var mouse = Mouse.current;
@@ -339,8 +345,8 @@ namespace Icebreaker.Gameplay
             var renderer = child.AddComponent<SpriteRenderer>();
             renderer.sortingOrder = 10;
 
-            PositionVisual(renderer, ice);
             UpdateVisualAppearance(renderer, ice);
+            PositionVisual(renderer, ice);
             return renderer;
         }
 
@@ -351,19 +357,34 @@ namespace Icebreaker.Gameplay
                 return;
             }
 
-            var worldPos = ReferenceToWorld(ice.ReferencePosition);
+            var worldPos = ReferenceToWorld(ice.VisualReferencePosition);
             renderer.transform.position = worldPos;
 
-            var worldRadius = ResolveWorldRadius(config?.IceCollisionRadiusReferencePixels ?? 56f);
-            renderer.transform.localScale = Vector3.one * (worldRadius * 2f);
+            var referenceDiameter = ice.VisualDiameterForDisplayReferencePixels > 0f
+                ? ice.VisualDiameterForDisplayReferencePixels
+                : config?.VisualDiameterMaximumReferencePixels ?? 42f;
+            ApplyVisualScale(renderer, referenceDiameter, ResolveSpawnAnimationScale(ice));
         }
 
         private void UpdateVisualAppearance(SpriteRenderer renderer, IceInstance ice)
         {
             renderer.sprite = iceVisualCatalog?.ResolveStaticSprite(
-                ice.Tier,
-                ice.SpecialType,
-                ice.IceInstanceId);
+                ice.VisualTier,
+                ice.VisualSpecialType,
+                ice.VisualIceInstanceId);
+
+            renderer.enabled = ice.RespawnState != IceRespawnState.RespawnGap;
+            if (!renderer.enabled)
+            {
+                return;
+            }
+
+            if (ice.RespawnState == IceRespawnState.SpawnAnimating)
+            {
+                var alpha = ResolveSpawnAnimationScale(ice);
+                renderer.color = new Color(1f, 1f, 1f, alpha);
+                return;
+            }
 
             if (ice.IsDestroyed)
             {
@@ -383,8 +404,8 @@ namespace Icebreaker.Gameplay
 
             var ice = field.ActiveIce[index];
             var renderer = visuals[index];
-            PositionVisual(renderer, ice);
             UpdateVisualAppearance(renderer, ice);
+            PositionVisual(renderer, ice);
         }
 
         private void RefreshAllVisuals()
@@ -489,6 +510,70 @@ namespace Icebreaker.Gameplay
             var worldHeight = sceneCamera.orthographicSize * 2f;
             var displaySize = referenceRadius * 2f;
             return worldHeight * (displaySize / ReferenceHeight) * 0.5f;
+        }
+
+        private void ApplyVisualScale(
+            SpriteRenderer renderer,
+            float referenceDiameter,
+            float spawnAnimationScale)
+        {
+            var spriteExtent = renderer.sprite != null
+                ? Mathf.Max(renderer.sprite.bounds.size.x, renderer.sprite.bounds.size.y)
+                : 1f;
+            spriteExtent = Mathf.Max(0.0001f, spriteExtent);
+            var worldHeight = ResolveWorldHeight(referenceDiameter);
+            renderer.transform.localScale = Vector3.one * (worldHeight / spriteExtent * spawnAnimationScale);
+        }
+
+        private float ResolveWorldHeight(float referenceHeight)
+        {
+            if (sceneCamera == null || !sceneCamera.orthographic)
+            {
+                return referenceHeight / ReferenceHeight;
+            }
+
+            return sceneCamera.orthographicSize * 2f * (referenceHeight / ReferenceHeight);
+        }
+
+        private float ResolveSpawnAnimationScale(IceInstance ice)
+        {
+            if (ice.RespawnState != IceRespawnState.SpawnAnimating || config == null)
+            {
+                return 1f;
+            }
+
+            if (config.SpawnAnimationSeconds <= 0f)
+            {
+                return 1f;
+            }
+
+            var elapsed = (activeClock?.StageElapsedSeconds ?? Time.timeAsDouble - stageStartedAt) -
+                ice.RespawnStateStartedAt;
+            return Mathf.Clamp01((float)(elapsed / config.SpawnAnimationSeconds));
+        }
+
+        private void UpdateRespawnAnimationVisuals()
+        {
+            if (field == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < field.ActiveIce.Count && i < visuals.Count; i++)
+            {
+                var ice = field.ActiveIce[i];
+                if (ice.RespawnState != IceRespawnState.SpawnAnimating)
+                {
+                    continue;
+                }
+
+                var renderer = visuals[i];
+                var referenceDiameter = ice.VisualDiameterForDisplayReferencePixels > 0f
+                    ? ice.VisualDiameterForDisplayReferencePixels
+                    : config?.VisualDiameterMaximumReferencePixels ?? 42f;
+                renderer.color = new Color(1f, 1f, 1f, ResolveSpawnAnimationScale(ice));
+                ApplyVisualScale(renderer, referenceDiameter, ResolveSpawnAnimationScale(ice));
+            }
         }
 
         // --- Event handlers ---
@@ -624,6 +709,11 @@ namespace Icebreaker.Gameplay
             RefreshVisual(index);
         }
 
+        private void HandleIceRespawnStateChanged(int index)
+        {
+            RefreshVisual(index);
+        }
+
         private Sprite[] ResolveDestructionFrames(Texture2D sheet)
         {
             if (destructionFrames.TryGetValue(sheet, out var cachedFrames))
@@ -734,10 +824,20 @@ namespace Icebreaker.Gameplay
             };
 
             return new IceFieldConfig(
-                maxActiveIceCount: 20,
+                maxActiveIceCount: 40,
                 maxSpecialIceCount: 2,
-                hitRadiusReferencePixels: 56f,
-                minimumSpawnDistanceReferencePixels: 120f,
+                visualDiameterMinimumReferencePixels: 34f,
+                visualDiameterMaximumReferencePixels: 42f,
+                iceCollisionRadiusReferencePixels: 40f,
+                strictExtraVisualGapReferencePixels: 18f,
+                relaxedExtraVisualGapReferencePixels: 12f,
+                outerMarginReferencePixels: 20f,
+                protectedAreaPaddingReferencePixels: 21f,
+                recentDestructionExclusionReferencePixels: 160f,
+                recentDestructionExclusionSeconds: 1f,
+                respawnGapSeconds: 0.12f,
+                spawnAnimationSeconds: 0.18f,
+                chainRespawnStaggerSeconds: 0.03f,
                 respawnProtectionSeconds: 0.25f,
                 iceDefinitions: iceDefinitions,
                 spawnWeights: weightList.ToArray(),
@@ -793,4 +893,3 @@ namespace Icebreaker.Gameplay
 
     }
 }
-
