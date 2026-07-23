@@ -19,7 +19,12 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
-        private const string BuildStamp = "ui02-production-font-roles-v2";
+        private const string HudArtFolder = "Assets/04.Images/30.UI/Hud";
+        private const string FundsArtworkPath = HudArtFolder + "/FundsPanel.png";
+        private const string TimerArtworkPath = HudArtFolder + "/TimerPanel.png";
+        private const string SettingsArtworkPath = HudArtFolder + "/SettingsPanel.png";
+        private const string LauncherBuildStamp = "ui02-production-font-roles-v2";
+        private const string IcebreakingBuildStamp = "ui02-play-hud-icons-v3";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
         public static void Build()
@@ -30,10 +35,11 @@ namespace Icebreaker.UI.Editor
         internal static void Build(bool force)
         {
             EnsureAssetFolder(PrefabFolder);
-            if (!force && !ProductionUiGuard.NeedsRebuild(
-                    BuildStamp,
-                    LauncherPrefabPath,
-                    IcebreakingPrefabPath))
+            var rebuildLauncher = force ||
+                                  ProductionUiGuard.NeedsRebuild(LauncherBuildStamp, LauncherPrefabPath);
+            var rebuildIcebreaking = force ||
+                                     ProductionUiGuard.NeedsRebuild(IcebreakingBuildStamp, IcebreakingPrefabPath);
+            if (!rebuildLauncher && !rebuildIcebreaking)
             {
                 Validate();
                 return;
@@ -48,12 +54,18 @@ namespace Icebreaker.UI.Editor
             var font = theme.PrimaryFont ??
                 throw new InvalidOperationException("UI primary font is not assigned.");
 
-            BuildLauncher(theme, font);
-            BuildIcebreaking(theme, font);
-            ProductionUiGuard.MarkRebuilt(
-                BuildStamp,
-                LauncherPrefabPath,
-                IcebreakingPrefabPath);
+            if (rebuildLauncher)
+            {
+                BuildLauncher(theme, font);
+                ProductionUiGuard.MarkRebuilt(LauncherBuildStamp, LauncherPrefabPath);
+            }
+
+            if (rebuildIcebreaking)
+            {
+                BuildIcebreaking(theme, font);
+                ProductionUiGuard.MarkRebuilt(IcebreakingBuildStamp, IcebreakingPrefabPath);
+            }
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Validate();
@@ -64,7 +76,7 @@ namespace Icebreaker.UI.Editor
         public static void BuildCombatHud()
         {
             EnsureAssetFolder(PrefabFolder);
-            if (!ProductionUiGuard.NeedsRebuild(BuildStamp, IcebreakingPrefabPath))
+            if (!ProductionUiGuard.NeedsRebuild(IcebreakingBuildStamp, IcebreakingPrefabPath))
             {
                 ValidateCombatHud();
                 return;
@@ -80,7 +92,7 @@ namespace Icebreaker.UI.Editor
                 throw new InvalidOperationException("UI primary font is not assigned.");
 
             BuildIcebreaking(theme, font);
-            ProductionUiGuard.MarkRebuilt(BuildStamp, IcebreakingPrefabPath);
+            ProductionUiGuard.MarkRebuilt(IcebreakingBuildStamp, IcebreakingPrefabPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             ValidateCombatHud();
@@ -142,6 +154,9 @@ namespace Icebreaker.UI.Editor
                 ValidateRect(icebreaking, "HudRoot/FundsArea", 8f, 6f, 176.5f, 48f, errors);
                 ValidateRect(icebreaking, "HudRoot/TimerArea", 675.5f, 6f, 131f, 48f, errors);
                 ValidateRect(icebreaking, "HudRoot/SettingsHitArea", 812f, 6f, 139.5f, 48f, errors);
+                ValidateArtwork(icebreaking, "HudRoot/FundsArea/Artwork", FundsArtworkPath, errors);
+                ValidateArtwork(icebreaking, "HudRoot/TimerArea/Artwork", TimerArtworkPath, errors);
+                ValidateArtwork(icebreaking, "HudRoot/SettingsHitArea/Artwork", SettingsArtworkPath, errors);
                 ValidateRect(icebreaking, "HudRoot/CountdownText", 380f, 150f, 200f, 240f, errors);
                 ValidateButtonSeparation(icebreaking, new[] { "HudRoot/SettingsHitArea" }, errors);
                 ValidatePresenterReferences<IcebreakingHudPresenter>(icebreaking, new[]
@@ -181,6 +196,9 @@ namespace Icebreaker.UI.Editor
                 ValidateRect(icebreaking, "HudRoot/FundsArea", 8f, 6f, 176.5f, 48f, errors);
                 ValidateRect(icebreaking, "HudRoot/TimerArea", 675.5f, 6f, 131f, 48f, errors);
                 ValidateRect(icebreaking, "HudRoot/SettingsHitArea", 812f, 6f, 139.5f, 48f, errors);
+                ValidateArtwork(icebreaking, "HudRoot/FundsArea/Artwork", FundsArtworkPath, errors);
+                ValidateArtwork(icebreaking, "HudRoot/TimerArea/Artwork", TimerArtworkPath, errors);
+                ValidateArtwork(icebreaking, "HudRoot/SettingsHitArea/Artwork", SettingsArtworkPath, errors);
                 ValidateRect(icebreaking, "HudRoot/CountdownText", 380f, 150f, 200f, 240f, errors);
                 ValidateButtonSeparation(icebreaking, new[] { "HudRoot/SettingsHitArea" }, errors);
                 ValidatePresenterReferences<IcebreakingHudPresenter>(icebreaking, new[]
@@ -294,17 +312,21 @@ namespace Icebreaker.UI.Editor
 
                 var fundsArea = CreateTopLeftPanel("FundsArea", hudRoot.transform, 8f, 6f, 176.5f, 48f, theme.Panel);
                 panels.Add(fundsArea);
+                CreateCroppedArtwork("Artwork", fundsArea.transform, FundsArtworkPath, new RectInt(16, 12, 353, 96));
                 var fundsText = CreateInsetText("FundsText", fundsArea.transform, "정비 자금 12.4K", font, 18f, TextAlignmentOptions.Center);
                 SetTopLeft(fundsText.rectTransform, 52f, 3f, 119f, 42f);
                 texts.Add(fundsText);
 
                 var timerArea = CreateTopLeftPanel("TimerArea", hudRoot.transform, 675.5f, 6f, 131f, 48f, theme.Panel);
                 panels.Add(timerArea);
+                CreateCroppedArtwork("Artwork", timerArea.transform, TimerArtworkPath, new RectInt(1351, 12, 262, 96));
                 var timerText = CreateInsetText("TimerText", timerArea.transform, "00:42", font, 24f, TextAlignmentOptions.Center);
                 SetTopLeft(timerText.rectTransform, 40f, 3f, 87f, 42f);
                 texts.Add(timerText);
 
                 var settings = CreateButton("SettingsHitArea", hudRoot.transform, 812f, 6f, 139.5f, 48f, "설정", font, 14f, theme.Panel, texts, panels);
+                CreateCroppedArtwork("Artwork", settings.transform, SettingsArtworkPath, new RectInt(1624, 12, 279, 96))
+                    .transform.SetAsFirstSibling();
                 SetTopLeft(settings.GetComponentInChildren<TMP_Text>().rectTransform, 43f, 3f, 92f, 42f);
 
                 var countdownText = CreateTopLeftText(
@@ -379,6 +401,26 @@ namespace Icebreaker.UI.Editor
             SetTopLeft(rect, x, y, width, height);
             var image = gameObject.GetComponent<Image>();
             image.color = color;
+            image.raycastTarget = false;
+            return image;
+        }
+
+        private static RawImage CreateCroppedArtwork(string name, Transform parent, string path, RectInt crop)
+        {
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path) ??
+                          throw new InvalidOperationException($"HUD artwork was not found at {path}.");
+            var gameObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
+            var rect = gameObject.GetComponent<RectTransform>();
+            rect.SetParent(parent, false);
+            Stretch(rect);
+
+            var image = gameObject.GetComponent<RawImage>();
+            image.texture = texture;
+            image.uvRect = new Rect(
+                crop.x / (float)texture.width,
+                (texture.height - crop.y - crop.height) / (float)texture.height,
+                crop.width / (float)texture.width,
+                crop.height / (float)texture.height);
             image.raycastTarget = false;
             return image;
         }
@@ -637,6 +679,16 @@ namespace Icebreaker.UI.Editor
                 HudTextFormatter.FormatProgress(37, 120) != "37/120")
             {
                 errors.Add("HUD state text formatting does not match the UI-02/UI-03 contract.");
+            }
+        }
+
+        private static void ValidateArtwork(GameObject prefab, string path, string texturePath, List<string> errors)
+        {
+            var artwork = prefab.transform.Find(path)?.GetComponent<RawImage>();
+            var expectedTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+            if (artwork == null || expectedTexture == null || artwork.texture != expectedTexture)
+            {
+                errors.Add($"{path} must reference {texturePath}.");
             }
         }
 
