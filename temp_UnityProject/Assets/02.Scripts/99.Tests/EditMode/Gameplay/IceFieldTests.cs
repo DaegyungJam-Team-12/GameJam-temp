@@ -581,13 +581,19 @@ namespace Icebreaker.Gameplay.Tests
             mockClock.StageElapsedSeconds = 60d;
 
             int damageEventCount = 0;
+            int destroyedEventCount = 0;
+            int respawnEventCount = 0;
             testField.DamageApplied += _ => damageEventCount++;
+            testField.IceDestroyed += _ => destroyedEventCount++;
+            testField.IceRespawned += _ => respawnEventCount++;
 
             // Click should be ignored
             var clicked = testField.ApplyClickAt(new Vector2(100, 100), 10f, EffectType.Click, 60d);
             
             Assert.That(clicked, Is.False, "ApplyClickAt should return false after duration has passed.");
             Assert.That(damageEventCount, Is.EqualTo(0), "No damage events should be fired after combat ends.");
+            Assert.That(destroyedEventCount, Is.Zero, "No destroy events should be fired after combat ends.");
+            Assert.That(respawnEventCount, Is.Zero, "No respawns should occur after combat ends.");
             Assert.That(target.RemainingHp, Is.EqualTo(10f), "Target should not take damage after combat ends.");
         }
 
@@ -1429,6 +1435,144 @@ namespace Icebreaker.Gameplay.Tests
             
             var target4Damage = damageEvents.FindAll(e => e.IceInstanceId == testField.ActiveIce[4].IceInstanceId);
             Assert.That(target4Damage.Count, Is.EqualTo(0), "Target 4 should not be damaged because depth limit is 3.");
+        }
+
+        [Test]
+        public void AreaTick_D03_DoesNotHitRespawnedIce()
+        {
+            var chainConfig = new ChainEffectConfig(
+                overkillEnabled: true, overkillTransferMultiplier: 0.5f,
+                hullFragmentDamageMultiplier: 0f, hullFragmentRadiusReferencePixels: 0f,
+                crystalShardCount: 0, crackDamageMultiplier: 0f, crackRadiusReferencePixels: 0f,
+                iceCollapseEnabled: false, iceCollapseRequiredDestroyCount: 5,
+                iceCollapseDamageMultiplier: 0f, iceCollapseRadiusReferencePixels: 0f,
+                maxChainDepth: 3);
+            var testField = CreateAreaTestField(2, 10f, new MockClock(), chainConfig: chainConfig);
+            var first = testField.ActiveIce[0];
+            var second = testField.ActiveIce[1];
+            first.Reset(first.IceInstanceId, IceTier.T1, SpecialIceType.None, 1f, new Vector2(100f, 100f), 0d);
+            second.Reset(second.IceInstanceId, IceTier.T1, SpecialIceType.None, 1f, new Vector2(110f, 100f), 0d);
+            var originalIds = new HashSet<long> { first.IceInstanceId, second.IceInstanceId };
+            var destroyedIds = new List<long>();
+            var chainDamageIds = new List<long>();
+            testField.IceDestroyed += e => destroyedIds.Add(e.IceInstanceId);
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.Overkill)
+                {
+                    chainDamageIds.Add(e.IceInstanceId);
+                }
+            };
+
+            var hitCount = testField.ApplyAreaTickAt(new Vector2(100f, 100f), 20f, 3f, 1d);
+
+            Assert.That(hitCount, Is.EqualTo(2));
+            Assert.That(destroyedIds, Is.EquivalentTo(originalIds));
+            Assert.That(chainDamageIds, Is.Empty, "Queued D03 damage must not hit respawned ice.");
+        }
+
+        [Test]
+        public void D03_OverkillSkipsRespawnProtectedTarget()
+        {
+            var chainConfig = new ChainEffectConfig(
+                overkillEnabled: true, overkillTransferMultiplier: 0.5f,
+                hullFragmentDamageMultiplier: 0f, hullFragmentRadiusReferencePixels: 0f,
+                crystalShardCount: 0, crackDamageMultiplier: 0f, crackRadiusReferencePixels: 0f,
+                iceCollapseEnabled: false, iceCollapseRequiredDestroyCount: 5,
+                iceCollapseDamageMultiplier: 0f, iceCollapseRadiusReferencePixels: 0f,
+                maxChainDepth: 3);
+            var testClock = new MockClock { StageElapsedSeconds = 1d };
+            var testField = CreateAreaTestField(
+                2,
+                10f,
+                testClock,
+                chainConfig: chainConfig,
+                respawnProtectionSeconds: 0.25f);
+            var source = testField.ActiveIce[0];
+            var protectedTarget = testField.ActiveIce[1];
+            source.Reset(source.IceInstanceId, IceTier.T1, SpecialIceType.None, 1f, new Vector2(100f, 100f), 0d);
+            protectedTarget.Reset(
+                protectedTarget.IceInstanceId,
+                IceTier.T1,
+                SpecialIceType.None,
+                10f,
+                new Vector2(110f, 100f),
+                0.9d);
+            var overkillCount = 0;
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.Overkill)
+                {
+                    overkillCount++;
+                }
+            };
+
+            testField.ApplyClickAt(new Vector2(100f, 100f), 3f, EffectType.Click, 1d);
+
+            Assert.That(overkillCount, Is.Zero);
+            Assert.That(protectedTarget.RemainingHp, Is.EqualTo(10f));
+        }
+
+        [Test]
+        public void CrackExplosion_UsesConfiguredTotalMultiplierOnce()
+        {
+            var chainConfig = new ChainEffectConfig(
+                overkillEnabled: false, overkillTransferMultiplier: 0f,
+                hullFragmentDamageMultiplier: 0f, hullFragmentRadiusReferencePixels: 0f,
+                crystalShardCount: 0, crackDamageMultiplier: 3f, crackRadiusReferencePixels: 120f,
+                iceCollapseEnabled: false, iceCollapseRequiredDestroyCount: 5,
+                iceCollapseDamageMultiplier: 0f, iceCollapseRadiusReferencePixels: 0f,
+                maxChainDepth: 3);
+            var testField = CreateAreaTestField(2, 10f, new MockClock(), chainConfig: chainConfig);
+            var crack = testField.ActiveIce[0];
+            var target = testField.ActiveIce[1];
+            crack.Reset(crack.IceInstanceId, IceTier.T1, SpecialIceType.Crack, 10f, new Vector2(100f, 100f), 0d);
+            target.Reset(target.IceInstanceId, IceTier.T1, SpecialIceType.None, 100f, new Vector2(150f, 100f), 0d);
+            DamageAppliedEvent? crackDamage = null;
+            testField.DamageApplied += e =>
+            {
+                if (e.EffectType == EffectType.CrackExplosion)
+                {
+                    crackDamage = e;
+                }
+            };
+
+            testField.ApplyClickAt(new Vector2(100f, 100f), 10f, EffectType.Click, 1d);
+
+            Assert.That(crackDamage.HasValue, Is.True);
+            Assert.That(crackDamage!.Value.Damage, Is.EqualTo(30f));
+        }
+
+        [Test]
+        public void QueueProcessing_StageEndingCancelsRemainingDamageAndRespawns()
+        {
+            var testClock = new MockClock();
+            var testField = CreateAreaTestField(2, 10f, testClock);
+            var first = testField.ActiveIce[0];
+            var second = testField.ActiveIce[1];
+            first.Reset(first.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(100f, 100f), 0d);
+            second.Reset(second.IceInstanceId, IceTier.T1, SpecialIceType.None, 10f, new Vector2(110f, 100f), 0d);
+            var damageCount = 0;
+            var destroyedCount = 0;
+            var respawnCount = 0;
+            testField.DamageApplied += _ =>
+            {
+                damageCount++;
+                if (damageCount == 1)
+                {
+                    testClock.Phase = GamePhase.StageEnding;
+                    testClock.StageElapsedSeconds = testClock.DurationSeconds;
+                }
+            };
+            testField.IceDestroyed += _ => destroyedCount++;
+            testField.IceRespawned += _ => respawnCount++;
+
+            testField.ApplyAreaTickAt(new Vector2(100f, 100f), 20f, 10f, 1d);
+
+            Assert.That(damageCount, Is.EqualTo(1));
+            Assert.That(destroyedCount, Is.EqualTo(1));
+            Assert.That(respawnCount, Is.Zero);
+            Assert.That(second.RemainingHp, Is.EqualTo(10f));
         }
     }
 }

@@ -183,7 +183,7 @@ namespace Icebreaker.Gameplay
                 hullFragmentDamageMultiplier: 0f,
                 hullFragmentRadiusReferencePixels: 90f,
                 crystalShardCount: 5,
-                crackDamageMultiplier: 1.0f,
+                crackDamageMultiplier: 3.0f,
                 crackRadiusReferencePixels: 120f,
                 iceCollapseEnabled: false,
                 iceCollapseRequiredDestroyCount: 5,
@@ -695,5 +695,4 @@ namespace Icebreaker.Gameplay
         }
     }
 }
-
 
