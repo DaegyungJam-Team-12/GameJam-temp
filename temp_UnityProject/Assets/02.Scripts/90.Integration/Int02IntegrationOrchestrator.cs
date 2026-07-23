@@ -233,29 +233,25 @@ namespace Icebreaker.Integration
                 return;
             }
 
-            var phase = coordinator.CurrentState.Phase;
-
-            if (currentManagementScreen == ManagementScreen.Settings)
+            switch (currentManagementScreen)
             {
-                CloseManagementScreen();
-                return;
-            }
-
-            if (currentManagementScreen == ManagementScreen.Maintenance ||
-                currentManagementScreen == ManagementScreen.Route)
-            {
-                CloseManagementScreen();
-                return;
-            }
-
-            if (currentManagementScreen == ManagementScreen.None)
-            {
-                if (phase == GamePhase.Traveling || phase == GamePhase.Ready ||
-                    phase == GamePhase.Completed || phase == GamePhase.Playing)
-                {
-                    HandleSettingsRequested();
-                    return;
-                }
+                case ManagementScreen.Settings:
+                case ManagementScreen.Maintenance:
+                case ManagementScreen.Route:
+                    HandleManagementCollapseRequested();
+                    break;
+                
+                case ManagementScreen.None:
+                    switch (coordinator.CurrentState.Phase)
+                    {
+                        case GamePhase.Traveling:
+                        case GamePhase.Ready:
+                        case GamePhase.Completed:
+                        case GamePhase.Playing:
+                            HandleSettingsRequested();
+                            break;
+                    }
+                    break;
             }
         }
 
