@@ -26,9 +26,11 @@ namespace Icebreaker.Integration.Tests
         private string demoSavePath = null!;
         private byte[]? originalDemoSave;
 
-        [SetUp]
-        public void SetUp()
+        [UnitySetUp]
+        public IEnumerator SetUp()
         {
+            yield return DestroyActiveOrchestrators();
+
             demoSavePath = Path.Combine(Application.persistentDataPath, "save_demo.json");
             originalDemoSave = File.Exists(demoSavePath)
                 ? File.ReadAllBytes(demoSavePath)
@@ -38,11 +40,7 @@ namespace Icebreaker.Integration.Tests
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            if (SceneManager.GetActiveScene().name == "int02_complete_loop")
-            {
-                yield return SceneManager.LoadSceneAsync("minjun", LoadSceneMode.Single);
-                yield return null;
-            }
+            yield return DestroyActiveOrchestrators();
 
             if (originalDemoSave != null)
             {
@@ -53,6 +51,20 @@ namespace Icebreaker.Integration.Tests
             {
                 File.Delete(demoSavePath);
             }
+        }
+
+        private static IEnumerator DestroyActiveOrchestrators()
+        {
+            var orchestratorType = FindType("Icebreaker.Integration.Int02IntegrationOrchestrator");
+            foreach (var orchestrator in Resources.FindObjectsOfTypeAll(orchestratorType))
+            {
+                if (orchestrator is Component component && component.gameObject.scene.isLoaded)
+                {
+                    UnityEngine.Object.Destroy(component);
+                }
+            }
+
+            yield return null;
         }
 
         [UnityTest]
