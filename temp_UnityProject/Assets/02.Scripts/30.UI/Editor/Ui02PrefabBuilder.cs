@@ -19,7 +19,7 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
-        private const string BuildStamp = "ui02-launcher-tabbar-art-v1";
+        private const string BuildStamp = "ui02-launcher-tabbar-art-v2";
         private const string TabbarArtFolder = "Assets/04.Images/Tabbar";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
@@ -251,8 +251,8 @@ namespace Icebreaker.UI.Editor
                 var accents = new List<Graphic>();
                 var texts = new List<TMP_Text>();
 
-                // Funds value text, over the coin panel art (rect derived from the art slice).
-                var fundsText = CreateTopLeftText("FundsText", hudRoot.transform, 40f, 96f, 104f, 52f, "정비 자금\n12.4K", font, 13f, TextAlignmentOptions.Center);
+                // Funds value text, to the right of the coin icon on the panel art.
+                var fundsText = CreateTopLeftText("FundsText", hudRoot.transform, 48f, 97f, 96f, 50f, "정비 자금\n12.4K", font, 13f, TextAlignmentOptions.Center);
                 texts.Add(fundsText);
 
                 // Destination name/progress, over the destination panel art.
@@ -276,7 +276,12 @@ namespace Icebreaker.UI.Editor
                 // Invisible click areas aligned to each art button (rects mapped from the art's own
                 // auto-sliced sub-sprite bounds in the 1600x315 texture).
                 var maintenance = CreateHitArea("MaintenanceHitArea", hudRoot.transform, 320f, 87f, 135f, 67f);
+                // Label to the right of the wrench/compass icons baked into the button art.
+                var maintenanceText = CreateTopLeftText("MaintenanceText", maintenance.transform, 42f, 9f, 88f, 48f, "정비", font, 16f, TextAlignmentOptions.Center);
+                texts.Add(maintenanceText);
                 var route = CreateHitArea("RouteHitArea", hudRoot.transform, 453f, 87f, 135f, 67f);
+                var routeText = CreateTopLeftText("RouteText", route.transform, 40f, 9f, 90f, 48f, "운항 현황", font, 14f, TextAlignmentOptions.Center);
+                texts.Add(routeText);
                 var start = CreateHitArea("StageStartHitArea", hudRoot.transform, 589f, 94f, 165f, 56f);
                 start.interactable = false;
                 var settings = CreateHitArea("SettingsHitArea", hudRoot.transform, 760f, 107f, 32f, 32f);
