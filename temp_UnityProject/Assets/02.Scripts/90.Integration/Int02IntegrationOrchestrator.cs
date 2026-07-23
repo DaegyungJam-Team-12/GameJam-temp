@@ -44,6 +44,7 @@ namespace Icebreaker.Integration
         private ManagementScreen managementScreenBeforeSettings;
         private bool stageStartRequestPending;
         private bool shutdownFlushed;
+        private Int02InputController? inputController;
 
         public event Action<DamageAppliedEvent> DamageApplied = delegate { };
 
@@ -147,6 +148,9 @@ namespace Icebreaker.Integration
             coordinator.StateChanged += HandleCoordinatorStateChanged;
             coordinator.MaintenanceChanged += HandleMaintenanceChanged;
 
+            inputController = new Int02InputController();
+            inputController.EscapeRequested += HandleEscapePressed;
+
             iceFieldView.InjectStageClock(loop);
             iceFieldView.InjectCombatConfig(coordinator.CurrentCombatConfig);
         }
@@ -219,6 +223,36 @@ namespace Icebreaker.Integration
         private void Update()
         {
             coordinator?.Tick(Time.unscaledDeltaTime);
+            inputController?.Tick();
+        }
+
+        private void HandleEscapePressed()
+        {
+            if (coordinator == null)
+            {
+                return;
+            }
+
+            switch (currentManagementScreen)
+            {
+                case ManagementScreen.Settings:
+                case ManagementScreen.Maintenance:
+                case ManagementScreen.Route:
+                    HandleManagementCollapseRequested();
+                    break;
+                
+                case ManagementScreen.None:
+                    switch (coordinator.CurrentState.Phase)
+                    {
+                        case GamePhase.Traveling:
+                        case GamePhase.Ready:
+                        case GamePhase.Completed:
+                        case GamePhase.Playing:
+                            HandleSettingsRequested();
+                            break;
+                    }
+                    break;
+            }
         }
 
         private void OnApplicationQuit()
@@ -290,6 +324,11 @@ namespace Icebreaker.Integration
                 coordinator.MaintenanceChanged -= HandleMaintenanceChanged;
                 FlushForShutdown();
                 coordinator.Dispose();
+            }
+
+            if (inputController != null)
+            {
+                inputController.EscapeRequested -= HandleEscapePressed;
             }
         }
 

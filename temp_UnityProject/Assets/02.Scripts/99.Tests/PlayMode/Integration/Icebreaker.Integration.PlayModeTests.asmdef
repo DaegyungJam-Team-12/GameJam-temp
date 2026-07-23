@@ -4,7 +4,9 @@
   "references": [
     "Icebreaker.Gameplay",
     "Icebreaker.Shared",
-    "Unity.TextMeshPro"
+    "Unity.TextMeshPro",
+    "Unity.InputSystem",
+    "Unity.InputSystem.TestFramework"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
