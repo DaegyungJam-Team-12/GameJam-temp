@@ -127,6 +127,7 @@ namespace Icebreaker.UI.Editor
                 TMP_Settings.fallbackFontAssets?.Count == 1 &&
                 TMP_Settings.fallbackFontAssets[0] == maintenanceFont)
             {
+                Ui02PrefabBuilder.Build(false);
                 MaintenanceTreePrefabBuilder.Build(false);
                 Ui05PrefabBuilder.Build(false);
                 return;

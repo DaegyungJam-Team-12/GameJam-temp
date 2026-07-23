@@ -29,7 +29,8 @@ namespace Icebreaker.UI.Editor
         private const string SettingsButtonArtPath = ArtFolder + "/투명 설정 버튼.png";
         private const string CollapseButtonArtPath = ArtFolder + "/접기 버튼 투명 스프라이트.png";
         private const string SettingsArtFolder = "Assets/04.Images/30.UI/Settings/";
-        private const string BuildStamp = "ui05-route-settings-art-v6";
+        private const string FundsArtworkPath = "Assets/04.Images/30.UI/Hud/FundsPanel.png";
+        private const string BuildStamp = "ui05-route-funds-icon-v7";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-05 Management Views")]
         public static void Build()
@@ -102,8 +103,10 @@ namespace Icebreaker.UI.Editor
             ApplySprite(headerArt, HeaderArtPath, true);
             var headerTitle = CreateTopLeftText("TitleText", header.transform, 100f, 10f, 250f, 38f, "운항 현황", font, 29f, TextAlignmentOptions.Left);
             headerTitle.fontStyle = FontStyles.Bold;
-            var fundsArea = CreateTopLeftImage("FundsArea", header.transform, 568f, 6f, 156f, 46f, new Color32(0x12, 0x31, 0x49, 0xFF), false);
+            var fundsArea = CreateTopLeftImage("FundsArea", header.transform, 548f, 5f, 176.5f, 48f, new Color32(0x12, 0x31, 0x49, 0xFF), false);
+            CreateCroppedArtwork("Artwork", fundsArea.transform, FundsArtworkPath, new RectInt(16, 12, 353, 96));
             var fundsText = CreateInsetText("FundsText", fundsArea.transform, "보유 자금 12.4K", font, 16f, TextAlignmentOptions.Center);
+            SetTopLeft(fundsText.rectTransform, 52f, 3f, 119f, 42f);
             var settingsButton = CreateButton("SettingsButton", header.transform, 734f, 4f, 82f, 50f, "설정", font, 15f, theme.Panel);
             ApplySprite(settingsButton.GetComponent<Image>(), SettingsButtonArtPath, true);
             var collapseButton = CreateButton("CollapseButton", header.transform, 822f, 4f, 100f, 50f, "접기", font, 15f, theme.Panel);
@@ -323,6 +326,17 @@ namespace Icebreaker.UI.Editor
             if (prefab.GetComponentInChildren<ScrollRect>(true) != null)
             {
                 errors.Add("Management views must not use scrolling, dragging, or zooming.");
+            }
+
+            var fundsArtwork = prefab.transform
+                .Find("Background/CommonHeader/FundsArea/Artwork")
+                ?.GetComponent<RawImage>();
+            var expectedFundsTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(FundsArtworkPath);
+            if (fundsArtwork == null ||
+                expectedFundsTexture == null ||
+                fundsArtwork.texture != expectedFundsTexture)
+            {
+                errors.Add($"Management funds artwork must reference {FundsArtworkPath}.");
             }
 
             ProductionUiGuard.CollectErrors(prefab, errors);
@@ -615,6 +629,26 @@ namespace Icebreaker.UI.Editor
             var image = root.GetComponent<Image>();
             image.color = color;
             image.raycastTarget = raycast;
+            return image;
+        }
+
+        private static RawImage CreateCroppedArtwork(string name, Transform parent, string path, RectInt crop)
+        {
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path) ??
+                          throw new InvalidOperationException($"HUD artwork was not found at {path}.");
+            var root = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
+            var rect = root.GetComponent<RectTransform>();
+            rect.SetParent(parent, false);
+            Stretch(rect);
+
+            var image = root.GetComponent<RawImage>();
+            image.texture = texture;
+            image.uvRect = new Rect(
+                crop.x / (float)texture.width,
+                (texture.height - crop.y - crop.height) / (float)texture.height,
+                crop.width / (float)texture.width,
+                crop.height / (float)texture.height);
+            image.raycastTarget = false;
             return image;
         }
 
