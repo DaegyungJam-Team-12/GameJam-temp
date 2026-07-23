@@ -13,6 +13,8 @@ namespace Icebreaker.UI.Maintenance
 {
     public sealed class MaintenanceTreePresenter : MonoBehaviour
     {
+        private const float BottomRowTooltipVerticalOffset = 40f;
+
         [Header("Data")]
         [SerializeField] private MaintenanceTreeLayoutAsset? layout;
         [SerializeField] private MonoBehaviour? sourceBehaviour;
@@ -28,6 +30,7 @@ namespace Icebreaker.UI.Maintenance
 
         [Header("Selection")]
         [SerializeField] private RectTransform? tooltipOverlay;
+        [SerializeField] private RectTransform? treeViewport;
         [SerializeField] private MaintenanceTooltipView? tooltipView;
 
         [Header("Chrome")]
@@ -46,7 +49,7 @@ namespace Icebreaker.UI.Maintenance
         private readonly Dictionary<string, MaintenanceNodeView> nodesById =
             new(StringComparer.Ordinal);
         private readonly HashSet<string> pendingPurchaseStepIds = new(StringComparer.Ordinal);
-        private string? selectedStepId;
+        private string? hoveredStepId;
 
         public event Action<string> PurchaseRequested = delegate { };
         public event Action CloseRequested = delegate { };
@@ -124,17 +127,18 @@ namespace Icebreaker.UI.Maintenance
 
             source!.EnsureInitialized();
             source.StepsChanged += Render;
-            viewport!.StepClicked += HandleStepClicked;
-            viewport.StepDoubleClicked += HandleStepDoubleClicked;
-            viewport.StepHovered += HandleStepHovered;
-            viewport.BackgroundClicked += HandleBackgroundClicked;
-            tooltipView!.PurchaseClicked += HandleTooltipPurchaseClicked;
+            var inputViewport = viewport!;
+            inputViewport.StepDoubleClicked += HandleStepDoubleClicked;
+            inputViewport.StepHovered += HandleStepHovered;
+            inputViewport.StepHoverExited += HandleStepHoverExited;
             subscribed = true;
             Render(source.CurrentSteps);
         }
 
         private void Unsubscribe()
         {
+            ClearHover();
+
             if (subscribed && source != null)
             {
                 source.StepsChanged -= Render;
@@ -142,17 +146,13 @@ namespace Icebreaker.UI.Maintenance
 
             if (subscribed && viewport != null)
             {
-                viewport.StepClicked -= HandleStepClicked;
                 viewport.StepDoubleClicked -= HandleStepDoubleClicked;
                 viewport.StepHovered -= HandleStepHovered;
-                viewport.BackgroundClicked -= HandleBackgroundClicked;
-                viewport.CancelPointer();
+                viewport.StepHoverExited -= HandleStepHoverExited;
             }
 
-            if (subscribed && tooltipView != null)
-            {
-                tooltipView.PurchaseClicked -= HandleTooltipPurchaseClicked;
-            }
+            viewport?.ClearHover();
+            viewport?.CancelPointer();
 
             subscribed = false;
         }
@@ -193,7 +193,7 @@ namespace Icebreaker.UI.Maintenance
 
             RenderEdges(layoutById, dataById);
             RenderNodes(layoutById, dataById);
-            RestoreSelection();
+            RestoreHover();
 
             if (source != null)
             {
@@ -307,7 +307,7 @@ namespace Icebreaker.UI.Maintenance
             }
         }
 
-        private void HandleStepClicked(string stepId)
+        private void HandleStepHovered(string stepId)
         {
             if (!dataById.TryGetValue(stepId, out var data) ||
                 data.Visibility == MaintenanceStepVisibility.Hidden ||
@@ -316,26 +316,37 @@ namespace Icebreaker.UI.Maintenance
                 return;
             }
 
-            if (selectedStepId != null && nodesById.TryGetValue(selectedStepId, out var previous))
+            if (hoveredStepId != null && nodesById.TryGetValue(hoveredStepId, out var previous))
             {
                 previous.SetSelected(false);
             }
 
-            selectedStepId = stepId;
+            hoveredStepId = stepId;
             node.SetSelected(true);
             ShowTooltip(data, node);
         }
 
-        private void HandleStepHovered(string stepId) => HandleStepClicked(stepId);
-
         private void HandleStepDoubleClicked(string stepId) => TryPurchase(stepId);
 
-        private void HandleTooltipPurchaseClicked()
+        private void HandleStepHoverExited(string stepId)
         {
-            if (selectedStepId != null)
+            if (!string.Equals(hoveredStepId, stepId, StringComparison.Ordinal))
             {
-                TryPurchase(selectedStepId);
+                return;
             }
+
+            ClearHover();
+        }
+
+        private void ClearHover()
+        {
+            if (hoveredStepId != null && nodesById.TryGetValue(hoveredStepId, out var node))
+            {
+                node.SetSelected(false);
+            }
+
+            hoveredStepId = null;
+            tooltipView?.Hide();
         }
 
         private void TryPurchase(string stepId)
@@ -348,31 +359,19 @@ namespace Icebreaker.UI.Maintenance
             }
         }
 
-        private void HandleBackgroundClicked()
+        private void RestoreHover()
         {
-            if (selectedStepId != null && nodesById.TryGetValue(selectedStepId, out var selected))
-            {
-                selected.SetSelected(false);
-            }
-
-            selectedStepId = null;
-            tooltipView?.Hide();
-        }
-
-        private void RestoreSelection()
-        {
-            if (selectedStepId != null &&
-                dataById.TryGetValue(selectedStepId, out var data) &&
+            if (hoveredStepId != null &&
+                dataById.TryGetValue(hoveredStepId, out var data) &&
                 data.Visibility != MaintenanceStepVisibility.Hidden &&
-                nodesById.TryGetValue(selectedStepId, out var node))
+                nodesById.TryGetValue(hoveredStepId, out var node))
             {
                 node.SetSelected(true);
                 ShowTooltip(data, node);
                 return;
             }
 
-            selectedStepId = null;
-            tooltipView?.Hide();
+            ClearHover();
         }
 
         private void ShowTooltip(MaintenancePurchaseStepViewData data, MaintenanceNodeView node)
@@ -382,20 +381,51 @@ namespace Icebreaker.UI.Maintenance
                 return;
             }
 
-            var screenPosition = RectTransformUtility.WorldToScreenPoint(null, node.transform.position);
-            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    tooltipOverlay,
-                    screenPosition,
-                    null,
-                    out var localPosition))
+            var localAnchor = (Vector2)tooltipOverlay.InverseTransformPoint(node.transform.position);
+            if (IsBottomRowNode(data.StepId))
             {
-                return;
+                localAnchor.y += BottomRowTooltipVerticalOffset;
             }
 
             tooltipView.Show(
                 data,
-                localPosition + new Vector2(54f, 28f),
-                tooltipOverlay.rect);
+                localAnchor,
+                GetViewportBoundsInTooltipOverlay());
+        }
+
+        private bool IsBottomRowNode(string stepId)
+        {
+            var maximumY = float.MinValue;
+            foreach (var nodeLayout in layout!.Nodes)
+            {
+                maximumY = Mathf.Max(maximumY, nodeLayout.Position.y);
+            }
+
+            foreach (var nodeLayout in layout.Nodes)
+            {
+                if (nodeLayout.StepId == stepId)
+                {
+                    return Mathf.Approximately(nodeLayout.Position.y, maximumY);
+                }
+            }
+
+            return false;
+        }
+
+        private Rect GetViewportBoundsInTooltipOverlay()
+        {
+            var corners = new Vector3[4];
+            treeViewport!.GetWorldCorners(corners);
+            var minimum = (Vector2)tooltipOverlay!.InverseTransformPoint(corners[0]);
+            var maximum = minimum;
+            for (var index = 1; index < corners.Length; index++)
+            {
+                var corner = (Vector2)tooltipOverlay.InverseTransformPoint(corners[index]);
+                minimum = Vector2.Min(minimum, corner);
+                maximum = Vector2.Max(maximum, corner);
+            }
+
+            return Rect.MinMaxRect(minimum.x, minimum.y, maximum.x, maximum.y);
         }
 
         private bool ValidateReferences()
@@ -403,7 +433,7 @@ namespace Icebreaker.UI.Maintenance
             if (layout != null && source != null &&
                 content != null && edgeLayer != null && nodeLayer != null &&
                 viewport != null && nodePrefab != null && edgePrefab != null &&
-                tooltipOverlay != null && tooltipView != null &&
+                tooltipOverlay != null && treeViewport != null && tooltipView != null &&
                 closeButton != null && stageStartButton != null)
             {
                 return true;

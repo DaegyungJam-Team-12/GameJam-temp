@@ -132,6 +132,19 @@ namespace Icebreaker.UI.Editor
                 }
             }
 
+            if (tooltip != null)
+            {
+                if (tooltip.transform.Find("PurchaseButton") != null)
+                {
+                    errors.Add("Tooltip must not contain a PurchaseButton.");
+                }
+
+                if (tooltip.GetComponentsInChildren<Graphic>(true).Any(graphic => graphic.raycastTarget))
+                {
+                    errors.Add("Tooltip graphics must not intercept raycasts.");
+                }
+            }
+
             ValidateFakeStates(errors);
             if (errors.Count > 0)
             {
@@ -308,24 +321,21 @@ namespace Icebreaker.UI.Editor
                 typeof(MaintenanceTooltipView));
             try
             {
-                ConfigureTopLeftAnchor(root.GetComponent<RectTransform>(), new Vector2(300f, 230f));
+                ConfigureTopLeftAnchor(root.GetComponent<RectTransform>(), new Vector2(300f, 184f));
                 var panel = root.GetComponent<Image>();
                 panel.sprite = LoadChrome("TooltipPanel");
                 panel.type = Image.Type.Sliced;
                 panel.color = Color.white;
+                panel.raycastTarget = false;
                 var title = CreateTopLeftText("Title", root.transform, 14f, 12f, 272f, 28f, "주 파쇄기 출력 · 2/3", font, 18f, TextAlignmentOptions.Left);
                 var effect = CreateTopLeftText("Effect", root.transform, 14f, 48f, 272f, 48f, "직접 피해 ×5\n현재값 → 구매 후 값", font, 14f, TextAlignmentOptions.TopLeft);
                 var cost = CreateTopLeftText("Cost", root.transform, 14f, 106f, 272f, 26f, "가격 900", font, 15f, TextAlignmentOptions.Left);
                 var lockText = CreateTopLeftText("Lock", root.transform, 14f, 136f, 272f, 34f, "잠금 조건 없음", font, 13f, TextAlignmentOptions.TopLeft);
-                var purchaseButton = CreateButton("PurchaseButton", root.transform, 14f, 178f, 272f, 40f, "구매", font, theme.ActionAccent);
-                var purchaseButtonText = purchaseButton.transform.Find("Label")!.GetComponent<TMP_Text>();
                 var serialized = new SerializedObject(root.GetComponent<MaintenanceTooltipView>());
                 SetReference(serialized, "titleText", title);
                 SetReference(serialized, "effectText", effect);
                 SetReference(serialized, "costText", cost);
                 SetReference(serialized, "lockText", lockText);
-                SetReference(serialized, "purchaseButton", purchaseButton);
-                SetReference(serialized, "purchaseButtonText", purchaseButtonText);
                 serialized.ApplyModifiedPropertiesWithoutUndo();
                 PrefabUtility.SaveAsPrefabAsset(root, TooltipPrefabPath);
             }
@@ -408,6 +418,7 @@ namespace Icebreaker.UI.Editor
                 SetReference(serialized, "nodePrefab", nodePrefab);
                 SetReference(serialized, "edgePrefab", edgePrefab);
                 SetReference(serialized, "tooltipOverlay", tooltipOverlay);
+                SetReference(serialized, "treeViewport", viewport.rectTransform);
                 SetReference(serialized, "tooltipView", tooltip.GetComponent<MaintenanceTooltipView>());
                 SetReference(serialized, "fundsText", fundsText);
                 SetReference(serialized, "previewStateText", previewStateText);
@@ -552,7 +563,7 @@ namespace Icebreaker.UI.Editor
             foreach (var propertyName in new[]
                      {
                          "layout", "sourceBehaviour", "theme", "content", "edgeLayer", "nodeLayer",
-                         "viewport", "nodePrefab", "edgePrefab", "tooltipOverlay", "tooltipView",
+                         "viewport", "nodePrefab", "edgePrefab", "tooltipOverlay", "treeViewport", "tooltipView",
                          "fundsText", "previewStateText", "closeButton", "stageStartButton"
                      })
             {

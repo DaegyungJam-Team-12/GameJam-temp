@@ -241,8 +241,7 @@ namespace Icebreaker.Integration.Tests
             yield return null;
             Assert.That(tree.activeSelf, Is.True);
 
-            ClickMaintenanceStep(tree, "C01-L1");
-            ClickMaintenancePurchaseButton(tree);
+            DoubleClickMaintenanceStep(tree, "C01-L1");
             yield return null;
 
             Assert.That(GetStateValue(orchestrator, orchestratorType, "Funds"), Is.Zero);
@@ -461,7 +460,7 @@ namespace Icebreaker.Integration.Tests
             button.onClick.Invoke();
         }
 
-        private static void ClickMaintenanceStep(GameObject tree, string stepId)
+        private static void DoubleClickMaintenanceStep(GameObject tree, string stepId)
         {
             var viewportType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeViewport");
             var viewport = tree.GetComponentInChildren(viewportType, true);
@@ -473,23 +472,27 @@ namespace Icebreaker.Integration.Tests
                 pointerId = 1,
                 position = Vector2.zero
             };
-            var up = new PointerEventData(eventSystem)
+            var firstUp = new PointerEventData(eventSystem)
             {
                 pointerId = 1,
-                position = new Vector2(2f, 0f)
+                position = new Vector2(2f, 0f),
+                clickCount = 1
             };
             viewportType.GetMethod("ProcessPointerDown")!
                 .Invoke(viewport, new object[] { down, stepId });
             viewportType.GetMethod("ProcessPointerUp")!
-                .Invoke(viewport, new object[] { up, stepId });
-        }
+                .Invoke(viewport, new object[] { firstUp, stepId });
 
-        private static void ClickMaintenancePurchaseButton(GameObject tree)
-        {
-            var button = tree.transform
-                .Find("TooltipOverlay/Tooltip/PurchaseButton")!
-                .GetComponent<Button>();
-            button.onClick.Invoke();
+            var secondUp = new PointerEventData(eventSystem)
+            {
+                pointerId = 1,
+                position = new Vector2(2f, 0f),
+                clickCount = 2
+            };
+            viewportType.GetMethod("ProcessPointerDown")!
+                .Invoke(viewport, new object[] { down, stepId });
+            viewportType.GetMethod("ProcessPointerUp")!
+                .Invoke(viewport, new object[] { secondUp, stepId });
         }
 
         private static void AssertStepState(

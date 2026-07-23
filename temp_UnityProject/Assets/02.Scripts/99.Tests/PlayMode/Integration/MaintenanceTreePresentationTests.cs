@@ -67,7 +67,11 @@ namespace Icebreaker.Integration.Tests
 
             var tooltip = AssetDatabase.LoadAssetAtPath<GameObject>(TooltipPrefabPath);
             Assert.That(tooltip!.GetComponent<Image>().type, Is.EqualTo(Image.Type.Sliced));
-            Assert.That(tooltip.transform.Find("PurchaseButton")!.GetComponent<Button>(), Is.Not.Null);
+            Assert.That(tooltip.transform.Find("PurchaseButton"), Is.Null);
+            Assert.That(
+                tooltip.GetComponentsInChildren<Graphic>(true).All(graphic => !graphic.raycastTarget),
+                Is.True,
+                "The hover-only tooltip must not intercept node or viewport input.");
             var tree = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
             var bottomBar = tree!.transform.Find("BottomBar")!;
             Assert.That(bottomBar.GetComponent<Image>().type, Is.EqualTo(Image.Type.Sliced));
@@ -179,7 +183,7 @@ namespace Icebreaker.Integration.Tests
         }
 
         [UnityTest]
-        public IEnumerator ShortClick_RequestsOnceWhileDragDisableAndDuplicateInputDoNotPurchase()
+        public IEnumerator HoverTooltip_OnlyExactSameNodeDoubleClickRequestsPurchase()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
             Assert.That(prefab, Is.Not.Null);
@@ -202,63 +206,226 @@ namespace Icebreaker.Integration.Tests
                 Action<string> handler = requests.Add;
                 presenterType.GetEvent("PurchaseRequested")!.AddEventHandler(presenter, handler);
 
-                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 1, Vector2.zero), "C01-L1");
-                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 1, new Vector2(4f, 0f)), "C01-L1");
-                Assert.That(requests, Is.Empty, "Selecting a node must not purchase it.");
-
                 var tooltip = instance.transform.Find("TooltipOverlay/Tooltip");
-                var purchaseButton = tooltip!.Find("PurchaseButton")!.GetComponent<Button>();
-                Assert.That(purchaseButton.interactable, Is.True);
-                purchaseButton.onClick.Invoke();
-                Assert.That(requests, Is.EqualTo(new[] { "C01-L1" }));
+                Assert.That(tooltip, Is.Not.Null);
+                Assert.That(tooltip!.gameObject.activeSelf, Is.False);
 
-                purchaseButton.onClick.Invoke();
-                Assert.That(requests, Has.Count.EqualTo(1), "A pending Step must ignore duplicate clicks.");
+                InvokeHover(viewportType, viewport, "ProcessPointerEnter", "C01-L1");
+                Assert.That(tooltip.gameObject.activeSelf, Is.True);
+                Assert.That(
+                    instance.transform.Find("TreeViewport/TreeContent/NodeLayer/Node_C01-L1/SelectionFrame")!
+                        .gameObject.activeSelf,
+                    Is.True);
+
+                InvokeHover(viewportType, viewport, "ProcessPointerEnter", "C02-L1");
+                InvokeHover(viewportType, viewport, "ProcessPointerExit", "C01-L1");
+                Assert.That(tooltip.gameObject.activeSelf, Is.True, "An older node exit must not hide the current hover tooltip.");
+                Assert.That(
+                    instance.transform.Find("TreeViewport/TreeContent/NodeLayer/Node_C02-L1/SelectionFrame")!
+                        .gameObject.activeSelf,
+                    Is.True);
+
+                InvokeHover(viewportType, viewport, "ProcessPointerExit", "C02-L1");
+                Assert.That(tooltip.gameObject.activeSelf, Is.False, "Hover exit must hide the tooltip in the same frame.");
+
+                ClickStep(viewportType, viewport, eventSystem, 1, "C02-L1", Vector2.zero, new Vector2(2f, 0f), 2);
+                Assert.That(requests, Is.Empty, "A node that cannot be purchased must not request a purchase.");
+
+                ClickStep(viewportType, viewport, eventSystem, 2, "C01-L1", Vector2.zero, new Vector2(4f, 0f), 1);
+                Assert.That(requests, Is.Empty, "A single click must not purchase.");
+                Assert.That(tooltip.gameObject.activeSelf, Is.False, "A single click must not latch the tooltip.");
+
+                ClickStep(viewportType, viewport, eventSystem, 3, "C01-L1", Vector2.zero, new Vector2(4f, 0f), 3);
+                Assert.That(requests, Is.Empty, "Only clickCount exactly equal to two can purchase.");
+
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 4, Vector2.zero), "C01-L1");
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 4, new Vector2(4f, 0f), 2), "C02-L1");
+                Assert.That(requests, Is.Empty, "A down/up node mismatch must not purchase.");
+
+                InvokeHover(viewportType, viewport, "ProcessPointerEnter", "C01-L1");
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 5, Vector2.zero), "C01-L1");
+                var drag = Pointer(eventSystem, 5, new Vector2(20f, 0f));
+                drag.delta = new Vector2(20f, 0f);
+                viewportType.GetMethod("ProcessPointerDrag")!.Invoke(viewport, new object[] { drag });
+                InvokeHover(viewportType, viewport, "ProcessPointerEnter", "C02-L1");
+                InvokeHover(viewportType, viewport, "ProcessPointerExit", "C01-L1");
+                Assert.That(tooltip.gameObject.activeSelf, Is.True);
+                Assert.That(
+                    instance.transform.Find("TreeViewport/TreeContent/NodeLayer/Node_C01-L1/SelectionFrame")!
+                        .gameObject.activeSelf,
+                    Is.True,
+                    "Crossing nodes while dragging must not change the hover highlight.");
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 5, new Vector2(20f, 0f), 2), "C01-L1");
+                Assert.That(requests, Is.Empty, "An 8px-or-more drag must not purchase.");
+                Assert.That(tooltip.gameObject.activeSelf, Is.False, "Ending a drag must clear stale hover UI.");
+                Assert.That(
+                    instance.transform.Find("TreeViewport/TreeContent/NodeLayer/Node_C01-L1/SelectionFrame")!
+                        .gameObject.activeSelf,
+                    Is.False);
+
+                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 6, Vector2.zero), "C01-L1");
+                ((Behaviour)viewport).enabled = false;
+                ((Behaviour)viewport).enabled = true;
+                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 6, new Vector2(2f, 0f), 2), "C01-L1");
+                Assert.That(requests, Is.Empty, "Disable must clear stale pointer state.");
+
+                ClickStep(viewportType, viewport, eventSystem, 7, "C01-L1", Vector2.zero, new Vector2(7f, 0f), 2);
+                Assert.That(requests, Is.EqualTo(new[] { "C01-L1" }));
+                ClickStep(viewportType, viewport, eventSystem, 8, "C01-L1", Vector2.zero, new Vector2(4f, 0f), 2);
+                Assert.That(requests, Has.Count.EqualTo(1), "A pending Step must ignore duplicate double-clicks.");
 
                 var c01Purchased = Enum.Parse(previewStateType, "C01Purchased");
                 sourceType.GetMethod("SetPreviewState")!.Invoke(source, new[] { c01Purchased });
                 yield return null;
 
-                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 3, Vector2.zero), "C02-L1");
-                var drag = Pointer(eventSystem, 3, new Vector2(20f, 0f));
-                drag.delta = new Vector2(20f, 0f);
-                viewportType.GetMethod("ProcessPointerDrag")!.Invoke(viewport, new object[] { drag });
-                InvokePointer(viewportType, viewport, "ProcessPointerUp", drag, "C02-L1");
-                Assert.That(requests, Has.Count.EqualTo(1), "A 20px drag must not purchase.");
-
-                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 4, Vector2.zero), "C02-L1");
-                ((Behaviour)viewport).enabled = false;
-                ((Behaviour)viewport).enabled = true;
-                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 4, Vector2.zero), "C02-L1");
-                Assert.That(requests, Has.Count.EqualTo(1), "Disable must clear stale pointer state.");
-
-                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 5, Vector2.zero), "C02-L1");
-                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 5, Vector2.zero), "C02-L1");
+                ClickStep(viewportType, viewport, eventSystem, 9, "C02-L1", Vector2.zero, new Vector2(4f, 0f), 3);
                 Assert.That(requests, Is.EqualTo(new[] { "C01-L1" }));
-                purchaseButton = tooltip.Find("PurchaseButton")!.GetComponent<Button>();
-                Assert.That(purchaseButton.interactable, Is.True);
-                purchaseButton.onClick.Invoke();
+                ClickStep(viewportType, viewport, eventSystem, 10, "C02-L1", Vector2.zero, new Vector2(8f, 0f), 2);
+                Assert.That(requests, Is.EqualTo(new[] { "C01-L1" }), "Exactly 8px must be treated as a drag.");
+                ClickStep(viewportType, viewport, eventSystem, 11, "C02-L1", Vector2.zero, new Vector2(4f, 0f), 2);
                 Assert.That(requests, Is.EqualTo(new[] { "C01-L1", "C02-L1" }));
 
+                InvokeHover(viewportType, viewport, "ProcessPointerEnter", "C02-L1");
                 viewportType.GetMethod("ApplyZoomAtPointer")!.Invoke(
                     viewport,
                     new object[] { 1f, new Vector2(400f, -200f) });
-                Assert.That(tooltip, Is.Not.Null);
                 Assert.That(tooltip!.localScale, Is.EqualTo(Vector3.one));
                 Assert.That(tooltip.gameObject.activeSelf, Is.True);
-
-                InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, 6, Vector2.zero), null);
-                InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, 6, new Vector2(2f, 0f)), null);
-                Assert.That(tooltip.gameObject.activeSelf, Is.False);
-                Assert.That(
-                    instance.transform.Find("TreeViewport/TreeContent/NodeLayer/Node_C02-L1/SelectionFrame")!
-                        .gameObject.activeSelf,
-                    Is.False);
             }
             finally
             {
                 UnityEngine.Object.Destroy(instance);
                 UnityEngine.Object.Destroy(eventSystemObject);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator DisablingTheTree_ClearsHoverBeforeTheSameNodeCanBeEnteredAgain()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
+            Assert.That(prefab, Is.Not.Null);
+            var instance = UnityEngine.Object.Instantiate(prefab!);
+
+            try
+            {
+                yield return null;
+
+                var viewportType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeViewport");
+                var viewport = instance.GetComponentInChildren(viewportType, true)!;
+                var tooltip = instance.transform.Find("TooltipOverlay/Tooltip")!;
+
+                InvokeHover(viewportType, viewport, "ProcessPointerEnter", "C01-L1");
+                Assert.That(tooltip.gameObject.activeSelf, Is.True);
+
+                instance.SetActive(false);
+                instance.SetActive(true);
+                yield return null;
+
+                Assert.That(tooltip.gameObject.activeSelf, Is.False);
+                Assert.That(
+                    instance.transform.Find("TreeViewport/TreeContent/NodeLayer/Node_C01-L1/SelectionFrame")!
+                        .gameObject.activeSelf,
+                    Is.False);
+
+                InvokeHover(viewportType, viewport, "ProcessPointerEnter", "C01-L1");
+                Assert.That(tooltip.gameObject.activeSelf, Is.True);
+            }
+            finally
+            {
+                UnityEngine.Object.Destroy(instance);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator Tooltip_PreservesVerticalOffsetAtCenterAndBottomNodesAcrossZoomAndPan()
+        {
+            const float normalTooltipVerticalOffset = 28f;
+            const float bottomRowTooltipVerticalOffset = 68f;
+            var layout = AssetDatabase.LoadAssetAtPath<MaintenanceTreeLayoutAsset>(LayoutPath);
+            Assert.That(layout, Is.Not.Null);
+            var maximumY = layout!.Nodes.Max(node => node.Position.y);
+            var bottomRowStepIds = layout.Nodes
+                .Where(node => Mathf.Approximately(node.Position.y, maximumY))
+                .Select(node => node.StepId)
+                .ToArray();
+            Assert.That(bottomRowStepIds, Is.EquivalentTo(new[] { "D04-L1", "D04-L2", "D04-L3" }));
+
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
+            Assert.That(prefab, Is.Not.Null);
+            var instance = UnityEngine.Object.Instantiate(prefab!);
+
+            try
+            {
+                yield return null;
+
+                var viewportType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeViewport");
+                var sourceType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreeFakeDataSource");
+                var previewStateType = FindType("Icebreaker.UI.Maintenance.MaintenanceTreePreviewState");
+                var viewport = instance.GetComponentInChildren(viewportType, true)!;
+                var source = instance.GetComponent(sourceType)!;
+                sourceType.GetMethod("SetPreviewState")!.Invoke(
+                    source,
+                    new[] { Enum.Parse(previewStateType, "FullyPurchased") });
+                yield return null;
+
+                var viewportRect = (RectTransform)instance.transform.Find("TreeViewport")!;
+                var content = (RectTransform)instance.transform.Find("TreeViewport/TreeContent")!;
+                var tooltipOverlay = (RectTransform)instance.transform.Find("TooltipOverlay")!;
+                var tooltip = (RectTransform)instance.transform.Find("TooltipOverlay/Tooltip")!;
+                foreach (var zoom in new[] { 0.8f, 1f, 1.25f })
+                {
+                    foreach (var position in new[] { Vector2.zero, new Vector2(-9999f, 9999f) })
+                    {
+                        content.localScale = Vector3.one * zoom;
+                        content.anchoredPosition = position;
+                        viewportType.GetMethod("ClampNow")!.Invoke(viewport, null);
+                        Canvas.ForceUpdateCanvases();
+
+                        var centerNode = (RectTransform)instance.transform.Find(
+                            "TreeViewport/TreeContent/NodeLayer/Node_C01-L1")!;
+                        var centerAnchor = (Vector2)tooltipOverlay.InverseTransformPoint(centerNode.position);
+                        InvokeHover(viewportType, viewport, "ProcessPointerEnter", "C01-L1");
+                        Assert.That(
+                            tooltip.anchoredPosition.y,
+                            Is.EqualTo(centerAnchor.y + normalTooltipVerticalOffset).Within(0.01f),
+                            "C01-L1");
+                        Assert.That(tooltip.localScale, Is.EqualTo(Vector3.one));
+                        InvokeHover(viewportType, viewport, "ProcessPointerExit", "C01-L1");
+
+                        foreach (var stepId in bottomRowStepIds)
+                        {
+                            var node = (RectTransform)instance.transform.Find(
+                                "TreeViewport/TreeContent/NodeLayer/Node_" + stepId)!;
+                            var anchor = (Vector2)tooltipOverlay.InverseTransformPoint(node.position);
+                            InvokeHover(viewportType, viewport, "ProcessPointerEnter", stepId);
+                            Assert.That(
+                                tooltip.anchoredPosition.y,
+                                Is.EqualTo(anchor.y + bottomRowTooltipVerticalOffset).Within(0.01f),
+                                stepId);
+                            Assert.That(tooltip.localScale, Is.EqualTo(Vector3.one));
+                            InvokeHover(viewportType, viewport, "ProcessPointerExit", stepId);
+                        }
+                    }
+                }
+
+                content.localScale = Vector3.one * 0.8f;
+                content.anchoredPosition = Vector2.zero;
+                viewportType.GetMethod("ClampNow")!.Invoke(viewport, null);
+                Canvas.ForceUpdateCanvases();
+
+                var rightNode = (RectTransform)instance.transform.Find(
+                    "TreeViewport/TreeContent/NodeLayer/Node_H02-L1")!;
+                var rightAnchor = (Vector2)tooltipOverlay.InverseTransformPoint(rightNode.position);
+                InvokeHover(viewportType, viewport, "ProcessPointerEnter", "H02-L1");
+                var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewportRect, tooltip);
+                Assert.That(tooltip.anchoredPosition.x, Is.LessThan(rightAnchor.x), "H02-L1");
+                Assert.That(bounds.min.x, Is.GreaterThanOrEqualTo(viewportRect.rect.xMin + 15.5f));
+                Assert.That(bounds.max.x, Is.LessThanOrEqualTo(viewportRect.rect.xMax - 15.5f));
+                InvokeHover(viewportType, viewport, "ProcessPointerExit", "H02-L1");
+            }
+            finally
+            {
+                UnityEngine.Object.Destroy(instance);
             }
         }
 
@@ -279,13 +446,38 @@ namespace Icebreaker.Integration.Tests
         private static PointerEventData Pointer(
             EventSystem eventSystem,
             int pointerId,
-            Vector2 position)
+            Vector2 position,
+            int clickCount = 0)
         {
             return new PointerEventData(eventSystem)
             {
                 pointerId = pointerId,
-                position = position
+                position = position,
+                clickCount = clickCount
             };
+        }
+
+        private static void ClickStep(
+            Type viewportType,
+            Component viewport,
+            EventSystem eventSystem,
+            int pointerId,
+            string stepId,
+            Vector2 downPosition,
+            Vector2 upPosition,
+            int clickCount)
+        {
+            InvokePointer(viewportType, viewport, "ProcessPointerDown", Pointer(eventSystem, pointerId, downPosition), stepId);
+            InvokePointer(viewportType, viewport, "ProcessPointerUp", Pointer(eventSystem, pointerId, upPosition, clickCount), stepId);
+        }
+
+        private static void InvokeHover(
+            Type viewportType,
+            Component viewport,
+            string methodName,
+            string stepId)
+        {
+            viewportType.GetMethod(methodName)!.Invoke(viewport, new object[] { stepId });
         }
 
         private static void InvokePointer(
@@ -293,7 +485,7 @@ namespace Icebreaker.Integration.Tests
             Component viewport,
             string methodName,
             PointerEventData pointer,
-            string? stepId)
+            string stepId)
         {
             viewportType.GetMethod(methodName)!.Invoke(viewport, new object[] { pointer, stepId });
         }

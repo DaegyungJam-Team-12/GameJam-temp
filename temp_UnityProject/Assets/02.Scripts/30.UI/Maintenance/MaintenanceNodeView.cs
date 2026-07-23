@@ -11,6 +11,7 @@ namespace Icebreaker.UI.Maintenance
 {
     public sealed class MaintenanceNodeView : MonoBehaviour,
         IPointerEnterHandler,
+        IPointerExitHandler,
         IPointerDownHandler,
         IPointerUpHandler,
         IBeginDragHandler,
@@ -164,6 +165,9 @@ namespace Icebreaker.UI.Maintenance
 
         public void OnPointerEnter(PointerEventData eventData) =>
             viewport?.ProcessPointerEnter(StepId);
+
+        public void OnPointerExit(PointerEventData eventData) =>
+            viewport?.ProcessPointerExit(StepId);
 
         public void OnPointerDown(PointerEventData eventData) =>
             viewport?.ProcessPointerDown(eventData, StepId);

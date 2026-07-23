@@ -26,11 +26,11 @@ namespace Icebreaker.UI.Maintenance
         private int activePointerId;
         private Vector2 pointerDownScreenPosition;
         private string? pointerDownStepId;
+        private string? hoveredStepId;
 
-        public event Action<string> StepClicked = delegate { };
         public event Action<string> StepDoubleClicked = delegate { };
         public event Action<string> StepHovered = delegate { };
-        public event Action BackgroundClicked = delegate { };
+        public event Action<string> StepHoverExited = delegate { };
 
         public float CurrentZoom => content != null
             ? content.localScale.x
@@ -66,13 +66,18 @@ namespace Icebreaker.UI.Maintenance
             ClampNow();
         }
 
-        private void OnDisable() => CancelPointer();
+        private void OnDisable()
+        {
+            CancelPointer();
+            ClearHover();
+        }
 
         private void OnApplicationFocus(bool hasFocus)
         {
             if (!hasFocus)
             {
                 CancelPointer();
+                ClearHover();
             }
         }
 
@@ -102,7 +107,7 @@ namespace Icebreaker.UI.Maintenance
             direction.Normalize();
             content.anchoredPosition +=
                 direction * (keyboardPanPixelsPerSecond * Time.unscaledDeltaTime);
-            ClampNow();
+            ClampKeyboardPan();
         }
 
         public void OnPointerDown(PointerEventData eventData) =>
@@ -131,16 +136,35 @@ namespace Icebreaker.UI.Maintenance
         {
             // Hover shows the tooltip immediately, but ignore hovers while the pointer is held
             // (dragging/panning) so panning across nodes doesn't hijack the selection.
-            if (pointerActive || string.IsNullOrEmpty(stepId))
+            if (pointerActive || string.IsNullOrEmpty(stepId) ||
+                string.Equals(hoveredStepId, stepId, StringComparison.Ordinal))
             {
                 return;
             }
 
+            hoveredStepId = stepId;
             StepHovered(stepId);
+        }
+
+        public void ProcessPointerExit(string? stepId)
+        {
+            if (pointerActive || string.IsNullOrEmpty(stepId) ||
+                !string.Equals(hoveredStepId, stepId, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            hoveredStepId = null;
+            StepHoverExited(stepId);
         }
 
         public void ProcessPointerDown(PointerEventData eventData, string? stepId)
         {
+            if (pointerActive)
+            {
+                CancelPointer();
+            }
+
             pointerActive = true;
             activePointerId = eventData.pointerId;
             pointerDownScreenPosition = eventData.position;
@@ -161,33 +185,33 @@ namespace Icebreaker.UI.Maintenance
 
         public void ProcessPointerUp(PointerEventData eventData, string? stepId)
         {
-            if (!pointerActive || eventData.pointerId != activePointerId)
+            if (!pointerActive)
             {
+                return;
+            }
+
+            if (eventData.pointerId != activePointerId)
+            {
+                CancelPointer();
                 return;
             }
 
             var movedPixels = Vector2.Distance(pointerDownScreenPosition, eventData.position);
             var clickedStepId = pointerDownStepId;
-            var isDoubleClick = eventData.clickCount >= 2;
+            var isDoubleClick = eventData.clickCount == 2;
             var isShortClick = movedPixels < MaintenanceTreeViewportMath.ClickDragThresholdPixels;
             var isStepClick = isShortClick &&
                           !string.IsNullOrEmpty(clickedStepId) &&
                           string.Equals(clickedStepId, stepId, StringComparison.Ordinal);
-            var isBackgroundClick = isShortClick &&
-                                    string.IsNullOrEmpty(clickedStepId) &&
-                                    string.IsNullOrEmpty(stepId);
             CancelPointer();
-            if (isStepClick)
+            if (!isShortClick)
             {
-                StepClicked(clickedStepId!);
-                if (isDoubleClick)
-                {
-                    StepDoubleClicked(clickedStepId!);
-                }
+                ClearHover();
             }
-            else if (isBackgroundClick)
+
+            if (isStepClick && isDoubleClick)
             {
-                BackgroundClicked();
+                StepDoubleClicked(clickedStepId!);
             }
         }
 
@@ -235,6 +259,18 @@ namespace Icebreaker.UI.Maintenance
             pointerDownStepId = null;
         }
 
+        public void ClearHover()
+        {
+            if (hoveredStepId == null)
+            {
+                return;
+            }
+
+            var previousStepId = hoveredStepId;
+            hoveredStepId = null;
+            StepHoverExited(previousStepId);
+        }
+
         public void ClampNow()
         {
             if (content == null)
@@ -244,6 +280,21 @@ namespace Icebreaker.UI.Maintenance
 
             viewportRect ??= (RectTransform)transform;
             content.anchoredPosition = MaintenanceTreeViewportMath.ClampContentPosition(
+                content.anchoredPosition,
+                content.rect.size,
+                viewportRect.rect.size,
+                CurrentZoom);
+        }
+
+        private void ClampKeyboardPan()
+        {
+            if (content == null)
+            {
+                return;
+            }
+
+            viewportRect ??= (RectTransform)transform;
+            content.anchoredPosition = MaintenanceTreeViewportMath.ClampKeyboardContentPosition(
                 content.anchoredPosition,
                 content.rect.size,
                 viewportRect.rect.size,
