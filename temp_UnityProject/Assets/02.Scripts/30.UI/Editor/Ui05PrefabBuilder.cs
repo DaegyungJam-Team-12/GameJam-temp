@@ -156,7 +156,7 @@ namespace Icebreaker.UI.Editor
             var root = CreateStretchRect("SettingsRoot", parent).gameObject;
             var view = root.AddComponent<SettingsModalView>();
             CreateStretchImage("Dim", root.transform, new Color(0.01f, 0.03f, 0.05f, 0.72f), true);
-            var modal = CreateTopLeftImage("SettingsModal", root.transform, 320f, 150f, 320f, 240f, theme.Panel, true);
+            var modal = CreateTopLeftImage("SettingsModal", root.transform, 320f, 150f, 320f, 300f, theme.Panel, true);
             var title = CreateTopLeftText("TitleText", modal.transform, 20f, 14f, 200f, 34f, "설정", font, 25f, TextAlignmentOptions.Left);
             title.fontStyle = FontStyles.Bold;
             var close = CreateButton("CloseButton", modal.transform, 264f, 8f, 48f, 44f, "닫기", font, 12f, theme.Panel);
@@ -172,11 +172,14 @@ namespace Icebreaker.UI.Editor
             shake.isOn = true;
 
             var quit = CreateButton("QuitButton", modal.transform, 20f, 168f, 276f, 52f, "게임 종료", font, 18f, new Color32(0x83, 0x3D, 0x45, 0xFF));
+            var resetSave = CreateButton("ResetSaveButton", modal.transform, 20f, 228f, 276f, 52f, "저장 초기화", font, 18f, new Color32(0x8A, 0x5A, 0x1E, 0xFF));
             var serialized = new SerializedObject(view);
             SetObject(serialized, "masterVolumeSlider", volume);
             SetObject(serialized, "screenShakeToggle", shake);
             SetObject(serialized, "closeButton", close);
             SetObject(serialized, "quitButton", quit);
+            SetObject(serialized, "resetSaveButton", resetSave);
+            SetObject(serialized, "resetSaveButtonText", resetSave.GetComponentInChildren<TMP_Text>());
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return new SettingsTargets(root, view);
         }
@@ -243,9 +246,10 @@ namespace Icebreaker.UI.Editor
 
             if (prefab.transform.Find("Background/SettingsRoot/SettingsModal/MasterVolumeSlider") == null ||
                 prefab.transform.Find("Background/SettingsRoot/SettingsModal/ScreenShakeToggle") == null ||
-                prefab.transform.Find("Background/SettingsRoot/SettingsModal/QuitButton") == null)
+                prefab.transform.Find("Background/SettingsRoot/SettingsModal/QuitButton") == null ||
+                prefab.transform.Find("Background/SettingsRoot/SettingsModal/ResetSaveButton") == null)
             {
-                errors.Add("Settings modal must expose only the required volume, shake, and quit controls.");
+                errors.Add("Settings modal must expose the required volume, shake, quit, and reset-save controls.");
             }
         }
 

@@ -11,6 +11,7 @@ namespace Icebreaker.Core
         private readonly double debounceSeconds;
         private bool pendingDirty;
         private double elapsedSinceDirty;
+        private bool suspended;
 
         public SaveService(SaveStore store, SaveData data, double debounceSeconds = 1.0)
         {
@@ -45,11 +46,31 @@ namespace Icebreaker.Core
 
         public int FlushCount { get; private set; }
 
+        public bool IsSuspended => suspended;
+
         public void MarkDirty()
         {
+            if (suspended)
+            {
+                return;
+            }
+
             DirtyMarkCount++;
             pendingDirty = true;
             elapsedSinceDirty = 0d;
+        }
+
+        /// <summary>
+        /// Deletes the persisted save and permanently stops this service from writing again.
+        /// After this call MarkDirty/Tick/Flush are no-ops, so no shutdown or debounce path can
+        /// recreate the file for the remainder of the session.
+        /// </summary>
+        public void ClearAndSuspend()
+        {
+            suspended = true;
+            pendingDirty = false;
+            elapsedSinceDirty = 0d;
+            store.Delete(data.profileId);
         }
 
         public void Tick(double deltaSeconds)
@@ -76,7 +97,7 @@ namespace Icebreaker.Core
 
         public void Flush()
         {
-            if (!pendingDirty)
+            if (suspended || !pendingDirty)
             {
                 return;
             }

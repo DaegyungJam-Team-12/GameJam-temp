@@ -13,6 +13,7 @@ using Icebreaker.UI.Hud;
 using Icebreaker.UI.Management;
 using Icebreaker.UI.Maintenance;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Icebreaker.Integration
@@ -207,6 +208,7 @@ namespace Icebreaker.Integration
                 managementViews.MasterVolumeChanged += HandleMasterVolumeChanged;
                 managementViews.ScreenShakeChanged += HandleScreenShakeChanged;
                 managementViews.QuitRequested += HandleQuitRequested;
+                managementViews.ResetSaveRequested += HandleResetSaveRequested;
             }
 
             ApplyViewState(coordinator.CurrentState);
@@ -228,8 +230,10 @@ namespace Icebreaker.Integration
 
         private void OnDestroy()
         {
-            managementViews?.CloseSettings();
-            SetManagementScreen(ManagementScreen.None);
+            // Do not manipulate child UI here: during scene unload (e.g. save-reset reload)
+            // those views may already be destroyed, and CloseSettings() would touch a dead
+            // GameObject. Live-teardown UI cleanup belongs to OnApplicationQuit. OnDestroy only
+            // unsubscribes events (Unity's != null skips destroyed refs) and disposes the loop.
 
             if (launcherHud != null)
             {
@@ -264,6 +268,7 @@ namespace Icebreaker.Integration
                 managementViews.MasterVolumeChanged -= HandleMasterVolumeChanged;
                 managementViews.ScreenShakeChanged -= HandleScreenShakeChanged;
                 managementViews.QuitRequested -= HandleQuitRequested;
+                managementViews.ResetSaveRequested -= HandleResetSaveRequested;
             }
 
             if (combatSource != null)
@@ -424,6 +429,16 @@ namespace Icebreaker.Integration
             coordinator?.SetScreenShakeEnabled(enabled);
 
         private static void HandleQuitRequested() => Application.Quit();
+
+        private void HandleResetSaveRequested()
+        {
+            // The coordinator deletes the file and permanently suspends saving, so neither the
+            // debounce Tick nor the teardown flush (fired while this scene unloads) can recreate
+            // it. Reloading the active scene then boots a brand-new game from the missing save,
+            // resetting funds, maintenance levels, destination progress, and phase in place.
+            coordinator?.ResetSave();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
 
         private void HandleMaintenanceCloseRequested() => CloseManagementScreen();
 

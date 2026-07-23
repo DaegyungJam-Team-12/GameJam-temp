@@ -135,6 +135,16 @@ namespace Icebreaker.Core
             saveService.MarkDirty();
         }
 
+        /// <summary>
+        /// Deletes the save file and stops all further persistence for this session so no
+        /// shutdown or debounce flush can rewrite it. The game is expected to quit afterwards.
+        /// </summary>
+        public void ResetSave()
+        {
+            ThrowIfDisposed();
+            saveService.ClearAndSuspend();
+        }
+
         public void RequestStageStart()
         {
             ThrowIfDisposed();
