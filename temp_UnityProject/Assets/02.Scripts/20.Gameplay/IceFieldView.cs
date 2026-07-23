@@ -25,6 +25,14 @@ namespace Icebreaker.Gameplay
         private const float HitFlashDurationSeconds = 0.05f;
         private const float HitSquashScaleX = 1.08f;
         private const float HitSquashScaleY = 0.90f;
+        private const float IdleDriftMinimumReferencePixels = 3f;
+        private const float IdleDriftMaximumReferencePixels = 6f;
+        private const float IdleDriftMinimumCyclesPerSecond = 0.12f;
+        private const float IdleDriftMaximumCyclesPerSecond = 0.20f;
+        private const float IdleRotationMinimumDegrees = 2f;
+        private const float IdleRotationMaximumDegrees = 4f;
+        private const float IdleRotationMinimumCyclesPerSecond = 0.08f;
+        private const float IdleRotationMaximumCyclesPerSecond = 0.14f;
 
         // --- Direct attack defaults (D01 level 0, D02 level 0) ---
         private const float BaseDirectDamage = 1f;
@@ -65,6 +73,7 @@ namespace Icebreaker.Gameplay
         private AttackTickScheduler? attackTickScheduler;
         private readonly List<SpriteRenderer> visuals = new();
         private readonly List<HitTiltState> hitTilts = new(56);
+        private readonly List<IdleMotionState> idleMotions = new(56);
         private readonly Dictionary<Texture2D, Sprite[]> destructionFrames = new();
         private readonly List<DestructionVisual> destructionVisuals = new();
 #if UNITY_EDITOR
@@ -74,6 +83,7 @@ namespace Icebreaker.Gameplay
         private Transform? cursorRingRoot;
         private Transform? cursorRingRotator;
         private double stageStartedAt;
+        private float idleMotionElapsedSeconds;
         private IStageClock? injectedClock;
         private CombatConfig? injectedCombatConfig;
         private IStageClock? activeClock;
@@ -101,6 +111,17 @@ namespace Icebreaker.Gameplay
             public bool IsActive;
             public Vector3 BaseScale;
             public Color BaseColor;
+        }
+
+        private struct IdleMotionState
+        {
+            public long IceInstanceId;
+            public float DriftAmplitudeReferencePixels;
+            public float DriftCyclesPerSecond;
+            public float DriftPhaseRadians;
+            public float RotationAmplitudeDegrees;
+            public float RotationCyclesPerSecond;
+            public float RotationPhaseRadians;
         }
 
         private sealed class DummyClock : IStageClock
@@ -162,6 +183,7 @@ namespace Icebreaker.Gameplay
 
             ApplyCombatConfig();
             ResetAllHitTilts();
+            idleMotionElapsedSeconds = 0f;
             field!.Initialize(0d);
             EnsureVisualCapacity();
             RefreshAllVisuals();
@@ -302,6 +324,7 @@ namespace Icebreaker.Gameplay
             field?.UpdateRespawns();
             UpdateRespawnAnimationVisuals();
             UpdateDestructionVisuals(Time.deltaTime);
+            UpdateIdleMotionVisuals(Time.deltaTime);
             UpdateHitTilts(Time.deltaTime);
 
             var mouse = Mouse.current;
@@ -602,6 +625,106 @@ namespace Icebreaker.Gameplay
             }
         }
 
+        private void UpdateIdleMotionVisuals(float deltaTime)
+        {
+            if (field == null || activeClock?.IsPaused == true)
+            {
+                return;
+            }
+
+            idleMotionElapsedSeconds += deltaTime;
+            for (var i = 0; i < field.ActiveIce.Count && i < visuals.Count; i++)
+            {
+                var ice = field.ActiveIce[i];
+                EnsureIdleMotion(i, ice.IceInstanceId);
+
+                var state = idleMotions[i];
+                var phase = state.DriftPhaseRadians +
+                    idleMotionElapsedSeconds * state.DriftCyclesPerSecond * Mathf.PI * 2f;
+                var offsetReferencePixels = new Vector2(
+                    Mathf.Sin(phase) * state.DriftAmplitudeReferencePixels,
+                    0f);
+                visuals[i].transform.position = ReferenceToWorld(
+                    ice.VisualReferencePosition + offsetReferencePixels);
+
+                if (i >= hitTilts.Count || !hitTilts[i].IsActive)
+                {
+                    ApplyIdleRotation(i);
+                }
+            }
+        }
+
+        private void EnsureIdleMotion(int index, long iceInstanceId)
+        {
+            while (idleMotions.Count <= index)
+            {
+                idleMotions.Add(default);
+            }
+
+            if (idleMotions[index].IceInstanceId != iceInstanceId)
+            {
+                idleMotions[index] = CreateIdleMotion(iceInstanceId);
+            }
+        }
+
+        private static IdleMotionState CreateIdleMotion(long iceInstanceId)
+        {
+            return new IdleMotionState
+            {
+                IceInstanceId = iceInstanceId,
+                DriftAmplitudeReferencePixels = Mathf.Lerp(
+                    IdleDriftMinimumReferencePixels,
+                    IdleDriftMaximumReferencePixels,
+                    ResolveSeed(iceInstanceId, 1)),
+                DriftCyclesPerSecond = Mathf.Lerp(
+                    IdleDriftMinimumCyclesPerSecond,
+                    IdleDriftMaximumCyclesPerSecond,
+                    ResolveSeed(iceInstanceId, 2)),
+                DriftPhaseRadians = ResolveSeed(iceInstanceId, 3) * Mathf.PI * 2f,
+                RotationAmplitudeDegrees = Mathf.Lerp(
+                    IdleRotationMinimumDegrees,
+                    IdleRotationMaximumDegrees,
+                    ResolveSeed(iceInstanceId, 4)),
+                RotationCyclesPerSecond = Mathf.Lerp(
+                    IdleRotationMinimumCyclesPerSecond,
+                    IdleRotationMaximumCyclesPerSecond,
+                    ResolveSeed(iceInstanceId, 5)),
+                RotationPhaseRadians = ResolveSeed(iceInstanceId, 6) * Mathf.PI * 2f
+            };
+        }
+
+        private static float ResolveSeed(long iceInstanceId, int salt)
+        {
+            var hash = unchecked((uint)(iceInstanceId * 1103515245L + salt * 12345L));
+            return (hash & 0xffff) / 65535f;
+        }
+
+        private float ResolveIdleRotationDegrees(int index)
+        {
+            if (index < 0 || index >= idleMotions.Count)
+            {
+                return 0f;
+            }
+
+            var state = idleMotions[index];
+            var phase = state.RotationPhaseRadians +
+                idleMotionElapsedSeconds * state.RotationCyclesPerSecond * Mathf.PI * 2f;
+            return Mathf.Sin(phase) * state.RotationAmplitudeDegrees;
+        }
+
+        private void ApplyIdleRotation(int index)
+        {
+            if (index < 0 || index >= visuals.Count)
+            {
+                return;
+            }
+
+            visuals[index].transform.localRotation = Quaternion.Euler(
+                0f,
+                0f,
+                ResolveIdleRotationDegrees(index));
+        }
+
         private void StartHitTilt(int index, long iceInstanceId)
         {
             if (index < 0 || index >= visuals.Count || index >= hitTilts.Count)
@@ -684,7 +807,7 @@ namespace Icebreaker.Gameplay
             }
             else
             {
-                visuals[index].transform.localRotation = Quaternion.identity;
+                ApplyIdleRotation(index);
             }
 
             hitTilts[index] = default;
@@ -700,7 +823,10 @@ namespace Icebreaker.Gameplay
 
         private void ApplyHitTilt(int index, float angle)
         {
-            visuals[index].transform.localRotation = Quaternion.Euler(0f, 0f, angle);
+            visuals[index].transform.localRotation = Quaternion.Euler(
+                0f,
+                0f,
+                ResolveIdleRotationDegrees(index) + angle);
         }
 
         private void ApplyHitSquash(int index, HitTiltState state, float strength)
@@ -714,7 +840,7 @@ namespace Icebreaker.Gameplay
         private void RestoreHitReaction(int index, HitTiltState state)
         {
             var renderer = visuals[index];
-            renderer.transform.localRotation = Quaternion.identity;
+            ApplyIdleRotation(index);
             renderer.transform.localScale = state.BaseScale;
             renderer.color = state.BaseColor;
         }
