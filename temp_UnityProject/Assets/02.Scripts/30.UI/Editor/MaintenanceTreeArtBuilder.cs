@@ -13,6 +13,7 @@ namespace Icebreaker.UI.Editor
         public const string ArtFolder = "Assets/04.Images/30.UI/Maintenance";
         public const string IconFolder = ArtFolder + "/Icons";
         public const string ChromeFolder = ArtFolder + "/Chrome";
+        private const string ConsoleButtonArtPath = ArtFolder + "/Buttons/MaintenanceConsoleButton.png";
 
         private static readonly string[] LogicalIds =
         {
@@ -110,6 +111,8 @@ namespace Icebreaker.UI.Editor
                     : Vector4.zero;
                 ConfigureSprite($"{ChromeFolder}/{name}.png", border);
             }
+
+            ConfigureSprite(ConsoleButtonArtPath, new Vector4(96f, 96f, 96f, 96f));
 
             AssetDatabase.SaveAssets();
         }

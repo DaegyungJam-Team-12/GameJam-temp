@@ -28,7 +28,8 @@ namespace Icebreaker.UI.Editor
         private const string StartButtonArtPath = ArtFolder + "/주황색 쇄빙 시작 버튼.png";
         private const string SettingsButtonArtPath = ArtFolder + "/투명 설정 버튼.png";
         private const string CollapseButtonArtPath = ArtFolder + "/접기 버튼 투명 스프라이트.png";
-        private const string BuildStamp = "ui05-route-art-v5";
+        private const string SettingsArtFolder = "Assets/04.Images/30.UI/Settings/";
+        private const string BuildStamp = "ui05-route-settings-art-v6";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-05 Management Views")]
         public static void Build()
@@ -183,22 +184,26 @@ namespace Icebreaker.UI.Editor
             var view = root.AddComponent<SettingsModalView>();
             CreateStretchImage("Dim", root.transform, new Color(0.01f, 0.03f, 0.05f, 0.72f), true);
             var modal = CreateTopLeftImage("SettingsModal", root.transform, 210f, 30f, 540f, 490f, theme.Panel, true);
+            AddSettingsArtwork(modal.transform);
             var title = CreateTopLeftText("TitleText", modal.transform, 20f, 14f, 200f, 34f, "설정", font, 25f, TextAlignmentOptions.Left);
             title.fontStyle = FontStyles.Bold;
             var close = CreateButton("CloseButton", modal.transform, 476f, 8f, 48f, 44f, "닫기", font, 12f, theme.Panel);
+            MakeVisualsTransparent(close);
 
-            CreateTopLeftText("VolumeLabel", modal.transform, 20f, 64f, 110f, 26f, "마스터 볼륨", font, 15f, TextAlignmentOptions.Left);
-            var volume = CreateSlider("MasterVolumeSlider", modal.transform, 136f, 64f, 160f, 28f, theme);
+            CreateTopLeftText("VolumeLabel", modal.transform, 80f, 104f, 110f, 26f, "마스터 볼륨", font, 15f, TextAlignmentOptions.Left);
+            var volume = CreateSlider("MasterVolumeSlider", modal.transform, 173f, 90f, 300f, 28f, theme);
             volume.minValue = 0f;
             volume.maxValue = 1f;
             volume.value = 0f;
 
-            CreateTopLeftText("ShakeLabel", modal.transform, 20f, 112f, 200f, 30f, "화면 진동", font, 15f, TextAlignmentOptions.Left);
-            var shake = CreateToggle("ScreenShakeToggle", modal.transform, 258f, 112f, 34f, 30f, theme);
+            CreateTopLeftText("ShakeLabel", modal.transform, 80f, 148f, 200f, 30f, "화면 진동", font, 15f, TextAlignmentOptions.Left);
+            var shake = CreateToggle("ScreenShakeToggle", modal.transform, 172f, 134f, 27f, 26f, theme);
             shake.isOn = true;
 
-            var quit = CreateButton("QuitButton", modal.transform, 20f, 168f, 276f, 52f, "게임 종료", font, 18f, new Color32(0x83, 0x3D, 0x45, 0xFF));
-            var resetSave = CreateButton("ResetSaveButton", modal.transform, 20f, 228f, 276f, 52f, "저장 초기화", font, 18f, new Color32(0x8A, 0x5A, 0x1E, 0xFF));
+            var quit = CreateButton("QuitButton", modal.transform, 145f, 200f, 228f, 50f, "게임 종료", font, 18f, new Color32(0x83, 0x3D, 0x45, 0xFF));
+            var resetSave = CreateButton("ResetSaveButton", modal.transform, 145f, 267f, 228f, 50f, "저장 초기화", font, 18f, new Color32(0x8A, 0x5A, 0x1E, 0xFF));
+            MakeVisualsTransparent(quit);
+            MakeVisualsTransparent(resetSave);
 
             var windowControls = BuildWindowControls(modal.transform, theme, font);
 
@@ -232,25 +237,32 @@ namespace Icebreaker.UI.Editor
 
         private static WindowControlTargets BuildWindowControls(Transform modal, UiThemeAsset theme, TMP_FontAsset font)
         {
-            const float buttonWidth = 118f;
-            const float buttonHeight = 44f;
-            const float gap = 8f;
-            const float column0 = 20f;
-            const float column1 = column0 + buttonWidth + gap;
-            const float column2 = column1 + buttonWidth + gap;
-            const float column3 = column2 + buttonWidth + gap;
+            const float buttonWidth = 71f;
+            const float buttonHeight = 40f;
+            const float column0 = 144f;
+            const float column1 = 215f;
+            const float column2 = 299f;
+            const float column3 = 386f;
 
-            CreateTopLeftText("WindowPositionLabel", modal, 20f, 296f, 300f, 26f, "창 위치", font, 15f, TextAlignmentOptions.Left);
-            var positionBottomLeft = CreateButton("PositionBottomLeftButton", modal, column0, 330f, buttonWidth, buttonHeight, "왼쪽 아래", font, 14f, theme.Panel);
-            var positionBottomCenter = CreateButton("PositionBottomCenterButton", modal, column1, 330f, buttonWidth, buttonHeight, "가운데 아래", font, 14f, theme.Panel);
-            var positionBottomRight = CreateButton("PositionBottomRightButton", modal, column2, 330f, buttonWidth, buttonHeight, "오른쪽 아래", font, 14f, theme.Panel);
-            var positionReset = CreateButton("PositionResetButton", modal, column3, 330f, buttonWidth, buttonHeight, "위치 초기화", font, 14f, new Color32(0x3A, 0x4A, 0x58, 0xFF));
+            CreateTopLeftText("WindowPositionLabel", modal, 22f, 355f, 300f, 26f, "창 위치", font, 15f, TextAlignmentOptions.Left);
+            var positionBottomLeft = CreateButton("PositionBottomLeftButton", modal, column0, 369f, buttonWidth, buttonHeight, "왼쪽 아래", font, 14f, theme.Panel);
+            var positionBottomCenter = CreateButton("PositionBottomCenterButton", modal, column1, 369f, 84f, buttonHeight, "가운데 아래", font, 14f, theme.Panel);
+            var positionBottomRight = CreateButton("PositionBottomRightButton", modal, column2, 369f, 74f, buttonHeight, "오른쪽 아래", font, 14f, theme.Panel);
+            var positionReset = CreateButton("PositionResetButton", modal, column3, 369f, 103f, buttonHeight, "위치 초기화", font, 14f, new Color32(0x3A, 0x4A, 0x58, 0xFF));
+            MakeVisualsTransparent(positionBottomLeft);
+            MakeVisualsTransparent(positionBottomCenter);
+            MakeVisualsTransparent(positionBottomRight);
+            MakeVisualsTransparent(positionReset);
 
-            CreateTopLeftText("WindowSizeLabel", modal, 20f, 392f, 300f, 26f, "창 크기", font, 15f, TextAlignmentOptions.Left);
+            CreateTopLeftText("WindowSizeLabel", modal, 22f, 441f, 300f, 26f, "창 크기", font, 15f, TextAlignmentOptions.Left);
             var sizeDefault = CreateButton("SizeDefaultButton", modal, column0, 426f, buttonWidth, buttonHeight, "기본", font, 14f, theme.Panel);
-            var sizeLarge = CreateButton("SizeLargeButton", modal, column1, 426f, buttonWidth, buttonHeight, "크게", font, 14f, theme.Panel);
-            var sizeExtraLarge = CreateButton("SizeExtraLargeButton", modal, column2, 426f, buttonWidth, buttonHeight, "매우 크게", font, 14f, theme.Panel);
-            var sizeReset = CreateButton("SizeResetButton", modal, column3, 426f, buttonWidth, buttonHeight, "크기 초기화", font, 14f, new Color32(0x3A, 0x4A, 0x58, 0xFF));
+            var sizeLarge = CreateButton("SizeLargeButton", modal, column1, 426f, 84f, buttonHeight, "크게", font, 14f, theme.Panel);
+            var sizeExtraLarge = CreateButton("SizeExtraLargeButton", modal, column2, 426f, 74f, buttonHeight, "매우 크게", font, 14f, theme.Panel);
+            var sizeReset = CreateButton("SizeResetButton", modal, column3, 426f, 103f, buttonHeight, "크기 초기화", font, 14f, new Color32(0x3A, 0x4A, 0x58, 0xFF));
+            MakeVisualsTransparent(sizeDefault);
+            MakeVisualsTransparent(sizeLarge);
+            MakeVisualsTransparent(sizeExtraLarge);
+            MakeVisualsTransparent(sizeReset);
 
             return new WindowControlTargets(
                 positionBottomLeft,
@@ -485,6 +497,7 @@ namespace Icebreaker.UI.Editor
             rect.SetParent(parent, false);
             SetTopLeft(rect, x, y, width, height);
             var track = CreateStretchImage("Track", root.transform, new Color32(0x04, 0x12, 0x20, 0xFF), false);
+            track.raycastTarget = true;
             track.rectTransform.offsetMin = new Vector2(0f, 9f);
             track.rectTransform.offsetMax = new Vector2(0f, -9f);
             var fillArea = CreateStretchRect("Fill Area", root.transform);
@@ -537,6 +550,47 @@ namespace Icebreaker.UI.Editor
             colors.disabledColor = new Color(0.48f, 0.53f, 0.58f, 0.72f);
             colors.fadeDuration = 0.08f;
             button.colors = colors;
+        }
+
+        private static void AddSettingsArtwork(Transform parent)
+        {
+            var artwork = new GameObject("Artwork", typeof(RectTransform));
+            artwork.transform.SetParent(parent, false);
+            Stretch(artwork.GetComponent<RectTransform>());
+            foreach (var fileName in new[]
+            {
+                "SettingsPanel.png", "VolumeIcon.png", "ShakeIcon.png",
+                "QuitButton.png", "ResetSaveButton.png", "PositionBar.png", "PositionSelected.png",
+                "ResetPositionButton.png", "SizeBar.png", "SizeSelected.png", "ResetSizeButton.png", "CloseButton.png"
+            })
+            {
+                var path = SettingsArtFolder + fileName;
+                var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+                if (importer != null && importer.spriteImportMode != SpriteImportMode.Single)
+                {
+                    importer.textureType = TextureImporterType.Sprite;
+                    importer.spriteImportMode = SpriteImportMode.Single;
+                    importer.SaveAndReimport();
+                }
+
+                var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                if (sprite == null)
+                {
+                    throw new InvalidOperationException($"Settings artwork was not found: {fileName}.");
+                }
+
+                var image = CreateStretchImage(fileName, artwork.transform, Color.white, false);
+                image.sprite = sprite;
+                image.preserveAspect = false;
+            }
+        }
+
+        private static void MakeVisualsTransparent(Selectable selectable)
+        {
+            foreach (var image in selectable.GetComponentsInChildren<Image>(true))
+            {
+                image.color = Color.clear;
+            }
         }
 
         private static Image CreateTopLeftImage(string name, Transform parent, float x, float y, float width, float height, Color color, bool raycast)
