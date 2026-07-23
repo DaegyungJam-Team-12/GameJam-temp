@@ -19,11 +19,20 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
+        private const string BuildStamp = "ui02-production-preview-v1";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
         public static void Build()
         {
             EnsureAssetFolder(PrefabFolder);
+            if (!ProductionUiGuard.NeedsRebuild(
+                    BuildStamp,
+                    LauncherPrefabPath,
+                    IcebreakingPrefabPath))
+            {
+                Validate();
+                return;
+            }
 
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
             if (theme == null)
@@ -40,6 +49,10 @@ namespace Icebreaker.UI.Editor
 
             BuildLauncher(theme, font);
             BuildIcebreaking(theme, font);
+            ProductionUiGuard.MarkRebuilt(
+                BuildStamp,
+                LauncherPrefabPath,
+                IcebreakingPrefabPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Validate();
@@ -50,6 +63,11 @@ namespace Icebreaker.UI.Editor
         public static void BuildCombatHud()
         {
             EnsureAssetFolder(PrefabFolder);
+            if (!ProductionUiGuard.NeedsRebuild(BuildStamp, IcebreakingPrefabPath))
+            {
+                ValidateCombatHud();
+                return;
+            }
 
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
             if (theme == null)
@@ -65,6 +83,7 @@ namespace Icebreaker.UI.Editor
             }
 
             BuildIcebreaking(theme, font);
+            ProductionUiGuard.MarkRebuilt(BuildStamp, IcebreakingPrefabPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             ValidateCombatHud();

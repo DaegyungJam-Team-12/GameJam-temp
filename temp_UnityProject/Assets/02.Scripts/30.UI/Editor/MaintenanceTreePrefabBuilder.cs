@@ -24,6 +24,7 @@ namespace Icebreaker.UI.Editor
         private const string NodePrefabPath = PrefabFolder + "/UI_MaintenanceNode.prefab";
         private const string TooltipPrefabPath = PrefabFolder + "/UI_MaintenanceTooltip.prefab";
         private const string EdgePrefabPath = PrefabFolder + "/UI_MaintenanceEdge.prefab";
+        private const string BuildStamp = "maintenance-production-preview-v1";
 
         private static readonly Vector2 ContentSize = new Vector2(1600f, 900f);
 
@@ -32,6 +33,12 @@ namespace Icebreaker.UI.Editor
         {
             EnsureAssetFolder(DataFolder);
             EnsureAssetFolder(PrefabFolder);
+            if (!ProductionUiGuard.NeedsRebuild(BuildStamp, TreePrefabPath))
+            {
+                Validate();
+                return;
+            }
+
             MaintenanceTreeArtBuilder.Build();
 
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
@@ -53,6 +60,7 @@ namespace Icebreaker.UI.Editor
             BuildEdgePrefab();
             BuildTooltipPrefab(theme, font);
             BuildTreePrefab(layout, theme, font);
+            ProductionUiGuard.MarkRebuilt(BuildStamp, TreePrefabPath);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();

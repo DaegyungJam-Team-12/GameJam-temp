@@ -17,11 +17,18 @@ namespace Icebreaker.UI.Editor
         private const string ThemePath = "Assets/04.Images/30.UI/Theme/UiTheme.asset";
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Management";
         private const string PrefabPath = PrefabFolder + "/UI_ManagementViews.prefab";
+        private const string BuildStamp = "ui05-production-preview-v1";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-05 Management Views")]
         public static void Build()
         {
             EnsureAssetFolder(PrefabFolder);
+            if (!ProductionUiGuard.NeedsRebuild(BuildStamp, PrefabPath))
+            {
+                Validate();
+                return;
+            }
+
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
             if (theme == null)
             {
@@ -40,6 +47,7 @@ namespace Icebreaker.UI.Editor
             {
                 BuildContents(root, theme, font);
                 PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
+                ProductionUiGuard.MarkRebuilt(BuildStamp, PrefabPath);
                 AssetDatabase.SaveAssets();
             }
             finally

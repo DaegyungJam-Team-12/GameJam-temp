@@ -45,6 +45,33 @@ namespace Icebreaker.UI.Editor
             }
         }
 
+        public static bool NeedsRebuild(string buildStamp, params string[] prefabPaths)
+        {
+            foreach (var path in prefabPaths)
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                var importer = AssetImporter.GetAtPath(path);
+                if (prefab == null || importer == null || importer.userData != buildStamp)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static void MarkRebuilt(string buildStamp, params string[] prefabPaths)
+        {
+            foreach (var path in prefabPaths)
+            {
+                var importer = AssetImporter.GetAtPath(path) ??
+                               throw new InvalidOperationException(
+                                   $"Missing prefab importer for build stamp: {path}");
+                importer.userData = buildStamp;
+                AssetDatabase.WriteImportSettingsIfDirty(path);
+            }
+        }
+
         [MenuItem("ICEBREAKER/UI/Validate All Production Prefabs")]
         public static void ValidateAll()
         {

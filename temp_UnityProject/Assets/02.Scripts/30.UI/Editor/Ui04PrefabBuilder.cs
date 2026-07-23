@@ -16,11 +16,17 @@ namespace Icebreaker.UI.Editor
         private const string ThemePath = "Assets/04.Images/30.UI/Theme/UiTheme.asset";
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string PrefabPath = PrefabFolder + "/UI_RewardSettlement.prefab";
+        private const string BuildStamp = "ui04-production-preview-v1";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-04 Reward Settlement")]
         public static void Build()
         {
             EnsureAssetFolder(PrefabFolder);
+            if (!ProductionUiGuard.NeedsRebuild(BuildStamp, PrefabPath))
+            {
+                Validate();
+                return;
+            }
 
             var theme = AssetDatabase.LoadAssetAtPath<UiThemeAsset>(ThemePath);
             if (theme == null)
@@ -232,6 +238,7 @@ namespace Icebreaker.UI.Editor
                     accents);
                 settlementRoot.SetActive(false);
                 PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
+                ProductionUiGuard.MarkRebuilt(BuildStamp, PrefabPath);
             }
             finally
             {
