@@ -24,7 +24,9 @@ namespace Icebreaker.UI.Editor
         private const string NodePrefabPath = PrefabFolder + "/UI_MaintenanceNode.prefab";
         private const string TooltipPrefabPath = PrefabFolder + "/UI_MaintenanceTooltip.prefab";
         private const string EdgePrefabPath = PrefabFolder + "/UI_MaintenanceEdge.prefab";
-        private const string BuildStamp = "maintenance-production-font-roles-v3";
+        private const string ConsoleButtonArtPath =
+            "Assets/04.Images/30.UI/Maintenance/Buttons/MaintenanceConsoleButton.png";
+        private const string BuildStamp = "maintenance-production-font-roles-v4-console-chrome";
 
         private static readonly Vector2 ContentSize = new Vector2(1600f, 900f);
 
@@ -364,9 +366,10 @@ namespace Icebreaker.UI.Editor
             var nodePrefab = AssetDatabase.LoadAssetAtPath<MaintenanceNodeView>(NodePrefabPath);
             var edgePrefab = AssetDatabase.LoadAssetAtPath<MaintenanceTreeEdgeView>(EdgePrefabPath);
             var tooltipPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(TooltipPrefabPath);
-            if (nodePrefab == null || edgePrefab == null || tooltipPrefab == null)
+            var consoleButtonArt = AssetDatabase.LoadAssetAtPath<Sprite>(ConsoleButtonArtPath);
+            if (nodePrefab == null || edgePrefab == null || tooltipPrefab == null || consoleButtonArt == null)
             {
-                throw new InvalidOperationException("Maintenance child prefabs must exist before the tree is built.");
+                throw new InvalidOperationException("Maintenance tree art or child prefabs are missing.");
             }
 
             var root = CreateCanvasRoot("UI_MaintenanceTree", new Vector2(960f, 540f));
@@ -375,7 +378,8 @@ namespace Icebreaker.UI.Editor
                 var presenter = root.AddComponent<MaintenanceTreePresenter>();
                 CreateStretchImage("Background", root.transform, theme.Background, false);
 
-                var topBar = CreateTopLeftImage("TopBar", root.transform, 0f, 0f, 960f, 60f, theme.Panel, false);
+                var topBar = CreateTopLeftImage("TopBar", root.transform, 0f, 0f, 960f, 60f, Color.white, false);
+                ApplyConsoleArt(topBar, consoleButtonArt);
                 CreateTopLeftText("MaintenanceTab", topBar.transform, 16f, 10f, 120f, 40f, "정비", font, 20f, TextAlignmentOptions.Center);
                 CreateTopLeftText("RouteTab", topBar.transform, 144f, 10f, 140f, 40f, "운항 현황", font, 18f, TextAlignmentOptions.Center);
                 CreateTopLeftText("Title", topBar.transform, 310f, 10f, 250f, 40f, "선박 정비·강화", font, 19f, TextAlignmentOptions.Center);
@@ -408,8 +412,7 @@ namespace Icebreaker.UI.Editor
                 tooltip.SetActive(false);
 
                 var bottomBar = CreateTopLeftImage("BottomBar", root.transform, 0f, 468f, 960f, 72f, Color.white, false);
-                bottomBar.sprite = LoadChrome("BottomBar");
-                bottomBar.type = Image.Type.Sliced;
+                ApplyConsoleArt(bottomBar, consoleButtonArt);
                 CreateTopLeftSprite("WasdIcon", bottomBar.transform, 16f, 20f, 28f, 28f, LoadChrome("ControlWasd"));
                 CreateTopLeftSprite("DragIcon", bottomBar.transform, 48f, 20f, 28f, 28f, LoadChrome("ControlDrag"));
                 CreateTopLeftSprite("WheelIcon", bottomBar.transform, 80f, 20f, 28f, 28f, LoadChrome("ControlWheel"));
@@ -730,11 +733,40 @@ namespace Icebreaker.UI.Editor
             string name, Transform parent, float x, float y, float width, float height,
             string label, TMP_FontAsset font, Color color)
         {
-            var image = CreateTopLeftImage(name, parent, x, y, width, height, color, true);
+            var art = AssetDatabase.LoadAssetAtPath<Sprite>(ConsoleButtonArtPath);
+            if (art == null)
+            {
+                throw new InvalidOperationException($"Maintenance console art is missing: {ConsoleButtonArtPath}");
+            }
+
+            var action = string.Equals(name, "StageStartButton", StringComparison.Ordinal);
+            var image = CreateTopLeftImage(name, parent, x, y, width, height,
+                action ? new Color(1f, 0.72f, 0.42f, 1f) : Color.white, true);
+            ApplyConsoleArt(image, art);
             var button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
-            CreateCenteredText("Label", image.transform, Vector2.zero, new Vector2(width - 8f, height - 4f), label, font, 15f, TextAlignmentOptions.Center);
+            button.transition = Selectable.Transition.ColorTint;
+            button.colors = new ColorBlock
+            {
+                normalColor = Color.white,
+                highlightedColor = new Color(0.75f, 0.95f, 1f, 1f),
+                pressedColor = new Color(0.45f, 0.7f, 0.82f, 1f),
+                selectedColor = new Color(0.75f, 0.95f, 1f, 1f),
+                disabledColor = new Color(0.32f, 0.42f, 0.5f, 0.65f),
+                colorMultiplier = 1f,
+                fadeDuration = 0.08f
+            };
+            var text = CreateCenteredText("Label", image.transform, Vector2.zero,
+                new Vector2(width - 16f, height - 4f), label, font, 15f, TextAlignmentOptions.Center);
+            text.color = action ? new Color(1f, 0.97f, 0.87f, 1f) : Color.white;
             return button;
+        }
+
+        private static void ApplyConsoleArt(Image image, Sprite art)
+        {
+            image.sprite = art;
+            image.type = Image.Type.Sliced;
+            image.preserveAspect = false;
         }
 
         private static void ConfigureText(
