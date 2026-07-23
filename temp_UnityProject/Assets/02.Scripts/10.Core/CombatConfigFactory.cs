@@ -92,7 +92,43 @@ namespace Icebreaker.Core
         {
             IceDefinition[] definitions;
             IceSpawnWeight[] weights;
-            if (c04Level >= 1)
+            if (c04Level >= 1 && stageNumber >= 5L)
+            {
+                definitions = new[]
+                {
+                    CreateT1Definition(),
+                    CreateT2Definition(),
+                    CreateT3Definition(),
+                    CreateT4Definition(),
+                    CreateT5Definition()
+                };
+                weights = new[]
+                {
+                    new IceSpawnWeight(IceTier.T1, 10),
+                    new IceSpawnWeight(IceTier.T2, 20),
+                    new IceSpawnWeight(IceTier.T3, 35),
+                    new IceSpawnWeight(IceTier.T4, 25),
+                    new IceSpawnWeight(IceTier.T5, 10)
+                };
+            }
+            else if (c04Level >= 1 && stageNumber >= 4L)
+            {
+                definitions = new[]
+                {
+                    CreateT1Definition(),
+                    CreateT2Definition(),
+                    CreateT3Definition(),
+                    CreateT4Definition()
+                };
+                weights = new[]
+                {
+                    new IceSpawnWeight(IceTier.T1, 15),
+                    new IceSpawnWeight(IceTier.T2, 30),
+                    new IceSpawnWeight(IceTier.T3, 40),
+                    new IceSpawnWeight(IceTier.T4, 15)
+                };
+            }
+            else if (c04Level >= 1)
             {
                 definitions = new[]
                 {
@@ -131,7 +167,7 @@ namespace Icebreaker.Core
                 40 + extraIceCount,
                 2,
                 34f,
-                42f,
+                48f,
                 40f,
                 18f,
                 12f,
@@ -165,6 +201,16 @@ namespace Icebreaker.Core
         private static IceDefinition CreateT3Definition()
         {
             return new IceDefinition(IceTier.T3, "심빙", 360f, 700);
+        }
+
+        private static IceDefinition CreateT4Definition()
+        {
+            return new IceDefinition(IceTier.T4, "자빙", 2160f, 6300);
+        }
+
+        private static IceDefinition CreateT5Definition()
+        {
+            return new IceDefinition(IceTier.T5, "극빙", 12960f, 56700);
         }
 
         private static Dictionary<string, int> CreateLevelMap(IReadOnlyList<MaintenanceLevel> levels)

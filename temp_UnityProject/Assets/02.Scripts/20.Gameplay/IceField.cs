@@ -519,8 +519,9 @@ namespace Icebreaker.Gameplay
             ref ScheduledRespawn scheduled,
             double stageElapsedSeconds)
         {
+            var tier = PickRandomTier();
             var nextId = idGenerator.PeekNextId();
-            var visualDiameter = ResolveVisualDiameter(nextId);
+            var visualDiameter = ResolveVisualDiameter(tier, nextId);
             if (!TryFindSpawnPosition(
                     scheduled.Target,
                     visualDiameter * 0.5f,
@@ -531,7 +532,6 @@ namespace Icebreaker.Gameplay
             }
 
             nextId = idGenerator.NextId();
-            var tier = PickRandomTier();
             var definition = GetDefinition(tier);
             DetermineSpecialIce(tier, out var specialType, out var hpMultiplier);
             scheduled.Target.BeginSpawnAnimation(
@@ -565,7 +565,7 @@ namespace Icebreaker.Gameplay
             var tier = PickRandomTier();
             var def = GetDefinition(tier);
             var nextId = idGenerator.PeekNextId();
-            var visualDiameter = ResolveVisualDiameter(nextId);
+            var visualDiameter = ResolveVisualDiameter(tier, nextId);
             if (!TryFindSpawnPosition(null, visualDiameter * 0.5f, stageElapsedSeconds, out var position))
             {
                 ice = null;
@@ -713,7 +713,7 @@ namespace Icebreaker.Gameplay
             }
         }
 
-        private float ResolveVisualDiameter(long iceInstanceId)
+        private float ResolveVisualDiameter(IceTier tier, long iceInstanceId)
         {
             var minimum = config.VisualDiameterMinimumReferencePixels;
             var maximum = config.VisualDiameterMaximumReferencePixels;
@@ -725,8 +725,10 @@ namespace Icebreaker.Gameplay
             unchecked
             {
                 var hash = (ulong)iceInstanceId * 11400714819323198485UL;
-                var normalized = (hash >> 40) / (float)((1UL << 24) - 1UL);
-                return minimum + (maximum - minimum) * normalized;
+                var sizeStep = (int)((hash >> 40) % 5UL);
+                var tierIndex = Mathf.Clamp((int)tier, 0, 4);
+                var sizeIndex = tierIndex * 5 + sizeStep;
+                return minimum + (maximum - minimum) * (sizeIndex / 24f);
             }
         }
 

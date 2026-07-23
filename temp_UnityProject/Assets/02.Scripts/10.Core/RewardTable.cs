@@ -10,6 +10,8 @@ namespace Icebreaker.Core
         private readonly long t1Funds;
         private readonly long t2Funds;
         private readonly long t3Funds;
+        private const long T4Funds = 6300;
+        private const long T5Funds = 56700;
         private readonly double crystalMultiplier;
 
         public RewardTable(long t1Funds, long t2Funds, long t3Funds, double crystalMultiplier)
@@ -66,6 +68,8 @@ namespace Icebreaker.Core
                 IceTier.T1 => t1Funds,
                 IceTier.T2 => t2Funds,
                 IceTier.T3 => t3Funds,
+                IceTier.T4 => T4Funds,
+                IceTier.T5 => T5Funds,
                 _ => throw new ArgumentOutOfRangeException(nameof(tier), tier, "Unknown ice tier.")
             };
             var specialMultiplier = specialType == SpecialIceType.Crystal

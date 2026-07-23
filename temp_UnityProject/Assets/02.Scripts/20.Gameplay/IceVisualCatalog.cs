@@ -30,6 +30,14 @@ namespace Icebreaker.Gameplay
         [SerializeField] private Texture2D? t3Variant01Sheet;
         [SerializeField] private Texture2D? t3Variant02Sheet;
 
+        [Header("T4")]
+        [SerializeField] private Sprite? t4;
+        [SerializeField] private Texture2D? t4Sheet;
+
+        [Header("T5")]
+        [SerializeField] private Sprite? t5;
+        [SerializeField] private Texture2D? t5Sheet;
+
         [Header("Special Ice Overlays")]
         [Tooltip("Overlay drawn above the tier-specific base ice for crystal ice.")]
         [SerializeField] private Sprite? crystal;
@@ -46,6 +54,8 @@ namespace Icebreaker.Gameplay
             t2Variant01Sheet != null && t2Variant02Sheet != null &&
             t3Variant01 != null && t3Variant02 != null &&
             t3Variant01Sheet != null && t3Variant02Sheet != null &&
+            t4 != null && t4Sheet != null &&
+            t5 != null && t5Sheet != null &&
             crystal != null && crystalSheet != null &&
             crack != null && crackSheet != null;
 
@@ -68,6 +78,8 @@ namespace Icebreaker.Gameplay
             {
                 IceTier.T2 => useSecondVariant ? t2Variant02 : t2Variant01,
                 IceTier.T3 => useSecondVariant ? t3Variant02 : t3Variant01,
+                IceTier.T4 => t4,
+                IceTier.T5 => t5,
                 _ => useSecondVariant ? t1Variant02 : t1Variant01,
             };
         }
@@ -93,6 +105,8 @@ namespace Icebreaker.Gameplay
             {
                 IceTier.T2 => useSecondVariant ? t2Variant02Sheet : t2Variant01Sheet,
                 IceTier.T3 => useSecondVariant ? t3Variant02Sheet : t3Variant01Sheet,
+                IceTier.T4 => t4Sheet,
+                IceTier.T5 => t5Sheet,
                 _ => useSecondVariant ? t1Variant02Sheet : t1Variant01Sheet,
             };
         }

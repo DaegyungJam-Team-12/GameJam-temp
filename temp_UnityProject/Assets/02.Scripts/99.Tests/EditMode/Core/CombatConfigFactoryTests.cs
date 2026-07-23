@@ -82,6 +82,36 @@ namespace Icebreaker.Core.Tests
         }
 
         [Test]
+        public void Build_FullyUnlockedLaterStagesIntroduceT4ThenT5()
+        {
+            var unlockedLevels = new[]
+            {
+                new MaintenanceLevel(MaintenanceCatalog.C03, 1),
+                new MaintenanceLevel(MaintenanceCatalog.C04, 1)
+            };
+            var stageFour = CombatConfigFactory.Build(unlockedLevels, stageNumber: 4L);
+            var stageFive = CombatConfigFactory.Build(unlockedLevels, stageNumber: 5L);
+
+            Assert.That(stageFour.IceField.IceDefinitions, Has.Count.EqualTo(4));
+            AssertIceDefinition(
+                stageFour.IceField.IceDefinitions[3],
+                IceTier.T4,
+                "자빙",
+                2160f,
+                6300);
+            AssertSpawnWeights(stageFour.IceField.SpawnWeights, 15, 30, 40, 15);
+
+            Assert.That(stageFive.IceField.IceDefinitions, Has.Count.EqualTo(5));
+            AssertIceDefinition(
+                stageFive.IceField.IceDefinitions[4],
+                IceTier.T5,
+                "극빙",
+                12960f,
+                56700);
+            AssertSpawnWeights(stageFive.IceField.SpawnWeights, 10, 20, 35, 25, 10);
+        }
+
+        [Test]
         public void Build_FullyUpgradedMatchesSharedContractReference()
         {
             var config = CombatConfigFactory.Build(CreateFullyUpgradedLevels());
@@ -213,7 +243,7 @@ namespace Icebreaker.Core.Tests
             Assert.That(iceField.MaxActiveIceCount, Is.EqualTo(40));
             Assert.That(iceField.MaxSpecialIceCount, Is.EqualTo(2));
             Assert.That(iceField.VisualDiameterMinimumReferencePixels, Is.EqualTo(34f));
-            Assert.That(iceField.VisualDiameterMaximumReferencePixels, Is.EqualTo(42f));
+            Assert.That(iceField.VisualDiameterMaximumReferencePixels, Is.EqualTo(48f));
             Assert.That(iceField.IceCollisionRadiusReferencePixels, Is.EqualTo(40f));
             Assert.That(iceField.StrictExtraVisualGapReferencePixels, Is.EqualTo(18f));
             Assert.That(iceField.RelaxedExtraVisualGapReferencePixels, Is.EqualTo(12f));
