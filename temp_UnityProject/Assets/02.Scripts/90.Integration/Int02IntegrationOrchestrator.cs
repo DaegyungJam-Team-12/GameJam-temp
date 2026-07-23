@@ -365,6 +365,7 @@ namespace Icebreaker.Integration
             if (coordinator?.CurrentState.CanStartStage == true)
             {
                 coordinator.RequestStageStart();
+                feedbackAudio?.PlayCountdown();
             }
         }
 
@@ -454,6 +455,7 @@ namespace Icebreaker.Integration
 
             stageStartRequestPending = true;
             coordinator.RequestStageStart();
+            feedbackAudio?.PlayCountdown();
         }
 
         private void HandleMaintenancePurchaseRequested(string stepId)
@@ -474,13 +476,22 @@ namespace Icebreaker.Integration
                 }
             }
 
-            if (requestedStep == null || !requestedStep.CanPurchase ||
-                coordinator.TryPurchaseMaintenance(
-                    requestedStep.MaintenanceId,
-                    requestedStep.TargetLevel) != MaintenancePurchaseResult.Success)
+            if (requestedStep == null || !requestedStep.CanPurchase)
             {
                 StepsChanged(CurrentSteps);
+                return;
             }
+
+            var result = coordinator.TryPurchaseMaintenance(
+                requestedStep.MaintenanceId,
+                requestedStep.TargetLevel);
+            if (result != MaintenancePurchaseResult.Success)
+            {
+                StepsChanged(CurrentSteps);
+                return;
+            }
+
+            feedbackAudio?.PlayPurchaseSuccess();
         }
 
         private void HandleContinueRequested() => coordinator?.ContinueSettlement();

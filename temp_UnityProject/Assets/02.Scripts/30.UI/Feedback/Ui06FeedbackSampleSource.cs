@@ -24,6 +24,7 @@ namespace Icebreaker.UI.Feedback
         public event Action<RewardGrantedEvent> RewardGranted = delegate { };
         public event Action<StageEnded> StageEnded = delegate { };
         public event Action<SettlementReady> SettlementReady = delegate { };
+        public event Action<ArrivalPresentationRequested> ArrivalPresentationRequested = delegate { };
 
         public int CurrentCharge => currentCharge;
 
@@ -176,6 +177,10 @@ namespace Icebreaker.UI.Feedback
             SettlementReady(settlement);
             SettlementReady(settlement);
         }
+
+        [ContextMenu("UI-06/Show Arrival")]
+        public void ShowArrival() =>
+            ArrivalPresentationRequested(new ArrivalPresentationRequested("harbor-sample", "샘플 항구"));
 
         private void PublishDestroyed(
             SpecialIceType specialType,

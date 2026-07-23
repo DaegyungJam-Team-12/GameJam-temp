@@ -16,6 +16,18 @@ namespace Icebreaker.UI.Editor
         private const string ThemePath = "Assets/04.Images/30.UI/Theme/UiTheme.asset";
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Feedback";
         private const string PrefabPath = PrefabFolder + "/UI_FeedbackAudio.prefab";
+        private const string SfxFolder = "Assets/06.Sounds/SFX";
+        private const string AmbientLoopPath = "Assets/06.Sounds/BGM/wind_sea_loop.mp3";
+        private const string LightBreakPath = SfxFolder + "/light_break.mp3";
+        private const string HeavyBreakPath = SfxFolder + "/heavy_break.mp3";
+        private const string CrackPath = SfxFolder + "/ice_cracking.mp3";
+        private const string CrystalDestroyPath = SfxFolder + "/crystal_destroy.mp3";
+        private const string CriticalHitPath = SfxFolder + "/critical_hit.mp3";
+        private const string ButtonClickPath = SfxFolder + "/click_sound.mp3";
+        private const string PurchaseSuccessPath = SfxFolder + "/purchase_success.mp3";
+        private const string CountdownPath = SfxFolder + "/countdown.mp3";
+        private const string SettlementCompletePath = SfxFolder + "/complete.mp3";
+        private const string ArrivalHornPath = SfxFolder + "/ship_horn.mp3";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-06 Feedback Audio")]
         public static void Build()
@@ -36,6 +48,13 @@ namespace Icebreaker.UI.Editor
                 var uiAudio = root.AddComponent<AudioSource>();
                 ConfigureAudioSource(gameplayAudio, 0.86f);
                 ConfigureAudioSource(uiAudio, 0.68f);
+                var ambientRoot = new GameObject("AmbientAudio", typeof(AudioSource));
+                ambientRoot.transform.SetParent(root.transform, false);
+                var ambientAudio = ambientRoot.GetComponent<AudioSource>();
+                ConfigureAmbientAudioSource(
+                    ambientAudio,
+                    LoadRequiredAudioClip(AmbientLoopPath),
+                    0.34f);
 
                 var feedbackLayer = CreateStretchRect("FeedbackLayer", root.transform);
                 var cueTemplate = CreateCueTemplate(feedbackLayer, font, theme);
@@ -52,6 +71,7 @@ namespace Icebreaker.UI.Editor
                     cueTemplate,
                     gameplayAudio,
                     uiAudio,
+                    ambientAudio,
                     sampleButton);
 
                 PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -117,7 +137,9 @@ namespace Icebreaker.UI.Editor
             {
                 "combatSourceBehaviour", "progressionSourceBehaviour", "theme", "supportCore", "supportStateText",
                 "muzzleGlow", "supportTrail", "feedbackLayer", "feedbackCueTemplate", "gameplayAudioSource",
-                "uiAudioSource"
+                "uiAudioSource", "ambientAudioSource", "lightBreakClip", "heavyBreakClip", "crackClip",
+                "crystalDestroyClip", "criticalHitClip", "buttonClickClip", "purchaseSuccessClip",
+                "countdownClip", "settlementCompleteClip", "arrivalHornClip", "ambientLoopClip"
             };
             foreach (var propertyName in requiredReferences)
             {
@@ -158,6 +180,13 @@ namespace Icebreaker.UI.Editor
                         errors.Add("UI-06 audio must be 2D, non-looping, and disabled on awake.");
                     }
                 }
+            }
+
+            var ambientAudio = prefab.transform.Find("AmbientAudio")?.GetComponent<AudioSource>();
+            if (ambientAudio == null || ambientAudio.playOnAwake || !ambientAudio.loop ||
+                !Mathf.Approximately(ambientAudio.spatialBlend, 0f) || ambientAudio.clip == null)
+            {
+                errors.Add("UI-06 ambient audio must be an assigned 2D loop disabled on awake.");
             }
 
             if (!Mathf.Approximately(UiAudioSettings.DefaultMasterVolume, 0f))
@@ -262,6 +291,30 @@ namespace Icebreaker.UI.Editor
                 if (presenter.LastAudioCue != "Button")
                 {
                     errors.Add("Button audio feedback is not connected.");
+                }
+
+                presenter.PlayPurchaseSuccess();
+                if (presenter.LastAudioCue != "Purchase")
+                {
+                    errors.Add("Purchase success audio feedback is not connected.");
+                }
+
+                presenter.PlayCountdown();
+                if (presenter.LastAudioCue != "Countdown" || presenter.CountdownSoundCount != 1)
+                {
+                    errors.Add("Countdown audio feedback is not connected.");
+                }
+
+                source.StartStage();
+                if (presenter.LastAudioCue != "StageStart" || presenter.CountdownSoundCount != 1)
+                {
+                    errors.Add("Stage start must not replay the countdown clip.");
+                }
+
+                source.ShowArrival();
+                if (presenter.LastAudioCue != "Arrival")
+                {
+                    errors.Add("Arrival horn audio feedback is not connected.");
                 }
             }
             catch (Exception exception)
@@ -490,6 +543,7 @@ namespace Icebreaker.UI.Editor
             GameObject cueTemplate,
             AudioSource gameplayAudio,
             AudioSource uiAudio,
+            AudioSource ambientAudio,
             Button sampleButton)
         {
             var serialized = new SerializedObject(presenter);
@@ -505,6 +559,18 @@ namespace Icebreaker.UI.Editor
             SetObject(serialized, "feedbackCueTemplate", cueTemplate);
             SetObject(serialized, "gameplayAudioSource", gameplayAudio);
             SetObject(serialized, "uiAudioSource", uiAudio);
+            SetObject(serialized, "ambientAudioSource", ambientAudio);
+            SetObject(serialized, "lightBreakClip", LoadRequiredAudioClip(LightBreakPath));
+            SetObject(serialized, "heavyBreakClip", LoadRequiredAudioClip(HeavyBreakPath));
+            SetObject(serialized, "crackClip", LoadRequiredAudioClip(CrackPath));
+            SetObject(serialized, "crystalDestroyClip", LoadRequiredAudioClip(CrystalDestroyPath));
+            SetObject(serialized, "criticalHitClip", LoadRequiredAudioClip(CriticalHitPath));
+            SetObject(serialized, "buttonClickClip", LoadRequiredAudioClip(ButtonClickPath));
+            SetObject(serialized, "purchaseSuccessClip", LoadRequiredAudioClip(PurchaseSuccessPath));
+            SetObject(serialized, "countdownClip", LoadRequiredAudioClip(CountdownPath));
+            SetObject(serialized, "settlementCompleteClip", LoadRequiredAudioClip(SettlementCompletePath));
+            SetObject(serialized, "arrivalHornClip", LoadRequiredAudioClip(ArrivalHornPath));
+            SetObject(serialized, "ambientLoopClip", LoadRequiredAudioClip(AmbientLoopPath));
             SetObjectArray(serialized, "uiButtons", new[] { sampleButton });
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
@@ -516,6 +582,19 @@ namespace Icebreaker.UI.Editor
             audioSource.spatialBlend = 0f;
             audioSource.volume = volume;
         }
+
+        private static void ConfigureAmbientAudioSource(AudioSource audioSource, AudioClip clip, float volume)
+        {
+            audioSource.clip = clip;
+            audioSource.playOnAwake = false;
+            audioSource.loop = true;
+            audioSource.spatialBlend = 0f;
+            audioSource.volume = volume;
+        }
+
+        private static AudioClip LoadRequiredAudioClip(string path) =>
+            AssetDatabase.LoadAssetAtPath<AudioClip>(path) ??
+            throw new InvalidOperationException($"Audio clip was not found at {path}.");
 
         private static Image CreateTopLeftImage(
             string name,
