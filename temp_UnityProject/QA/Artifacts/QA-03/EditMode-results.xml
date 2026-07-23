@@ -1,0 +1,1412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="204" result="Passed" total="204" passed="204" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-23 08:26:29Z" end-time="2026-07-23 08:26:32Z" duration="3.1832382">
+  <test-suite type="TestSuite" id="1000" name="ICEBREAKER" fullname="ICEBREAKER" runstate="Runnable" testcasecount="204" result="Passed" start-time="2026-07-23 08:26:29Z" end-time="2026-07-23 08:26:32Z" duration="3.183238" total="204" passed="204" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1003" name="Icebreaker.Balance.EditModeTests.dll" fullname="C:/Users/user/AppData/Local/Temp/icebreaker-qa03-20260723-01/Library/ScriptAssemblies/Icebreaker.Balance.EditModeTests.dll" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-07-23 08:26:29Z" end-time="2026-07-23 08:26:30Z" duration="0.619360" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18456" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1004" name="Icebreaker" fullname="Icebreaker" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-07-23 08:26:29Z" end-time="2026-07-23 08:26:30Z" duration="0.618447" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1005" name="Balance" fullname="Icebreaker.Balance" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-07-23 08:26:29Z" end-time="2026-07-23 08:26:30Z" duration="0.618059" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1006" name="Tests" fullname="Icebreaker.Balance.Tests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-07-23 08:26:29Z" end-time="2026-07-23 08:26:30Z" duration="0.617628" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="MaintenanceBalanceSimulationTests" fullname="Icebreaker.Balance.Tests.MaintenanceBalanceSimulationTests" classname="Icebreaker.Balance.Tests.MaintenanceBalanceSimulationTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-07-23 08:26:29Z" end-time="2026-07-23 08:26:30Z" duration="0.615644" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1002" name="ReferenceBalance_FiveRunsMeetEarlyPurchasePacing" fullname="Icebreaker.Balance.Tests.MaintenanceBalanceSimulationTests.ReferenceBalance_FiveRunsMeetEarlyPurchasePacing" methodname="ReferenceBalance_FiveRunsMeetEarlyPurchasePacing" classname="Icebreaker.Balance.Tests.MaintenanceBalanceSimulationTests" runstate="Runnable" seed="890959252" result="Passed" start-time="2026-07-23 08:26:29Z" end-time="2026-07-23 08:26:30Z" duration="0.592340" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[runIndex=1 | fundsBeforeRun=0 | earnedFunds=340 | fundsAfterRun=240 | availableSteps=1 | affordableSteps=1 | purchasedSteps=C01-L1 | destroyedByTier=T1:34,T2:0,T3:0 | averageTargetsPerTick=1.000 | damageBySource=CursorAreaPulse:338.0 | destinationProgressGain=34
+runIndex=2 | fundsBeforeRun=240 | earnedFunds=320 | fundsAfterRun=90 | availableSteps=4 | affordableSteps=2 | purchasedSteps=C02-L1 | destroyedByTier=T1:32,T2:0,T3:0 | averageTargetsPerTick=1.000 | damageBySource=CursorAreaPulse:324.0 | destinationProgressGain=6
+runIndex=3 | fundsBeforeRun=90 | earnedFunds=374 | fundsAfterRun=114 | availableSteps=4 | affordableSteps=2 | purchasedSteps=C03-L1 | destroyedByTier=T1:34,T2:0,T3:0 | averageTargetsPerTick=1.000 | damageBySource=CursorAreaPulse:332.0 | destinationProgressGain=34
+runIndex=4 | fundsBeforeRun=114 | earnedFunds=352 | fundsAfterRun=336 | availableSteps=4 | affordableSteps=1 | purchasedSteps=C02-L2 | destroyedByTier=T1:32,T2:0,T3:0 | averageTargetsPerTick=1.000 | damageBySource=CursorAreaPulse:328.0 | destinationProgressGain=32
+runIndex=5 | fundsBeforeRun=336 | earnedFunds=372 | fundsAfterRun=138 | availableSteps=4 | affordableSteps=1 | purchasedSteps=D01-L1 | destroyedByTier=T1:23,T2:1,T3:0 | averageTargetsPerTick=1.000 | damageBySource=CursorAreaPulse:334.0 | destinationProgressGain=24
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1109" name="Icebreaker.Core.EditModeTests.dll" fullname="C:/Users/user/AppData/Local/Temp/icebreaker-qa03-20260723-01/Library/ScriptAssemblies/Icebreaker.Core.EditModeTests.dll" runstate="Runnable" testcasecount="91" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:31Z" duration="1.103897" total="91" passed="91" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18456" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1110" name="Icebreaker" fullname="Icebreaker" runstate="Runnable" testcasecount="91" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:31Z" duration="1.099931" total="91" passed="91" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1111" name="Core" fullname="Icebreaker.Core" runstate="Runnable" testcasecount="91" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:31Z" duration="1.098318" total="91" passed="91" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1112" name="Tests" fullname="Icebreaker.Core.Tests" runstate="Runnable" testcasecount="91" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:31Z" duration="1.096650" total="91" passed="91" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1007" name="CombatConfigFactoryTests" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.021119" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1008" name="Build_BaselineMatchesSharedContractReference" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_BaselineMatchesSharedContractReference" methodname="Build_BaselineMatchesSharedContractReference" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1600033508" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.010570" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1021" name="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.002426" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1017" name="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(0,56.0f)" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(0,56.0f)" methodname="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1440497659" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000609" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1018" name="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(1,72.0f)" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(1,72.0f)" methodname="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1402496423" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000176" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1019" name="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(2,88.0f)" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(2,88.0f)" methodname="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="578393097" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000107" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1020" name="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(3,104.0f)" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel(3,104.0f)" methodname="Build_D04ExpandsCursorRadiusBySixteenPixelsPerLevel" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="370080912" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000096" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="ParameterizedMethod" id="1016" name="Build_DirectProgressionUsesReferenceStyleSteps" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_DirectProgressionUsesReferenceStyleSteps" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.001536" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1012" name="Build_DirectProgressionUsesReferenceStyleSteps(0,1.0f,5.0f)" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_DirectProgressionUsesReferenceStyleSteps(0,1.0f,5.0f)" methodname="Build_DirectProgressionUsesReferenceStyleSteps" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1999773884" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000494" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1013" name="Build_DirectProgressionUsesReferenceStyleSteps(1,3.0f,6.25f)" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_DirectProgressionUsesReferenceStyleSteps(1,3.0f,6.25f)" methodname="Build_DirectProgressionUsesReferenceStyleSteps" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1617073648" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000092" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1014" name="Build_DirectProgressionUsesReferenceStyleSteps(2,5.0f,7.5f)" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_DirectProgressionUsesReferenceStyleSteps(2,5.0f,7.5f)" methodname="Build_DirectProgressionUsesReferenceStyleSteps" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="2111293891" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000074" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1015" name="Build_DirectProgressionUsesReferenceStyleSteps(3,7.0f,8.75f)" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_DirectProgressionUsesReferenceStyleSteps(3,7.0f,8.75f)" methodname="Build_DirectProgressionUsesReferenceStyleSteps" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1454785510" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000059" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1010" name="Build_FullyUpgradedMatchesSharedContractReference" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_FullyUpgradedMatchesSharedContractReference" methodname="Build_FullyUpgradedMatchesSharedContractReference" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1122593269" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.001991" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1011" name="Build_H02LevelOneRoundsCrystalShardCountUp" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_H02LevelOneRoundsCrystalShardCountUp" methodname="Build_H02LevelOneRoundsCrystalShardCountUp" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1035959889" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000821" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1009" name="Build_IceUnlocksSelectDefinitionsAndSpawnWeights" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.Build_IceUnlocksSelectDefinitionsAndSpawnWeights" methodname="Build_IceUnlocksSelectDefinitionsAndSpawnWeights" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="118225582" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000795" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1022" name="MaintenanceEfficiencyLevel_FeedsRewardTableFormula" fullname="Icebreaker.Core.Tests.CombatConfigFactoryTests.MaintenanceEfficiencyLevel_FeedsRewardTableFormula" methodname="MaintenanceEfficiencyLevel_FeedsRewardTableFormula" classname="Icebreaker.Core.Tests.CombatConfigFactoryTests" runstate="Runnable" seed="1852149991" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000421" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1023" name="DestinationCatalogTests" fullname="Icebreaker.Core.Tests.DestinationCatalogTests" classname="Icebreaker.Core.Tests.DestinationCatalogTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.002316" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1024" name="CreateStandardAndDemo_MatchDestinationSpecification" fullname="Icebreaker.Core.Tests.DestinationCatalogTests.CreateStandardAndDemo_MatchDestinationSpecification" methodname="CreateStandardAndDemo_MatchDestinationSpecification" classname="Icebreaker.Core.Tests.DestinationCatalogTests" runstate="Runnable" seed="429185728" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.001451" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1025" name="GameLoopControllerTests" fullname="Icebreaker.Core.Tests.GameLoopControllerTests" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.013216" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1036" name="CompletedPhase_BlocksStageStart" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.CompletedPhase_BlocksStageStart" methodname="CompletedPhase_BlocksStageStart" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="2050756060" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.004761" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1037" name="Constructor_RejectsNonPositiveDurations" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.Constructor_RejectsNonPositiveDurations" methodname="Constructor_RejectsNonPositiveDurations" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="774799660" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000621" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1029" name="CountdownElapses_TransitionsToPlaying" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.CountdownElapses_TransitionsToPlaying" methodname="CountdownElapses_TransitionsToPlaying" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="1251396738" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000921" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1026" name="InitialPhase_IsTraveling" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.InitialPhase_IsTraveling" methodname="InitialPhase_IsTraveling" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="2041633873" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000246" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1033" name="InvalidTransition_Throws" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.InvalidTransition_Throws" methodname="InvalidTransition_Throws" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="1762543518" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000452" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1028" name="RequestStageStart_FromReady_EntersCountdown" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.RequestStageStart_FromReady_EntersCountdown" methodname="RequestStageStart_FromReady_EntersCountdown" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="1882630795" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000391" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1032" name="SettingsPause_FreezesStageClock" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.SettingsPause_FreezesStageClock" methodname="SettingsPause_FreezesStageClock" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="422785977" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000330" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1035" name="SettlementWithArrival_ThenCompleteArrival_FinalDestination_Completed" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.SettlementWithArrival_ThenCompleteArrival_FinalDestination_Completed" methodname="SettlementWithArrival_ThenCompleteArrival_FinalDestination_Completed" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="859008147" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000247" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1034" name="SettlementWithoutArrival_ReturnsToTraveling_AndResetsVoyage" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.SettlementWithoutArrival_ReturnsToTraveling_AndResetsVoyage" methodname="SettlementWithoutArrival_ReturnsToTraveling_AndResetsVoyage" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="1711719001" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000322" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1030" name="StageClockAdvances_AndReachesStageEndingAt60" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.StageClockAdvances_AndReachesStageEndingAt60" methodname="StageClockAdvances_AndReachesStageEndingAt60" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="1638015167" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000446" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1031" name="StageEnding_WaitsOnePointTwoSeconds_BeforeSettlement" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.StageEnding_WaitsOnePointTwoSeconds_BeforeSettlement" methodname="StageEnding_WaitsOnePointTwoSeconds_BeforeSettlement" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="113129897" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000251" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1027" name="VoyageTimerElapses_TransitionsToReady" fullname="Icebreaker.Core.Tests.GameLoopControllerTests.VoyageTimerElapses_TransitionsToReady" methodname="VoyageTimerElapses_TransitionsToReady" classname="Icebreaker.Core.Tests.GameLoopControllerTests" runstate="Runnable" seed="1368690810" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000862" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1038" name="Int02CompleteLoopTests" fullname="Icebreaker.Core.Tests.Int02CompleteLoopTests" classname="Icebreaker.Core.Tests.Int02CompleteLoopTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.164897" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1040" name="InterruptedDuringSettlement_KeepsApprovedResults_AndRestartsFullVoyage" fullname="Icebreaker.Core.Tests.Int02CompleteLoopTests.InterruptedDuringSettlement_KeepsApprovedResults_AndRestartsFullVoyage" methodname="InterruptedDuringSettlement_KeepsApprovedResults_AndRestartsFullVoyage" classname="Icebreaker.Core.Tests.Int02CompleteLoopTests" runstate="Runnable" seed="1151934250" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.035846" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1039" name="TwoCycles_AccumulateOnce_SettleGrantedTotals_AndResolveSavedBoot" fullname="Icebreaker.Core.Tests.Int02CompleteLoopTests.TwoCycles_AccumulateOnce_SettleGrantedTotals_AndResolveSavedBoot" methodname="TwoCycles_AccumulateOnce_SettleGrantedTotals_AndResolveSavedBoot" classname="Icebreaker.Core.Tests.Int02CompleteLoopTests" runstate="Runnable" seed="230855948" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.126829" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1041" name="Int02LoopCoordinatorTests" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:31Z" duration="0.410896" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1051" name="C02Purchase_AppliesToNextStageReward" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.C02Purchase_AppliesToNextStageReward" methodname="C02Purchase_AppliesToNextStageReward" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="1623587042" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.099736" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1042" name="ContinueSettlement_OnArrival_RequestsPresentationOnceForCompletedDestination" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.ContinueSettlement_OnArrival_RequestsPresentationOnceForCompletedDestination" methodname="ContinueSettlement_OnArrival_RequestsPresentationOnceForCompletedDestination" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="1560123994" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.041529" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1043" name="ContinueSettlement_WithoutArrival_DoesNotRequestPresentation" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.ContinueSettlement_WithoutArrival_DoesNotRequestPresentation" methodname="ContinueSettlement_WithoutArrival_DoesNotRequestPresentation" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="1477376989" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.025748" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1045" name="CurrentCombatConfig_UsesSavedD04RadiusForTheNextStage" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.CurrentCombatConfig_UsesSavedD04RadiusForTheNextStage" methodname="CurrentCombatConfig_UsesSavedD04RadiusForTheNextStage" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="272750071" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.001379" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1050" name="CurrentStageConfig_RemainsFrozenAfterPlayingBegins" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.CurrentStageConfig_RemainsFrozenAfterPlayingBegins" methodname="CurrentStageConfig_RemainsFrozenAfterPlayingBegins" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="91869510" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.004589" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1049" name="RequestStageStart_PublishesLatestD04ConfigBeforeCountdown" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.RequestStageStart_PublishesLatestD04ConfigBeforeCountdown" methodname="RequestStageStart_PublishesLatestD04ConfigBeforeCountdown" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="176005286" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.059367" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1055" name="RouteStatusFactory_ShowsCompletedVoyageWithoutUpcomingDestination" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.RouteStatusFactory_ShowsCompletedVoyageWithoutUpcomingDestination" methodname="RouteStatusFactory_ShowsCompletedVoyageWithoutUpcomingDestination" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="1799491031" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.002845" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1054" name="RouteStatusFactory_UsesLedgerForCompletedAndUpcomingDestinations" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.RouteStatusFactory_UsesLedgerForCompletedAndUpcomingDestinations" methodname="RouteStatusFactory_UsesLedgerForCompletedAndUpcomingDestinations" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="11135792" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.000992" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1052" name="SettingsPause_FreezesTravelAndCompensatesSavedAvailabilityOnClose" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.SettingsPause_FreezesTravelAndCompensatesSavedAvailabilityOnClose" methodname="SettingsPause_FreezesTravelAndCompensatesSavedAvailabilityOnClose" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="1497059662" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.020693" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1053" name="SettingsValues_PersistTogetherWhenModalCloses" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.SettingsValues_PersistTogetherWhenModalCloses" methodname="SettingsValues_PersistTogetherWhenModalCloses" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="477698972" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:30Z" duration="0.014722" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1044" name="ThreeDestinationPlaythrough_CompletesGameAndDisablesStageStart" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.ThreeDestinationPlaythrough_CompletesGameAndDisablesStageStart" methodname="ThreeDestinationPlaythrough_CompletesGameAndDisablesStageStart" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="1297447930" result="Passed" start-time="2026-07-23 08:26:30Z" end-time="2026-07-23 08:26:31Z" duration="0.121058" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1048" name="TryPurchaseMaintenance_ExactTargetRejectsStaleAndSkippedSteps" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.TryPurchaseMaintenance_ExactTargetRejectsStaleAndSkippedSteps" methodname="TryPurchaseMaintenance_ExactTargetRejectsStaleAndSkippedSteps" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="984575953" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.004396" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1047" name="TryPurchaseMaintenance_RejectsPlayingWithoutMutation" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.TryPurchaseMaintenance_RejectsPlayingWithoutMutation" methodname="TryPurchaseMaintenance_RejectsPlayingWithoutMutation" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="13780884" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.003609" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1046" name="TryPurchaseMaintenance_UpdatesLedgerSaveAndGameStateFundsTogether" fullname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests.TryPurchaseMaintenance_UpdatesLedgerSaveAndGameStateFundsTogether" methodname="TryPurchaseMaintenance_UpdatesLedgerSaveAndGameStateFundsTogether" classname="Icebreaker.Core.Tests.Int02LoopCoordinatorTests" runstate="Runnable" seed="585098312" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.005289" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1056" name="MaintenanceCoreTests" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.358458" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1057" name="Catalog_StandardAndDemoMatchSpecification" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.Catalog_StandardAndDemoMatchSpecification" methodname="Catalog_StandardAndDemoMatchSpecification" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="116192229" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.006860" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1065" name="ExistingOwnedNodes_GrandfatherMissingFirstPurchaseRequirements" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.ExistingOwnedNodes_GrandfatherMissingFirstPurchaseRequirements" methodname="ExistingOwnedNodes_GrandfatherMissingFirstPurchaseRequirements" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="879017987" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.017950" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1067" name="Purchase_FlushesAndRoundTripsLevelsAndFunds" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.Purchase_FlushesAndRoundTripsLevelsAndFunds" methodname="Purchase_FlushesAndRoundTripsLevelsAndFunds" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="1483756788" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.017082" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1068" name="Purchase_MarksDirtyAndFlushesExactlyOnce" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.Purchase_MarksDirtyAndFlushesExactlyOnce" methodname="Purchase_MarksDirtyAndFlushesExactlyOnce" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="958037124" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.003630" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1063" name="TryPurchase_D04RequiresD02AndPersistsAllRadiusLevels" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.TryPurchase_D04RequiresD02AndPersistsAllRadiusLevels" methodname="TryPurchase_D04RequiresD02AndPersistsAllRadiusLevels" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="567187226" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.061421" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1062" name="TryPurchase_EnforcesLevelAndMultipleRequirements" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.TryPurchase_EnforcesLevelAndMultipleRequirements" methodname="TryPurchase_EnforcesLevelAndMultipleRequirements" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="1291398056" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.089463" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1059" name="TryPurchase_EnforcesPrerequisitesMaxLevelAndExactCosts" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.TryPurchase_EnforcesPrerequisitesMaxLevelAndExactCosts" methodname="TryPurchase_EnforcesPrerequisitesMaxLevelAndExactCosts" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="1994240653" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.044677" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1064" name="TryPurchase_NewSaveEnforcesReferenceTreeFirstPurchaseRequirements" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.TryPurchase_NewSaveEnforcesReferenceTreeFirstPurchaseRequirements" methodname="TryPurchase_NewSaveEnforcesReferenceTreeFirstPurchaseRequirements" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="307369924" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.085941" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1060" name="TryPurchase_RejectsUnaffordableWithoutNegativeFunds" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.TryPurchase_RejectsUnaffordableWithoutNegativeFunds" methodname="TryPurchase_RejectsUnaffordableWithoutNegativeFunds" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="1359528951" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000992" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1066" name="TryPurchase_UsesDemoCosts" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.TryPurchase_UsesDemoCosts" methodname="TryPurchase_UsesDemoCosts" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="2054061161" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.015888" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1061" name="TryPurchaseDetailed_DistinguishesLockedInsufficientFundsAndMaxLevel" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.TryPurchaseDetailed_DistinguishesLockedInsufficientFundsAndMaxLevel" methodname="TryPurchaseDetailed_DistinguishesLockedInsufficientFundsAndMaxLevel" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="1836539641" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.003428" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1058" name="ViewData_CalculatesOwnedAvailableLockedAndAffordability" fullname="Icebreaker.Core.Tests.MaintenanceCoreTests.ViewData_CalculatesOwnedAvailableLockedAndAffordability" methodname="ViewData_CalculatesOwnedAvailableLockedAndAffordability" classname="Icebreaker.Core.Tests.MaintenanceCoreTests" runstate="Runnable" seed="159243552" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.006648" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1069" name="MaintenancePurchaseStepTests" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.043096" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1075" name="AvailableStep_RemainsAvailableWhenFundsAreInsufficient" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.AvailableStep_RemainsAvailableWhenFundsAreInsufficient" methodname="AvailableStep_RemainsAvailableWhenFundsAreInsufficient" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="1479855448" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.002016" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1072" name="C01Purchase_RevealsFourChoicesAndOnlyTheirNextStepChildren" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.C01Purchase_RevealsFourChoicesAndOnlyTheirNextStepChildren" methodname="C01Purchase_RevealsFourChoicesAndOnlyTheirNextStepChildren" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="10539829" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.004074" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1070" name="Catalog_ProjectsExactly26UniqueInRangeStepsForEveryLogicalNode" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.Catalog_ProjectsExactly26UniqueInRangeStepsForEveryLogicalNode" methodname="Catalog_ProjectsExactly26UniqueInRangeStepsForEveryLogicalNode" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="1394327737" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.005309" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1078" name="CatalogValidation_RejectsUndefinedRequirementsAndCycles" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.CatalogValidation_RejectsUndefinedRequirementsAndCycles" methodname="CatalogValidation_RejectsUndefinedRequirementsAndCycles" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="1640117696" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000788" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1074" name="D02Level1_RevealsD04AsAvailable" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.D02Level1_RevealsD04AsAvailable" methodname="D02Level1_RevealsD04AsAvailable" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="2095328869" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.006930" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1073" name="DirectBranch_RevealsS01AtD01Level1AndD03H01AtLevel2" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.DirectBranch_RevealsS01AtD01Level1AndD03H01AtLevel2" methodname="DirectBranch_RevealsS01AtD01Level1AndD03H01AtLevel2" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="130799997" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.017697" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1077" name="FullyPurchasedSave_ProjectsEveryStepPurchasedAndVisible" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.FullyPurchasedSave_ProjectsEveryStepPurchasedAndVisible" methodname="FullyPurchasedSave_ProjectsEveryStepPurchasedAndVisible" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="1000790760" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.001373" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1076" name="HiddenFutureStep_CannotSkipTheExactNextLevel" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.HiddenFutureStep_CannotSkipTheExactNextLevel" methodname="HiddenFutureStep_CannotSkipTheExactNextLevel" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="245034581" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.001209" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1071" name="InitialVisibility_ShowsC01AndPreviewsOnlyItsFourDirectChildren" fullname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests.InitialVisibility_ShowsC01AndPreviewsOnlyItsFourDirectChildren" methodname="InitialVisibility_ShowsC01AndPreviewsOnlyItsFourDirectChildren" classname="Icebreaker.Core.Tests.MaintenancePurchaseStepTests" runstate="Runnable" seed="1406248024" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000493" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1079" name="ProgressionLedgerTests" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" testcasecount="16" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.014148" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1088" name="ApplyArrival_AdvancesToNextDestination" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.ApplyArrival_AdvancesToNextDestination" methodname="ApplyArrival_AdvancesToNextDestination" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="580013780" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.001676" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1089" name="ApplyArrival_OnLastDestination_CompletesGame" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.ApplyArrival_OnLastDestination_CompletesGame" methodname="ApplyArrival_OnLastDestination_CompletesGame" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="435690781" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.001021" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1084" name="Approve_GrantsRealFundsAndProgress" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.Approve_GrantsRealFundsAndProgress" methodname="Approve_GrantsRealFundsAndProgress" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="741740494" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000570" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1095" name="BeginStage_FreezesMaintenanceEfficiencyForThatStage" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.BeginStage_FreezesMaintenanceEfficiencyForThatStage" methodname="BeginStage_FreezesMaintenanceEfficiencyForThatStage" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="785399442" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000342" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1090" name="Constructor_RejectsEmptyDestinations" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.Constructor_RejectsEmptyDestinations" methodname="Constructor_RejectsEmptyDestinations" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="1513317970" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.003810" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1091" name="Constructor_RejectsNullRewardTable" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.Constructor_RejectsNullRewardTable" methodname="Constructor_RejectsNullRewardTable" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="1201625736" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000666" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1085" name="Duplicate_NotApproved" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.Duplicate_NotApproved" methodname="Duplicate_NotApproved" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="1596158193" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000379" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1087" name="EndStage_SummaryMatchesAccumulation" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.EndStage_SummaryMatchesAccumulation" methodname="EndStage_SummaryMatchesAccumulation" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="1785894727" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000397" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1086" name="ProgressCapsAtTarget_ThenFundsOnly" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.ProgressCapsAtTarget_ThenFundsOnly" methodname="ProgressCapsAtTarget_ThenFundsOnly" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="866870677" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000316" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1080" name="RewardTable_BaseFundsPerTier" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.RewardTable_BaseFundsPerTier" methodname="RewardTable_BaseFundsPerTier" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="1513336753" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000167" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1082" name="RewardTable_CrackAndNone_NoMultiplier" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.RewardTable_CrackAndNone_NoMultiplier" methodname="RewardTable_CrackAndNone_NoMultiplier" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="1742196954" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000134" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1081" name="RewardTable_CrystalMultiplier" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.RewardTable_CrystalMultiplier" methodname="RewardTable_CrystalMultiplier" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="2139317971" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000132" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1083" name="RewardTable_EfficiencyLevel_FloorsOnce" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.RewardTable_EfficiencyLevel_FloorsOnce" methodname="RewardTable_EfficiencyLevel_FloorsOnce" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="921132877" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000176" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1094" name="TrySpendFunds_ExactAmountSucceedsAndReachesZero" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.TrySpendFunds_ExactAmountSucceedsAndReachesZero" methodname="TrySpendFunds_ExactAmountSucceedsAndReachesZero" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="1670850772" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000173" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1093" name="TrySpendFunds_InsufficientAmountReturnsFalseWithoutMutation" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.TrySpendFunds_InsufficientAmountReturnsFalseWithoutMutation" methodname="TrySpendFunds_InsufficientAmountReturnsFalseWithoutMutation" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="650371067" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000170" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1092" name="TrySpendFunds_RejectsNegativeAmount" fullname="Icebreaker.Core.Tests.ProgressionLedgerTests.TrySpendFunds_RejectsNegativeAmount" methodname="TrySpendFunds_RejectsNegativeAmount" classname="Icebreaker.Core.Tests.ProgressionLedgerTests" runstate="Runnable" seed="1286976140" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000696" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1096" name="SavePersistenceTests" fullname="Icebreaker.Core.Tests.SavePersistenceTests" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.064558" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1107" name="BootResolver_GameCompleted_IsCompleted" fullname="Icebreaker.Core.Tests.SavePersistenceTests.BootResolver_GameCompleted_IsCompleted" methodname="BootResolver_GameCompleted_IsCompleted" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="1296347633" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000613" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1105" name="BootResolver_NoSave_IsReady" fullname="Icebreaker.Core.Tests.SavePersistenceTests.BootResolver_NoSave_IsReady" methodname="BootResolver_NoSave_IsReady" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="1808876283" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000330" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1106" name="BootResolver_RunInProgress_RestartsFullVoyage" fullname="Icebreaker.Core.Tests.SavePersistenceTests.BootResolver_RunInProgress_RestartsFullVoyage" methodname="BootResolver_RunInProgress_RestartsFullVoyage" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="670723840" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000327" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1108" name="BootResolver_VoyageRemaining_ClampsAndReadies" fullname="Icebreaker.Core.Tests.SavePersistenceTests.BootResolver_VoyageRemaining_ClampsAndReadies" methodname="BootResolver_VoyageRemaining_ClampsAndReadies" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="146093440" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.001957" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1102" name="Profiles_AreSeparateFiles" fullname="Icebreaker.Core.Tests.SavePersistenceTests.Profiles_AreSeparateFiles" methodname="Profiles_AreSeparateFiles" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="196910430" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.012687" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1098" name="Save_IsAtomic_NoTempLeftBehind" fullname="Icebreaker.Core.Tests.SavePersistenceTests.Save_IsAtomic_NoTempLeftBehind" methodname="Save_IsAtomic_NoTempLeftBehind" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="814241198" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.003167" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1099" name="Save_OverwritesExisting" fullname="Icebreaker.Core.Tests.SavePersistenceTests.Save_OverwritesExisting" methodname="Save_OverwritesExisting" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="311281021" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.015284" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1097" name="SaveData_RoundTripsThroughStore" fullname="Icebreaker.Core.Tests.SavePersistenceTests.SaveData_RoundTripsThroughStore" methodname="SaveData_RoundTripsThroughStore" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="1570823990" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.013164" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1103" name="SaveService_DebouncesThenFlushes" fullname="Icebreaker.Core.Tests.SavePersistenceTests.SaveService_DebouncesThenFlushes" methodname="SaveService_DebouncesThenFlushes" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="1590042803" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.003195" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1104" name="SaveService_Flush_ForcesImmediateWrite" fullname="Icebreaker.Core.Tests.SavePersistenceTests.SaveService_Flush_ForcesImmediateWrite" methodname="SaveService_Flush_ForcesImmediateWrite" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="1685449327" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.002555" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1101" name="TryLoad_CorruptFile_PreservesBackup_AndReturnsNull" fullname="Icebreaker.Core.Tests.SavePersistenceTests.TryLoad_CorruptFile_PreservesBackup_AndReturnsNull" methodname="TryLoad_CorruptFile_PreservesBackup_AndReturnsNull" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="460730591" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.007753" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1100" name="TryLoad_MissingFile_ReturnsNull" fullname="Icebreaker.Core.Tests.SavePersistenceTests.TryLoad_MissingFile_ReturnsNull" methodname="TryLoad_MissingFile_ReturnsNull" classname="Icebreaker.Core.Tests.SavePersistenceTests" runstate="Runnable" seed="1401769006" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.000416" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1163" name="Icebreaker.Gameplay.EditModeTests.dll" fullname="C:/Users/user/AppData/Local/Temp/icebreaker-qa03-20260723-01/Library/ScriptAssemblies/Icebreaker.Gameplay.EditModeTests.dll" runstate="Runnable" testcasecount="47" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:32Z" duration="1.382084" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18456" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1164" name="Icebreaker" fullname="Icebreaker" runstate="Runnable" testcasecount="47" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:32Z" duration="1.381230" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1165" name="Gameplay" fullname="Icebreaker.Gameplay" runstate="Runnable" testcasecount="47" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:32Z" duration="1.380503" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1166" name="Tests" fullname="Icebreaker.Gameplay.Tests" runstate="Runnable" testcasecount="47" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:32Z" duration="1.379803" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1113" name="IceFieldTests" fullname="Icebreaker.Gameplay.Tests.IceFieldTests" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" testcasecount="44" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:32Z" duration="1.372606" total="44" passed="44" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1115" name="AllIceInstanceIds_AreUnique" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.AllIceInstanceIds_AreUnique" methodname="AllIceInstanceIds_AreUnique" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="296386834" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.015919" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1155" name="AreaTick_PauseAndStageEndDoNotDamageOrChargeSupport" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.AreaTick_PauseAndStageEndDoNotDamageOrChargeSupport" methodname="AreaTick_PauseAndStageEndDoNotDamageOrChargeSupport" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="2102571855" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.012871" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1149" name="AttackTickScheduler_FiresImmediatelyThenCapsRecoveryTicks" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.AttackTickScheduler_FiresImmediatelyThenCapsRecoveryTicks" methodname="AttackTickScheduler_FiresImmediatelyThenCapsRecoveryTicks" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="881836223" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.007899" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1154" name="AttackTickScheduler_SixtySecondsStaysWithinOneTick" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.AttackTickScheduler_SixtySecondsStaysWithinOneTick" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.076359" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1150" name="AttackTickScheduler_SixtySecondsStaysWithinOneTick(5.0f,300)" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.AttackTickScheduler_SixtySecondsStaysWithinOneTick(5.0f,300)" methodname="AttackTickScheduler_SixtySecondsStaysWithinOneTick" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="2086550078" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.019037" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1151" name="AttackTickScheduler_SixtySecondsStaysWithinOneTick(6.25f,375)" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.AttackTickScheduler_SixtySecondsStaysWithinOneTick(6.25f,375)" methodname="AttackTickScheduler_SixtySecondsStaysWithinOneTick" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="463760116" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.013268" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1152" name="AttackTickScheduler_SixtySecondsStaysWithinOneTick(7.5f,450)" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.AttackTickScheduler_SixtySecondsStaysWithinOneTick(7.5f,450)" methodname="AttackTickScheduler_SixtySecondsStaysWithinOneTick" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1896246567" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.025133" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1153" name="AttackTickScheduler_SixtySecondsStaysWithinOneTick(8.75f,525)" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.AttackTickScheduler_SixtySecondsStaysWithinOneTick(8.75f,525)" methodname="AttackTickScheduler_SixtySecondsStaysWithinOneTick" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1061992042" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.017446" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1133" name="ChainDepth_Exceeds3_DoesNotTriggerFurtherChain" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.ChainDepth_Exceeds3_DoesNotTriggerFurtherChain" methodname="ChainDepth_Exceeds3_DoesNotTriggerFurtherChain" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="837808412" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.015944" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1118" name="ClickOnEmptySpace_ReturnsFalse" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.ClickOnEmptySpace_ReturnsFalse" methodname="ClickOnEmptySpace_ReturnsFalse" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1487992409" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.011911" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1134" name="CombatBoundary_ExceedsDuration_BlocksClickAndClearsQueue" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CombatBoundary_ExceedsDuration_BlocksClickAndClearsQueue" methodname="CombatBoundary_ExceedsDuration_BlocksClickAndClearsQueue" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1909212623" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.016409" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1132" name="CrackIce_Destroyed_Explosion_DamagesRadius3x" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CrackIce_Destroyed_Explosion_DamagesRadius3x" methodname="CrackIce_Destroyed_Explosion_DamagesRadius3x" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1473123670" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.013598" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1125" name="CriticalHit_AppliedToDirectAttack_InIceField" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CriticalHit_AppliedToDirectAttack_InIceField" methodname="CriticalHit_AppliedToDirectAttack_InIceField" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1722096952" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.009530" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1120" name="CriticalStrike_Always_MultipliesDamage" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CriticalStrike_Always_MultipliesDamage" methodname="CriticalStrike_Always_MultipliesDamage" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="906961470" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.012401" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1121" name="CriticalStrike_Never_ReturnsBaseDamage" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CriticalStrike_Never_ReturnsBaseDamage" methodname="CriticalStrike_Never_ReturnsBaseDamage" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1055770771" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.011482" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1131" name="CrystalIce_Destroyed_Spawns5Shards_ThatDestroyLowerTier" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CrystalIce_Destroyed_Spawns5Shards_ThatDestroyLowerTier" methodname="CrystalIce_Destroyed_Spawns5Shards_ThatDestroyLowerTier" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1233698662" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.013339" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1145" name="CursorAreaTick_HitsEveryIceWhoseCollisionCircleOverlaps" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CursorAreaTick_HitsEveryIceWhoseCollisionCircleOverlaps" methodname="CursorAreaTick_HitsEveryIceWhoseCollisionCircleOverlaps" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1564033971" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.019539" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1147" name="CursorAreaTick_IgnoresRespawnProtectionAndChargesSupportOnce" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CursorAreaTick_IgnoresRespawnProtectionAndChargesSupportOnce" methodname="CursorAreaTick_IgnoresRespawnProtectionAndChargesSupportOnce" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1516932006" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.016526" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1148" name="CursorAreaTick_QueuesAllDirectDamageBeforeOverkill" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CursorAreaTick_QueuesAllDirectDamageBeforeOverkill" methodname="CursorAreaTick_QueuesAllDirectDamageBeforeOverkill" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="181088983" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.017518" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1146" name="CursorAreaTick_RollsCriticalForEachOverlappedTarget" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.CursorAreaTick_RollsCriticalForEachOverlappedTarget" methodname="CursorAreaTick_RollsCriticalForEachOverlappedTarget" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1235638818" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.013075" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1156" name="D03_OverkillTransfer_AppliesToClosestAliveIce" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.D03_OverkillTransfer_AppliesToClosestAliveIce" methodname="D03_OverkillTransfer_AppliesToClosestAliveIce" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="58941464" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.016167" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1158" name="Depth3_StopsFurtherChain" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.Depth3_StopsFurtherChain" methodname="Depth3_StopsFurtherChain" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1156755618" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.005781" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1116" name="DestroyOneIce_CountRemainsAt20" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.DestroyOneIce_CountRemainsAt20" methodname="DestroyOneIce_CountRemainsAt20" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1178565704" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.015649" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1135" name="FatalDamage_PublishesOnce_ThenRespawnsWithNewId" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.FatalDamage_PublishesOnce_ThenRespawnsWithNewId" methodname="FatalDamage_PublishesOnce_ThenRespawnsWithNewId" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="103720449" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.012037" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1157" name="H03_IceCollapse_TriggersOn5thDestruction" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.H03_IceCollapse_TriggersOn5thDestruction" methodname="H03_IceCollapse_TriggersOn5thDestruction" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1366478278" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.013352" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1122" name="HoldInput_FirstPress_ReturnsOneTick" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.HoldInput_FirstPress_ReturnsOneTick" methodname="HoldInput_FirstPress_ReturnsOneTick" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1681021337" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.015742" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1123" name="HoldInput_HoldLongEnough_FiresMultipleTicks" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.HoldInput_HoldLongEnough_FiresMultipleTicks" methodname="HoldInput_HoldLongEnough_FiresMultipleTicks" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1776339304" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.012155" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1124" name="HoldInput_Released_ReturnsZero" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.HoldInput_Released_ReturnsZero" methodname="HoldInput_Released_ReturnsZero" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1346102476" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.008612" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1119" name="IceDestroyedEvent_PublishedExactlyOnce" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.IceDestroyedEvent_PublishedExactlyOnce" methodname="IceDestroyedEvent_PublishedExactlyOnce" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="557218688" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.015867" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1129" name="IceFieldView_DefaultConfiguration_UsesOnlyT1Weight" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.IceFieldView_DefaultConfiguration_UsesOnlyT1Weight" methodname="IceFieldView_DefaultConfiguration_UsesOnlyT1Weight" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1746273376" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.018211" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1127" name="IceSpawnPositioner_ExcludesProtectedAreas" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.IceSpawnPositioner_ExcludesProtectedAreas" methodname="IceSpawnPositioner_ExcludesProtectedAreas" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="433381629" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:31Z" duration="0.018873" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1128" name="IceSpawnPositioner_TwentyIceStayClearOfHudAndAtLeast104Apart" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.IceSpawnPositioner_TwentyIceStayClearOfHudAndAtLeast104Apart" methodname="IceSpawnPositioner_TwentyIceStayClearOfHudAndAtLeast104Apart" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="704272170" result="Passed" start-time="2026-07-23 08:26:31Z" end-time="2026-07-23 08:26:32Z" duration="0.729631" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1114" name="Initialize_Creates20IceInstances" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.Initialize_Creates20IceInstances" methodname="Initialize_Creates20IceInstances" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1418115527" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.010012" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1117" name="RespawnedIce_HasNewUniqueId" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.RespawnedIce_HasNewUniqueId" methodname="RespawnedIce_HasNewUniqueId" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="2019320744" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.016227" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1141" name="S01_12thHit_FiresSupportShot_AtClosestTarget" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S01_12thHit_FiresSupportShot_AtClosestTarget" methodname="S01_12thHit_FiresSupportShot_AtClosestTarget" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="932858242" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.022984" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1137" name="S01_12thValidHit_ResetsChargeToZero" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S01_12thValidHit_ResetsChargeToZero" methodname="S01_12thValidHit_ResetsChargeToZero" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1869242413" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.015702" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1140" name="S01_Initialize_ResetsCharge" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S01_Initialize_ResetsCharge" methodname="S01_Initialize_ResetsCharge" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1723277326" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.011353" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1138" name="S01_MissedClick_DoesNotCharge" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S01_MissedClick_DoesNotCharge" methodname="S01_MissedClick_DoesNotCharge" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="440785780" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.012276" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1139" name="S01_TimerExpired_DoesNotCharge" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S01_TimerExpired_DoesNotCharge" methodname="S01_TimerExpired_DoesNotCharge" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="87918980" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.015797" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1136" name="S01_ValidDirectHit_IncrementsSupportCharge" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S01_ValidDirectHit_IncrementsSupportCharge" methodname="S01_ValidDirectHit_IncrementsSupportCharge" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="1781809452" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.023258" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1142" name="S02_AdditionalTargets_FireWithReducedDamage" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S02_AdditionalTargets_FireWithReducedDamage" methodname="S02_AdditionalTargets_FireWithReducedDamage" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="386882405" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.013799" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1144" name="S03_NoSpecialIce_FallsBackToHighestHp" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S03_NoSpecialIce_FallsBackToHighestHp" methodname="S03_NoSpecialIce_FallsBackToHighestHp" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="445118925" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.006043" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1143" name="S03_PrioritizesSpecialIce_WithDoubledDamage" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.S03_PrioritizesSpecialIce_WithDoubledDamage" methodname="S03_PrioritizesSpecialIce_WithDoubledDamage" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="629070393" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.015609" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1130" name="SpecialIce_SpawnLimit_EnforcedTo2" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.SpecialIce_SpawnLimit_EnforcedTo2" methodname="SpecialIce_SpawnLimit_EnforcedTo2" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="473873569" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.019290" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1126" name="T1T2T3_MixedSpawn_AllTiersPresent" fullname="Icebreaker.Gameplay.Tests.IceFieldTests.T1T2T3_MixedSpawn_AllTiersPresent" methodname="T1T2T3_MixedSpawn_AllTiersPresent" classname="Icebreaker.Gameplay.Tests.IceFieldTests" runstate="Runnable" seed="488072571" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.012444" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1159" name="T1DestructionSandboxTests" fullname="Icebreaker.Gameplay.Tests.T1DestructionSandboxTests" classname="Icebreaker.Gameplay.Tests.T1DestructionSandboxTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.005794" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1161" name="ClicksAfterDestruction_DoNotPublishDuplicateEvents" fullname="Icebreaker.Gameplay.Tests.T1DestructionSandboxTests.ClicksAfterDestruction_DoNotPublishDuplicateEvents" methodname="ClicksAfterDestruction_DoNotPublishDuplicateEvents" classname="Icebreaker.Gameplay.Tests.T1DestructionSandboxTests" runstate="Runnable" seed="308602329" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001732" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1162" name="DamageEvents_ReportOneClickDamageWithoutCritical" fullname="Icebreaker.Gameplay.Tests.T1DestructionSandboxTests.DamageEvents_ReportOneClickDamageWithoutCritical" methodname="DamageEvents_ReportOneClickDamageWithoutCritical" classname="Icebreaker.Gameplay.Tests.T1DestructionSandboxTests" runstate="Runnable" seed="856252957" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001609" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1160" name="TenClicks_DestroyT1AndPublishOneDestruction" fullname="Icebreaker.Gameplay.Tests.T1DestructionSandboxTests.TenClicks_DestroyT1AndPublishOneDestruction" methodname="TenClicks_DestroyT1AndPublishOneDestruction" classname="Icebreaker.Gameplay.Tests.T1DestructionSandboxTests" runstate="Runnable" seed="1490558527" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000749" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1206" name="Icebreaker.Shared.EditModeTests.dll" fullname="C:/Users/user/AppData/Local/Temp/icebreaker-qa03-20260723-01/Library/ScriptAssemblies/Icebreaker.Shared.EditModeTests.dll" runstate="Runnable" testcasecount="31" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.041774" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18456" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1207" name="Icebreaker" fullname="Icebreaker" runstate="Runnable" testcasecount="31" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.040893" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1208" name="Shared" fullname="Icebreaker.Shared" runstate="Runnable" testcasecount="31" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.040129" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1209" name="Tests" fullname="Icebreaker.Shared.Tests" runstate="Runnable" testcasecount="31" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.039307" total="31" passed="31" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1167" name="EventSourceTests" fullname="Icebreaker.Shared.Tests.EventSourceTests" classname="Icebreaker.Shared.Tests.EventSourceTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.004841" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1168" name="Subscribers_ReceiveEachEventOnce_AndCanUnsubscribe" fullname="Icebreaker.Shared.Tests.EventSourceTests.Subscribers_ReceiveEachEventOnce_AndCanUnsubscribe" methodname="Subscribers_ReceiveEachEventOnce_AndCanUnsubscribe" classname="Icebreaker.Shared.Tests.EventSourceTests" runstate="Runnable" seed="1382537027" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.004020" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1169" name="FoundationProjectTests" fullname="Icebreaker.Shared.Tests.FoundationProjectTests" classname="Icebreaker.Shared.Tests.FoundationProjectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.005730" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1171" name="BuildSettings_ContainOnlyEnabledMinjunScene" fullname="Icebreaker.Shared.Tests.FoundationProjectTests.BuildSettings_ContainOnlyEnabledMinjunScene" methodname="BuildSettings_ContainOnlyEnabledMinjunScene" classname="Icebreaker.Shared.Tests.FoundationProjectTests" runstate="Runnable" seed="1606009844" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001442" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1170" name="OwnerScenes_ExistAtFlatPaths_WithDistinctGuids" fullname="Icebreaker.Shared.Tests.FoundationProjectTests.OwnerScenes_ExistAtFlatPaths_WithDistinctGuids" methodname="OwnerScenes_ExistAtFlatPaths_WithDistinctGuids" classname="Icebreaker.Shared.Tests.FoundationProjectTests" runstate="Runnable" seed="2142522927" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001152" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1172" name="SharedAssembly_HasNoDomainAssemblyReferences" fullname="Icebreaker.Shared.Tests.FoundationProjectTests.SharedAssembly_HasNoDomainAssemblyReferences" methodname="SharedAssembly_HasNoDomainAssemblyReferences" classname="Icebreaker.Shared.Tests.FoundationProjectTests" runstate="Runnable" seed="77358020" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001510" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1173" name="MaintenanceTreeLayoutAssetTests" fullname="Icebreaker.Shared.Tests.MaintenanceTreeLayoutAssetTests" classname="Icebreaker.Shared.Tests.MaintenanceTreeLayoutAssetTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.007945" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1174" name="Validate_AcceptsCompleteUniqueRootedLayoutInsideContentBounds" fullname="Icebreaker.Shared.Tests.MaintenanceTreeLayoutAssetTests.Validate_AcceptsCompleteUniqueRootedLayoutInsideContentBounds" methodname="Validate_AcceptsCompleteUniqueRootedLayoutInsideContentBounds" classname="Icebreaker.Shared.Tests.MaintenanceTreeLayoutAssetTests" runstate="Runnable" seed="1400787551" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.004125" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1176" name="Validate_RejectsInvalidContentSizeAndNodeVisualSize" fullname="Icebreaker.Shared.Tests.MaintenanceTreeLayoutAssetTests.Validate_RejectsInvalidContentSizeAndNodeVisualSize" methodname="Validate_RejectsInvalidContentSizeAndNodeVisualSize" classname="Icebreaker.Shared.Tests.MaintenanceTreeLayoutAssetTests" runstate="Runnable" seed="1165668929" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000967" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1175" name="Validate_ReportsEveryLockedLayoutBoundary" fullname="Icebreaker.Shared.Tests.MaintenanceTreeLayoutAssetTests.Validate_ReportsEveryLockedLayoutBoundary" methodname="Validate_ReportsEveryLockedLayoutBoundary" classname="Icebreaker.Shared.Tests.MaintenanceTreeLayoutAssetTests" runstate="Runnable" seed="859330939" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001366" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1177" name="MaintenanceTreeViewportMathTests" fullname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests" classname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.003668" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1178" name="ApplyScroll_UsesPointOneStepsAndClampsToLockedZoomRange" fullname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests.ApplyScroll_UsesPointOneStepsAndClampsToLockedZoomRange" methodname="ApplyScroll_UsesPointOneStepsAndClampsToLockedZoomRange" classname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests" runstate="Runnable" seed="579246400" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000319" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1181" name="ClampContentPosition_PreventsBlankSpaceAtEveryEdge" fullname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests.ClampContentPosition_PreventsBlankSpaceAtEveryEdge" methodname="ClampContentPosition_PreventsBlankSpaceAtEveryEdge" classname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests" runstate="Runnable" seed="1459718889" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000468" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1182" name="ClampTooltipTopLeft_FlipsCardInsideOverlayBounds" fullname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests.ClampTooltipTopLeft_FlipsCardInsideOverlayBounds" methodname="ClampTooltipTopLeft_FlipsCardInsideOverlayBounds" classname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests" runstate="Runnable" seed="900678333" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000343" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1180" name="KeepPointerStable_PreservesTheSameContentPointDuringZoom" fullname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests.KeepPointerStable_PreservesTheSameContentPointDuringZoom" methodname="KeepPointerStable_PreservesTheSameContentPointDuringZoom" classname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests" runstate="Runnable" seed="1865831154" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000470" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1179" name="KeyboardPanDirection_MapsWUpAndSDownWithoutChangingHorizontalControls" fullname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests.KeyboardPanDirection_MapsWUpAndSDownWithoutChangingHorizontalControls" methodname="KeyboardPanDirection_MapsWUpAndSDownWithoutChangingHorizontalControls" classname="Icebreaker.Shared.Tests.MaintenanceTreeViewportMathTests" runstate="Runnable" seed="2061325943" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000786" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1183" name="SharedContractTests" fullname="Icebreaker.Shared.Tests.SharedContractTests" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.015253" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1192" name="CombatConfigs_PreserveBaselineAndFullyUpgradedValues" fullname="Icebreaker.Shared.Tests.SharedContractTests.CombatConfigs_PreserveBaselineAndFullyUpgradedValues" methodname="CombatConfigs_PreserveBaselineAndFullyUpgradedValues" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="2036631962" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.002405" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1197" name="DirectAttackSnapshots_PreservePlannedProgression" fullname="Icebreaker.Shared.Tests.SharedContractTests.DirectAttackSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001180" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1193" name="DirectAttackSnapshots_PreservePlannedProgression(1.0f,5.0f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.DirectAttackSnapshots_PreservePlannedProgression(1.0f,5.0f)" methodname="DirectAttackSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="316513973" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000334" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1194" name="DirectAttackSnapshots_PreservePlannedProgression(3.0f,6.25f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.DirectAttackSnapshots_PreservePlannedProgression(3.0f,6.25f)" methodname="DirectAttackSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="600336140" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000065" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1195" name="DirectAttackSnapshots_PreservePlannedProgression(5.0f,7.5f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.DirectAttackSnapshots_PreservePlannedProgression(5.0f,7.5f)" methodname="DirectAttackSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="712818156" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000047" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1196" name="DirectAttackSnapshots_PreservePlannedProgression(7.0f,8.75f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.DirectAttackSnapshots_PreservePlannedProgression(7.0f,8.75f)" methodname="DirectAttackSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="1020481560" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000047" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1186" name="EventPayloads_PreserveLongDoubleAndReferencePositionValues" fullname="Icebreaker.Shared.Tests.SharedContractTests.EventPayloads_PreserveLongDoubleAndReferencePositionValues" methodname="EventPayloads_PreserveLongDoubleAndReferencePositionValues" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="101934553" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000716" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1201" name="HullFragmentSnapshots_PreservePlannedProgression" fullname="Icebreaker.Shared.Tests.SharedContractTests.HullFragmentSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001085" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1198" name="HullFragmentSnapshots_PreservePlannedProgression(0.25f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.HullFragmentSnapshots_PreservePlannedProgression(0.25f)" methodname="HullFragmentSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="2050774336" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000259" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1199" name="HullFragmentSnapshots_PreservePlannedProgression(0.5f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.HullFragmentSnapshots_PreservePlannedProgression(0.5f)" methodname="HullFragmentSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="1538325066" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000077" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1200" name="HullFragmentSnapshots_PreservePlannedProgression(0.75f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.HullFragmentSnapshots_PreservePlannedProgression(0.75f)" methodname="HullFragmentSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="1018132187" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000069" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1191" name="IceFieldConfig_RejectsDuplicateOrEmptyWeightsAndInvalidProbability" fullname="Icebreaker.Shared.Tests.SharedContractTests.IceFieldConfig_RejectsDuplicateOrEmptyWeightsAndInvalidProbability" methodname="IceFieldConfig_RejectsDuplicateOrEmptyWeightsAndInvalidProbability" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="20819223" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000905" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1189" name="MaintenanceDefinition_RejectsInvalidLevelDataAndRequirements" fullname="Icebreaker.Shared.Tests.SharedContractTests.MaintenanceDefinition_RejectsInvalidLevelDataAndRequirements" methodname="MaintenanceDefinition_RejectsInvalidLevelDataAndRequirements" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="714614026" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000666" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1190" name="MaintenanceNodeViewData_PreservesCalculatedPurchaseBoundary" fullname="Icebreaker.Shared.Tests.SharedContractTests.MaintenanceNodeViewData_PreservesCalculatedPurchaseBoundary" methodname="MaintenanceNodeViewData_PreservesCalculatedPurchaseBoundary" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="801459963" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000969" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1185" name="ManagementScreenRules_AllowRouteOutsideCombatOnly" fullname="Icebreaker.Shared.Tests.SharedContractTests.ManagementScreenRules_AllowRouteOutsideCombatOnly" methodname="ManagementScreenRules_AllowRouteOutsideCombatOnly" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="296375074" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000458" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1188" name="RuntimeContracts_DefensivelyCopyInputArrays" fullname="Icebreaker.Shared.Tests.SharedContractTests.RuntimeContracts_DefensivelyCopyInputArrays" methodname="RuntimeContracts_DefensivelyCopyInputArrays" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="1607664821" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001309" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1187" name="SettlementSummary_ValidatesReachedDestinationAndNullableId" fullname="Icebreaker.Shared.Tests.SharedContractTests.SettlementSummary_ValidatesReachedDestinationAndNullableId" methodname="SettlementSummary_ValidatesReachedDestinationAndNullableId" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="617180925" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000675" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1205" name="SpecialIceSnapshots_PreservePlannedProgression" fullname="Icebreaker.Shared.Tests.SharedContractTests.SpecialIceSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001399" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1202" name="SpecialIceSnapshots_PreservePlannedProgression(5,3.0f,120.0f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.SpecialIceSnapshots_PreservePlannedProgression(5,3.0f,120.0f)" methodname="SpecialIceSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="1773691882" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000397" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1203" name="SpecialIceSnapshots_PreservePlannedProgression(7,3.9f,156.0f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.SpecialIceSnapshots_PreservePlannedProgression(7,3.9f,156.0f)" methodname="SpecialIceSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="839492709" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000087" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1204" name="SpecialIceSnapshots_PreservePlannedProgression(8,4.8f,192.0f)" fullname="Icebreaker.Shared.Tests.SharedContractTests.SpecialIceSnapshots_PreservePlannedProgression(8,4.8f,192.0f)" methodname="SpecialIceSnapshots_PreservePlannedProgression" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="1545588748" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000079" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1184" name="StageClock_ExposesTheAuthoritativeDamageBoundary" fullname="Icebreaker.Shared.Tests.SharedContractTests.StageClock_ExposesTheAuthoritativeDamageBoundary" methodname="StageClock_ExposesTheAuthoritativeDamageBoundary" classname="Icebreaker.Shared.Tests.SharedContractTests" runstate="Runnable" seed="1921540681" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000605" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1250" name="Icebreaker.Window.EditModeTests.dll" fullname="C:/Users/user/AppData/Local/Temp/icebreaker-qa03-20260723-01/Library/ScriptAssemblies/Icebreaker.Window.EditModeTests.dll" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.021277" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18456" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1251" name="Icebreaker" fullname="Icebreaker" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.020339" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1252" name="Window" fullname="Icebreaker.Window" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.019632" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1253" name="Tests" fullname="Icebreaker.Window.Tests" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.018967" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1210" name="WindowAttachWaitTests" fullname="Icebreaker.Window.Tests.WindowAttachWaitTests" classname="Icebreaker.Window.Tests.WindowAttachWaitTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.002736" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1211" name="AttachedBeforeTimeout_ReturnsAttached" fullname="Icebreaker.Window.Tests.WindowAttachWaitTests.AttachedBeforeTimeout_ReturnsAttached" methodname="AttachedBeforeTimeout_ReturnsAttached" classname="Icebreaker.Window.Tests.WindowAttachWaitTests" runstate="Runnable" seed="611641325" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000398" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1212" name="AttachedPastTimeout_ReturnsAttached" fullname="Icebreaker.Window.Tests.WindowAttachWaitTests.AttachedPastTimeout_ReturnsAttached" methodname="AttachedPastTimeout_ReturnsAttached" classname="Icebreaker.Window.Tests.WindowAttachWaitTests" runstate="Runnable" seed="494662957" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000175" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1214" name="NotAttachedAtTimeout_ReturnsTimedOut" fullname="Icebreaker.Window.Tests.WindowAttachWaitTests.NotAttachedAtTimeout_ReturnsTimedOut" methodname="NotAttachedAtTimeout_ReturnsTimedOut" classname="Icebreaker.Window.Tests.WindowAttachWaitTests" runstate="Runnable" seed="911651419" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000156" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1213" name="NotAttachedBeforeTimeout_ReturnsPending" fullname="Icebreaker.Window.Tests.WindowAttachWaitTests.NotAttachedBeforeTimeout_ReturnsPending" methodname="NotAttachedBeforeTimeout_ReturnsPending" classname="Icebreaker.Window.Tests.WindowAttachWaitTests" runstate="Runnable" seed="202922249" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000174" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1215" name="ZeroOrNegativeTimeout_Throws" fullname="Icebreaker.Window.Tests.WindowAttachWaitTests.ZeroOrNegativeTimeout_Throws" methodname="ZeroOrNegativeTimeout_Throws" classname="Icebreaker.Window.Tests.WindowAttachWaitTests" runstate="Runnable" seed="1306419077" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000542" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1216" name="WindowLayoutTests" fullname="Icebreaker.Window.Tests.WindowLayoutTests" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.009289" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1219" name="ExpandedNearWorkAreaEdge_ShiftsFullyInside" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ExpandedNearWorkAreaEdge_ShiftsFullyInside" methodname="ExpandedNearWorkAreaEdge_ShiftsFullyInside" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="1287463013" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000968" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1229" name="ViewForPhase_MapsLockedPhaseTable" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.002176" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1221" name="ViewForPhase_MapsLockedPhaseTable(Traveling,Collapsed)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable(Traveling,Collapsed)" methodname="ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="255542323" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000531" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1222" name="ViewForPhase_MapsLockedPhaseTable(Ready,Collapsed)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable(Ready,Collapsed)" methodname="ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="1385371779" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000115" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1223" name="ViewForPhase_MapsLockedPhaseTable(Countdown,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable(Countdown,Expanded)" methodname="ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="954080904" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000086" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1224" name="ViewForPhase_MapsLockedPhaseTable(Playing,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable(Playing,Expanded)" methodname="ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="605931906" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000103" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1225" name="ViewForPhase_MapsLockedPhaseTable(StageEnding,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable(StageEnding,Expanded)" methodname="ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="348184276" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000083" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1226" name="ViewForPhase_MapsLockedPhaseTable(Settlement,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable(Settlement,Expanded)" methodname="ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="262794957" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000083" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1227" name="ViewForPhase_MapsLockedPhaseTable(Arrival,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable(Arrival,Expanded)" methodname="ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="1673187270" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000083" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1228" name="ViewForPhase_MapsLockedPhaseTable(Completed,Collapsed)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForPhase_MapsLockedPhaseTable(Completed,Collapsed)" methodname="ViewForPhase_MapsLockedPhaseTable" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="2001079708" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000080" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="ParameterizedMethod" id="1240" name="ViewForState_ManagementScreenOverridesPhase" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.003750" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1230" name="ViewForState_ManagementScreenOverridesPhase(Traveling,None,Collapsed)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Traveling,None,Collapsed)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="1632741826" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000373" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1231" name="ViewForState_ManagementScreenOverridesPhase(Traveling,Maintenance,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Traveling,Maintenance,Expanded)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="977345198" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000174" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1232" name="ViewForState_ManagementScreenOverridesPhase(Traveling,Route,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Traveling,Route,Expanded)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="1490833812" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000194" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1233" name="ViewForState_ManagementScreenOverridesPhase(Traveling,Settings,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Traveling,Settings,Expanded)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="590945347" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000197" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1234" name="ViewForState_ManagementScreenOverridesPhase(Ready,Maintenance,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Ready,Maintenance,Expanded)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="1081925321" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000129" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1235" name="ViewForState_ManagementScreenOverridesPhase(Ready,Route,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Ready,Route,Expanded)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="83142363" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000138" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1236" name="ViewForState_ManagementScreenOverridesPhase(Ready,Settings,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Ready,Settings,Expanded)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="251152489" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000167" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1237" name="ViewForState_ManagementScreenOverridesPhase(Ready,None,Collapsed)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Ready,None,Collapsed)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="1754870522" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000202" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1238" name="ViewForState_ManagementScreenOverridesPhase(Playing,None,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Playing,None,Expanded)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="488450294" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000205" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1239" name="ViewForState_ManagementScreenOverridesPhase(Completed,Settings,Expanded)" fullname="Icebreaker.Window.Tests.WindowLayoutTests.ViewForState_ManagementScreenOverridesPhase(Completed,Settings,Expanded)" methodname="ViewForState_ManagementScreenOverridesPhase" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="350191047" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000135" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1220" name="WindowLargerThanWorkArea_AlignsToWorkAreaOrigin" fullname="Icebreaker.Window.Tests.WindowLayoutTests.WindowLargerThanWorkArea_AlignsToWorkAreaOrigin" methodname="WindowLargerThanWorkArea_AlignsToWorkAreaOrigin" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="1079223346" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000163" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1217" name="Windows100Percent_PlacesBothViewsAtBottomRightMargin" fullname="Icebreaker.Window.Tests.WindowLayoutTests.Windows100Percent_PlacesBothViewsAtBottomRightMargin" methodname="Windows100Percent_PlacesBothViewsAtBottomRightMargin" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="2104598199" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000430" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1218" name="Windows125Percent_PlacesBothViewsAtBottomRightMargin" fullname="Icebreaker.Window.Tests.WindowLayoutTests.Windows125Percent_PlacesBothViewsAtBottomRightMargin" methodname="Windows125Percent_PlacesBothViewsAtBottomRightMargin" classname="Icebreaker.Window.Tests.WindowLayoutTests" runstate="Runnable" seed="892852878" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000355" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1241" name="WindowStartupDecisionTests" fullname="Icebreaker.Window.Tests.WindowStartupDecisionTests" classname="Icebreaker.Window.Tests.WindowStartupDecisionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.003333" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1242" name="ForceFallback_SelectsNormalWindow_WithoutInvokingInitializer" fullname="Icebreaker.Window.Tests.WindowStartupDecisionTests.ForceFallback_SelectsNormalWindow_WithoutInvokingInitializer" methodname="ForceFallback_SelectsNormalWindow_WithoutInvokingInitializer" classname="Icebreaker.Window.Tests.WindowStartupDecisionTests" runstate="Runnable" seed="1357746206" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000631" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1244" name="InitializerException_SelectsNormalWindow_AndDoesNotThrow" fullname="Icebreaker.Window.Tests.WindowStartupDecisionTests.InitializerException_SelectsNormalWindow_AndDoesNotThrow" methodname="InitializerException_SelectsNormalWindow_AndDoesNotThrow" classname="Icebreaker.Window.Tests.WindowStartupDecisionTests" runstate="Runnable" seed="1131083897" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000620" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1243" name="InitializerFailure_SelectsNormalWindow" fullname="Icebreaker.Window.Tests.WindowStartupDecisionTests.InitializerFailure_SelectsNormalWindow" methodname="InitializerFailure_SelectsNormalWindow" classname="Icebreaker.Window.Tests.WindowStartupDecisionTests" runstate="Runnable" seed="1674899041" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000256" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1245" name="InitializerSuccess_SelectsPluginWindow" fullname="Icebreaker.Window.Tests.WindowStartupDecisionTests.InitializerSuccess_SelectsPluginWindow" methodname="InitializerSuccess_SelectsPluginWindow" classname="Icebreaker.Window.Tests.WindowStartupDecisionTests" runstate="Runnable" seed="562874525" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000300" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1246" name="NullInitializer_Throws" fullname="Icebreaker.Window.Tests.WindowStartupDecisionTests.NullInitializer_Throws" methodname="NullInitializer_Throws" classname="Icebreaker.Window.Tests.WindowStartupDecisionTests" runstate="Runnable" seed="1540165934" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000244" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1247" name="WindowViewControllerTests" fullname="Icebreaker.Window.Tests.WindowViewControllerTests" classname="Icebreaker.Window.Tests.WindowViewControllerTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.002612" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1249" name="ApplyCollapsed_SetsSizePositionAndTopmost_WithoutFocus" fullname="Icebreaker.Window.Tests.WindowViewControllerTests.ApplyCollapsed_SetsSizePositionAndTopmost_WithoutFocus" methodname="ApplyCollapsed_SetsSizePositionAndTopmost_WithoutFocus" classname="Icebreaker.Window.Tests.WindowViewControllerTests" runstate="Runnable" seed="395804467" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.001030" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1248" name="ApplyExpanded_SetsSizePositionAndTopmost_WithoutFocus" fullname="Icebreaker.Window.Tests.WindowViewControllerTests.ApplyExpanded_SetsSizePositionAndTopmost_WithoutFocus" methodname="ApplyExpanded_SetsSizePositionAndTopmost_WithoutFocus" classname="Icebreaker.Window.Tests.WindowViewControllerTests" runstate="Runnable" seed="1682625925" result="Passed" start-time="2026-07-23 08:26:32Z" end-time="2026-07-23 08:26:32Z" duration="0.000676" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/user/AppData/LocalLow/DaegyungJamTeam12/ICEBREAKER\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
