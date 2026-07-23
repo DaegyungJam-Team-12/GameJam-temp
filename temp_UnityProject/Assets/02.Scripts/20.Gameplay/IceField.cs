@@ -31,6 +31,7 @@ namespace Icebreaker.Gameplay
         
         private long nextChainId = 1L;
         private long currentChainId;
+        
 
         private struct QueuedDamage
         {
@@ -63,24 +64,6 @@ namespace Icebreaker.Gameplay
                 var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
                 if (hpCmp != 0) return hpCmp;
                 
-                return a.IceInstanceId.CompareTo(b.IceInstanceId);
-            }
-        }
-
-        private readonly struct HpDistanceIdComparer : IComparer<IceInstance>
-        {
-            private readonly Vector2 origin;
-            public HpDistanceIdComparer(Vector2 origin) => this.origin = origin;
-            public int Compare(IceInstance a, IceInstance b)
-            {
-                var hpCmp = b.RemainingHp.CompareTo(a.RemainingHp);
-                if (hpCmp != 0) return hpCmp;
-
-                var distA = Vector2.SqrMagnitude(a.ReferencePosition - origin);
-                var distB = Vector2.SqrMagnitude(b.ReferencePosition - origin);
-                var distCmp = distA.CompareTo(distB);
-                if (distCmp != 0) return distCmp;
-
                 return a.IceInstanceId.CompareTo(b.IceInstanceId);
             }
         }
