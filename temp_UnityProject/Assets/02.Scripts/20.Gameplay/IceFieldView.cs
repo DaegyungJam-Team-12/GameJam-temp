@@ -19,8 +19,8 @@ namespace Icebreaker.Gameplay
     {
         private const float ReferenceWidth = 960f;
         private const float ReferenceHeight = 540f;
-        private const int RuntimeSpriteSize = 64;
         private const float SpawnMargin = 56f;
+        private const float DestructionVisualDurationSeconds = 0.45f;
 
         // --- Direct attack defaults (D01 level 0, D02 level 0) ---
         private const float BaseDirectDamage = 1f;
@@ -53,16 +53,18 @@ namespace Icebreaker.Gameplay
 
         [SerializeField] private Camera? sceneCamera;
         [SerializeField] private long stageId = 1L;
+        [SerializeField] private IceVisualCatalog? iceVisualCatalog;
 
         private IceField? field;
         private IceFieldConfig? config;
         private DirectAttackConfig? directAttackConfig;
         private AttackTickScheduler? attackTickScheduler;
         private readonly List<SpriteRenderer> visuals = new();
+        private readonly Dictionary<Texture2D, Sprite[]> destructionFrames = new();
+        private readonly List<DestructionVisual> destructionVisuals = new();
 #if UNITY_EDITOR
         private readonly List<FloatingText> floatingTexts = new();
 #endif
-        private Sprite? iceSprite;
         private Sprite? cursorRingSprite;
         private Transform? cursorRingRoot;
         private Transform? cursorRingRotator;
@@ -70,6 +72,21 @@ namespace Icebreaker.Gameplay
         private IStageClock? injectedClock;
         private CombatConfig? injectedCombatConfig;
         private IStageClock? activeClock;
+
+        private sealed class DestructionVisual
+        {
+            public DestructionVisual(GameObject root, SpriteRenderer renderer, Sprite[] frames)
+            {
+                Root = root;
+                Renderer = renderer;
+                Frames = frames;
+            }
+
+            public GameObject Root { get; }
+            public SpriteRenderer Renderer { get; }
+            public Sprite[] Frames { get; }
+            public float ElapsedSeconds { get; set; }
+        }
 
         private sealed class DummyClock : IStageClock
         {
@@ -129,7 +146,7 @@ namespace Icebreaker.Gameplay
             }
 
             ApplyCombatConfig();
-            field.Initialize(0d);
+            field!.Initialize(0d);
             RefreshAllVisuals();
             attackTickScheduler?.Reset();
         }
@@ -139,12 +156,20 @@ namespace Icebreaker.Gameplay
             stageStartedAt = Time.timeAsDouble;
             activeClock = injectedClock ?? new DummyClock(this);
             ApplyCombatConfig();
-            field.DamageApplied += HandleDamageApplied;
-            field.IceDestroyed += HandleIceDestroyed;
-            field.IceRespawned += HandleIceRespawned;
+            var activeField = field ??
+                throw new InvalidOperationException("IceField failed to initialize.");
+            activeField.DamageApplied += HandleDamageApplied;
+            activeField.IceDestroyed += HandleIceDestroyed;
+            activeField.IceRespawned += HandleIceRespawned;
 
-            iceSprite = CreateIceSprite();
-            field.Initialize(0d);
+            if (iceVisualCatalog == null || !iceVisualCatalog.IsComplete)
+            {
+                Debug.LogError(
+                    "[ART-P0] IceVisualCatalog is missing or incomplete. " +
+                    "Final ice visuals cannot be rendered.",
+                    this);
+            }
+            activeField.Initialize(0d);
         }
 
         private void ApplyCombatConfig()
@@ -224,6 +249,8 @@ namespace Icebreaker.Gameplay
             {
                 cursorRingRoot.gameObject.SetActive(false);
             }
+
+            ClearDestructionVisuals();
         }
 
         private void OnDestroy()
@@ -237,11 +264,8 @@ namespace Icebreaker.Gameplay
             field.IceDestroyed -= HandleIceDestroyed;
             field.IceRespawned -= HandleIceRespawned;
 
-            if (iceSprite != null)
-            {
-                Destroy(iceSprite.texture);
-                Destroy(iceSprite);
-            }
+            ClearDestructionVisuals();
+            DestroySlicedDestructionSprites();
 
             if (cursorRingSprite != null)
             {
@@ -252,6 +276,8 @@ namespace Icebreaker.Gameplay
 
         private void Update()
         {
+            UpdateDestructionVisuals(Time.deltaTime);
+
             var mouse = Mouse.current;
             if (field == null || sceneCamera == null || mouse == null ||
                 attackTickScheduler == null || directAttackConfig == null)
@@ -292,7 +318,7 @@ namespace Icebreaker.Gameplay
 
         private void CreateAllVisuals()
         {
-            if (field == null || iceSprite == null)
+            if (field == null)
             {
                 return;
             }
@@ -311,11 +337,10 @@ namespace Icebreaker.Gameplay
             child.transform.SetParent(transform, false);
 
             var renderer = child.AddComponent<SpriteRenderer>();
-            renderer.sprite = iceSprite;
             renderer.sortingOrder = 10;
 
             PositionVisual(renderer, ice);
-            UpdateVisualColor(renderer, ice);
+            UpdateVisualAppearance(renderer, ice);
             return renderer;
         }
 
@@ -333,33 +358,20 @@ namespace Icebreaker.Gameplay
             renderer.transform.localScale = Vector3.one * (worldRadius * 2f);
         }
 
-        private void UpdateVisualColor(SpriteRenderer renderer, IceInstance ice)
+        private void UpdateVisualAppearance(SpriteRenderer renderer, IceInstance ice)
         {
-            var hpRatio = ice.RemainingHp / ice.MaxHp;
+            renderer.sprite = iceVisualCatalog?.ResolveStaticSprite(
+                ice.Tier,
+                ice.SpecialType,
+                ice.IceInstanceId);
+
             if (ice.IsDestroyed)
             {
-                renderer.color = new Color(0.7f, 0.85f, 0.9f, 0.3f);
+                renderer.color = new Color(1f, 1f, 1f, 0.3f);
                 return;
             }
 
-            // Tier-based colors from spec: T1=white, T2=sky blue, T3=cobalt blue.
-            var tierColor = ice.Tier switch
-            {
-                IceTier.T2 => new Color(0.53f, 0.81f, 0.98f, 1f), // Sky blue
-                IceTier.T3 => new Color(0.24f, 0.35f, 0.67f, 1f), // Cobalt blue
-                _          => new Color(0.87f, 0.98f, 1f, 1f),    // White/light blue (T1)
-            };
-
-            if (ice.SpecialType == SpecialIceType.Crystal)
-            {
-                tierColor = new Color(1f, 0.92f, 0.5f, 1f); // Golden yellow for Crystal
-            }
-            else if (ice.SpecialType == SpecialIceType.Crack)
-            {
-                tierColor = new Color(1f, 0.4f, 0.4f, 1f); // Reddish for Crack
-            }
-
-            renderer.color = Color.Lerp(tierColor * 0.8f, tierColor, hpRatio);
+            renderer.color = Color.white;
         }
 
         private void RefreshVisual(int index)
@@ -372,7 +384,7 @@ namespace Icebreaker.Gameplay
             var ice = field.ActiveIce[index];
             var renderer = visuals[index];
             PositionVisual(renderer, ice);
-            UpdateVisualColor(renderer, ice);
+            UpdateVisualAppearance(renderer, ice);
         }
 
         private void RefreshAllVisuals()
@@ -493,7 +505,7 @@ namespace Icebreaker.Gameplay
             {
                 if (field.ActiveIce[i].IceInstanceId == e.IceInstanceId)
                 {
-                    UpdateVisualColor(visuals[i], field.ActiveIce[i]);
+                    UpdateVisualAppearance(visuals[i], field.ActiveIce[i]);
                     break;
                 }
             }
@@ -567,11 +579,135 @@ namespace Icebreaker.Gameplay
 
         private void HandleIceDestroyed(IceDestroyedEvent e)
         {
+            if (field == null || iceVisualCatalog == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < field.ActiveIce.Count && i < visuals.Count; i++)
+            {
+                var ice = field.ActiveIce[i];
+                if (ice.IceInstanceId != e.IceInstanceId)
+                {
+                    continue;
+                }
+
+                var sheet = iceVisualCatalog.ResolveDestructionSheet(
+                    ice.Tier,
+                    ice.SpecialType,
+                    ice.IceInstanceId);
+                if (sheet == null)
+                {
+                    return;
+                }
+
+                var source = visuals[i];
+                var root = new GameObject($"IceDestruction_{e.IceInstanceId}");
+                root.transform.SetParent(transform, false);
+                root.transform.position = source.transform.position;
+                root.transform.localScale = source.transform.localScale;
+                root.transform.rotation = source.transform.rotation;
+
+                var effectRenderer = root.AddComponent<SpriteRenderer>();
+                var frames = ResolveDestructionFrames(sheet);
+                effectRenderer.sprite = frames[0];
+                effectRenderer.sortingOrder = source.sortingOrder + 1;
+                effectRenderer.color = Color.white;
+
+                destructionVisuals.Add(new DestructionVisual(root, effectRenderer, frames));
+                return;
+            }
         }
 
         private void HandleIceRespawned(int index)
         {
             RefreshVisual(index);
+        }
+
+        private Sprite[] ResolveDestructionFrames(Texture2D sheet)
+        {
+            if (destructionFrames.TryGetValue(sheet, out var cachedFrames))
+            {
+                return cachedFrames;
+            }
+
+            var cellWidth = sheet.height;
+            if (cellWidth <= 0 || sheet.width % cellWidth != 0)
+            {
+                throw new InvalidOperationException(
+                    $"Destruction sheet '{sheet.name}' must contain equal square cells.");
+            }
+
+            var frameCount = sheet.width / cellWidth;
+            if (frameCount is not 5 and not 6)
+            {
+                throw new InvalidOperationException(
+                    $"Destruction sheet '{sheet.name}' must contain five or six cells.");
+            }
+
+            var frames = new Sprite[frameCount];
+            for (var i = 0; i < frames.Length; i++)
+            {
+                frames[i] = Sprite.Create(
+                    sheet,
+                    new Rect(i * cellWidth, 0f, cellWidth, sheet.height),
+                    new Vector2(0.5f, 0.5f),
+                    cellWidth);
+                frames[i].name = $"{sheet.name}_{i}";
+            }
+
+            destructionFrames.Add(sheet, frames);
+            return frames;
+        }
+
+        private void UpdateDestructionVisuals(float deltaTime)
+        {
+            for (var i = destructionVisuals.Count - 1; i >= 0; i--)
+            {
+                var visual = destructionVisuals[i];
+                visual.ElapsedSeconds += deltaTime;
+                if (visual.ElapsedSeconds >= DestructionVisualDurationSeconds)
+                {
+                    Destroy(visual.Root);
+                    destructionVisuals.RemoveAt(i);
+                    continue;
+                }
+
+                var normalized = visual.ElapsedSeconds / DestructionVisualDurationSeconds;
+                var frameIndex = Mathf.Min(
+                    Mathf.FloorToInt(normalized * visual.Frames.Length),
+                    visual.Frames.Length - 1);
+                visual.Renderer.sprite = visual.Frames[frameIndex];
+            }
+        }
+
+        private void ClearDestructionVisuals()
+        {
+            for (var i = 0; i < destructionVisuals.Count; i++)
+            {
+                if (destructionVisuals[i].Root != null)
+                {
+                    Destroy(destructionVisuals[i].Root);
+                }
+            }
+
+            destructionVisuals.Clear();
+        }
+
+        private void DestroySlicedDestructionSprites()
+        {
+            foreach (var frames in destructionFrames.Values)
+            {
+                for (var i = 0; i < frames.Length; i++)
+                {
+                    if (frames[i] != null)
+                    {
+                        Destroy(frames[i]);
+                    }
+                }
+            }
+
+            destructionFrames.Clear();
         }
 
         // --- Sprite & Config creation ---
@@ -655,44 +791,6 @@ namespace Icebreaker.Gameplay
                 textureSize);
         }
 
-        private static Sprite CreateIceSprite()
-        {
-            var texture = new Texture2D(RuntimeSpriteSize, RuntimeSpriteSize, TextureFormat.RGBA32, false)
-            {
-                filterMode = FilterMode.Bilinear,
-                wrapMode = TextureWrapMode.Clamp
-            };
-
-            var center = new Vector2((RuntimeSpriteSize - 1) * 0.5f, (RuntimeSpriteSize - 1) * 0.5f);
-            var maxRadius = RuntimeSpriteSize * 0.46f;
-
-            for (var y = 0; y < RuntimeSpriteSize; y++)
-            {
-                for (var x = 0; x < RuntimeSpriteSize; x++)
-                {
-                    var distance = Vector2.Distance(new Vector2(x, y), center);
-                    if (distance > maxRadius)
-                    {
-                        texture.SetPixel(x, y, Color.clear);
-                        continue;
-                    }
-
-                    var edge = distance / maxRadius;
-                    var color = Color.Lerp(
-                        new Color(0.87f, 0.98f, 1f, 1f),
-                        new Color(0.55f, 0.82f, 0.9f, 1f),
-                        edge);
-                    texture.SetPixel(x, y, color);
-                }
-            }
-
-            texture.Apply();
-            return Sprite.Create(
-                texture,
-                new Rect(0, 0, RuntimeSpriteSize, RuntimeSpriteSize),
-                new Vector2(0.5f, 0.5f),
-                RuntimeSpriteSize);
-        }
     }
 }
 

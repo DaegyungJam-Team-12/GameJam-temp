@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Icebreaker.Integration.Editor;
 using Icebreaker.Shared.State;
 using Icebreaker.UI.Hud;
 using Icebreaker.UI.Sandbox;
@@ -39,7 +40,9 @@ namespace Icebreaker.UI.Editor
             }
 
             BuildLauncher(theme, font);
+            DavinP0IceArtImporter.ApplyLauncherPrefabOnly();
             BuildIcebreaking(theme, font);
+            DavinP0IceArtImporter.ApplyIcebreakingHudPrefabOnly();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Validate();
@@ -65,6 +68,7 @@ namespace Icebreaker.UI.Editor
             }
 
             BuildIcebreaking(theme, font);
+            DavinP0IceArtImporter.ApplyIcebreakingHudPrefabOnly();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             ValidateCombatHud();
@@ -121,9 +125,9 @@ namespace Icebreaker.UI.Editor
             else
             {
                 ValidateCanvas(icebreaking, new Vector2(960f, 540f), errors);
-                ValidateRect(icebreaking, "HudRoot/FundsArea", 16f, 12f, 220f, 40f, errors);
-                ValidateRect(icebreaking, "HudRoot/TimerArea", 400f, 12f, 160f, 40f, errors);
-                ValidateRect(icebreaking, "HudRoot/SettingsHitArea", 904f, 12f, 40f, 40f, errors);
+                ValidateRect(icebreaking, "HudRoot/FundsArea", 8f, 6f, 176.5f, 48f, errors);
+                ValidateRect(icebreaking, "HudRoot/TimerArea", 675.5f, 6f, 131f, 48f, errors);
+                ValidateRect(icebreaking, "HudRoot/SettingsHitArea", 812f, 6f, 139.5f, 48f, errors);
                 ValidateRect(icebreaking, "HudRoot/CountdownText", 380f, 150f, 200f, 240f, errors);
                 ValidateButtonSeparation(icebreaking, new[] { "HudRoot/SettingsHitArea" }, errors);
                 ValidatePresenterReferences<IcebreakingHudPresenter>(icebreaking, new[]
@@ -160,9 +164,9 @@ namespace Icebreaker.UI.Editor
             else
             {
                 ValidateCanvas(icebreaking, new Vector2(960f, 540f), errors);
-                ValidateRect(icebreaking, "HudRoot/FundsArea", 16f, 12f, 220f, 40f, errors);
-                ValidateRect(icebreaking, "HudRoot/TimerArea", 400f, 12f, 160f, 40f, errors);
-                ValidateRect(icebreaking, "HudRoot/SettingsHitArea", 904f, 12f, 40f, 40f, errors);
+                ValidateRect(icebreaking, "HudRoot/FundsArea", 8f, 6f, 176.5f, 48f, errors);
+                ValidateRect(icebreaking, "HudRoot/TimerArea", 675.5f, 6f, 131f, 48f, errors);
+                ValidateRect(icebreaking, "HudRoot/SettingsHitArea", 812f, 6f, 139.5f, 48f, errors);
                 ValidateRect(icebreaking, "HudRoot/CountdownText", 380f, 150f, 200f, 240f, errors);
                 ValidateButtonSeparation(icebreaking, new[] { "HudRoot/SettingsHitArea" }, errors);
                 ValidatePresenterReferences<IcebreakingHudPresenter>(icebreaking, new[]
@@ -211,7 +215,9 @@ namespace Icebreaker.UI.Editor
                 var destinationArea = CreateTopLeftPanel("DestinationArea", hudRoot.transform, 128f, 8f, 200f, 56f, theme.Panel);
                 panels.Add(destinationArea);
                 var destinationName = CreateTopLeftText("DestinationNameText", destinationArea.transform, 8f, 3f, 108f, 24f, "섬마을", font, 15f, TextAlignmentOptions.Left);
+                destinationName.overflowMode = TextOverflowModes.Overflow;
                 var destinationProgress = CreateTopLeftText("DestinationProgressText", destinationArea.transform, 112f, 3f, 80f, 24f, "37/120", font, 14f, TextAlignmentOptions.Right);
+                destinationProgress.overflowMode = TextOverflowModes.Overflow;
                 texts.Add(destinationName);
                 texts.Add(destinationProgress);
 
@@ -225,7 +231,7 @@ namespace Icebreaker.UI.Editor
 
                 var maintenance = CreateButton("MaintenanceHitArea", hudRoot.transform, 336f, 8f, 80f, 56f, "정비", font, 17f, theme.Panel, texts, panels);
                 var route = CreateButton("RouteHitArea", hudRoot.transform, 424f, 8f, 96f, 56f, "운항 현황", font, 16f, theme.Panel, texts, panels);
-                var start = CreateButton("StageStartHitArea", hudRoot.transform, 528f, 8f, 208f, 56f, "다음 쇄빙 00:24", font, 17f, theme.ActionAccent, texts, accents);
+                var start = CreateButton("StageStartHitArea", hudRoot.transform, 528f, 8f, 208f, 56f, "쇄빙 시작", font, 17f, theme.ActionAccent, texts, accents);
                 start.interactable = false;
                 var settings = CreateButton("SettingsHitArea", hudRoot.transform, 744f, 12f, 48f, 48f, "설정", font, 14f, theme.Panel, texts, panels);
 
@@ -268,17 +274,20 @@ namespace Icebreaker.UI.Editor
                 var panels = new List<Graphic>();
                 var texts = new List<TMP_Text>();
 
-                var fundsArea = CreateTopLeftPanel("FundsArea", hudRoot.transform, 16f, 12f, 220f, 40f, theme.Panel);
+                var fundsArea = CreateTopLeftPanel("FundsArea", hudRoot.transform, 8f, 6f, 176.5f, 48f, theme.Panel);
                 panels.Add(fundsArea);
                 var fundsText = CreateInsetText("FundsText", fundsArea.transform, "정비 자금 12.4K", font, 18f, TextAlignmentOptions.Center);
+                SetTopLeft(fundsText.rectTransform, 52f, 3f, 119f, 42f);
                 texts.Add(fundsText);
 
-                var timerArea = CreateTopLeftPanel("TimerArea", hudRoot.transform, 400f, 12f, 160f, 40f, theme.Panel);
+                var timerArea = CreateTopLeftPanel("TimerArea", hudRoot.transform, 675.5f, 6f, 131f, 48f, theme.Panel);
                 panels.Add(timerArea);
                 var timerText = CreateInsetText("TimerText", timerArea.transform, "00:42", font, 24f, TextAlignmentOptions.Center);
+                SetTopLeft(timerText.rectTransform, 40f, 3f, 87f, 42f);
                 texts.Add(timerText);
 
-                var settings = CreateButton("SettingsHitArea", hudRoot.transform, 904f, 12f, 40f, 40f, "설정", font, 12f, theme.Panel, texts, panels, visualInset: 3f);
+                var settings = CreateButton("SettingsHitArea", hudRoot.transform, 812f, 6f, 139.5f, 48f, "설정", font, 14f, theme.Panel, texts, panels);
+                SetTopLeft(settings.GetComponentInChildren<TMP_Text>().rectTransform, 43f, 3f, 92f, 42f);
 
                 var countdownText = CreateTopLeftText(
                     "CountdownText",
@@ -368,8 +377,7 @@ namespace Icebreaker.UI.Editor
             float fontSize,
             Color visualColor,
             List<TMP_Text> texts,
-            List<Graphic> themedGraphics,
-            float visualInset = 4f)
+            List<Graphic> themedGraphics)
         {
             var hitArea = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
             var hitRect = hitArea.GetComponent<RectTransform>();
@@ -377,20 +385,21 @@ namespace Icebreaker.UI.Editor
             SetTopLeft(hitRect, x, y, width, height);
 
             var hitImage = hitArea.GetComponent<Image>();
-            hitImage.color = Color.clear;
+            hitImage.color = visualColor;
             hitImage.raycastTarget = true;
 
-            var visual = CreateStretchPanel("Visual", hitArea.transform, visualColor, raycastTarget: false);
-            var visualRect = visual.rectTransform;
-            visualRect.offsetMin = new Vector2(visualInset, visualInset);
-            visualRect.offsetMax = new Vector2(-visualInset, -visualInset);
-            themedGraphics.Add(visual);
-
-            var text = CreateInsetText("Label", visual.transform, label, font, fontSize, TextAlignmentOptions.Center);
+            var text = CreateInsetText(
+                "Label",
+                hitArea.transform,
+                label,
+                font,
+                fontSize,
+                TextAlignmentOptions.Center);
             texts.Add(text);
+            themedGraphics.Add(hitImage);
 
             var button = hitArea.GetComponent<Button>();
-            button.targetGraphic = visual;
+            button.targetGraphic = hitImage;
             button.transition = Selectable.Transition.ColorTint;
             var colors = button.colors;
             colors.normalColor = Color.white;
@@ -762,12 +771,15 @@ namespace Icebreaker.UI.Editor
                 }
 
                 var hitImage = transform.GetComponent<Image>();
-                if (hitImage == null || !hitImage.raycastTarget || hitImage.color.a > 0.001f)
+                if (hitImage == null ||
+                    !hitImage.raycastTarget ||
+                    hitImage.color.a < 0.99f)
                 {
-                    errors.Add($"{prefab.name}/{path} must use a transparent raycast hit area.");
+                    errors.Add(
+                        $"{prefab.name}/{path} must use its visible parent Image as the hit area.");
                 }
 
-                ValidateVisualInset(transform, errors);
+                ValidateEncapsulatedButton(transform, errors);
                 var x = transform.anchoredPosition.x;
                 var y = -transform.anchoredPosition.y;
                 rects.Add(new Rect(x, y, transform.sizeDelta.x, transform.sizeDelta.y));
@@ -785,20 +797,24 @@ namespace Icebreaker.UI.Editor
             }
         }
 
-        private static void ValidateVisualInset(Transform? hitArea, List<string> errors)
+        private static void ValidateEncapsulatedButton(Transform? hitArea, List<string> errors)
         {
             if (hitArea == null)
             {
                 return;
             }
 
-            var visual = hitArea.Find("Visual") as RectTransform;
-            var hitRect = hitArea as RectTransform;
-            if (visual == null || hitRect == null ||
-                visual.rect.width >= hitRect.rect.width || visual.rect.height >= hitRect.rect.height ||
-                visual.GetComponent<Graphic>()?.raycastTarget != false)
+            var label = hitArea.Find("Label");
+            var image = hitArea.GetComponent<Image>();
+            var button = hitArea.GetComponent<Button>();
+            if (label?.GetComponent<TMP_Text>() == null ||
+                hitArea.Find("Visual") != null ||
+                image == null ||
+                button == null ||
+                button.targetGraphic != image)
             {
-                errors.Add($"{hitArea.name} must have a smaller, non-raycast Visual child.");
+                errors.Add(
+                    $"{hitArea.name} must directly parent its Label and use its own Image as Button target.");
             }
         }
 
