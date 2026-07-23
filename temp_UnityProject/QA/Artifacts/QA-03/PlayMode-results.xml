@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="8" result="Passed" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-07-23 08:27:07Z" end-time="2026-07-23 08:29:38Z" duration="151.253473">
+  <test-suite type="TestSuite" id="1018" name="ICEBREAKER" fullname="ICEBREAKER" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-07-23 08:27:07Z" end-time="2026-07-23 08:29:38Z" duration="151.253473" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1011" name="Icebreaker.Integration.PlayModeTests.dll" fullname="C:/Users/user/AppData/Local/Temp/icebreaker-qa03-20260723-01/Library/ScriptAssemblies/Icebreaker.Integration.PlayModeTests.dll" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-07-23 08:27:07Z" end-time="2026-07-23 08:29:38Z" duration="151.238504" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="16028" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1012" name="Icebreaker" fullname="Icebreaker" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-07-23 08:27:07Z" end-time="2026-07-23 08:29:38Z" duration="151.237266" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1013" name="Integration" fullname="Icebreaker.Integration" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-07-23 08:27:07Z" end-time="2026-07-23 08:29:38Z" duration="151.236550" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1014" name="Tests" fullname="Icebreaker.Integration.Tests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-07-23 08:27:07Z" end-time="2026-07-23 08:29:38Z" duration="151.235820" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="Int02SceneIntegrationTests" fullname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests" classname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-23 08:27:07Z" end-time="2026-07-23 08:29:38Z" duration="150.897578" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1002" name="CompleteLoopScene_BindsHudAndInjectsRealStageClock" fullname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests.CompleteLoopScene_BindsHudAndInjectsRealStageClock" methodname="CompleteLoopScene_BindsHudAndInjectsRealStageClock" classname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests" runstate="Runnable" seed="2073460627" result="Passed" start-time="2026-07-23 08:27:07Z" end-time="2026-07-23 08:27:08Z" duration="1.064580" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[INT-02] demo loop wired: state -> gameplay -> UI -> settlement -> save.
+]]></output>
+              </test-case>
+              <test-case id="1003" name="CompleteLoopScene_InjectsSavedD04RadiusIntoTheField" fullname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests.CompleteLoopScene_InjectsSavedD04RadiusIntoTheField" methodname="CompleteLoopScene_InjectsSavedD04RadiusIntoTheField" classname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests" runstate="Runnable" seed="56257139" result="Passed" start-time="2026-07-23 08:27:08Z" end-time="2026-07-23 08:27:09Z" duration="0.586557" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[INT-02] demo loop wired: state -> gameplay -> UI -> settlement -> save.
+]]></output>
+              </test-case>
+              <test-case id="1004" name="MaintenanceScreen_PurchasesWithRealFundsAndPersistsAcrossReload" fullname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests.MaintenanceScreen_PurchasesWithRealFundsAndPersistsAcrossReload" methodname="MaintenanceScreen_PurchasesWithRealFundsAndPersistsAcrossReload" classname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests" runstate="Runnable" seed="1682287170" result="Passed" start-time="2026-07-23 08:27:09Z" end-time="2026-07-23 08:27:10Z" duration="1.637933" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[INT-02] demo loop wired: state -> gameplay -> UI -> settlement -> save.
+[INT-02] demo loop wired: state -> gameplay -> UI -> settlement -> save.
+]]></output>
+              </test-case>
+              <test-case id="1005" name="StartButton_UsesRealCountdownAndCompletesTwoSavedCycles" fullname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests.StartButton_UsesRealCountdownAndCompletesTwoSavedCycles" methodname="StartButton_UsesRealCountdownAndCompletesTwoSavedCycles" classname="Icebreaker.Integration.Tests.Int02SceneIntegrationTests" runstate="Runnable" seed="527962462" result="Passed" start-time="2026-07-23 08:27:10Z" end-time="2026-07-23 08:29:38Z" duration="147.583820" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[INT-02] demo loop wired: state -> gameplay -> UI -> settlement -> save.
+[INT-02] demo loop wired: state -> gameplay -> UI -> settlement -> save.
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1006" name="MaintenanceTreePresentationTests" fullname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests" classname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-07-23 08:29:38Z" end-time="2026-07-23 08:29:38Z" duration="0.336031" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1007" name="ArtAssets_ReuseFourteenLogicalIconsAndProvideNonColorStateCues" fullname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests.ArtAssets_ReuseFourteenLogicalIconsAndProvideNonColorStateCues" methodname="ArtAssets_ReuseFourteenLogicalIconsAndProvideNonColorStateCues" classname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests" runstate="Runnable" seed="1274256507" result="Passed" start-time="2026-07-23 08:29:38Z" end-time="2026-07-23 08:29:38Z" duration="0.020142" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1009" name="KoreanTooltip_TextFitsItsFixedOverlayCards" fullname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests.KoreanTooltip_TextFitsItsFixedOverlayCards" methodname="KoreanTooltip_TextFitsItsFixedOverlayCards" classname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests" runstate="Runnable" seed="1956571957" result="Passed" start-time="2026-07-23 08:29:38Z" end-time="2026-07-23 08:29:38Z" duration="0.022647" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1010" name="ShortClick_RequestsOnceWhileDragDisableAndDuplicateInputDoNotPurchase" fullname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests.ShortClick_RequestsOnceWhileDragDisableAndDuplicateInputDoNotPurchase" methodname="ShortClick_RequestsOnceWhileDragDisableAndDuplicateInputDoNotPurchase" classname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests" runstate="Runnable" seed="1147780468" result="Passed" start-time="2026-07-23 08:29:38Z" end-time="2026-07-23 08:29:38Z" duration="0.122360" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[There can be only one active Event System.
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+There are 2 event systems in the scene. Please ensure there is always exactly one event system in the scene
+]]></output>
+              </test-case>
+              <test-case id="1008" name="StaticTree_RendersFiveInitialAndAllFullyPurchasedNodesWithoutRaycastsOnHidden" fullname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests.StaticTree_RendersFiveInitialAndAllFullyPurchasedNodesWithoutRaycastsOnHidden" methodname="StaticTree_RendersFiveInitialAndAllFullyPurchasedNodesWithoutRaycastsOnHidden" classname="Icebreaker.Integration.Tests.MaintenanceTreePresentationTests" runstate="Runnable" seed="423847614" result="Passed" start-time="2026-07-23 08:29:38Z" end-time="2026-07-23 08:29:38Z" duration="0.168034" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/user/AppData/LocalLow/DaegyungJamTeam12/ICEBREAKER\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
