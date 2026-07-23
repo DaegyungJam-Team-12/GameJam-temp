@@ -117,7 +117,7 @@ namespace Icebreaker.UI.Hud
                 return;
             }
 
-            if (fundsText == null || destinationNameText == null || destinationProgressText == null ||
+            if (fundsText == null || destinationNameText == null ||
                 destinationProgressFill == null || startButtonText == null || startButton == null)
             {
                 Debug.LogError("[UI-02] Launcher HUD has one or more missing references.", this);

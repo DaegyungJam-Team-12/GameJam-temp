@@ -19,7 +19,7 @@ namespace Icebreaker.UI.Editor
         private const string PrefabFolder = "Assets/03.Prefabs/30.UI/Hud";
         private const string LauncherPrefabPath = PrefabFolder + "/UI_LauncherHud.prefab";
         private const string IcebreakingPrefabPath = PrefabFolder + "/UI_IcebreakingHud.prefab";
-        private const string BuildStamp = "ui02-launcher-tabbar-art-v3";
+        private const string BuildStamp = "ui02-launcher-tabbar-art-v4";
         private const string TabbarArtFolder = "Assets/04.Images/Tabbar";
 
         [MenuItem("ICEBREAKER/UI/Rebuild UI-02 HUD Prefabs")]
@@ -131,7 +131,6 @@ namespace Icebreaker.UI.Editor
                     "theme",
                     "fundsText",
                     "destinationNameText",
-                    "destinationProgressText",
                     "destinationProgressFill",
                     "startButtonText",
                     "maintenanceButton",
@@ -255,16 +254,13 @@ namespace Icebreaker.UI.Editor
                 var fundsText = CreateTopLeftText("FundsText", hudRoot.transform, 48f, 97f, 96f, 50f, "정비 자금\n12.4K", font, 13f, TextAlignmentOptions.Center);
                 texts.Add(fundsText);
 
-                // Destination name/progress, in the empty panel to the RIGHT of the pin icon
-                // baked into the destination button art (so they do not overlap the pin).
-                var destinationName = CreateTopLeftText("DestinationNameText", hudRoot.transform, 196f, 92f, 54f, 24f, "섬마을", font, 15f, TextAlignmentOptions.Left);
+                // Destination name only (no progress number), in the empty panel to the RIGHT of
+                // the pin icon baked into the destination button art.
+                var destinationName = CreateTopLeftText("DestinationNameText", hudRoot.transform, 196f, 92f, 118f, 26f, "섬마을", font, 15f, TextAlignmentOptions.Left);
                 destinationName.overflowMode = TextOverflowModes.Overflow;
-                var destinationProgress = CreateTopLeftText("DestinationProgressText", hudRoot.transform, 250f, 92f, 66f, 24f, "37/120", font, 13f, TextAlignmentOptions.Right);
-                destinationProgress.overflowMode = TextOverflowModes.Overflow;
                 texts.Add(destinationName);
-                texts.Add(destinationProgress);
 
-                var progressTrack = CreateTopLeftPanel("ProgressTrack", hudRoot.transform, 196f, 129f, 120f, 9f, new Color(0.02f, 0.07f, 0.12f, 1f));
+                var progressTrack = CreateTopLeftPanel("ProgressTrack", hudRoot.transform, 196f, 129f, 107f, 9f, new Color(0.02f, 0.07f, 0.12f, 1f));
                 progressTrack.raycastTarget = false;
                 var progressFill = CreateStretchPanel("ProgressFill", progressTrack.transform, theme.Success, raycastTarget: false);
                 progressFill.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd") ??
@@ -300,7 +296,7 @@ namespace Icebreaker.UI.Editor
                     theme,
                     fundsText,
                     destinationName,
-                    destinationProgress,
+                    null,
                     progressFill,
                     startText,
                     maintenance,
@@ -562,7 +558,7 @@ namespace Icebreaker.UI.Editor
             UiThemeAsset theme,
             TMP_Text fundsText,
             TMP_Text destinationName,
-            TMP_Text destinationProgress,
+            TMP_Text? destinationProgress,
             Image progressFill,
             TMP_Text startText,
             Button maintenance,
@@ -580,7 +576,7 @@ namespace Icebreaker.UI.Editor
             serialized.FindProperty("destinationDisplayName").stringValue = "섬마을";
             SetObject(serialized, "fundsText", fundsText);
             SetObject(serialized, "destinationNameText", destinationName);
-            SetObject(serialized, "destinationProgressText", destinationProgress);
+            SetOptionalObject(serialized, "destinationProgressText", destinationProgress);
             SetObject(serialized, "destinationProgressFill", progressFill);
             SetObject(serialized, "startButtonText", startText);
             SetObject(serialized, "maintenanceButton", maintenance);

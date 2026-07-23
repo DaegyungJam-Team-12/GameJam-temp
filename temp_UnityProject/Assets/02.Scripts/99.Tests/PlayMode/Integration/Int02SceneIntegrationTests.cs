@@ -485,16 +485,12 @@ namespace Icebreaker.Integration.Tests
             var fill = (Image)launcherType
                 .GetField("destinationProgressFill", BindingFlags.Instance | BindingFlags.NonPublic)!
                 .GetValue(launcher)!;
-            var text = (TMPro.TMP_Text)launcherType
-                .GetField("destinationProgressText", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .GetValue(launcher)!;
 
             Assert.That(fill.sprite, Is.Not.Null);
             Assert.That(fill.type, Is.EqualTo(Image.Type.Filled));
             Assert.That(
                 fill.fillAmount,
                 Is.EqualTo((float)expectedProgress / expectedTarget).Within(0.0001f));
-            Assert.That(text.text, Is.EqualTo($"{expectedProgress}/{expectedTarget}"));
         }
 
         private static void ClickStartButtonThroughEventSystem()
