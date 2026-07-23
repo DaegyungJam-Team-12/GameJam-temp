@@ -14,6 +14,9 @@ namespace Icebreaker.UI.Editor
         public const string IconFolder = ArtFolder + "/Icons";
         public const string ChromeFolder = ArtFolder + "/Chrome";
         private const string ConsoleButtonArtPath = ArtFolder + "/Buttons/MaintenanceConsoleButton.png";
+        private const string SettingsButtonArtPath = ArtFolder + "/Buttons/SettingsButton.png";
+        private const string StageStartButtonArtPath = ArtFolder + "/Buttons/StageStartButton.png";
+        private const string CollapseButtonArtPath = ArtFolder + "/Buttons/CollapseButton.png";
 
         private static readonly string[] LogicalIds =
         {
@@ -113,6 +116,9 @@ namespace Icebreaker.UI.Editor
             }
 
             ConfigureSprite(ConsoleButtonArtPath, new Vector4(96f, 96f, 96f, 96f));
+            ConfigureSprite(SettingsButtonArtPath, Vector4.zero);
+            ConfigureSprite(StageStartButtonArtPath, Vector4.zero);
+            ConfigureSprite(CollapseButtonArtPath, Vector4.zero);
 
             AssetDatabase.SaveAssets();
         }
